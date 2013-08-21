@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>CUSTOM-deploy</actionName>
+        <displayName>deploy</displayName>
+        <goals>
+            <goal>deploy</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-Clean and Build (snapshots)</actionName>
+        <displayName>Clean and Build (snapshots)</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>run</actionName>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
+        </goals>
+        <activatedProfiles>
+            <activatedProfile>cismet-dev-exec</activatedProfile>
+        </activatedProfiles>
+        <properties>
+            <jalopy.skip>true</jalopy.skip>
+            <exec.classpathScope>runtime</exec.classpathScope>
+            <exec.args>-Xmx512m -classpath ${de.cismet.cids.classpath} de.cismet.watergis.gui.WatergisApp -u "http://localhost:9917/callserver/binary" -c "Sirius.navigator.connection.RESTfulConnection" -d "WRRL_DB_MV"</exec.args>
+            <exec.executable>java</exec.executable>
+        </properties>
+    </action>
+    <action>
+        <actionName>debug</actionName>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
+        </goals>
+        <activatedProfiles>
+            <activatedProfile>cismet-dev-exec</activatedProfile>
+        </activatedProfiles>
+        <properties>
+            <jalopy.skip>true</jalopy.skip>
+            <exec.classpathScope>runtime</exec.classpathScope>
+            <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Xmx512m -classpath ${de.cismet.cids.classpath} de.cismet.watergis.gui.WatergisApp -u "http://localhost:9917/callserver/binary" -c "Sirius.navigator.connection.RESTfulConnection" -d "watergis"</exec.args>
+            <jpda.listen>true</jpda.listen>
+            <jpda.listen>true</jpda.listen>
+            <exec.executable>java</exec.executable>
+        </properties>
+    </action>
+    <action>
+        <actionName>profile</actionName>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
+        </goals>
+        <activatedProfiles>
+            <activatedProfile>cismet-dev-exec</activatedProfile>
+        </activatedProfiles>
+        <properties>
+            <jalopy.skip>true</jalopy.skip>
+            <exec.classpathScope>runtime</exec.classpathScope>
+            <exec.args>${profiler.args} -Xmx512m -classpath${de.cismet.cids.classpath} de.cismet.watergis.gui.main.watergisApp -u "http://localhost:9917/callserver/binary" -c "Sirius.navigator.connection.RESTfulConnection" -d "watergis"</exec.args>
+            <profiler.action>profile</profiler.action>
+            <exec.executable>${profiler.java}</exec.executable>
+        </properties>
+    </action>
+</actions>

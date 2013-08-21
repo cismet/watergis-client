@@ -1,0 +1,440 @@
+/**
+ * *************************************************
+ *
+ * cismet GmbH, Saarbruecken, Germany
+ * 
+* ... and it just works.
+ * 
+***************************************************
+ */
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package de.cismet.watergis.gui;
+
+import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
+
+import net.infonode.docking.RootWindow;
+import net.infonode.docking.util.DockingUtil;
+import net.infonode.docking.util.StringViewMap;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import org.jdom.Element;
+
+import java.awt.Dimension;
+import java.awt.Point;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import de.cismet.tools.configuration.Configurable;
+import de.cismet.tools.configuration.ConfigurationManager;
+
+import de.cismet.tools.gui.startup.StaticStartupTools;
+
+import de.cismet.watergis.broker.AppBroker;
+
+import static java.awt.Frame.MAXIMIZED_BOTH;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+/**
+ * DOCUMENT ME!
+ *
+ * @author thorsten
+ * @version $Revision$, $Date$
+ */
+public class WatergisApp extends javax.swing.JFrame implements Configurable, WindowListener {
+
+    //~ Static fields/initializers ---------------------------------------------
+    private static final Logger LOG = Logger.getLogger(WatergisApp.class);
+    private static JFrame SPLASH;
+    private static final ConfigurationManager configManager = new ConfigurationManager();
+    private static final String FILENAME_WATERGIS_CONFIGURATION = "defaultWatergisProperties.xml";
+    private static final String FILENAME_LOCAL_WATERGIS_CONFIGURATION = "watergisProperties.xml";
+    private static final String CLASSPATH_WATERGIS_CONFIGURATION = "/de/cismet/watergis/configuration/";
+    private static final String DIRECTORYPATH_HOME = System.getProperty("user.home");
+    private static final String DIRECTORYEXTENSION = System.getProperty("directory.extension");
+    private static final String FILESEPARATOR = System.getProperty("file.separator");
+    private static final String DIRECTORYNAME_WATERGISHOME = ".watergis"
+            + ((DIRECTORYEXTENSION != null) ? DIRECTORYEXTENSION : "");
+    private static final String DIRECTORYPATH_WATERGIS = DIRECTORYPATH_HOME + FILESEPARATOR
+            + DIRECTORYNAME_WATERGISHOME;
+    private static final String FILEPATH_DEFAULT_LAYOUT = DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.layout";
+    private static final String FILEPATH_PLUGIN_LAYOUT = DIRECTORYPATH_WATERGIS + FILESEPARATOR
+            + "pluginWatergis.layout";
+    private static final String FILEPATH_DEFAULT_APP_DATA = DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.data";
+    private static final String FILEPATH_SCREEN = DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.screen";
+
+    static {
+        configManager.setDefaultFileName(FILENAME_WATERGIS_CONFIGURATION);
+        configManager.setFileName(FILENAME_LOCAL_WATERGIS_CONFIGURATION);
+        configManager.setClassPathFolder(CLASSPATH_WATERGIS_CONFIGURATION);
+        configManager.setFolder(DIRECTORYNAME_WATERGISHOME);
+    }
+    //~ Instance fields --------------------------------------------------------
+    private RootWindow rootWindow;
+    private StringViewMap viewMap = new StringViewMap();
+    // Configurable
+    private Dimension windowSize = null;
+    private Point windowLocation = null;
+
+    //~ Constructors -----------------------------------------------------------
+    /**
+     * Creates new form WatergisApp.
+     */
+    public WatergisApp() {
+        this.addWindowListener(this);
+
+        configManager.addConfigurable(this);
+        configManager.configure(this);
+        initComponents();
+        initDocking();
+        setWindowSize();
+    }
+
+    //~ Methods ----------------------------------------------------------------
+    /**
+     * DOCUMENT ME!
+     */
+    private void initDocking() {
+        rootWindow = DockingUtil.createRootWindow(viewMap, true);
+        AppBroker.getInstance().setRootWindow(rootWindow);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private static void initLog4J() {
+        try {
+            PropertyConfigurator.configure(WatergisApp.class.getResource(
+                    "/de/cismet/watergis/configuration/log4j.properties"));
+            LOG.info("Log4J System erfolgreich konfiguriert");
+        } catch (Exception ex) {
+            System.err.println("Fehler bei Log4J Initialisierung");
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle(org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.title")); // NOI18N
+
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 300, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param args DOCUMENT ME!
+     */
+    public static void main(final String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e) {
+                LOG.error("Uncaught Exception in " + t, e);
+            }
+        });
+        initLog4J();
+        try {
+            final Options options = new Options();
+            options.addOption("u", true, "CallserverUrl");
+            options.addOption("c", true, "ConnectionClass");
+            options.addOption("d", true, "Domain");
+            final PosixParser parser = new PosixParser();
+            final CommandLine cmd = parser.parse(options, args);
+            if (cmd.hasOption("u")) {
+                AppBroker.getInstance().setCallserverUrl(cmd.getOptionValue("u"));
+            } else {
+                LOG.warn("Kein Callserverhost spezifiziert, bitte mit -u setzen.");
+                System.exit(1);
+            }
+            if (cmd.hasOption("c")) {
+                AppBroker.getInstance().setConnectionClass(cmd.getOptionValue("c"));
+            } else {
+                LOG.warn("Keine ConnectionClass spezifiziert, bitte mit -c setzen.");
+                System.exit(1);
+            }
+            if (cmd.hasOption("d")) {
+                AppBroker.getInstance().setDomain(cmd.getOptionValue("d"));
+            } else {
+                LOG.error("Keine Domain spezifiziert, bitte mit -d setzen.");
+                System.exit(1);
+            }
+        } catch (Exception ex) {
+            LOG.error("Fehler beim auslesen der Kommandozeilen Parameter", ex);
+            System.exit(1);
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final PlasticXPLookAndFeel lf = new PlasticXPLookAndFeel();
+                    javax.swing.UIManager.setLookAndFeel(lf);
+                } catch (Exception ex) {
+                    LOG.error("Fehler beim setzen des Look & Feels", ex);
+                }
+                try {
+                    SPLASH = StaticStartupTools.showGhostFrame(FILEPATH_SCREEN, "FIS Gewässer [Startup]");
+                    SPLASH.setLocationRelativeTo(null);
+                } catch (Exception e) {
+                    LOG.warn("Problem beim Darstellen des Pre-Loading-Frame", e);
+                }
+                try {
+//                        handleLogin();
+                    AppBroker.getInstance().setLoggedIn(true);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Login erfolgreich");
+                    }
+                    final WatergisApp app = new WatergisApp();
+                    app.setVisible(true);
+                    if (SPLASH != null) {
+                        SPLASH.dispose();
+                    }
+                    SPLASH = null;
+                } catch (Exception ex) {
+                    LOG.error("Fehler beim Loginframe", ex);
+                    System.exit(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Element getConfiguration() {
+        final Element ret = new Element("cismapPluginUIPreferences");
+        final Element window = new Element("window");
+        final int windowHeight = this.getHeight();
+        final int windowWidth = this.getWidth();
+        final int windowX = (int) this.getLocation().getX();
+        final int windowY = (int) this.getLocation().getY();
+        final boolean windowMaximised = (this.getExtendedState() == MAXIMIZED_BOTH);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Windowsize: width " + windowWidth + " height " + windowHeight);
+        }
+        window.setAttribute("height", "" + windowHeight);
+        window.setAttribute("width", "" + windowWidth);
+        window.setAttribute("x", "" + windowX);
+        window.setAttribute("y", "" + windowY);
+        window.setAttribute("max", "" + windowMaximised);
+        ret.addContent(window);
+        return ret;
+    }
+
+    @Override
+    public void masterConfigure(final Element parent) {
+//        try {
+//            // ToDo if it fails all fail better place in the single try catch
+//            final Element urls = parent.getChild("urls");
+//            final Element albConfiguration = parent.getChild("albConfiguration");
+//            try {
+//                if (LOG.isDebugEnabled()) {
+//                    LOG.debug("OnlineHilfeUrl: " + urls.getChildText("onlineHelp"));
+//                }
+//                onlineHelpURL = urls.getChildText("onlineHelp");
+//            } catch (Exception ex) {
+//                LOG.warn("Fehler beim lesen der OnlineHilfe URL", ex);
+//            }
+//            try {
+//                albURL = albConfiguration.getChildText("albURL");
+//                if (albURL != null) {
+//                    albURL = albURL.trim();
+//                }
+//                if (LOG.isDebugEnabled()) {
+//                    LOG.debug("ALBURL: " + albURL.trim());
+//                }
+//            } catch (Exception ex) {
+//                LOG.warn("Fehler beim lesen der ALB Konfiguration", ex);
+//            }
+//            try {
+//                if (LOG.isDebugEnabled()) {
+//                    LOG.debug("News Url: " + urls.getChildText("onlineHelp"));
+//                }
+//                newsURL = urls.getChildText("news");
+//            } catch (Exception ex) {
+//                LOG.warn("Fehler beim lesen der News Url", ex);
+//            }
+//
+//        } catch (Exception ex) {
+//            LOG.error("Fehler beim konfigurieren der Watergis Applikation: ", ex);
+//        }
+    }
+
+    @Override
+    public void dispose() {
+        try {
+            StaticStartupTools.saveScreenshotOfFrame(this, FILEPATH_SCREEN);
+        } catch (Exception ex) {
+            LOG.fatal("Fehler beim Capturen des App-Inhaltes", ex);
+        }
+
+        setVisible(false);
+        LOG.info("Dispose(): Watergis wird heruntergefahren");
+
+//        this.saveAppData(FILEPATH_DEFAULT_APP_DATA);
+
+        configManager.writeConfiguration();
+        saveLayout(FILEPATH_DEFAULT_LAYOUT);
+
+        super.dispose();
+        System.exit(0);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param file DOCUMENT ME!
+     */
+    public void saveLayout(final String file) {
+        // AppBroker.getInstance().setTitleBarComponentpainter(AppBroker.DEFAULT_MODE_COLOR);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Saving Layout.. to " + file);
+        }
+        final File layoutFile = new File(file);
+        try {
+            if (!layoutFile.exists()) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Saving Layout.. File '" + file + "' does not exit");
+                }
+                layoutFile.createNewFile();
+            } else {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Saving Layout.. File '" + file + "' does exit");
+                }
+            }
+            final FileOutputStream layoutOutput = new FileOutputStream(layoutFile);
+            final ObjectOutputStream out = new ObjectOutputStream(layoutOutput);
+            rootWindow.write(out);
+            out.flush();
+            out.close();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Saving Layout.. to " + file + " successfull");
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "W\u00E4hrend dem Speichern des Layouts ist ein Fehler aufgetreten.",
+                    "Fehler",
+                    JOptionPane.INFORMATION_MESSAGE);
+            LOG.error("A failure occured during writing the layout file " + file, ex);
+        }
+    }
+
+    @Override
+    public void configure(final Element parent) {
+        final Element prefs = parent.getChild("cismapPluginUIPreferences");
+        if (prefs == null) {
+            LOG.warn("there is no local configuration 'cismapPluginUIPreferences'");
+        } else {
+            try {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("setting windowsize of application");
+                }
+                final Element window = prefs.getChild("window");
+                if (window == null) {
+                    LOG.warn("there is no 'window' configuration in 'cismapPluginUIPreferences'");
+                } else {
+                    final int windowHeight = window.getAttribute("height").getIntValue();
+                    final int windowWidth = window.getAttribute("width").getIntValue();
+                    final int windowX = window.getAttribute("x").getIntValue();
+                    final int windowY = window.getAttribute("y").getIntValue();
+                    final boolean windowMaximised = window.getAttribute("max").getBooleanValue();
+                    windowSize = new Dimension(windowWidth, windowHeight);
+                    windowLocation = new Point(windowX, windowY);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("windowSize: width " + windowWidth + " heigth " + windowHeight);
+                    }
+                    // TODO why is this not working
+                    // mapComponent.formComponentResized(null);
+                    if (windowMaximised) {
+                        this.setExtendedState(MAXIMIZED_BOTH);
+                    } else {
+                    }
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("setting of window successful");
+                    }
+                }
+            } catch (Exception t) {
+                // TODO defaults
+                LOG.error("Error while setting windowsize", t);
+            }
+        }
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
+    @Override
+    public void windowOpened(WindowEvent e) {
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("windowClosing():");
+        }
+        cleanUp();
+        dispose();
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+    }
+
+    private void cleanUp() {
+    }
+
+    private void setWindowSize() {
+        if ((windowSize != null) && (windowLocation != null)) {
+            this.setSize(windowSize);
+            this.setLocation(windowLocation);
+        } else {
+            this.pack();
+        }
+    }
+}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<watergis>
+    <urls>
+        <onlineHelp>www.cismet.de</onlineHelp>
+        <news>www.cismet.de</news>
+    </urls>
+    <cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
+        <home default="false" srs="EPSG:4326" metric="false">
+            <BoundingBox x1="-180.0" y1="-90.0" x2="180.0" y2="90.0" />
+        </home>
+        <home default="true" srs="EPSG:31466" metric="true">
+            <!--<BoundingBox x1="2566470.0" y1="5673088.0" x2="2597175.0" y2="5686286.0" />-->
+            <BoundingBox x1=" 2584473.0" y1=" 5682858.0" x2="2584869.0" y2="5683078.0" />            
+        </home>
+        <Position>
+            <!--<BoundingBox x1="2579494.723086932" y1="5675637.802734375" x2="2579672.13726463" y2="5675724.306640625" />-->
+            <BoundingBox x1=" 2584473.0" y1=" 5682858.0" x2="2584869.0" y2="5683078.0" />
+        </Position>
+        <printing>
+            <scale selected="false" denominator="0">frei</scale>
+            <scale selected="false" denominator="-1">Benutzerdefiniert</scale>
+            <scale selected="true" denominator="500">1:500</scale>
+            <scale selected="false" denominator="1000">1:1000</scale>
+            <scale selected="false" denominator="1500">1:1500</scale>
+            <scale selected="false" denominator="2000">1:2000</scale>
+            <scale selected="false" denominator="2500">1:2500</scale>
+            <resolution selected="false" dpi="72">72 dpi</resolution>
+            <resolution selected="false" dpi="100">100 dpi</resolution>
+            <resolution selected="false" dpi="150">150 dpi</resolution>
+            <resolution selected="false" dpi="200">200 dpi</resolution>
+            <resolution selected="true" dpi="300">300 dpi</resolution>
+            <template selected="true" title="Standard DIN-A4 hochkant" file="/A4H.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="508" mapHeight="699" scaleDenominatorPlaceholder="scale" />
+            <action selected="false" id="print">Drucken</action>
+            <action selected="false" id="printpreview">Druckvorschau</action>
+            <action selected="true" id="pdf">PDF anzeigen</action>
+        </printing>
+    </cismapMappingPreferences>
+    <!--TODO Verbessern anständiges Format erstellen-->
+
+
+    <cismapActiveLayerConfiguration>        
+        <Layers>   
+            <simpleWms layerPosition="0" skip="false" enabled="true" name="Orthophoto 2010" translucency="0.2"><![CDATA[http://s102x284:8399/arcgis/services/WuNDa-Orthophoto-WUP/MapServer/WMSServer?service=WMS&VERSION=1.1.1&REQUEST=GetMap&WIDTH=<cismap:width>&HEIGHT=<cismap:height>&BBOX=<cismap:boundingBox>&SRS=EPSG:31466&FORMAT=image/png&TRANSPARENT=TRUE&BGCOLOR=0xF0F0F0&EXCEPTIONS=application/vnd.ogc.se_xml&LAYERS=5&STYLES=default]]></simpleWms>
+        </Layers>
+    </cismapActiveLayerConfiguration>
+</watergis>
