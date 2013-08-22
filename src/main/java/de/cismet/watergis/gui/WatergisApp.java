@@ -47,6 +47,9 @@ import java.io.ObjectOutputStream;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.interaction.CismapBroker;
+
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
@@ -109,6 +112,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     // Views
     private View vMap;
     private View vTopicTree;
+
+    private MappingComponent mappingComponent;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cmdAddBookmark;
     private javax.swing.JButton cmdExportMap;
@@ -184,6 +189,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         configManager.addConfigurable(this);
         configManager.configure(this);
         initComponents();
+        initCismetCommonsComponents();
         initDefaultPanels();
         initDocking();
         initInfoNode();
@@ -270,6 +276,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 .getTabWindowProperties()
                 .getTabbedPanelProperties()
                 .setShadowStrength(0.8f);
+    }
+    /**
+     * DOCUMENT ME!
+     */
+    private void initCismetCommonsComponents() {
+        mappingComponent = new MappingComponent();
+        CismapBroker.getInstance().setMappingComponent(mappingComponent);
+        AppBroker.getInstance().setMappingComponent(mappingComponent);
     }
 
     /**

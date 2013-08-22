@@ -41,7 +41,7 @@ public class AppBroker implements Configurable {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(AppBroker.class);
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(AppBroker.class);
     // COLORS
     private static final Color blue = new Color(124, 160, 221);
     public static final Color DEFAULT_MODE_COLOR = blue;
