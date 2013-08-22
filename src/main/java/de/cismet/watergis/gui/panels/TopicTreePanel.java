@@ -17,20 +17,19 @@ package de.cismet.watergis.gui.panels;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class KartenPanel extends javax.swing.JPanel {
-
-    //~ Instance fields --------------------------------------------------------
+public class TopicTreePanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
 
     //~ Constructors -----------------------------------------------------------
 
     /**
-     * Creates new form KartenPanel.
+     * Creates new form TreePanel.
      */
-    public KartenPanel() {
+    public TopicTreePanel() {
         initComponents();
     }
 
@@ -43,13 +42,13 @@ public class KartenPanel extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
 
         setLayout(new java.awt.BorderLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(
-            jLabel1,
-            org.openide.util.NbBundle.getMessage(KartenPanel.class, "KartenPanel.jLabel1.text")); // NOI18N
-        add(jLabel1, java.awt.BorderLayout.CENTER);
-    }                                                                                             // </editor-fold>//GEN-END:initComponents
+        jScrollPane1.setViewportView(jTree1);
+
+        add(jScrollPane1, java.awt.BorderLayout.PAGE_START);
+    } // </editor-fold>//GEN-END:initComponents
 }

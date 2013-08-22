@@ -55,9 +55,10 @@ import de.cismet.tools.configuration.ConfigurationManager;
 import de.cismet.tools.gui.startup.StaticStartupTools;
 
 import de.cismet.watergis.broker.AppBroker;
+import de.cismet.watergis.broker.ComponentName;
 
-import de.cismet.watergis.gui.panels.KartenPanel;
-import de.cismet.watergis.gui.panels.TreePanel;
+import de.cismet.watergis.gui.panels.MapPanel;
+import de.cismet.watergis.gui.panels.TopicTreePanel;
 
 import static java.awt.Frame.MAXIMIZED_BOTH;
 
@@ -105,11 +106,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private Dimension windowSize = null;
     private Point windowLocation = null;
     // Panels
-    private KartenPanel pKarte = new KartenPanel();
-    private TreePanel pTree = new TreePanel();
+    private MapPanel pMap;
+    private TopicTreePanel pTopicTree;
     // Views
-    private View vKarte;
-    private View vTree;
+    private View vMap;
+    private View vTopicTree;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cmdAddBookmark;
     private javax.swing.JButton cmdExportMap;
@@ -220,11 +221,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      * DOCUMENT ME!
      */
     private void initInfoNode() {
-        vTree = new View("Tree", null, pTree);
-        viewMap.addView("Tree", vTree);
+        vTopicTree = new View("Tree", null, pTopicTree);
+        viewMap.addView("Tree", vTopicTree);
 
-        vKarte = new View("Karte", null, pKarte);
-        viewMap.addView("Karte", vKarte);
+        vMap = new View("Karte", null, pMap);
+        viewMap.addView("Karte", vMap);
 
         rootWindow = DockingUtil.createRootWindow(viewMap, true);
         AppBroker.getInstance().setRootWindow(rootWindow);
@@ -263,7 +264,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      * DOCUMENT ME!
      */
     public void doLayoutInfoNode() {
-        rootWindow.setWindow(new SplitWindow(true, 0.22901994f, vTree, vKarte));
+        rootWindow.setWindow(new SplitWindow(true, 0.22901994f, vTopicTree, vMap));
     }
 
     /**
@@ -1149,12 +1150,12 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 LOG.debug("Saving Layout.. to " + file + " successfull");
             }
         } catch (IOException ex) {
-            String message = org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.saveLayout().MessageDialog.message");
-            String title = org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.saveLayout().MessageDialog.title");
+            final String message = org.openide.util.NbBundle.getMessage(
+                    WatergisApp.class,
+                    "WatergisApp.saveLayout().MessageDialog.message");
+            final String title = org.openide.util.NbBundle.getMessage(
+                    WatergisApp.class,
+                    "WatergisApp.saveLayout().MessageDialog.title");
             JOptionPane.showMessageDialog(
                 this,
                 message,
