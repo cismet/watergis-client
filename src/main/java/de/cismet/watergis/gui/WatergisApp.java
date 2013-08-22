@@ -60,6 +60,7 @@ import de.cismet.tools.gui.startup.StaticStartupTools;
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
+import de.cismet.watergis.gui.actions.CloseAction;
 import de.cismet.watergis.gui.actions.OptionsAction;
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
@@ -919,6 +920,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         menFile.add(jMenuItem12);
         menFile.add(jSeparator3);
 
+        mniClose.setAction(new CloseAction());
         mniClose.setIcon(new javax.swing.ImageIcon(
                 getClass().getResource("/de/cismet/watergis/res/icons16/icon-programclose.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
