@@ -73,6 +73,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniFileOptions">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="new OptionsAction()" type="code"/>
+                </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-settingsandroid.png"/>
                 </Property>

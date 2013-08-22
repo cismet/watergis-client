@@ -58,6 +58,7 @@ import de.cismet.tools.gui.startup.StaticStartupTools;
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
+import de.cismet.watergis.gui.actions.OptionsAction;
 import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.TopicTreePanel;
 
@@ -846,6 +847,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniCreateGeoLink.text")); // NOI18N
         menFile.add(mniCreateGeoLink);
 
+        mniFileOptions.setAction(new OptionsAction());
         mniFileOptions.setIcon(new javax.swing.ImageIcon(
                 getClass().getResource("/de/cismet/watergis/res/icons16/icon-settingsandroid.png")));    // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
