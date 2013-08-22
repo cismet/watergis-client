@@ -129,6 +129,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdRemoveSelectionAllThemes;
     private javax.swing.JButton cmdSaveProject;
     private javax.swing.JButton cmdScale;
+    private javax.swing.JButton cmdSelectAll;
     private javax.swing.JButton cmdSelectionAttribute;
     private javax.swing.JButton cmdSelectionForm;
     private javax.swing.JButton cmdSelectionLocation;
@@ -293,6 +294,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdSelectionAttribute = new javax.swing.JButton();
         cmdSelectionLocation = new javax.swing.JButton();
         cmdZoomSelectedObjects = new javax.swing.JButton();
+        cmdSelectAll = new javax.swing.JButton();
         cmdInvertSelection = new javax.swing.JButton();
         cmdRemoveSelectionAktiveTheme = new javax.swing.JButton();
         cmdRemoveSelectionAllThemes = new javax.swing.JButton();
@@ -346,6 +348,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdOpenProject,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdOpenProject.text")); // NOI18N
+        cmdOpenProject.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdOpenProject.toolTipText"));                                              // NOI18N
         cmdOpenProject.setFocusable(false);
         cmdOpenProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdOpenProject.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -359,6 +364,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdSaveProject,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSaveProject.text")); // NOI18N
+        cmdSaveProject.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdSaveProject.toolTipText"));                                              // NOI18N
         cmdSaveProject.setFocusable(false);
         cmdSaveProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdSaveProject.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -372,6 +380,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdPrint,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPrint.text")); // NOI18N
+        cmdPrint.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdPrint.toolTipText"));                                              // NOI18N
         cmdPrint.setFocusable(false);
         cmdPrint.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdPrint.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -382,6 +393,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdExportMap,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdExportMap.text")); // NOI18N
+        cmdExportMap.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdExportMap.toolTipText"));                                              // NOI18N
         cmdExportMap.setFocusable(false);
         cmdExportMap.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdExportMap.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -392,6 +406,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdAddBookmark,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdAddBookmark.text")); // NOI18N
+        cmdAddBookmark.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdAddBookmark.toolTipText"));                                              // NOI18N
         cmdAddBookmark.setFocusable(false);
         cmdAddBookmark.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdAddBookmark.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -402,6 +419,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdManageBookmarks,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdManageBookmarks.text")); // NOI18N
+        cmdManageBookmarks.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdManageBookmarks.toolTipText"));                                              // NOI18N
         cmdManageBookmarks.setFocusable(false);
         cmdManageBookmarks.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdManageBookmarks.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -415,6 +435,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdScale,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdScale.text")); // NOI18N
+        cmdScale.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdScale.toolTipText"));                                              // NOI18N
         cmdScale.setFocusable(false);
         cmdScale.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdScale.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -425,6 +448,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdZoomIn,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdZoomIn.text")); // NOI18N
+        cmdZoomIn.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdZoomIn.toolTipText"));                                              // NOI18N
         cmdZoomIn.setFocusable(false);
         cmdZoomIn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdZoomIn.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -438,6 +464,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdZoomOut,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdZoomOut.text")); // NOI18N
+        cmdZoomOut.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdZoomOut.toolTipText"));                                              // NOI18N
         cmdZoomOut.setFocusable(false);
         cmdZoomOut.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdZoomOut.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -451,6 +480,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdPan,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPan.text")); // NOI18N
+        cmdPan.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdPan.toolTipText"));                                              // NOI18N
         cmdPan.setFocusable(false);
         cmdPan.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdPan.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -464,6 +496,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdGoTo,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdGoTo.text")); // NOI18N
+        cmdGoTo.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdGoTo.toolTipText"));                                              // NOI18N
         cmdGoTo.setFocusable(false);
         cmdGoTo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdGoTo.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -477,6 +512,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdFullExtend,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdFullExtend.text")); // NOI18N
+        cmdFullExtend.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdFullExtend.toolTipText"));                                              // NOI18N
         cmdFullExtend.setFocusable(false);
         cmdFullExtend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdFullExtend.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -490,6 +528,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdPreviousExtend,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPreviousExtend.text")); // NOI18N
+        cmdPreviousExtend.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdPreviousExtend.toolTipText"));                                              // NOI18N
         cmdPreviousExtend.setFocusable(false);
         cmdPreviousExtend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdPreviousExtend.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -503,6 +544,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdNextExtend,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdNextExtend.text")); // NOI18N
+        cmdNextExtend.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdNextExtend.toolTipText"));                                              // NOI18N
         cmdNextExtend.setFocusable(false);
         cmdNextExtend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdNextExtend.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -519,6 +563,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdSelectionForm,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectionForm.text")); // NOI18N
+        cmdSelectionForm.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdSelectionForm.toolTipText"));                                              // NOI18N
         cmdSelectionForm.setFocusable(false);
         cmdSelectionForm.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdSelectionForm.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -532,6 +579,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdSelectionAttribute,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectionAttribute.text")); // NOI18N
+        cmdSelectionAttribute.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdSelectionAttribute.toolTipText"));                                              // NOI18N
         cmdSelectionAttribute.setFocusable(false);
         cmdSelectionAttribute.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdSelectionAttribute.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -545,6 +595,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdSelectionLocation,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectionLocation.text")); // NOI18N
+        cmdSelectionLocation.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdSelectionLocation.toolTipText"));                                              // NOI18N
         cmdSelectionLocation.setFocusable(false);
         cmdSelectionLocation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdSelectionLocation.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -558,6 +611,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdZoomSelectedObjects,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdZoomSelectedObjects.text")); // NOI18N
+        cmdZoomSelectedObjects.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdZoomSelectedObjects.toolTipText"));                                              // NOI18N
         cmdZoomSelectedObjects.setFocusable(false);
         cmdZoomSelectedObjects.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdZoomSelectedObjects.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -566,11 +622,30 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdZoomSelectedObjects.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdZoomSelectedObjects);
 
+        cmdSelectAll.setIcon(new javax.swing.ImageIcon(
+                getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionadd.png")));     // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            cmdSelectAll,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectAll.text")); // NOI18N
+        cmdSelectAll.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdSelectAll.toolTipText"));                                              // NOI18N
+        cmdSelectAll.setFocusable(false);
+        cmdSelectAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdSelectAll.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdSelectAll.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdSelectAll.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSelectAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdSelectAll);
+
         cmdInvertSelection.setIcon(new javax.swing.ImageIcon(
                 getClass().getResource("/de/cismet/watergis/res/icons22/icon-selection-rectangleselection.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdInvertSelection,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdInvertSelection.text"));       // NOI18N
+        cmdInvertSelection.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdInvertSelection.toolTipText"));                                                    // NOI18N
         cmdInvertSelection.setFocusable(false);
         cmdInvertSelection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdInvertSelection.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -584,6 +659,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdRemoveSelectionAktiveTheme,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdRemoveSelectionAktiveTheme.text")); // NOI18N
+        cmdRemoveSelectionAktiveTheme.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdRemoveSelectionAktiveTheme.toolTipText"));                                              // NOI18N
         cmdRemoveSelectionAktiveTheme.setFocusable(false);
         cmdRemoveSelectionAktiveTheme.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdRemoveSelectionAktiveTheme.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -597,6 +675,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdRemoveSelectionAllThemes,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdRemoveSelectionAllThemes.text")); // NOI18N
+        cmdRemoveSelectionAllThemes.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdRemoveSelectionAllThemes.toolTipText"));                                              // NOI18N
         cmdRemoveSelectionAllThemes.setFocusable(false);
         cmdRemoveSelectionAllThemes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdRemoveSelectionAllThemes.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -613,6 +694,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdTable,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdTable.text")); // NOI18N
+        cmdTable.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdTable.toolTipText"));                                              // NOI18N
         cmdTable.setFocusable(false);
         cmdTable.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdTable.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -626,6 +710,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdInfo,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdInfo.text")); // NOI18N
+        cmdInfo.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdInfo.toolTipText"));                                              // NOI18N
         cmdInfo.setFocusable(false);
         cmdInfo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdInfo.setMaximumSize(new java.awt.Dimension(34, 34));
@@ -639,6 +726,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdMeasure,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdMeasure.text")); // NOI18N
+        cmdMeasure.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdMeasure.toolTipText"));                                              // NOI18N
         cmdMeasure.setFocusable(false);
         cmdMeasure.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdMeasure.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -649,6 +739,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdPresentation,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPresentation.text")); // NOI18N
+        cmdPresentation.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdPresentation.toolTipText"));                                              // NOI18N
         cmdPresentation.setFocusable(false);
         cmdPresentation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdPresentation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
