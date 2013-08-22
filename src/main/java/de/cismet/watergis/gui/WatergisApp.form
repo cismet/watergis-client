@@ -13,6 +13,9 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="mniOpenProject">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="openProjectAction" type="code"/>
+                </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-folder-open.png"/>
                 </Property>
@@ -23,6 +26,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniSaveProject">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="saveProjectAction" type="code"/>
+                </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-save-floppy.png"/>
                 </Property>
@@ -33,6 +39,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniWindow">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="printAction" type="code"/>
+                </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-newwindow.png"/>
                 </Property>
@@ -43,6 +52,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniPrint">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="printAction" type="code"/>
+                </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-print.png"/>
                 </Property>
@@ -53,6 +65,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniExportMap">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="exportMapAction" type="code"/>
+                </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-export.png"/>
                 </Property>
@@ -323,6 +338,9 @@
       <SubComponents>
         <Component class="javax.swing.JButton" name="cmdOpenProject">
           <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="openProjectAction" type="code"/>
+            </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-folder-open.png"/>
             </Property>
@@ -348,6 +366,9 @@
         </Component>
         <Component class="javax.swing.JButton" name="cmdSaveProject">
           <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="saveProjectAction" type="code"/>
+            </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-save-floppy.png"/>
             </Property>
@@ -373,14 +394,8 @@
         </Component>
         <Component class="javax.swing.JButton" name="cmdPrint">
           <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-print.png"/>
-            </Property>
-            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.cmdPrint.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-            </Property>
-            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.cmdPrint.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="printAction" type="code"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -398,6 +413,9 @@
         </Component>
         <Component class="javax.swing.JButton" name="cmdExportMap">
           <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="exportMapAction" type="code"/>
+            </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-export.png"/>
             </Property>
