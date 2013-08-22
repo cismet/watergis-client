@@ -18,8 +18,11 @@ package de.cismet.watergis.broker;
 import Sirius.navigator.connection.ConnectionSession;
 
 import net.infonode.docking.RootWindow;
+import net.infonode.gui.componentpainter.GradientComponentPainter;
 
 import org.jdom.Element;
+
+import java.awt.Color;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 
@@ -36,6 +39,9 @@ public class AppBroker implements Configurable {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(AppBroker.class);
+    // COLORS
+    private static final Color blue = new Color(124, 160, 221);
+    public static final Color DEFAULT_MODE_COLOR = blue;
 
     //~ Instance fields --------------------------------------------------------
 
@@ -203,6 +209,24 @@ public class AppBroker implements Configurable {
      */
     public RootWindow getRootWindow() {
         return rootWindow;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  color  DOCUMENT ME!
+     */
+    public void setTitleBarComponentpainter(final Color color) {
+        getRootWindow().getRootWindowProperties()
+                .getViewProperties()
+                .getViewTitleBarProperties()
+                .getNormalProperties()
+                .getShapedPanelProperties()
+                .setComponentPainter(new GradientComponentPainter(
+                        color,
+                        new Color(236, 233, 216),
+                        color,
+                        new Color(236, 233, 216)));
     }
 
     //~ Inner Classes ----------------------------------------------------------
