@@ -31,6 +31,8 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 
 import de.cismet.tools.configuration.Configurable;
 
+import de.cismet.watergis.gui.WatergisApp;
+
 /**
  * DOCUMENT ME!
  *
@@ -242,6 +244,15 @@ public class AppBroker implements Configurable {
      */
     public Component getComponent(final ComponentName name) {
         return components.get(name);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public WatergisApp getWatergisApp() {
+        return (WatergisApp)components.get(ComponentName.MAIN);
     }
 
     /**
