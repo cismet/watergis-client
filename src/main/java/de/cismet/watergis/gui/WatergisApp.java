@@ -136,6 +136,35 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jToolBar1 = new javax.swing.JToolBar();
+        cmdOpenProject = new javax.swing.JButton();
+        cmdSaveProject = new javax.swing.JButton();
+        cmdPrint = new javax.swing.JButton();
+        cmdExportMap = new javax.swing.JButton();
+        cmdAddBookmark = new javax.swing.JButton();
+        cmdManageBookmarks = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JToolBar.Separator();
+        cmdScale = new javax.swing.JButton();
+        cmdZoomIn = new javax.swing.JButton();
+        cmdZoomOut = new javax.swing.JButton();
+        cmdPan = new javax.swing.JButton();
+        cmdGoTo = new javax.swing.JButton();
+        cmdFullExtend = new javax.swing.JButton();
+        cmdPreviousExtend = new javax.swing.JButton();
+        cmdNextExtend = new javax.swing.JButton();
+        jSeparator5 = new javax.swing.JToolBar.Separator();
+        cmdSelectionForm = new javax.swing.JButton();
+        cmdSelectionAttribute = new javax.swing.JButton();
+        cmdSelectionLocation = new javax.swing.JButton();
+        cmdZoomSelectedObjects = new javax.swing.JButton();
+        cmdInvertSelection = new javax.swing.JButton();
+        cmdRemoveSelectionAktiveTheme = new javax.swing.JButton();
+        cmdRemoveSelectionAllThemes = new javax.swing.JButton();
+        jSeparator6 = new javax.swing.JToolBar.Separator();
+        cmdTable = new javax.swing.JButton();
+        cmdInfo = new javax.swing.JButton();
+        cmdMeasure = new javax.swing.JButton();
+        cmdPresentation = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         menFile = new javax.swing.JMenu();
         mniOpenProject = new javax.swing.JMenuItem();
@@ -169,6 +198,249 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.title")); // NOI18N
+
+        jToolBar1.setRollover(true);
+        jToolBar1.setMaximumSize(new java.awt.Dimension(679, 32769));
+        jToolBar1.setMinimumSize(new java.awt.Dimension(667, 33));
+        jToolBar1.setPreferredSize(new java.awt.Dimension(691, 35));
+
+        cmdOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-folder-open.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdOpenProject, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdOpenProject.text")); // NOI18N
+        cmdOpenProject.setFocusable(false);
+        cmdOpenProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdOpenProject.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdOpenProject.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdOpenProject.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdOpenProject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdOpenProject);
+
+        cmdSaveProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-save-floppy.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdSaveProject, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSaveProject.text")); // NOI18N
+        cmdSaveProject.setFocusable(false);
+        cmdSaveProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdSaveProject.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdSaveProject.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdSaveProject.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSaveProject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdSaveProject);
+
+        cmdPrint.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-print.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdPrint, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPrint.text")); // NOI18N
+        cmdPrint.setFocusable(false);
+        cmdPrint.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdPrint.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdPrint);
+
+        cmdExportMap.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-export.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdExportMap, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdExportMap.text")); // NOI18N
+        cmdExportMap.setFocusable(false);
+        cmdExportMap.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdExportMap.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdExportMap);
+
+        cmdAddBookmark.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-circleadd.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdAddBookmark, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdAddBookmark.text")); // NOI18N
+        cmdAddBookmark.setFocusable(false);
+        cmdAddBookmark.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdAddBookmark.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdAddBookmark);
+
+        cmdManageBookmarks.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-bookmark.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdManageBookmarks, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdManageBookmarks.text")); // NOI18N
+        cmdManageBookmarks.setFocusable(false);
+        cmdManageBookmarks.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdManageBookmarks.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdManageBookmarks);
+
+        jSeparator4.setSeparatorSize(new java.awt.Dimension(2, 0));
+        jToolBar1.add(jSeparator4);
+
+        cmdScale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-ruler.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdScale, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdScale.text")); // NOI18N
+        cmdScale.setFocusable(false);
+        cmdScale.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdScale.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdScale);
+
+        cmdZoomIn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-zoom-in.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdZoomIn, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdZoomIn.text")); // NOI18N
+        cmdZoomIn.setFocusable(false);
+        cmdZoomIn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdZoomIn.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdZoomIn.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdZoomIn.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdZoomIn.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdZoomIn);
+
+        cmdZoomOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-zoom-out.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdZoomOut, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdZoomOut.text")); // NOI18N
+        cmdZoomOut.setFocusable(false);
+        cmdZoomOut.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdZoomOut.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdZoomOut.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdZoomOut.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdZoomOut.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdZoomOut);
+
+        cmdPan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-move.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdPan, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPan.text")); // NOI18N
+        cmdPan.setFocusable(false);
+        cmdPan.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdPan.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdPan.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdPan.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdPan.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdPan);
+
+        cmdGoTo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-map-marker.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdGoTo, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdGoTo.text")); // NOI18N
+        cmdGoTo.setFocusable(false);
+        cmdGoTo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdGoTo.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdGoTo.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdGoTo.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdGoTo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdGoTo);
+
+        cmdFullExtend.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-fullscreen.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdFullExtend, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdFullExtend.text")); // NOI18N
+        cmdFullExtend.setFocusable(false);
+        cmdFullExtend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdFullExtend.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdFullExtend.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdFullExtend.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdFullExtend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdFullExtend);
+
+        cmdPreviousExtend.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-arrow-left.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdPreviousExtend, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPreviousExtend.text")); // NOI18N
+        cmdPreviousExtend.setFocusable(false);
+        cmdPreviousExtend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdPreviousExtend.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdPreviousExtend.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdPreviousExtend.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdPreviousExtend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdPreviousExtend);
+
+        cmdNextExtend.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-arrow-right.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdNextExtend, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdNextExtend.text")); // NOI18N
+        cmdNextExtend.setFocusable(false);
+        cmdNextExtend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdNextExtend.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdNextExtend.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdNextExtend.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdNextExtend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdNextExtend);
+
+        jSeparator5.setSeparatorSize(new java.awt.Dimension(2, 0));
+        jToolBar1.add(jSeparator5);
+
+        cmdSelectionForm.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionadd.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdSelectionForm, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectionForm.text")); // NOI18N
+        cmdSelectionForm.setFocusable(false);
+        cmdSelectionForm.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdSelectionForm.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdSelectionForm.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdSelectionForm.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSelectionForm.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdSelectionForm);
+
+        cmdSelectionAttribute.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionadd.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdSelectionAttribute, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectionAttribute.text")); // NOI18N
+        cmdSelectionAttribute.setFocusable(false);
+        cmdSelectionAttribute.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdSelectionAttribute.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdSelectionAttribute.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdSelectionAttribute.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSelectionAttribute.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdSelectionAttribute);
+
+        cmdSelectionLocation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionadd.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdSelectionLocation, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectionLocation.text")); // NOI18N
+        cmdSelectionLocation.setFocusable(false);
+        cmdSelectionLocation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdSelectionLocation.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdSelectionLocation.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdSelectionLocation.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSelectionLocation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdSelectionLocation);
+
+        cmdZoomSelectedObjects.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-resize.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdZoomSelectedObjects, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdZoomSelectedObjects.text")); // NOI18N
+        cmdZoomSelectedObjects.setFocusable(false);
+        cmdZoomSelectedObjects.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdZoomSelectedObjects.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdZoomSelectedObjects.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdZoomSelectedObjects.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdZoomSelectedObjects.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdZoomSelectedObjects);
+
+        cmdInvertSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-selection-rectangleselection.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdInvertSelection, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdInvertSelection.text")); // NOI18N
+        cmdInvertSelection.setFocusable(false);
+        cmdInvertSelection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdInvertSelection.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdInvertSelection.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdInvertSelection.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdInvertSelection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdInvertSelection);
+
+        cmdRemoveSelectionAktiveTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionremove.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdRemoveSelectionAktiveTheme, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdRemoveSelectionAktiveTheme.text")); // NOI18N
+        cmdRemoveSelectionAktiveTheme.setFocusable(false);
+        cmdRemoveSelectionAktiveTheme.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdRemoveSelectionAktiveTheme.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdRemoveSelectionAktiveTheme.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdRemoveSelectionAktiveTheme.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdRemoveSelectionAktiveTheme.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdRemoveSelectionAktiveTheme);
+
+        cmdRemoveSelectionAllThemes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionremove.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdRemoveSelectionAllThemes, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdRemoveSelectionAllThemes.text")); // NOI18N
+        cmdRemoveSelectionAllThemes.setFocusable(false);
+        cmdRemoveSelectionAllThemes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdRemoveSelectionAllThemes.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdRemoveSelectionAllThemes.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdRemoveSelectionAllThemes.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdRemoveSelectionAllThemes.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdRemoveSelectionAllThemes);
+
+        jSeparator6.setSeparatorSize(new java.awt.Dimension(2, 0));
+        jToolBar1.add(jSeparator6);
+
+        cmdTable.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-spreadsheet.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdTable, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdTable.text")); // NOI18N
+        cmdTable.setFocusable(false);
+        cmdTable.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdTable.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdTable.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdTable.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdTable.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdTable);
+
+        cmdInfo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-info-sign.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdInfo, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdInfo.text")); // NOI18N
+        cmdInfo.setFocusable(false);
+        cmdInfo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdInfo.setMaximumSize(new java.awt.Dimension(34, 34));
+        cmdInfo.setMinimumSize(new java.awt.Dimension(34, 34));
+        cmdInfo.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdInfo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdInfo);
+
+        cmdMeasure.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-ruler.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdMeasure, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdMeasure.text")); // NOI18N
+        cmdMeasure.setFocusable(false);
+        cmdMeasure.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdMeasure.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdMeasure);
+
+        cmdPresentation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/icon-eye-view.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdPresentation, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPresentation.text")); // NOI18N
+        cmdPresentation.setFocusable(false);
+        cmdPresentation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdPresentation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cmdPresentation);
 
         org.openide.awt.Mnemonics.setLocalizedText(menFile, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menFile.text")); // NOI18N
 
@@ -283,11 +555,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 400, Short.MAX_VALUE)
+            .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 966, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 279, Short.MAX_VALUE)
+            .add(layout.createSequentialGroup()
+                .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(0, 244, Short.MAX_VALUE))
         );
 
         pack();
@@ -532,6 +806,31 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cmdAddBookmark;
+    private javax.swing.JButton cmdExportMap;
+    private javax.swing.JButton cmdFullExtend;
+    private javax.swing.JButton cmdGoTo;
+    private javax.swing.JButton cmdInfo;
+    private javax.swing.JButton cmdInvertSelection;
+    private javax.swing.JButton cmdManageBookmarks;
+    private javax.swing.JButton cmdMeasure;
+    private javax.swing.JButton cmdNextExtend;
+    private javax.swing.JButton cmdOpenProject;
+    private javax.swing.JButton cmdPan;
+    private javax.swing.JButton cmdPresentation;
+    private javax.swing.JButton cmdPreviousExtend;
+    private javax.swing.JButton cmdPrint;
+    private javax.swing.JButton cmdRemoveSelectionAktiveTheme;
+    private javax.swing.JButton cmdRemoveSelectionAllThemes;
+    private javax.swing.JButton cmdSaveProject;
+    private javax.swing.JButton cmdScale;
+    private javax.swing.JButton cmdSelectionAttribute;
+    private javax.swing.JButton cmdSelectionForm;
+    private javax.swing.JButton cmdSelectionLocation;
+    private javax.swing.JButton cmdTable;
+    private javax.swing.JButton cmdZoomIn;
+    private javax.swing.JButton cmdZoomOut;
+    private javax.swing.JButton cmdZoomSelectedObjects;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
@@ -540,6 +839,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JToolBar.Separator jSeparator4;
+    private javax.swing.JToolBar.Separator jSeparator5;
+    private javax.swing.JToolBar.Separator jSeparator6;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenu menBookmark;
     private javax.swing.JMenu menFile;
     private javax.swing.JMenu menHelp;
