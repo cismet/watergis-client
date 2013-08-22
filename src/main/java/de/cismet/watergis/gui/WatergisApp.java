@@ -340,11 +340,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
         tobDLM25W.setRollover(true);
         tobDLM25W.setMaximumSize(new java.awt.Dimension(679, 32769));
-        tobDLM25W.setMinimumSize(new java.awt.Dimension(667, 33));
-        tobDLM25W.setPreferredSize(new java.awt.Dimension(691, 35));
+        tobDLM25W.setMinimumSize(new java.awt.Dimension(667, 26));
+        tobDLM25W.setPreferredSize(new java.awt.Dimension(691, 28));
 
         cmdOpenProject.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-folder-open.png")));        // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-folder-open.png")));        // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdOpenProject,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdOpenProject.text")); // NOI18N
@@ -353,14 +353,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdOpenProject.toolTipText"));                                              // NOI18N
         cmdOpenProject.setFocusable(false);
         cmdOpenProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdOpenProject.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdOpenProject.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdOpenProject.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdOpenProject.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdOpenProject.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdOpenProject.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdOpenProject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdOpenProject);
 
         cmdSaveProject.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-save-floppy.png")));        // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-save-floppy.png")));        // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdSaveProject,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSaveProject.text")); // NOI18N
@@ -369,14 +369,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdSaveProject.toolTipText"));                                              // NOI18N
         cmdSaveProject.setFocusable(false);
         cmdSaveProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdSaveProject.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdSaveProject.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdSaveProject.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSaveProject.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdSaveProject.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdSaveProject.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdSaveProject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdSaveProject);
 
         cmdPrint.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-print.png")));        // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-print.png")));        // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdPrint,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPrint.text")); // NOI18N
@@ -385,11 +385,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdPrint.toolTipText"));                                              // NOI18N
         cmdPrint.setFocusable(false);
         cmdPrint.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdPrint.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdPrint.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdPrint.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdPrint.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdPrint);
 
         cmdExportMap.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-export.png")));           // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-export.png")));           // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdExportMap,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdExportMap.text")); // NOI18N
@@ -398,11 +401,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdExportMap.toolTipText"));                                              // NOI18N
         cmdExportMap.setFocusable(false);
         cmdExportMap.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdExportMap.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdExportMap.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdExportMap);
 
         cmdAddBookmark.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-circleadd.png")));          // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-circleadd.png")));          // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdAddBookmark,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdAddBookmark.text")); // NOI18N
@@ -411,11 +417,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdAddBookmark.toolTipText"));                                              // NOI18N
         cmdAddBookmark.setFocusable(false);
         cmdAddBookmark.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdAddBookmark.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdAddBookmark.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdAddBookmark.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdAddBookmark.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdAddBookmark);
 
         cmdManageBookmarks.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-bookmark.png")));               // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-bookmark.png")));               // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdManageBookmarks,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdManageBookmarks.text")); // NOI18N
@@ -424,6 +433,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdManageBookmarks.toolTipText"));                                              // NOI18N
         cmdManageBookmarks.setFocusable(false);
         cmdManageBookmarks.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdManageBookmarks.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdManageBookmarks.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdManageBookmarks.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdManageBookmarks.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdManageBookmarks);
 
@@ -431,7 +443,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         tobDLM25W.add(jSeparator4);
 
         cmdScale.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-ruler.png")));        // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-ruler.png")));        // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdScale,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdScale.text")); // NOI18N
@@ -440,11 +452,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdScale.toolTipText"));                                              // NOI18N
         cmdScale.setFocusable(false);
         cmdScale.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdScale.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdScale.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdScale.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdScale.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdScale);
 
         cmdZoomIn.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-zoom-in.png")));       // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-zoom-in.png")));       // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdZoomIn,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdZoomIn.text")); // NOI18N
@@ -453,14 +468,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdZoomIn.toolTipText"));                                              // NOI18N
         cmdZoomIn.setFocusable(false);
         cmdZoomIn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdZoomIn.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdZoomIn.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdZoomIn.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdZoomIn.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdZoomIn.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdZoomIn.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdZoomIn.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdZoomIn);
 
         cmdZoomOut.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-zoom-out.png")));       // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-zoom-out.png")));       // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdZoomOut,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdZoomOut.text")); // NOI18N
@@ -469,14 +484,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdZoomOut.toolTipText"));                                              // NOI18N
         cmdZoomOut.setFocusable(false);
         cmdZoomOut.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdZoomOut.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdZoomOut.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdZoomOut.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdZoomOut.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdZoomOut.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdZoomOut.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdZoomOut.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdZoomOut);
 
         cmdPan.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-move.png")));       // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-move.png")));       // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdPan,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPan.text")); // NOI18N
@@ -485,14 +500,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdPan.toolTipText"));                                              // NOI18N
         cmdPan.setFocusable(false);
         cmdPan.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdPan.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdPan.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdPan.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdPan.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdPan.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdPan.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdPan.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdPan);
 
         cmdGoTo.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-map-marker.png")));  // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-map-marker.png")));  // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdGoTo,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdGoTo.text")); // NOI18N
@@ -501,14 +516,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdGoTo.toolTipText"));                                              // NOI18N
         cmdGoTo.setFocusable(false);
         cmdGoTo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdGoTo.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdGoTo.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdGoTo.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdGoTo.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdGoTo.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdGoTo.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdGoTo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdGoTo);
 
         cmdFullExtend.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-fullscreen.png")));        // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-fullscreen.png")));        // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdFullExtend,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdFullExtend.text")); // NOI18N
@@ -517,14 +532,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdFullExtend.toolTipText"));                                              // NOI18N
         cmdFullExtend.setFocusable(false);
         cmdFullExtend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdFullExtend.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdFullExtend.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdFullExtend.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdFullExtend.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdFullExtend.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdFullExtend.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdFullExtend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdFullExtend);
 
         cmdPreviousExtend.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-arrow-left.png")));            // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-arrow-left.png")));            // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdPreviousExtend,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPreviousExtend.text")); // NOI18N
@@ -533,14 +548,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdPreviousExtend.toolTipText"));                                              // NOI18N
         cmdPreviousExtend.setFocusable(false);
         cmdPreviousExtend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdPreviousExtend.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdPreviousExtend.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdPreviousExtend.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdPreviousExtend.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdPreviousExtend.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdPreviousExtend.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdPreviousExtend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdPreviousExtend);
 
         cmdNextExtend.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-arrow-right.png")));       // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-arrow-right.png")));       // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdNextExtend,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdNextExtend.text")); // NOI18N
@@ -549,9 +564,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdNextExtend.toolTipText"));                                              // NOI18N
         cmdNextExtend.setFocusable(false);
         cmdNextExtend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdNextExtend.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdNextExtend.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdNextExtend.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdNextExtend.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdNextExtend.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdNextExtend.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdNextExtend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdNextExtend);
 
@@ -559,7 +574,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         tobDLM25W.add(jSeparator5);
 
         cmdSelectionForm.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionadd.png")));         // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionadd.png")));         // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdSelectionForm,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectionForm.text")); // NOI18N
@@ -568,14 +583,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdSelectionForm.toolTipText"));                                              // NOI18N
         cmdSelectionForm.setFocusable(false);
         cmdSelectionForm.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdSelectionForm.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdSelectionForm.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdSelectionForm.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSelectionForm.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdSelectionForm.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdSelectionForm.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdSelectionForm.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdSelectionForm);
 
         cmdSelectionAttribute.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionadd.png")));              // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionadd.png")));              // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdSelectionAttribute,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectionAttribute.text")); // NOI18N
@@ -584,14 +599,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdSelectionAttribute.toolTipText"));                                              // NOI18N
         cmdSelectionAttribute.setFocusable(false);
         cmdSelectionAttribute.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdSelectionAttribute.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdSelectionAttribute.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdSelectionAttribute.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSelectionAttribute.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdSelectionAttribute.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdSelectionAttribute.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdSelectionAttribute.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdSelectionAttribute);
 
         cmdSelectionLocation.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionadd.png")));             // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionadd.png")));             // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdSelectionLocation,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectionLocation.text")); // NOI18N
@@ -600,14 +615,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdSelectionLocation.toolTipText"));                                              // NOI18N
         cmdSelectionLocation.setFocusable(false);
         cmdSelectionLocation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdSelectionLocation.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdSelectionLocation.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdSelectionLocation.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSelectionLocation.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdSelectionLocation.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdSelectionLocation.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdSelectionLocation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdSelectionLocation);
 
         cmdZoomSelectedObjects.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-resize.png")));                     // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-resize.png")));                     // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdZoomSelectedObjects,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdZoomSelectedObjects.text")); // NOI18N
@@ -616,14 +631,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdZoomSelectedObjects.toolTipText"));                                              // NOI18N
         cmdZoomSelectedObjects.setFocusable(false);
         cmdZoomSelectedObjects.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdZoomSelectedObjects.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdZoomSelectedObjects.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdZoomSelectedObjects.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdZoomSelectedObjects.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdZoomSelectedObjects.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdZoomSelectedObjects.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdZoomSelectedObjects.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdZoomSelectedObjects);
 
         cmdSelectAll.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionadd.png")));     // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-newwindow.png")));        // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdSelectAll,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectAll.text")); // NOI18N
@@ -632,14 +647,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdSelectAll.toolTipText"));                                              // NOI18N
         cmdSelectAll.setFocusable(false);
         cmdSelectAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdSelectAll.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdSelectAll.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdSelectAll.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdSelectAll.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdSelectAll.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdSelectAll.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdSelectAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdSelectAll);
 
         cmdInvertSelection.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-selection-rectangleselection.png"))); // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-selection-rectangleselection.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdInvertSelection,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdInvertSelection.text"));       // NOI18N
@@ -648,14 +663,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdInvertSelection.toolTipText"));                                                    // NOI18N
         cmdInvertSelection.setFocusable(false);
         cmdInvertSelection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdInvertSelection.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdInvertSelection.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdInvertSelection.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdInvertSelection.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdInvertSelection.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdInvertSelection.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdInvertSelection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdInvertSelection);
 
         cmdRemoveSelectionAktiveTheme.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionremove.png")));                   // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionremove.png")));                   // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdRemoveSelectionAktiveTheme,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdRemoveSelectionAktiveTheme.text")); // NOI18N
@@ -664,14 +679,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdRemoveSelectionAktiveTheme.toolTipText"));                                              // NOI18N
         cmdRemoveSelectionAktiveTheme.setFocusable(false);
         cmdRemoveSelectionAktiveTheme.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdRemoveSelectionAktiveTheme.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdRemoveSelectionAktiveTheme.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdRemoveSelectionAktiveTheme.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdRemoveSelectionAktiveTheme.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdRemoveSelectionAktiveTheme.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdRemoveSelectionAktiveTheme.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdRemoveSelectionAktiveTheme.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdRemoveSelectionAktiveTheme);
 
         cmdRemoveSelectionAllThemes.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-selectionremove.png")));                 // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionremove.png")));                 // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdRemoveSelectionAllThemes,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdRemoveSelectionAllThemes.text")); // NOI18N
@@ -680,9 +695,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdRemoveSelectionAllThemes.toolTipText"));                                              // NOI18N
         cmdRemoveSelectionAllThemes.setFocusable(false);
         cmdRemoveSelectionAllThemes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdRemoveSelectionAllThemes.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdRemoveSelectionAllThemes.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdRemoveSelectionAllThemes.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdRemoveSelectionAllThemes.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdRemoveSelectionAllThemes.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdRemoveSelectionAllThemes.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdRemoveSelectionAllThemes.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdRemoveSelectionAllThemes);
 
@@ -690,7 +705,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         tobDLM25W.add(jSeparator6);
 
         cmdTable.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-spreadsheet.png")));  // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-spreadsheet.png")));  // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdTable,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdTable.text")); // NOI18N
@@ -699,14 +714,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdTable.toolTipText"));                                              // NOI18N
         cmdTable.setFocusable(false);
         cmdTable.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdTable.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdTable.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdTable.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdTable.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdTable.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdTable.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdTable.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdTable);
 
         cmdInfo.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-info-sign.png")));   // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-info-sign.png")));   // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdInfo,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdInfo.text")); // NOI18N
@@ -715,14 +730,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdInfo.toolTipText"));                                              // NOI18N
         cmdInfo.setFocusable(false);
         cmdInfo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdInfo.setMaximumSize(new java.awt.Dimension(34, 34));
-        cmdInfo.setMinimumSize(new java.awt.Dimension(34, 34));
-        cmdInfo.setPreferredSize(new java.awt.Dimension(34, 34));
+        cmdInfo.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdInfo.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdInfo.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdInfo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdInfo);
 
         cmdMeasure.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-ruler.png")));          // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-ruler.png")));          // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdMeasure,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdMeasure.text")); // NOI18N
@@ -731,11 +746,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdMeasure.toolTipText"));                                              // NOI18N
         cmdMeasure.setFocusable(false);
         cmdMeasure.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdMeasure.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdMeasure.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdMeasure.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdMeasure.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdMeasure);
 
         cmdPresentation.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons22/icon-eye-view.png")));            // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-eye-view.png")));            // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             cmdPresentation,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdPresentation.text")); // NOI18N
@@ -744,6 +762,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 "WatergisApp.cmdPresentation.toolTipText"));                                              // NOI18N
         cmdPresentation.setFocusable(false);
         cmdPresentation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdPresentation.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdPresentation.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdPresentation.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdPresentation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdPresentation);
 
