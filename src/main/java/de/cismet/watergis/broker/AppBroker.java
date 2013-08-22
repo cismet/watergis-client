@@ -23,6 +23,9 @@ import net.infonode.gui.componentpainter.GradientComponentPainter;
 import org.jdom.Element;
 
 import java.awt.Color;
+import java.awt.Component;
+
+import java.util.EnumMap;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 
@@ -52,6 +55,8 @@ public class AppBroker implements Configurable {
     private String callserverUrl;
     private String connectionClass;
     private RootWindow rootWindow;
+
+    private EnumMap<ComponentName, Component> components = new EnumMap<ComponentName, Component>(ComponentName.class);
 
     //~ Constructors -----------------------------------------------------------
 
@@ -227,6 +232,26 @@ public class AppBroker implements Configurable {
                         new Color(236, 233, 216),
                         color,
                         new Color(236, 233, 216)));
+    }
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   name  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Component getComponent(final ComponentName name) {
+        return components.get(name);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  name       DOCUMENT ME!
+     * @param  component  DOCUMENT ME!
+     */
+    public void addComponent(final ComponentName name, final Component component) {
+        components.put(name, component);
     }
 
     //~ Inner Classes ----------------------------------------------------------

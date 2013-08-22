@@ -13,10 +13,8 @@ package de.cismet.watergis.gui;
 
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
-import net.infonode.docking.DockingWindow;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
-import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.mouse.DockingWindowActionMouseButtonListener;
 import net.infonode.docking.properties.RootWindowProperties;
@@ -186,6 +184,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         configManager.addConfigurable(this);
         configManager.configure(this);
         initComponents();
+        initDefaultPanels();
         initDocking();
         initInfoNode();
         doLayoutInfoNode();
@@ -215,6 +214,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             System.err.println("Error during the initialisation");
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initDefaultPanels() {
+        pMap = new MapPanel();
+        pTopicTree = new TopicTreePanel();
+
+        AppBroker.getInstance().addComponent(ComponentName.MAP, pMap);
+        AppBroker.getInstance().addComponent(ComponentName.MAP, pTopicTree);
+        LOG.info("set refernence for the main application in Broker: " + this);
+        AppBroker.getInstance().addComponent(ComponentName.MAIN, this);
     }
 
     /**
