@@ -209,9 +209,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         try {
             PropertyConfigurator.configure(WatergisApp.class.getResource(
                     "/de/cismet/watergis/configuration/log4j.properties"));
-            LOG.info("Log4J System erfolgreich konfiguriert");
+            LOG.info("Log4J System was configured successfully");
         } catch (Exception ex) {
-            System.err.println("Fehler bei Log4J Initialisierung");
+            System.err.println("Error during the initialisation");
             ex.printStackTrace();
         }
     }
@@ -983,23 +983,23 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             if (cmd.hasOption("u")) {
                 AppBroker.getInstance().setCallserverUrl(cmd.getOptionValue("u"));
             } else {
-                LOG.warn("Kein Callserverhost spezifiziert, bitte mit -u setzen.");
+                LOG.warn("No Callserverhost specified, please specify it with the option -u.");
                 System.exit(1);
             }
             if (cmd.hasOption("c")) {
                 AppBroker.getInstance().setConnectionClass(cmd.getOptionValue("c"));
             } else {
-                LOG.warn("Keine ConnectionClass spezifiziert, bitte mit -c setzen.");
+                LOG.warn("No ConnectionClass specified, please specify it with the option -c.");
                 System.exit(1);
             }
             if (cmd.hasOption("d")) {
                 AppBroker.getInstance().setDomain(cmd.getOptionValue("d"));
             } else {
-                LOG.error("Keine Domain spezifiziert, bitte mit -d setzen.");
+                LOG.error("No Domain specified, please specify it with the option -d.");
                 System.exit(1);
             }
         } catch (Exception ex) {
-            LOG.error("Fehler beim auslesen der Kommandozeilen Parameter", ex);
+            LOG.error("Error while reading the command-line parameters.", ex);
             System.exit(1);
         }
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -1010,19 +1010,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                         final PlasticXPLookAndFeel lf = new PlasticXPLookAndFeel();
                         javax.swing.UIManager.setLookAndFeel(lf);
                     } catch (Exception ex) {
-                        LOG.error("Fehler beim setzen des Look & Feels", ex);
+                        LOG.error("Error while setting the Look & Feel", ex);
                     }
                     try {
                         SPLASH = StaticStartupTools.showGhostFrame(FILEPATH_SCREEN, "FIS Gewässer [Startup]");
                         SPLASH.setLocationRelativeTo(null);
                     } catch (Exception e) {
-                        LOG.warn("Problem beim Darstellen des Pre-Loading-Frame", e);
+                        LOG.warn("Problem with displaying the Pre-Loading-Frame", e);
                     }
                     try {
 //                        handleLogin();
                         AppBroker.getInstance().setLoggedIn(true);
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("Login erfolgreich");
+                            LOG.debug("Login successful");
                         }
                         final WatergisApp app = new WatergisApp();
                         app.setVisible(true);
@@ -1031,7 +1031,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                         }
                         SPLASH = null;
                     } catch (Exception ex) {
-                        LOG.error("Fehler beim Loginframe", ex);
+                        LOG.error("Error during the Loginframe", ex);
                         System.exit(0);
                     }
                 }
@@ -1103,11 +1103,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         try {
             StaticStartupTools.saveScreenshotOfFrame(this, FILEPATH_SCREEN);
         } catch (Exception ex) {
-            LOG.fatal("Fehler beim Capturen des App-Inhaltes", ex);
+            LOG.fatal("Error while capturing the app content", ex);
         }
 
         setVisible(false);
-        LOG.info("Dispose(): Watergis wird heruntergefahren");
+        LOG.info("Dispose(): Watergis is going to shut down");
 
 //        this.saveAppData(FILEPATH_DEFAULT_APP_DATA);
 
@@ -1149,10 +1149,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 LOG.debug("Saving Layout.. to " + file + " successfull");
             }
         } catch (IOException ex) {
+            String message = org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.saveLayout().MessageDialog.message");
+            String title = org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.saveLayout().MessageDialog.title");
             JOptionPane.showMessageDialog(
                 this,
-                "W\u00E4hrend dem Speichern des Layouts ist ein Fehler aufgetreten.",
-                "Fehler",
+                message,
+                title,
                 JOptionPane.INFORMATION_MESSAGE);
             LOG.error("A failure occured during writing the layout file " + file, ex);
         }
