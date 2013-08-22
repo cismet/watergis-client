@@ -13,8 +13,10 @@ package de.cismet.watergis.gui;
 
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
+import net.infonode.docking.DockingWindow;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
+import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.mouse.DockingWindowActionMouseButtonListener;
 import net.infonode.docking.properties.RootWindowProperties;
@@ -59,7 +61,10 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.gui.actions.OptionsAction;
+import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
+import de.cismet.watergis.gui.panels.SelectionPanel;
+import de.cismet.watergis.gui.panels.TablePanel;
 import de.cismet.watergis.gui.panels.TopicTreePanel;
 
 import static java.awt.Frame.MAXIMIZED_BOTH;
@@ -110,9 +115,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     // Panels
     private MapPanel pMap;
     private TopicTreePanel pTopicTree;
+    private InfoPanel pInfo;
+    private SelectionPanel pSelection;
+    private TablePanel pTable;
     // Views
     private View vMap;
     private View vTopicTree;
+    private View vInfo;
+    private View vSelection;
+    private View vTable;
 
     private MappingComponent mappingComponent;
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -229,9 +240,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private void initDefaultPanels() {
         pMap = new MapPanel();
         pTopicTree = new TopicTreePanel();
+        pInfo = new InfoPanel();
+        pSelection = new SelectionPanel();
+        pTable = new TablePanel();
 
         AppBroker.getInstance().addComponent(ComponentName.MAP, pMap);
-        AppBroker.getInstance().addComponent(ComponentName.MAP, pTopicTree);
+        AppBroker.getInstance().addComponent(ComponentName.TREE, pTopicTree);
+        AppBroker.getInstance().addComponent(ComponentName.INFO, pInfo);
+        AppBroker.getInstance().addComponent(ComponentName.SELECTION, pSelection);
+        AppBroker.getInstance().addComponent(ComponentName.TABLE, pTable);
         LOG.info("set refernence for the main application in Broker: " + this);
         AppBroker.getInstance().addComponent(ComponentName.MAIN, this);
     }
@@ -240,11 +257,25 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      * DOCUMENT ME!
      */
     private void initInfoNode() {
-        vTopicTree = new View("Tree", null, pTopicTree);
-        viewMap.addView("Tree", vTopicTree);
+        String title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().TopicTree");
+        vTopicTree = new View(title, null, pTopicTree);
+        viewMap.addView(title, vTopicTree);
 
-        vMap = new View("Karte", null, pMap);
-        viewMap.addView("Karte", vMap);
+        title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Map");
+        vMap = new View(title, null, pMap);
+        viewMap.addView(title, vMap);
+
+        title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Info");
+        vInfo = new View(title, null, pInfo);
+        viewMap.addView(title, vInfo);
+
+        title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Selection");
+        vSelection = new View(title, null, pSelection);
+        viewMap.addView(title, vSelection);
+
+        title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Table");
+        vTable = new View(title, null, pTable);
+        viewMap.addView(title, vTable);
 
         rootWindow = DockingUtil.createRootWindow(viewMap, true);
         AppBroker.getInstance().setRootWindow(rootWindow);
@@ -291,7 +322,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      * DOCUMENT ME!
      */
     public void doLayoutInfoNode() {
-        rootWindow.setWindow(new SplitWindow(true, 0.22901994f, vTopicTree, vMap));
+        final TabWindow tab = new TabWindow(new DockingWindow[] { vMap, vInfo, vSelection, vTable });
+        rootWindow.setWindow(new SplitWindow(true, 0.22901994f, vTopicTree, tab));
+        vMap.restoreFocus();
     }
 
     /**
