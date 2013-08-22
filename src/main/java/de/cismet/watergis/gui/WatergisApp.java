@@ -136,8 +136,148 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuBar1 = new javax.swing.JMenuBar();
+        menFile = new javax.swing.JMenu();
+        mniOpenProject = new javax.swing.JMenuItem();
+        mniSaveProject = new javax.swing.JMenuItem();
+        mniWindow = new javax.swing.JMenuItem();
+        mniPrint = new javax.swing.JMenuItem();
+        mniExportMap = new javax.swing.JMenuItem();
+        mniCreateGeoLink = new javax.swing.JMenuItem();
+        mniFileOptions = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem11 = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem9 = new javax.swing.JMenuItem();
+        jMenuItem12 = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        mniClose = new javax.swing.JMenuItem();
+        menBookmark = new javax.swing.JMenu();
+        mniCreateBookmark = new javax.swing.JMenuItem();
+        mniManageBookmarks = new javax.swing.JMenuItem();
+        menSelection = new javax.swing.JMenu();
+        mniSelectForm = new javax.swing.JMenuItem();
+        mniSelectAttribute = new javax.swing.JMenuItem();
+        mniSelectLocation = new javax.swing.JMenuItem();
+        mniZoomSelectedObjects = new javax.swing.JMenuItem();
+        mniRemoveSelection = new javax.swing.JMenuItem();
+        mniSelectionOptions = new javax.swing.JMenuItem();
+        menHelp = new javax.swing.JMenu();
+        mniHelp = new javax.swing.JMenuItem();
+        mniInfo = new javax.swing.JMenuItem();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.title")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(menFile, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menFile.text")); // NOI18N
+
+        mniOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-folder-open.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniOpenProject, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniOpenProject.text")); // NOI18N
+        menFile.add(mniOpenProject);
+
+        mniSaveProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-save-floppy.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniSaveProject, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniSaveProject.text")); // NOI18N
+        menFile.add(mniSaveProject);
+
+        mniWindow.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-newwindow.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniWindow, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniWindow.text")); // NOI18N
+        menFile.add(mniWindow);
+
+        mniPrint.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-print.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniPrint, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniPrint.text")); // NOI18N
+        menFile.add(mniPrint);
+
+        mniExportMap.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-export.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniExportMap, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniExportMap.text")); // NOI18N
+        menFile.add(mniExportMap);
+
+        mniCreateGeoLink.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-link.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniCreateGeoLink, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniCreateGeoLink.text")); // NOI18N
+        menFile.add(mniCreateGeoLink);
+
+        mniFileOptions.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-settingsandroid.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniFileOptions, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniFileOptions.text")); // NOI18N
+        menFile.add(mniFileOptions);
+        menFile.add(jSeparator1);
+
+        jMenuItem8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-explorerwindow.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jMenuItem8, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem8.text")); // NOI18N
+        menFile.add(jMenuItem8);
+
+        jMenuItem11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-explorerwindow.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jMenuItem11, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem11.text")); // NOI18N
+        menFile.add(jMenuItem11);
+        menFile.add(jSeparator2);
+
+        jMenuItem9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-explorerwindow.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jMenuItem9, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem9.text")); // NOI18N
+        menFile.add(jMenuItem9);
+
+        jMenuItem12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-explorerwindow.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jMenuItem12, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem12.text")); // NOI18N
+        menFile.add(jMenuItem12);
+        menFile.add(jSeparator3);
+
+        mniClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-programclose.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniClose, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniClose.text")); // NOI18N
+        menFile.add(mniClose);
+
+        jMenuBar1.add(menFile);
+
+        org.openide.awt.Mnemonics.setLocalizedText(menBookmark, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menBookmark.text")); // NOI18N
+
+        mniCreateBookmark.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-circleadd.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniCreateBookmark, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniCreateBookmark.text")); // NOI18N
+        menBookmark.add(mniCreateBookmark);
+
+        mniManageBookmarks.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-bookmark.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniManageBookmarks, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniManageBookmarks.text")); // NOI18N
+        menBookmark.add(mniManageBookmarks);
+
+        jMenuBar1.add(menBookmark);
+
+        org.openide.awt.Mnemonics.setLocalizedText(menSelection, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menSelection.text")); // NOI18N
+
+        mniSelectForm.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-selectionadd.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniSelectForm, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniSelectForm.text")); // NOI18N
+        menSelection.add(mniSelectForm);
+
+        mniSelectAttribute.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-selectionadd.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniSelectAttribute, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniSelectAttribute.text")); // NOI18N
+        menSelection.add(mniSelectAttribute);
+
+        mniSelectLocation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-selectionadd.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniSelectLocation, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniSelectLocation.text")); // NOI18N
+        menSelection.add(mniSelectLocation);
+
+        mniZoomSelectedObjects.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-resize.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniZoomSelectedObjects, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniZoomSelectedObjects.text")); // NOI18N
+        menSelection.add(mniZoomSelectedObjects);
+
+        mniRemoveSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-selectionremove.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniRemoveSelection, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniRemoveSelection.text")); // NOI18N
+        menSelection.add(mniRemoveSelection);
+
+        mniSelectionOptions.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-settingsandroid.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniSelectionOptions, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniSelectionOptions.text")); // NOI18N
+        menSelection.add(mniSelectionOptions);
+
+        jMenuBar1.add(menSelection);
+
+        org.openide.awt.Mnemonics.setLocalizedText(menHelp, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menHelp.text")); // NOI18N
+
+        mniHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-question-sign.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniHelp, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniHelp.text")); // NOI18N
+        menHelp.add(mniHelp);
+
+        mniInfo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons/icon-info-sign.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniInfo, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniInfo.text")); // NOI18N
+        menHelp.add(mniInfo);
+
+        jMenuBar1.add(menHelp);
+
+        setJMenuBar(jMenuBar1);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -147,7 +287,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 300, Short.MAX_VALUE)
+            .add(0, 279, Short.MAX_VALUE)
         );
 
         pack();
@@ -392,6 +532,36 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenuItem jMenuItem12;
+    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JMenu menBookmark;
+    private javax.swing.JMenu menFile;
+    private javax.swing.JMenu menHelp;
+    private javax.swing.JMenu menSelection;
+    private javax.swing.JMenuItem mniClose;
+    private javax.swing.JMenuItem mniCreateBookmark;
+    private javax.swing.JMenuItem mniCreateGeoLink;
+    private javax.swing.JMenuItem mniExportMap;
+    private javax.swing.JMenuItem mniFileOptions;
+    private javax.swing.JMenuItem mniHelp;
+    private javax.swing.JMenuItem mniInfo;
+    private javax.swing.JMenuItem mniManageBookmarks;
+    private javax.swing.JMenuItem mniOpenProject;
+    private javax.swing.JMenuItem mniPrint;
+    private javax.swing.JMenuItem mniRemoveSelection;
+    private javax.swing.JMenuItem mniSaveProject;
+    private javax.swing.JMenuItem mniSelectAttribute;
+    private javax.swing.JMenuItem mniSelectForm;
+    private javax.swing.JMenuItem mniSelectLocation;
+    private javax.swing.JMenuItem mniSelectionOptions;
+    private javax.swing.JMenuItem mniWindow;
+    private javax.swing.JMenuItem mniZoomSelectedObjects;
     // End of variables declaration//GEN-END:variables
     @Override
     public void windowOpened(WindowEvent e) {
