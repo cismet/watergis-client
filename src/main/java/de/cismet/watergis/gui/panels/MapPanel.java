@@ -56,6 +56,7 @@ public class MapPanel extends javax.swing.JPanel implements FeatureCollectionLis
     public MapPanel() {
         initComponents();
         initMap();
+        initStatusbar();
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -133,6 +134,13 @@ public class MapPanel extends javax.swing.JPanel implements FeatureCollectionLis
                     SimpleMoveListener.COORDINATES_CHANGED,
                     mappingComponent.getInputListener(MappingComponent.MOTION));
         this.add(BorderLayout.CENTER, mappingComponent);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initStatusbar() {
+        this.add(new MapStatusBar(), BorderLayout.SOUTH);
     }
 
     @Override
