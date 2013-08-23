@@ -17,7 +17,7 @@ package de.cismet.watergis.gui.panels;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class MapStatusBar extends javax.swing.JPanel {
+public class StatusBar extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -34,7 +34,7 @@ public class MapStatusBar extends javax.swing.JPanel {
     /**
      * Creates new form MapStatusBar.
      */
-    public MapStatusBar() {
+    public StatusBar() {
         initComponents();
     }
 
@@ -64,7 +64,7 @@ public class MapStatusBar extends javax.swing.JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel1,
-            org.openide.util.NbBundle.getMessage(MapStatusBar.class, "MapStatusBar.jLabel1.text")); // NOI18N
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.jLabel1.text")); // NOI18N
 
         final javax.swing.GroupLayout pnlDecimalDegreeLayout = new javax.swing.GroupLayout(pnlDecimalDegree);
         pnlDecimalDegree.setLayout(pnlDecimalDegreeLayout);
@@ -93,7 +93,7 @@ public class MapStatusBar extends javax.swing.JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel2,
-            org.openide.util.NbBundle.getMessage(MapStatusBar.class, "MapStatusBar.jLabel2.text")); // NOI18N
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.jLabel2.text")); // NOI18N
 
         final javax.swing.GroupLayout pnlCoordinateSystemLayout = new javax.swing.GroupLayout(pnlCoordinateSystem);
         pnlCoordinateSystem.setLayout(pnlCoordinateSystemLayout);
@@ -122,7 +122,7 @@ public class MapStatusBar extends javax.swing.JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel3,
-            org.openide.util.NbBundle.getMessage(MapStatusBar.class, "MapStatusBar.jLabel3.text")); // NOI18N
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.jLabel3.text")); // NOI18N
 
         final javax.swing.GroupLayout pnlScaleLayout = new javax.swing.GroupLayout(pnlScale);
         pnlScale.setLayout(pnlScaleLayout);
