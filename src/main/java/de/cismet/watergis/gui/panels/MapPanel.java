@@ -11,8 +11,6 @@
  */
 package de.cismet.watergis.gui.panels;
 
-import edu.umd.cs.piccolox.event.PNotificationCenter;
-import edu.umd.cs.piccolox.event.PSelectionEventHandler;
 
 import org.mortbay.log.Log;
 
@@ -21,12 +19,6 @@ import java.awt.BorderLayout;
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.AttachFeatureListener;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.DeleteFeatureListener;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.FeatureMoveListener;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.JoinPolygonsListener;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SimpleMoveListener;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SplitPolygonListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 /**
@@ -85,54 +77,6 @@ public class MapPanel extends javax.swing.JPanel implements FeatureCollectionLis
         mappingComponent = CismapBroker.getInstance().getMappingComponent();
         mappingComponent.getFeatureCollection().addFeatureCollectionListener(this);
         mappingComponent.setBackgroundEnabled(true);
-        PNotificationCenter.defaultCenter()
-                .addListener(
-                    this,
-                    "attachFeatureRequested",
-                    AttachFeatureListener.ATTACH_FEATURE_NOTIFICATION,
-                    mappingComponent.getInputListener(MappingComponent.ATTACH_POLYGON_TO_ALPHADATA));
-        PNotificationCenter.defaultCenter()
-                .addListener(
-                    this,
-                    "selectionChanged",
-                    SplitPolygonListener.SELECTION_CHANGED,
-                    mappingComponent.getInputListener(MappingComponent.SPLIT_POLYGON));
-        PNotificationCenter.defaultCenter()
-                .addListener(
-                    this,
-                    "splitPolygon",
-                    SplitPolygonListener.SPLIT_FINISHED,
-                    mappingComponent.getInputListener(MappingComponent.SPLIT_POLYGON));
-        PNotificationCenter.defaultCenter()
-                .addListener(
-                    this,
-                    "featureDeleteRequested",
-                    DeleteFeatureListener.FEATURE_DELETE_REQUEST_NOTIFICATION,
-                    mappingComponent.getInputListener(MappingComponent.REMOVE_POLYGON));
-        PNotificationCenter.defaultCenter()
-                .addListener(
-                    this,
-                    "joinPolygons",
-                    JoinPolygonsListener.FEATURE_JOIN_REQUEST_NOTIFICATION,
-                    mappingComponent.getInputListener(MappingComponent.JOIN_POLYGONS));
-        PNotificationCenter.defaultCenter()
-                .addListener(
-                    this,
-                    "selectionChanged",
-                    PSelectionEventHandler.SELECTION_CHANGED_NOTIFICATION,
-                    mappingComponent.getInputListener(MappingComponent.SELECT));
-        PNotificationCenter.defaultCenter()
-                .addListener(
-                    this,
-                    "selectionChanged",
-                    FeatureMoveListener.SELECTION_CHANGED_NOTIFICATION,
-                    mappingComponent.getInputListener(MappingComponent.MOVE_POLYGON));
-        PNotificationCenter.defaultCenter()
-                .addListener(
-                    this,
-                    "coordinatesChanged",
-                    SimpleMoveListener.COORDINATES_CHANGED,
-                    mappingComponent.getInputListener(MappingComponent.MOTION));
         this.add(BorderLayout.CENTER, mappingComponent);
     }
 
