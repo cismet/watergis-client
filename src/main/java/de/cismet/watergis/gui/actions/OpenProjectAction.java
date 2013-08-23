@@ -14,12 +14,11 @@ package de.cismet.watergis.gui.actions;
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
-
-import de.cismet.watergis.broker.AppBroker;
-
-import de.cismet.watergis.gui.WatergisApp;
+import javax.swing.ImageIcon;
+import javax.swing.KeyStroke;
 
 /**
  * DOCUMENT ME!
@@ -40,6 +39,22 @@ public class OpenProjectAction extends AbstractAction {
      */
     public OpenProjectAction() {
         setEnabled(false);
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+                KeyEvent.VK_O,
+                ActionEvent.CTRL_MASK));
+        final String tooltip = org.openide.util.NbBundle.getMessage(
+                OpenProjectAction.class,
+                "OpenProjectAction.toolTipText");
+        putValue(SHORT_DESCRIPTION, tooltip);
+        final String text = org.openide.util.NbBundle.getMessage(OpenProjectAction.class, "OpenProjectAction.text");
+        putValue(NAME, text);
+        final String mnemonic = org.openide.util.NbBundle.getMessage(
+                OpenProjectAction.class,
+                "OpenProjectAction.mnemonic");
+        putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
+        final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
+                    "/de/cismet/watergis/res/icons16/icon-folder-open.png"));
+        putValue(SMALL_ICON, icon);
     }
 
     //~ Methods ----------------------------------------------------------------

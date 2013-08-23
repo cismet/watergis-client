@@ -11,7 +11,6 @@
  */
 package de.cismet.watergis.gui.panels;
 
-
 import org.mortbay.log.Log;
 
 import java.awt.BorderLayout;

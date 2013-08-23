@@ -14,12 +14,11 @@ package de.cismet.watergis.gui.actions;
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
-
-import de.cismet.watergis.broker.AppBroker;
-
-import de.cismet.watergis.gui.WatergisApp;
+import javax.swing.ImageIcon;
+import javax.swing.KeyStroke;
 
 /**
  * DOCUMENT ME!
@@ -40,6 +39,20 @@ public class ExportMapAction extends AbstractAction {
      */
     public ExportMapAction() {
         setEnabled(false);
+        final String text = org.openide.util.NbBundle.getMessage(ExportMapAction.class, "ExportMapAction.text");
+        putValue(NAME, text);
+        final String mnemonic = org.openide.util.NbBundle.getMessage(ExportMapAction.class, "ExportMapAction.mnemonic");
+        putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+                KeyEvent.VK_E,
+                ActionEvent.CTRL_MASK));
+        final String tooltip = org.openide.util.NbBundle.getMessage(
+                ExportMapAction.class,
+                "ExportMapAction.toolTipText");
+        putValue(SHORT_DESCRIPTION, tooltip);
+        final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
+                    "/de/cismet/watergis/res/icons16/icon-export.png"));
+        putValue(SMALL_ICON, icon);
     }
 
     //~ Methods ----------------------------------------------------------------

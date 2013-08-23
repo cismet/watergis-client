@@ -10,7 +10,9 @@ package de.cismet.watergis.gui.actions;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.KeyStroke;
 
 import de.cismet.lookupoptions.gui.OptionsDialog;
 
@@ -29,6 +31,23 @@ import de.cismet.watergis.broker.ComponentName;
  * @version  $Revision$, $Date$
  */
 public class OptionsAction extends AbstractAction {
+
+    //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new OptionsAction object.
+     */
+    public OptionsAction() {
+        final String tooltip = org.openide.util.NbBundle.getMessage(OptionsAction.class, "OptionsAction.toolTipText");
+        putValue(SHORT_DESCRIPTION, tooltip);
+        final String text = org.openide.util.NbBundle.getMessage(OpenProjectAction.class, "OptionsAction.text");
+        putValue(NAME, text);
+        final String mnemonic = org.openide.util.NbBundle.getMessage(OpenProjectAction.class, "OptionsAction.mnemonic");
+        putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
+        final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
+                    "/de/cismet/watergis/res/icons16/icon-settingsandroid.png"));
+        putValue(SMALL_ICON, icon);
+    }
 
     //~ Methods ----------------------------------------------------------------
 
