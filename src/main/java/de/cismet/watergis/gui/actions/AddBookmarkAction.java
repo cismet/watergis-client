@@ -39,7 +39,6 @@ public class AddBookmarkAction extends AbstractAction {
      * Creates a new CloseAction object.
      */
     public AddBookmarkAction() {
-        setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 AddBookmarkAction.class,
                 "AddBookmarkAction.toolTipText");
@@ -60,5 +59,10 @@ public class AddBookmarkAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

@@ -39,7 +39,6 @@ public class OnlineHelpAction extends AbstractAction {
      * Creates a new CloseAction object.
      */
     public OnlineHelpAction() {
-        setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 OnlineHelpAction.class,
                 "OnlineHelpAction.toolTipText");
@@ -60,5 +59,10 @@ public class OnlineHelpAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

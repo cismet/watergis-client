@@ -20,6 +20,8 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.watergis.broker.AppBroker;
+
 /**
  * DOCUMENT ME!
  *
@@ -38,7 +40,6 @@ public class ExportMapAction extends AbstractAction {
      * Creates a new ExportMapAction object.
      */
     public ExportMapAction() {
-        setEnabled(false);
         final String text = org.openide.util.NbBundle.getMessage(ExportMapAction.class, "ExportMapAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(ExportMapAction.class, "ExportMapAction.mnemonic");
@@ -60,5 +61,10 @@ public class ExportMapAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

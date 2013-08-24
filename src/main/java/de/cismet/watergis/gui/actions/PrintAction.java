@@ -20,6 +20,8 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.watergis.broker.AppBroker;
+
 import de.cismet.watergis.gui.WatergisApp;
 
 /**
@@ -40,7 +42,6 @@ public class PrintAction extends AbstractAction {
      * Creates a new PrintAction object.
      */
     public PrintAction() {
-        setEnabled(false);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
                 KeyEvent.VK_P,
                 ActionEvent.CTRL_MASK));
@@ -60,5 +61,9 @@ public class PrintAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

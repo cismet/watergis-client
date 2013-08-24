@@ -23,7 +23,6 @@ import de.cismet.watergis.broker.ComponentName;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  * DOCUMENT ME!
  *
@@ -57,5 +56,10 @@ public class OptionsAction extends AbstractAction {
         final OptionsDialog od = new OptionsDialog(main, true);
         od.setLocationRelativeTo(main);
         od.setVisible(true);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
