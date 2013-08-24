@@ -1,12 +1,10 @@
-/**
- * *************************************************
- *
- * cismet GmbH, Saarbruecken, Germany
- * 
-* ... and it just works.
- * 
-***************************************************
- */
+/***************************************************
+*
+* cismet GmbH, Saarbruecken, Germany
+*
+*              ... and it just works.
+*
+****************************************************/
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -28,15 +26,17 @@ import de.cismet.watergis.gui.actions.selection.*;
 /**
  * DOCUMENT ME!
  *
- * @author Gilles Baatz
- * @version $Revision$, $Date$
+ * @author   Gilles Baatz
+ * @version  $Revision$, $Date$
  */
 public class ZoomOutAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
+
     private static final Logger LOG = Logger.getLogger(ZoomOutAction.class);
 
     //~ Constructors -----------------------------------------------------------
+
     /**
      * Creates a new CloseAction object.
      */
@@ -54,11 +54,12 @@ public class ZoomOutAction extends AbstractAction {
                 "ZoomOutAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                "/de/cismet/watergis/res/icons16/icon-zoom-out.png"));
+                    "/de/cismet/watergis/res/icons16/icon-zoom-out.png"));
         putValue(SMALL_ICON, icon);
     }
 
     //~ Methods ----------------------------------------------------------------
+
     @Override
     public void actionPerformed(final ActionEvent e) {
         AppBroker.getInstance().simpleZoom(0.5f);

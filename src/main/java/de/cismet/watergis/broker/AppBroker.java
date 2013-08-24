@@ -281,8 +281,9 @@ public class AppBroker implements Configurable {
      * @param  factor  DOCUMENT ME!
      */
     public void simpleZoom(final float factor) {
-         RubberBandZoomListener r=(RubberBandZoomListener)AppBroker.getInstance().getMappingComponent().getInputListener(MappingComponent.ZOOM);
-         r.zoom(factor, mappingComponent.getCamera(), mappingComponent.getAnimationDuration(),500);
+        final RubberBandZoomListener r = (RubberBandZoomListener)AppBroker.getInstance().getMappingComponent()
+                    .getInputListener(MappingComponent.ZOOM);
+        r.zoom(factor, mappingComponent.getCamera(), mappingComponent.getAnimationDuration(), 500);
     }
 
     //~ Inner Classes ----------------------------------------------------------
