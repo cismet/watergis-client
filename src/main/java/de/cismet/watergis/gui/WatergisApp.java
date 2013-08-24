@@ -489,8 +489,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         mniHelp = new javax.swing.JMenuItem();
         mniInfo = new javax.swing.JMenuItem();
 
-        localConfigAction1.setEnabled(true);
-
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.title")); // NOI18N
 
@@ -501,7 +499,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         tobDLM25W.setPreferredSize(new java.awt.Dimension(691, 28));
 
         cmdOpenProject.setAction(openProjectAction1);
-        cmdOpenProject.setBorderPainted(false);
         cmdOpenProject.setFocusable(false);
         cmdOpenProject.setHideActionText(true);
         cmdOpenProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
