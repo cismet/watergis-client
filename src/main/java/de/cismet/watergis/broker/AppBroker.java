@@ -18,12 +18,20 @@ package de.cismet.watergis.broker;
 import Sirius.navigator.connection.ConnectionSession;
 
 import net.infonode.docking.RootWindow;
+import net.infonode.gui.componentpainter.GradientComponentPainter;
 
 import org.jdom.Element;
+
+import java.awt.Color;
+import java.awt.Component;
+
+import java.util.EnumMap;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 
 import de.cismet.tools.configuration.Configurable;
+
+import de.cismet.watergis.gui.WatergisApp;
 
 /**
  * DOCUMENT ME!
@@ -35,7 +43,10 @@ public class AppBroker implements Configurable {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(AppBroker.class);
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(AppBroker.class);
+    // COLORS
+    private static final Color blue = new Color(124, 160, 221);
+    public static final Color DEFAULT_MODE_COLOR = blue;
 
     //~ Instance fields --------------------------------------------------------
 
@@ -46,6 +57,8 @@ public class AppBroker implements Configurable {
     private String callserverUrl;
     private String connectionClass;
     private RootWindow rootWindow;
+
+    private EnumMap<ComponentName, Component> components = new EnumMap<ComponentName, Component>(ComponentName.class);
 
     //~ Constructors -----------------------------------------------------------
 
@@ -203,6 +216,53 @@ public class AppBroker implements Configurable {
      */
     public RootWindow getRootWindow() {
         return rootWindow;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  color  DOCUMENT ME!
+     */
+    public void setTitleBarComponentpainter(final Color color) {
+        getRootWindow().getRootWindowProperties()
+                .getViewProperties()
+                .getViewTitleBarProperties()
+                .getNormalProperties()
+                .getShapedPanelProperties()
+                .setComponentPainter(new GradientComponentPainter(
+                        color,
+                        new Color(236, 233, 216),
+                        color,
+                        new Color(236, 233, 216)));
+    }
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   name  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Component getComponent(final ComponentName name) {
+        return components.get(name);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public WatergisApp getWatergisApp() {
+        return (WatergisApp)components.get(ComponentName.MAIN);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  name       DOCUMENT ME!
+     * @param  component  DOCUMENT ME!
+     */
+    public void addComponent(final ComponentName name, final Component component) {
+        components.put(name, component);
     }
 
     //~ Inner Classes ----------------------------------------------------------
