@@ -265,6 +265,15 @@ public class AppBroker implements Configurable {
         components.put(name, component);
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isActionsAlwaysEnabled() {
+        return true;
+    }
+
     //~ Inner Classes ----------------------------------------------------------
 
     /**
