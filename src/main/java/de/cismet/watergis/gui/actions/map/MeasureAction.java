@@ -1,16 +1,19 @@
-/***************************************************
-*
-* cismet GmbH, Saarbruecken, Germany
-*
-*              ... and it just works.
-*
-****************************************************/
+/**
+ * *************************************************
+ *
+ * cismet GmbH, Saarbruecken, Germany
+ * 
+* ... and it just works.
+ * 
+***************************************************
+ */
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 package de.cismet.watergis.gui.actions.map;
 
+import de.cismet.watergis.broker.AppBroker;
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
@@ -24,17 +27,15 @@ import de.cismet.watergis.gui.actions.selection.*;
 /**
  * DOCUMENT ME!
  *
- * @author   Gilles Baatz
- * @version  $Revision$, $Date$
+ * @author Gilles Baatz
+ * @version $Revision$, $Date$
  */
 public class MeasureAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
-
     private static final Logger LOG = Logger.getLogger(MeasureAction.class);
 
     //~ Constructors -----------------------------------------------------------
-
     /**
      * Creates a new CloseAction object.
      */
@@ -53,14 +54,18 @@ public class MeasureAction extends AbstractAction {
                 "MeasureAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-ruler.png"));
+                "/de/cismet/watergis/res/icons16/icon-ruler.png"));
         putValue(SMALL_ICON, icon);
     }
 
     //~ Methods ----------------------------------------------------------------
-
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

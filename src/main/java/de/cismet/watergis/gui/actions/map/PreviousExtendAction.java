@@ -11,6 +11,7 @@
  */
 package de.cismet.watergis.gui.actions.map;
 
+import de.cismet.watergis.broker.AppBroker;
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
@@ -39,7 +40,6 @@ public class PreviousExtendAction extends AbstractAction {
      * Creates a new CloseAction object.
      */
     public PreviousExtendAction() {
-        setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 PreviousExtendAction.class,
                 "PreviousExtendAction.toolTipText");
@@ -62,5 +62,9 @@ public class PreviousExtendAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
