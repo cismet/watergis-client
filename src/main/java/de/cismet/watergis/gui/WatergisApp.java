@@ -160,8 +160,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdZoomIn;
     private javax.swing.JButton cmdZoomOut;
     private javax.swing.JButton cmdZoomSelectedObjects;
-    private de.cismet.watergis.gui.actions.CreateGeoLinkAction createGeoLinkAction1;
-    private de.cismet.watergis.gui.actions.ExportMapAction exportMapAction1;
+    private de.cismet.watergis.gui.actions.map.CreateGeoLinkAction createGeoLinkAction1;
+    private de.cismet.watergis.gui.actions.map.ExportMapAction exportMapAction1;
     private de.cismet.watergis.gui.actions.map.FullExtendAction fullExtendAction1;
     private de.cismet.watergis.gui.actions.map.GoToAction goToAction1;
     private de.cismet.watergis.gui.actions.InfoAction infoAction1;
@@ -422,7 +422,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        exportMapAction1 = new de.cismet.watergis.gui.actions.ExportMapAction();
+        exportMapAction1 = new de.cismet.watergis.gui.actions.map.ExportMapAction();
         closeAction1 = new de.cismet.watergis.gui.actions.CloseAction();
         openProjectAction1 = new de.cismet.watergis.gui.actions.OpenProjectAction();
         optionsAction1 = new de.cismet.watergis.gui.actions.OptionsAction();
@@ -431,7 +431,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         addBookmarkAction1 = new de.cismet.watergis.gui.actions.AddBookmarkAction();
         manageBookmarksAction1 = new de.cismet.watergis.gui.actions.ManageBookmarksAction();
         windowAction1 = new de.cismet.watergis.gui.actions.WindowAction();
-        createGeoLinkAction1 = new de.cismet.watergis.gui.actions.CreateGeoLinkAction();
+        createGeoLinkAction1 = new de.cismet.watergis.gui.actions.map.CreateGeoLinkAction();
         selectionAttributeAction1 = new de.cismet.watergis.gui.actions.selection.SelectionAttributeAction();
         selectionFormAction1 = new de.cismet.watergis.gui.actions.selection.SelectionFormAction();
         selectionLocationAction1 = new de.cismet.watergis.gui.actions.selection.SelectionLocationAction();
@@ -1066,8 +1066,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         } catch (Throwable t) {
             LOG.error("Error while loading the help urls (" + prefs.getChildren() + ")", t); // NOI18N
         }
-        
-        
+
         // try {
 // // ToDo if it fails all fail better place in the single try catch
 // final Element urls = parent.getChild("urls");

@@ -2,7 +2,7 @@
 
 <Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
-    <Component class="de.cismet.watergis.gui.actions.ExportMapAction" name="exportMapAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.ExportMapAction" name="exportMapAction1">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.CloseAction" name="closeAction1">
     </Component>
@@ -20,7 +20,7 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.WindowAction" name="windowAction1">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.CreateGeoLinkAction" name="createGeoLinkAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.CreateGeoLinkAction" name="createGeoLinkAction1">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.selection.SelectionAttributeAction" name="selectionAttributeAction1">
     </Component>
