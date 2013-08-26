@@ -50,7 +50,7 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.map.NextExtendAction" name="nextExtendAction1">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.PanAction" name="panAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.PanModeAction" name="panAction1">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.map.PreviousExtendAction" name="previousExtendAction1">
     </Component>

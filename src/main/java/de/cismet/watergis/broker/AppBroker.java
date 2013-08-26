@@ -24,8 +24,11 @@ import org.jdom.Element;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 
 import java.util.EnumMap;
+
+import javax.swing.Action;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener;
@@ -60,6 +63,7 @@ public class AppBroker implements Configurable {
     private RootWindow rootWindow;
 
     private EnumMap<ComponentName, Component> components = new EnumMap<ComponentName, Component>(ComponentName.class);
+    private EnumMap<MapMode, Action> mapModeSelectionActions = new EnumMap<MapMode, Action>(MapMode.class);
 
     //~ Constructors -----------------------------------------------------------
 
@@ -273,6 +277,25 @@ public class AppBroker implements Configurable {
      */
     public boolean isActionsAlwaysEnabled() {
         return true;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  name    DOCUMENT ME!
+     * @param  action  DOCUMENT ME!
+     */
+    public void addMapMode(final MapMode name, final Action action) {
+        mapModeSelectionActions.put(name, action);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  mode  DOCUMENT ME!
+     */
+    public void switchMapMode(final MapMode mode) {
+        mapModeSelectionActions.get(mode).actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode.name()));
     }
 
     /**
