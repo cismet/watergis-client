@@ -244,11 +244,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         configManager.configure(this);
         AppBroker.setConfigManager(configManager);
         initComponents();
+        initMapModes();
         initCismap();
         initHistoryButtons();
 
         initDefaultPanels();
-        initMapModes();
         initDocking();
         initInfoNode();
         doLayoutInfoNode();
@@ -273,6 +273,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         configManager.configure(mappingModel);
         mappingComponent.preparationSetMappingModel(mappingModel);
         configManager.configure(mappingComponent);
+        // set the interaction mode manually, as no event is fired during the config of the MappingComponent
+        AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
         mappingComponent.setMappingModel(mappingModel);
 
         mappingComponent.setInternalLayerWidgetAvailable(true);
@@ -633,7 +635,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
         tbtnPanMode.setAction(panAction1);
         btnGroupMapMode.add(tbtnPanMode);
-        tbtnPanMode.setSelected(true);
         tbtnPanMode.setFocusable(false);
         tbtnPanMode.setHideActionText(true);
         tbtnPanMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
