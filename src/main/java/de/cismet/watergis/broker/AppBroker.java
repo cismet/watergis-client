@@ -35,6 +35,7 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener;
 
 import de.cismet.tools.configuration.Configurable;
+import de.cismet.tools.configuration.ConfigurationManager;
 
 import de.cismet.watergis.gui.WatergisApp;
 
@@ -52,6 +53,7 @@ public class AppBroker implements Configurable {
     // COLORS
     private static final Color blue = new Color(124, 160, 221);
     public static final Color DEFAULT_MODE_COLOR = blue;
+    private static ConfigurationManager configManager;
 
     //~ Instance fields --------------------------------------------------------
 
@@ -308,6 +310,24 @@ public class AppBroker implements Configurable {
         final RubberBandZoomListener r = (RubberBandZoomListener)AppBroker.getInstance().getMappingComponent()
                     .getInputListener(MappingComponent.ZOOM);
         r.zoom(factor, mappingComponent.getCamera(), mappingComponent.getAnimationDuration(), 500);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static ConfigurationManager getConfigManager() {
+        return configManager;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  configManager  DOCUMENT ME!
+     */
+    public static void setConfigManager(final ConfigurationManager configManager) {
+        AppBroker.configManager = configManager;
     }
 
     //~ Inner Classes ----------------------------------------------------------
