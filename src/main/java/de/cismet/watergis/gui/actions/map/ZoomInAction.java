@@ -22,9 +22,6 @@ import javax.swing.KeyStroke;
 import de.cismet.cismap.commons.gui.MappingComponent;
 
 import de.cismet.watergis.broker.AppBroker;
-import de.cismet.watergis.broker.MapMode;
-
-import de.cismet.watergis.gui.actions.selection.*;
 
 /**
  * DOCUMENT ME!
@@ -66,7 +63,7 @@ public class ZoomInAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         AppBroker.getInstance().simpleZoom(1.5f);
-        AppBroker.getInstance().switchMapMode(MapMode.ZOOM);
+        AppBroker.getInstance().switchMapMode(MappingComponent.ZOOM);
     }
     @Override
     public boolean isEnabled() {

@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 
 import javax.swing.Action;
 
@@ -63,7 +64,7 @@ public class AppBroker implements Configurable {
     private RootWindow rootWindow;
 
     private EnumMap<ComponentName, Component> components = new EnumMap<ComponentName, Component>(ComponentName.class);
-    private EnumMap<MapMode, Action> mapModeSelectionActions = new EnumMap<MapMode, Action>(MapMode.class);
+    private HashMap<String, Action> mapModeSelectionActions = new HashMap<String, Action>();
 
     //~ Constructors -----------------------------------------------------------
 
@@ -285,7 +286,7 @@ public class AppBroker implements Configurable {
      * @param  name    DOCUMENT ME!
      * @param  action  DOCUMENT ME!
      */
-    public void addMapMode(final MapMode name, final Action action) {
+    public void addMapMode(final String name, final Action action) {
         mapModeSelectionActions.put(name, action);
     }
 
@@ -294,8 +295,8 @@ public class AppBroker implements Configurable {
      *
      * @param  mode  DOCUMENT ME!
      */
-    public void switchMapMode(final MapMode mode) {
-        mapModeSelectionActions.get(mode).actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode.name()));
+    public void switchMapMode(final String mode) {
+        mapModeSelectionActions.get(mode).actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode));
     }
 
     /**

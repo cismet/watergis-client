@@ -31,7 +31,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import org.jdom.Element;
 
@@ -62,7 +61,6 @@ import de.cismet.tools.gui.startup.StaticStartupTools;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
-import de.cismet.watergis.broker.MapMode;
 
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
@@ -340,9 +338,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      * DOCUMENT ME!
      */
     private void initMapModes() {
-        AppBroker.getInstance().addMapMode(MapMode.PAN, panAction1);
-        AppBroker.getInstance().addMapMode(MapMode.ZOOM, zoomModeAction1);
-        AppBroker.getInstance().addMapMode(MapMode.SELECTION, selectionModeAction1);
+        AppBroker.getInstance().addMapMode(MappingComponent.PAN, panAction1);
+        AppBroker.getInstance().addMapMode(MappingComponent.ZOOM, zoomModeAction1);
+        AppBroker.getInstance().addMapMode(MappingComponent.SELECT, selectionModeAction1);
     }
 
     /**

@@ -19,10 +19,9 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
-import de.cismet.watergis.broker.AppBroker;
-import de.cismet.watergis.broker.MapMode;
+import de.cismet.cismap.commons.gui.MappingComponent;
 
-import de.cismet.watergis.gui.actions.selection.*;
+import de.cismet.watergis.broker.AppBroker;
 
 /**
  * DOCUMENT ME!
@@ -64,7 +63,7 @@ public class ZoomOutAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         AppBroker.getInstance().simpleZoom(0.5f);
-        AppBroker.getInstance().switchMapMode(MapMode.ZOOM);
+        AppBroker.getInstance().switchMapMode(MappingComponent.ZOOM);
     }
 
     @Override

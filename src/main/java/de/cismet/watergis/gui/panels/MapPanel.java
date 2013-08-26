@@ -15,10 +15,15 @@ import org.mortbay.log.Log;
 
 import java.awt.BorderLayout;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+
+import de.cismet.watergis.broker.AppBroker;
 
 /**
  * DOCUMENT ME!
@@ -26,7 +31,7 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class MapPanel extends javax.swing.JPanel implements FeatureCollectionListener {
+public class MapPanel extends javax.swing.JPanel implements FeatureCollectionListener, PropertyChangeListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -75,7 +80,28 @@ public class MapPanel extends javax.swing.JPanel implements FeatureCollectionLis
         mappingComponent = CismapBroker.getInstance().getMappingComponent();
         mappingComponent.getFeatureCollection().addFeatureCollectionListener(this);
         mappingComponent.setBackgroundEnabled(true);
+        mappingComponent.addPropertyChangeListener(this);
         this.add(BorderLayout.CENTER, mappingComponent);
+    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt) {
+        final Object source = evt.getSource();
+        final String propName = evt.getPropertyName();
+        final Object newValue = evt.getNewValue();
+
+        if (source == null) {
+            return;
+        }
+        if (source.equals(mappingComponent)) {
+            if (mappingComponent.PROPERTY_MAP_INTERACTION_MODE.equals(propName)) {
+                if (newValue instanceof String) {
+                    AppBroker.getInstance().switchMapMode((String)newValue);
+                } else {
+                    LOG.error("MapingComponent changed to a mode, which is not mapped to a String");
+                }
+            }
+        }
     }
 
     @Override

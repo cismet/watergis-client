@@ -19,10 +19,9 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
-import de.cismet.watergis.broker.AppBroker;
-import de.cismet.watergis.broker.MapMode;
+import de.cismet.cismap.commons.gui.MappingComponent;
 
-import de.cismet.watergis.gui.actions.selection.*;
+import de.cismet.watergis.broker.AppBroker;
 
 /**
  * DOCUMENT ME!
@@ -66,7 +65,7 @@ public class FullExtendAction extends AbstractAction {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Zoom to Full Extend");
         }
-        AppBroker.getInstance().switchMapMode(MapMode.ZOOM);
+        AppBroker.getInstance().switchMapMode(MappingComponent.ZOOM);
         AppBroker.getInstance().getMappingComponent().gotoInitialBoundingBox();
     }
     @Override
