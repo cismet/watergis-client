@@ -62,11 +62,13 @@ public class NextExtendAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Zoom to Next Extend. (Work is done by the JHistoryButton)");
+        }
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

@@ -56,6 +56,7 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
+import de.cismet.tools.gui.historybutton.JHistoryButton;
 import de.cismet.tools.gui.log4jquickconfig.Log4JQuickConfig;
 import de.cismet.tools.gui.startup.StaticStartupTools;
 
@@ -245,6 +246,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         configManager.configure(this);
         initComponents();
         initCismap();
+        initHistoryButtons();
 
         initDefaultPanels();
         initMapModes();
@@ -277,6 +279,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         mappingComponent.setInternalLayerWidgetAvailable(true);
 
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initHistoryButtons() {
+        ((JHistoryButton)cmdNextExtend).setDirection(JHistoryButton.DIRECTION_FORWARD);
+        ((JHistoryButton)cmdPreviousExtend).setDirection(JHistoryButton.DIRECTION_BACKWARD);
+        ((JHistoryButton)cmdNextExtend).setHistoryModel(mappingComponent);
+        ((JHistoryButton)cmdPreviousExtend).setHistoryModel(mappingComponent);
     }
 
     /**
@@ -460,8 +472,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         tbtnPanMode = new javax.swing.JToggleButton();
         cmdGoTo = new javax.swing.JButton();
         cmdFullExtend = new javax.swing.JButton();
-        cmdPreviousExtend = new javax.swing.JButton();
-        cmdNextExtend = new javax.swing.JButton();
+        cmdPreviousExtend = new JHistoryButton();
+        cmdNextExtend = new JHistoryButton();
         jSeparator5 = new javax.swing.JToolBar.Separator();
         tbtnSelectionMode = new javax.swing.JToggleButton();
         cmdSelectionForm = new javax.swing.JButton();
