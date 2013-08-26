@@ -28,6 +28,7 @@ import java.awt.Component;
 import java.util.EnumMap;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener;
 
 import de.cismet.tools.configuration.Configurable;
 
@@ -263,6 +264,26 @@ public class AppBroker implements Configurable {
      */
     public void addComponent(final ComponentName name, final Component component) {
         components.put(name, component);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isActionsAlwaysEnabled() {
+        return true;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  factor  DOCUMENT ME!
+     */
+    public void simpleZoom(final float factor) {
+        final RubberBandZoomListener r = (RubberBandZoomListener)AppBroker.getInstance().getMappingComponent()
+                    .getInputListener(MappingComponent.ZOOM);
+        r.zoom(factor, mappingComponent.getCamera(), mappingComponent.getAnimationDuration(), 500);
     }
 
     //~ Inner Classes ----------------------------------------------------------

@@ -39,7 +39,6 @@ public class InfoAction extends AbstractAction {
      * Creates a new CloseAction object.
      */
     public InfoAction() {
-        setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 InfoAction.class,
                 "InfoAction.toolTipText");
@@ -60,5 +59,10 @@ public class InfoAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

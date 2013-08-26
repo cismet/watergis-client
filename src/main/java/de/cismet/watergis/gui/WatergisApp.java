@@ -56,6 +56,7 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
+import de.cismet.tools.gui.log4jquickconfig.Log4JQuickConfig;
 import de.cismet.tools.gui.startup.StaticStartupTools;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -124,7 +125,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private View vInfo;
     private View vSelection;
     private View vTable;
-
     private MappingComponent mappingComponent;
     private ActiveLayerModel mappingModel = new ActiveLayerModel();
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -238,16 +238,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         configManager.addConfigurable(this);
         configManager.configure(this);
         initComponents();
-        initCismetCommonsComponents();
-
-        configManager.addConfigurable((ActiveLayerModel)mappingModel);
-        configManager.addConfigurable(mappingComponent);
-
-        // First local configuration than serverconfiguration
-        configManager.configure(mappingModel);
-        mappingComponent.preparationSetMappingModel(mappingModel);
-        configManager.configure(mappingComponent);
-        mappingComponent.setMappingModel(mappingModel);
+        initCismap();
 
         initDefaultPanels();
         initDocking();
@@ -255,9 +246,31 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         doLayoutInfoNode();
         panMain.add(rootWindow, BorderLayout.CENTER);
         setWindowSize();
+        mappingComponent.unlock();
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initCismap() {
+        mappingComponent = new MappingComponent();
+        AppBroker.getInstance().setMappingComponent(mappingComponent);
+        mappingModel.setInitalLayerConfigurationFromServer(true);
+        configManager.addConfigurable((ActiveLayerModel)mappingModel);
+        configManager.addConfigurable(mappingComponent);
+
+        // First local configuration then serverconfiguration
+        configManager.configure(mappingModel);
+        mappingComponent.preparationSetMappingModel(mappingModel);
+        configManager.configure(mappingComponent);
+        mappingComponent.setMappingModel(mappingModel);
+
+        mappingComponent.setInternalLayerWidgetAvailable(true);
+
+        CismapBroker.getInstance().setMappingComponent(mappingComponent);
+    }
 
     /**
      * DOCUMENT ME!
@@ -271,14 +284,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      * DOCUMENT ME!
      */
     private static void initLog4J() {
-        try {
-            PropertyConfigurator.configure(WatergisApp.class.getResource(
-                    "/de/cismet/watergis/configuration/log4j.properties"));
-            LOG.info("Log4J System was configured successfully");
-        } catch (Exception ex) {
-            System.err.println("Error during the initialisation");
-            ex.printStackTrace();
-        }
+//        try {
+//            PropertyConfigurator.configure(WatergisApp.class.getResource(
+//                    "/de/cismet/watergis/configuration/log4j.properties"));
+//            LOG.info("Log4J System was configured successfully");
+//        } catch (Exception ex) {
+//            System.err.println("Error during the initialisation");
+//            ex.printStackTrace();
+//        }
+        Log4JQuickConfig.configure4LumbermillOnLocalhost();
     }
 
     /**
@@ -358,14 +372,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 .getTabWindowProperties()
                 .getTabbedPanelProperties()
                 .setShadowStrength(0.8f);
-    }
-    /**
-     * DOCUMENT ME!
-     */
-    private void initCismetCommonsComponents() {
-        mappingComponent = new MappingComponent();
-        CismapBroker.getInstance().setMappingComponent(mappingComponent);
-        AppBroker.getInstance().setMappingComponent(mappingComponent);
     }
 
     /**
@@ -486,6 +492,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.title")); // NOI18N
 
+        tobDLM25W.setFloatable(false);
         tobDLM25W.setRollover(true);
         tobDLM25W.setMaximumSize(new java.awt.Dimension(679, 32769));
         tobDLM25W.setMinimumSize(new java.awt.Dimension(667, 26));
@@ -498,6 +505,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdOpenProject.setMaximumSize(new java.awt.Dimension(26, 26));
         cmdOpenProject.setMinimumSize(new java.awt.Dimension(26, 26));
         cmdOpenProject.setPreferredSize(new java.awt.Dimension(26, 26));
+        cmdOpenProject.setRolloverEnabled(true);
         cmdOpenProject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdOpenProject);
 

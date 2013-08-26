@@ -20,6 +20,8 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.watergis.broker.AppBroker;
+
 /**
  * DOCUMENT ME!
  *
@@ -38,7 +40,6 @@ public class OpenProjectAction extends AbstractAction {
      * Creates a new OpenProjectAction object.
      */
     public OpenProjectAction() {
-        setEnabled(false);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
                 KeyEvent.VK_O,
                 ActionEvent.CTRL_MASK));
@@ -62,5 +63,10 @@ public class OpenProjectAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.panels;
 
+import de.cismet.cismap.commons.interaction.CismapBroker;
+
 /**
  * DOCUMENT ME!
  *
@@ -60,6 +62,13 @@ public class StatusBar extends javax.swing.JPanel {
         setMaximumSize(new java.awt.Dimension(32769, 20));
         setMinimumSize(new java.awt.Dimension(200, 20));
         setPreferredSize(new java.awt.Dimension(500, 20));
+        addMouseListener(new java.awt.event.MouseAdapter() {
+
+                @Override
+                public void mouseClicked(final java.awt.event.MouseEvent evt) {
+                    formMouseClicked(evt);
+                }
+            });
         setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -74,12 +83,12 @@ public class StatusBar extends javax.swing.JPanel {
                 90,
                 Short.MAX_VALUE).addGroup(
                 pnlDecimalDegreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-                    pnlDecimalDegreeLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(
-                        jLabel1).addGap(0, 0, Short.MAX_VALUE))));
+                    pnlDecimalDegreeLayout.createSequentialGroup().addGap(0, 5, Short.MAX_VALUE).addComponent(
+                        jLabel1).addGap(0, 5, Short.MAX_VALUE))));
         pnlDecimalDegreeLayout.setVerticalGroup(
             pnlDecimalDegreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
                 0,
-                15,
+                16,
                 Short.MAX_VALUE).addGroup(
                 pnlDecimalDegreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
                     pnlDecimalDegreeLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(
@@ -103,12 +112,12 @@ public class StatusBar extends javax.swing.JPanel {
                 140,
                 Short.MAX_VALUE).addGroup(
                 pnlCoordinateSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-                    pnlCoordinateSystemLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(
-                        jLabel2).addGap(0, 0, Short.MAX_VALUE))));
+                    pnlCoordinateSystemLayout.createSequentialGroup().addGap(0, 9, Short.MAX_VALUE).addComponent(
+                        jLabel2).addGap(0, 10, Short.MAX_VALUE))));
         pnlCoordinateSystemLayout.setVerticalGroup(
             pnlCoordinateSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
                 0,
-                15,
+                16,
                 Short.MAX_VALUE).addGroup(
                 pnlCoordinateSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
                     pnlCoordinateSystemLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(
@@ -132,14 +141,14 @@ public class StatusBar extends javax.swing.JPanel {
                 62,
                 Short.MAX_VALUE).addGroup(
                 pnlScaleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-                    pnlScaleLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(jLabel3).addGap(
+                    pnlScaleLayout.createSequentialGroup().addGap(0, 4, Short.MAX_VALUE).addComponent(jLabel3).addGap(
                         0,
-                        0,
+                        5,
                         Short.MAX_VALUE))));
         pnlScaleLayout.setVerticalGroup(
             pnlScaleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
                 0,
-                15,
+                16,
                 Short.MAX_VALUE).addGroup(
                 pnlScaleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
                     pnlScaleLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(jLabel3).addGap(
@@ -169,4 +178,19 @@ public class StatusBar extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1.0;
         add(jPanel1, gridBagConstraints);
     } // </editor-fold>//GEN-END:initComponents
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void formMouseClicked(final java.awt.event.MouseEvent evt) { //GEN-FIRST:event_formMouseClicked
+        if (evt.getClickCount() > 1) {
+            if (!CismapBroker.getInstance().getMappingComponent().isInternalLayerWidgetVisible()) {
+                CismapBroker.getInstance().getMappingComponent().showInternalLayerWidget(true, 300);
+            } else {
+                CismapBroker.getInstance().getMappingComponent().showInternalLayerWidget(false, 150);
+            }
+        }
+    }                                                                    //GEN-LAST:event_formMouseClicked
 }

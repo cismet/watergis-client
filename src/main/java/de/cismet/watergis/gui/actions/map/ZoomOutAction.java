@@ -19,6 +19,8 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.watergis.broker.AppBroker;
+
 import de.cismet.watergis.gui.actions.selection.*;
 
 /**
@@ -39,7 +41,6 @@ public class ZoomOutAction extends AbstractAction {
      * Creates a new CloseAction object.
      */
     public ZoomOutAction() {
-        setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 ZoomOutAction.class,
                 "ZoomOutAction.toolTipText");
@@ -61,6 +62,11 @@ public class ZoomOutAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        AppBroker.getInstance().simpleZoom(0.5f);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

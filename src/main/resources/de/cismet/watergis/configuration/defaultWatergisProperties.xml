@@ -42,7 +42,10 @@
 
     <cismapActiveLayerConfiguration>        
         <Layers>   
-            <simpleWms layerPosition="0" skip="false" enabled="true" name="Orthophoto 2010" translucency="0.2"><![CDATA[http://s102x284:8399/arcgis/services/WuNDa-Orthophoto-WUP/MapServer/WMSServer?service=WMS&VERSION=1.1.1&REQUEST=GetMap&WIDTH=<cismap:width>&HEIGHT=<cismap:height>&BBOX=<cismap:boundingBox>&SRS=EPSG:31466&FORMAT=image/png&TRANSPARENT=TRUE&BGCOLOR=0xF0F0F0&EXCEPTIONS=application/vnd.ogc.se_xml&LAYERS=5&STYLES=default]]></simpleWms>
+            <WMSServiceLayer name="Stadtplanreihe farbig" title="" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
+                <capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
+                <wmsLayer name="R102:stadtplan2007" title="Stadtplanreihe farbig" enabled="true" style="default" info="false" />
+            </WMSServiceLayer>
         </Layers>
     </cismapActiveLayerConfiguration>
 </watergis>

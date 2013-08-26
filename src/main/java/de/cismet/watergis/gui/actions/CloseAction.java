@@ -50,4 +50,9 @@ public class CloseAction extends AbstractAction {
     public void actionPerformed(final ActionEvent e) {
         AppBroker.getInstance().getWatergisApp().dispose();
     }
+
+    @Override
+    public boolean isEnabled() {
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
+    }
 }
