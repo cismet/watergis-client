@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
 import de.cismet.watergis.broker.AppBroker;
+import de.cismet.watergis.broker.MapMode;
 
 import de.cismet.watergis.gui.actions.selection.*;
 
@@ -62,10 +63,14 @@ public class FullExtendAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Zoom to Full Extend");
+        }
+        AppBroker.getInstance().switchMapMode(MapMode.ZOOM);
+        AppBroker.getInstance().getMappingComponent().gotoInitialBoundingBox();
     }
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
