@@ -129,6 +129,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private ActiveLayerModel mappingModel = new ActiveLayerModel();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.watergis.gui.actions.AddBookmarkAction addBookmarkAction1;
+    private javax.swing.ButtonGroup btnGroupMapMode;
     private de.cismet.watergis.gui.actions.CentralConfigAction centralConfigAction1;
     private de.cismet.watergis.gui.actions.CloseAction closeAction1;
     private javax.swing.JButton cmdAddBookmark;
@@ -141,7 +142,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdMeasure;
     private javax.swing.JButton cmdNextExtend;
     private javax.swing.JButton cmdOpenProject;
-    private javax.swing.JButton cmdPan;
     private javax.swing.JButton cmdPresentation;
     private javax.swing.JButton cmdPreviousExtend;
     private javax.swing.JButton cmdPrint;
@@ -210,20 +210,24 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.map.PreviousExtendAction previousExtendAction1;
     private de.cismet.watergis.gui.actions.PrintAction printAction1;
     private de.cismet.watergis.gui.actions.selection.RemoveSelectionAllTopicsAction removeSelectionAllTopicsAction1;
-    private de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction
-        removeSelectionCurrentTopicAction1;
+    private de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction removeSelectionCurrentTopicAction1;
     private de.cismet.watergis.gui.actions.SaveProjectAction saveProjectAction1;
     private de.cismet.watergis.gui.actions.map.ScaleAction scaleAction1;
     private de.cismet.watergis.gui.actions.selection.SelectAllAction selectAllAction1;
     private de.cismet.watergis.gui.actions.selection.SelectionAttributeAction selectionAttributeAction1;
     private de.cismet.watergis.gui.actions.selection.SelectionFormAction selectionFormAction1;
     private de.cismet.watergis.gui.actions.selection.SelectionLocationAction selectionLocationAction1;
+    private de.cismet.watergis.gui.actions.map.SelectionModeAction selectionModeAction1;
     private de.cismet.watergis.gui.actions.selection.SelectionOptionsAction selectionOptionsAction1;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
     private de.cismet.watergis.gui.actions.TableAction tableAction1;
+    private javax.swing.JToggleButton tbtnPanMode;
+    private javax.swing.JToggleButton tbtnSelectionMode;
+    private javax.swing.JToggleButton tbtnZoomMode;
     private javax.swing.JToolBar tobDLM25W;
     private de.cismet.watergis.gui.actions.WindowAction windowAction1;
     private de.cismet.watergis.gui.actions.map.ZoomInAction zoomInAction1;
+    private de.cismet.watergis.gui.actions.map.ZoomModeAction zoomModeAction1;
     private de.cismet.watergis.gui.actions.map.ZoomOutAction zoomOutAction1;
     private de.cismet.watergis.gui.actions.selection.ZoomSelectedObjectsAction zoomSelectedObjectsAction1;
     // End of variables declaration//GEN-END:variables
@@ -390,6 +394,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+
         exportMapAction1 = new de.cismet.watergis.gui.actions.ExportMapAction();
         closeAction1 = new de.cismet.watergis.gui.actions.CloseAction();
         openProjectAction1 = new de.cismet.watergis.gui.actions.OpenProjectAction();
@@ -408,8 +413,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         zoomSelectedObjectsAction1 = new de.cismet.watergis.gui.actions.selection.ZoomSelectedObjectsAction();
         selectAllAction1 = new de.cismet.watergis.gui.actions.selection.SelectAllAction();
         invertSelectionAction1 = new de.cismet.watergis.gui.actions.selection.InvertSelectionAction();
-        removeSelectionCurrentTopicAction1 =
-            new de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction();
+        removeSelectionCurrentTopicAction1 = new de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction();
         scaleAction1 = new de.cismet.watergis.gui.actions.map.ScaleAction();
         fullExtendAction1 = new de.cismet.watergis.gui.actions.map.FullExtendAction();
         goToAction1 = new de.cismet.watergis.gui.actions.map.GoToAction();
@@ -426,6 +430,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         onlineHelpAction1 = new de.cismet.watergis.gui.actions.OnlineHelpAction();
         tableAction1 = new de.cismet.watergis.gui.actions.TableAction();
         presentationAction1 = new de.cismet.watergis.gui.actions.PresentationAction();
+        zoomModeAction1 = new de.cismet.watergis.gui.actions.map.ZoomModeAction();
+        selectionModeAction1 = new de.cismet.watergis.gui.actions.map.SelectionModeAction();
+        btnGroupMapMode = new javax.swing.ButtonGroup();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
@@ -435,14 +442,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdManageBookmarks = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JToolBar.Separator();
         cmdScale = new javax.swing.JButton();
+        tbtnZoomMode = new javax.swing.JToggleButton();
         cmdZoomIn = new javax.swing.JButton();
         cmdZoomOut = new javax.swing.JButton();
-        cmdPan = new javax.swing.JButton();
+        tbtnPanMode = new javax.swing.JToggleButton();
         cmdGoTo = new javax.swing.JButton();
         cmdFullExtend = new javax.swing.JButton();
         cmdPreviousExtend = new javax.swing.JButton();
         cmdNextExtend = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JToolBar.Separator();
+        tbtnSelectionMode = new javax.swing.JToggleButton();
         cmdSelectionForm = new javax.swing.JButton();
         cmdSelectionAttribute = new javax.swing.JButton();
         cmdSelectionLocation = new javax.swing.JButton();
@@ -505,7 +514,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdOpenProject.setMaximumSize(new java.awt.Dimension(26, 26));
         cmdOpenProject.setMinimumSize(new java.awt.Dimension(26, 26));
         cmdOpenProject.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdOpenProject.setRolloverEnabled(true);
         cmdOpenProject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdOpenProject);
 
@@ -572,6 +580,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdScale.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdScale);
 
+        tbtnZoomMode.setAction(zoomModeAction1);
+        btnGroupMapMode.add(tbtnZoomMode);
+        tbtnZoomMode.setFocusable(false);
+        tbtnZoomMode.setHideActionText(true);
+        tbtnZoomMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbtnZoomMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(tbtnZoomMode);
+
         cmdZoomIn.setAction(zoomInAction1);
         cmdZoomIn.setFocusable(false);
         cmdZoomIn.setHideActionText(true);
@@ -592,15 +608,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdZoomOut.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdZoomOut);
 
-        cmdPan.setAction(panAction1);
-        cmdPan.setFocusable(false);
-        cmdPan.setHideActionText(true);
-        cmdPan.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdPan.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdPan.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdPan.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdPan.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdPan);
+        tbtnPanMode.setAction(panAction1);
+        btnGroupMapMode.add(tbtnPanMode);
+        tbtnPanMode.setSelected(true);
+        tbtnPanMode.setFocusable(false);
+        tbtnPanMode.setHideActionText(true);
+        tbtnPanMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbtnPanMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(tbtnPanMode);
 
         cmdGoTo.setAction(goToAction1);
         cmdGoTo.setFocusable(false);
@@ -645,6 +660,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         jSeparator5.setSeparatorSize(new java.awt.Dimension(2, 0));
         tobDLM25W.add(jSeparator5);
 
+        tbtnSelectionMode.setAction(selectionModeAction1);
+        btnGroupMapMode.add(tbtnSelectionMode);
+        org.openide.awt.Mnemonics.setLocalizedText(tbtnSelectionMode, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.tbtnSelectionMode.text_1")); // NOI18N
+        tbtnSelectionMode.setFocusable(false);
+        tbtnSelectionMode.setHideActionText(true);
+        tbtnSelectionMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbtnSelectionMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(tbtnSelectionMode);
+
         cmdSelectionForm.setAction(selectionFormAction1);
         cmdSelectionForm.setFocusable(false);
         cmdSelectionForm.setHideActionText(true);
@@ -686,9 +710,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         tobDLM25W.add(cmdZoomSelectedObjects);
 
         cmdSelectAll.setAction(selectAllAction1);
-        org.openide.awt.Mnemonics.setLocalizedText(
-            cmdSelectAll,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectAll.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(cmdSelectAll, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.cmdSelectAll.text")); // NOI18N
         cmdSelectAll.setFocusable(false);
         cmdSelectAll.setHideActionText(true);
         cmdSelectAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -777,9 +799,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         getContentPane().add(panMain, java.awt.BorderLayout.CENTER);
         getContentPane().add(statusBar1, java.awt.BorderLayout.PAGE_END);
 
-        org.openide.awt.Mnemonics.setLocalizedText(
-            menFile,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menFile.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(menFile, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menFile.text")); // NOI18N
 
         mniOpenProject.setAction(openProjectAction1);
         menFile.add(mniOpenProject);
@@ -804,28 +824,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         menFile.add(jSeparator1);
 
         jMenuItem8.setAction(centralConfigAction1);
-        org.openide.awt.Mnemonics.setLocalizedText(
-            jMenuItem8,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem8.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jMenuItem8, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem8.text")); // NOI18N
         menFile.add(jMenuItem8);
 
         jMenuItem11.setAction(centralConfigAction1);
-        org.openide.awt.Mnemonics.setLocalizedText(
-            jMenuItem11,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem11.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jMenuItem11, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem11.text")); // NOI18N
         menFile.add(jMenuItem11);
         menFile.add(jSeparator2);
 
         jMenuItem9.setAction(localConfigAction1);
-        org.openide.awt.Mnemonics.setLocalizedText(
-            jMenuItem9,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem9.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jMenuItem9, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem9.text")); // NOI18N
         menFile.add(jMenuItem9);
 
         jMenuItem12.setAction(localConfigAction1);
-        org.openide.awt.Mnemonics.setLocalizedText(
-            jMenuItem12,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem12.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jMenuItem12, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem12.text")); // NOI18N
         menFile.add(jMenuItem12);
         menFile.add(jSeparator3);
 
@@ -834,9 +846,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
         jMenuBar1.add(menFile);
 
-        org.openide.awt.Mnemonics.setLocalizedText(
-            menBookmark,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menBookmark.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(menBookmark, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menBookmark.text")); // NOI18N
 
         mniCreateBookmark.setAction(addBookmarkAction1);
         menBookmark.add(mniCreateBookmark);
@@ -846,9 +856,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
         jMenuBar1.add(menBookmark);
 
-        org.openide.awt.Mnemonics.setLocalizedText(
-            menSelection,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menSelection.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(menSelection, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menSelection.text")); // NOI18N
 
         mniSelectForm.setAction(selectionFormAction1);
         menSelection.add(mniSelectForm);
@@ -863,26 +871,18 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         menSelection.add(mniZoomSelectedObjects);
 
         mniRemoveSelection.setAction(removeSelectionAllTopicsAction1);
-        mniRemoveSelection.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionremove.png")));        // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(
-            mniRemoveSelection,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniRemoveSelection.text")); // NOI18N
+        mniRemoveSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionremove.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniRemoveSelection, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniRemoveSelection.text")); // NOI18N
         menSelection.add(mniRemoveSelection);
 
         mniSelectionOptions.setAction(selectionOptionsAction1);
-        mniSelectionOptions.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-settingsandroid.png")));         // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(
-            mniSelectionOptions,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniSelectionOptions.text")); // NOI18N
+        mniSelectionOptions.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons16/icon-settingsandroid.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(mniSelectionOptions, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniSelectionOptions.text")); // NOI18N
         menSelection.add(mniSelectionOptions);
 
         jMenuBar1.add(menSelection);
 
-        org.openide.awt.Mnemonics.setLocalizedText(
-            menHelp,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menHelp.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(menHelp, org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menHelp.text")); // NOI18N
 
         mniHelp.setAction(onlineHelpAction1);
         menHelp.add(mniHelp);
@@ -895,7 +895,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         setJMenuBar(jMenuBar1);
 
         pack();
-    } // </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
