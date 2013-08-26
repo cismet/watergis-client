@@ -20,6 +20,8 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.cismap.commons.gui.MappingComponent;
+
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.WatergisApp;
@@ -60,10 +62,15 @@ public class PrintAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
+        final String oldMode = mappingComponent.getInteractionMode();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("oldInteractionMode:" + oldMode);
+        }
+        mappingComponent.showPrintingSettingsDialog(oldMode);
     }
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
