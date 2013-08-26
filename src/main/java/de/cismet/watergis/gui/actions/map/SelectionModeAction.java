@@ -31,33 +31,33 @@ import de.cismet.watergis.gui.actions.selection.*;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class PanAction extends AbstractAction {
+public class SelectionModeAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(PanAction.class);
+    private static final Logger LOG = Logger.getLogger(SelectionModeAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new CloseAction object.
      */
-    public PanAction() {
+    public SelectionModeAction() {
         setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                PanAction.class,
-                "PanAction.toolTipText");
+                SelectionModeAction.class,
+                "SelectionModeAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(
-                PanAction.class,
-                "PanAction.text");
+                SelectionModeAction.class,
+                "SelectionModeAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
-                PanAction.class,
-                "PanAction.mnemonic");
+                SelectionModeAction.class,
+                "SelectionModeAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-move.png"));
+                    "/de/cismet/watergis/res/icons16/icon-selection-rectangleselection.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -68,7 +68,7 @@ public class PanAction extends AbstractAction {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Switch in Pan Mode");
         }
-        AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.PAN);
+        AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
         putValue(SELECTED_KEY, Boolean.TRUE);
     }
 

@@ -31,33 +31,33 @@ import de.cismet.watergis.gui.actions.selection.*;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class PanAction extends AbstractAction {
+public class ZoomModeAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(PanAction.class);
+    private static final Logger LOG = Logger.getLogger(ZoomModeAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new CloseAction object.
      */
-    public PanAction() {
+    public ZoomModeAction() {
         setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                PanAction.class,
-                "PanAction.toolTipText");
+                ZoomModeAction.class,
+                "ZoomModeAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(
-                PanAction.class,
-                "PanAction.text");
+                ZoomModeAction.class,
+                "ZoomModeAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
-                PanAction.class,
-                "PanAction.mnemonic");
+                ZoomModeAction.class,
+                "ZoomModeAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-move.png"));
+                    "/de/cismet/watergis/res/icons16/icon-zoom.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -68,7 +68,7 @@ public class PanAction extends AbstractAction {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Switch in Pan Mode");
         }
-        AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.PAN);
+        AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.ZOOM);
         putValue(SELECTED_KEY, Boolean.TRUE);
     }
 
