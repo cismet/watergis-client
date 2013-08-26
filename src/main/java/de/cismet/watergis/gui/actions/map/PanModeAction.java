@@ -31,30 +31,30 @@ import de.cismet.watergis.gui.actions.selection.*;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class PanAction extends AbstractAction {
+public class PanModeAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(PanAction.class);
+    private static final Logger LOG = Logger.getLogger(PanModeAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new CloseAction object.
      */
-    public PanAction() {
+    public PanModeAction() {
         setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                PanAction.class,
-                "PanAction.toolTipText");
+                PanModeAction.class,
+                "PanModeAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(
-                PanAction.class,
-                "PanAction.text");
+                PanModeAction.class,
+                "PanModeAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
-                PanAction.class,
-                "PanAction.mnemonic");
+                PanModeAction.class,
+                "PanModeAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-move.png"));

@@ -66,7 +66,7 @@ public class ZoomModeAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Switch in Pan Mode");
+            LOG.debug("Switch in Zoom Mode");
         }
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.ZOOM);
         putValue(SELECTED_KEY, Boolean.TRUE);

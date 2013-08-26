@@ -66,7 +66,7 @@ public class SelectionModeAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Switch in Pan Mode");
+            LOG.debug("Switch in Selection Mode");
         }
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
         putValue(SELECTED_KEY, Boolean.TRUE);
