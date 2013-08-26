@@ -19,6 +19,7 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import de.cismet.cismap.commons.BoundingBox;
 import de.cismet.cismap.commons.Crs;
@@ -26,7 +27,11 @@ import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
+import de.cismet.cismap.navigatorplugin.GotoPointDialog;
+
 import de.cismet.tools.StaticDecimalTools;
+
+import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -79,12 +84,17 @@ public class GoToAction extends AbstractAction {
         final XBoundingBox c = (XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera();
         final double x = (c.getX1() + c.getX2()) / 2;
         final double y = (c.getY1() + c.getY2()) / 2;
+        final String message = org.openide.util.NbBundle.getMessage(
+                GoToAction.class,
+                "GoToAction.actionPerformed().dialogMessage");
+
         final String s = JOptionPane.showInputDialog(
                 AppBroker.getInstance().getComponent(ComponentName.MAIN),
-                "Zentriere auf folgendem Punkt: x,y",
+                message,
                 StaticDecimalTools.round(x)
                         + ","
                         + StaticDecimalTools.round(y));
+
         try {
             final String[] sa = s.split(",");
             final Double gotoX = new Double(sa[0]);
@@ -101,6 +111,7 @@ public class GoToAction extends AbstractAction {
         } catch (Exception skip) {
         }
     }
+
     @Override
     public boolean isEnabled() {
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
