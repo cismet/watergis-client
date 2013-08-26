@@ -32,7 +32,6 @@ public class OnlineHelpAction extends OpenLinkInExternalWebBrowserAbstractAction
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(OnlineHelpAction.class);
-    private static final String URL = "https://github.com/cismet/dlm25w_lung";
 
     //~ Constructors -----------------------------------------------------------
 
@@ -62,7 +61,7 @@ public class OnlineHelpAction extends OpenLinkInExternalWebBrowserAbstractAction
         if (LOG.isDebugEnabled()) {
             LOG.debug("open Online-Help");
         }
-        openUrlInExternalBrowser(URL);
+        openUrlInExternalBrowser(AppBroker.getInstance().getWatergisApp().getHelpURL());
     }
 
     @Override

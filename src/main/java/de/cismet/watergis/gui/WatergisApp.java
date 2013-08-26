@@ -127,6 +127,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private View vTable;
     private MappingComponent mappingComponent;
     private ActiveLayerModel mappingModel = new ActiveLayerModel();
+
+    private String helpURL;
+    private String infoURL;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.watergis.gui.actions.AddBookmarkAction addBookmarkAction1;
     private javax.swing.ButtonGroup btnGroupMapMode;
@@ -592,7 +595,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdManageBookmarks.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdManageBookmarks);
 
-        jSeparator4.setSeparatorSize(new java.awt.Dimension(2, 0));
+        jSeparator4.setSeparatorSize(new java.awt.Dimension(2, 32));
         tobDLM25W.add(jSeparator4);
 
         cmdScale.setAction(scaleAction1);
@@ -1049,41 +1052,57 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
     @Override
     public void masterConfigure(final Element parent) {
-//        try {
-//            // ToDo if it fails all fail better place in the single try catch
-//            final Element urls = parent.getChild("urls");
-//            final Element albConfiguration = parent.getChild("albConfiguration");
-//            try {
-//                if (LOG.isDebugEnabled()) {
-//                    LOG.debug("OnlineHilfeUrl: " + urls.getChildText("onlineHelp"));
-//                }
-//                onlineHelpURL = urls.getChildText("onlineHelp");
-//            } catch (Exception ex) {
-//                LOG.warn("Fehler beim lesen der OnlineHilfe URL", ex);
-//            }
-//            try {
-//                albURL = albConfiguration.getChildText("albURL");
-//                if (albURL != null) {
-//                    albURL = albURL.trim();
-//                }
-//                if (LOG.isDebugEnabled()) {
-//                    LOG.debug("ALBURL: " + albURL.trim());
-//                }
-//            } catch (Exception ex) {
-//                LOG.warn("Fehler beim lesen der ALB Konfiguration", ex);
-//            }
-//            try {
-//                if (LOG.isDebugEnabled()) {
-//                    LOG.debug("News Url: " + urls.getChildText("onlineHelp"));
-//                }
-//                newsURL = urls.getChildText("news");
-//            } catch (Exception ex) {
-//                LOG.warn("Fehler beim lesen der News Url", ex);
-//            }
+        final Element prefs = parent.getChild("urls");
+        try {
+            final Element help_url_element = prefs.getChild("onlineHelp"); // NOI18N
+            final Element info_url_element = prefs.getChild("info");       // NOI18N
+
+            helpURL = help_url_element.getText();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("helpUrl:" + helpURL); // NOI18N
+            }
+
+            infoURL = info_url_element.getText();
+        } catch (Throwable t) {
+            LOG.error("Error while loading the help urls (" + prefs.getChildren() + ")", t); // NOI18N
+        }
+        
+        
+        // try {
+// // ToDo if it fails all fail better place in the single try catch
+// final Element urls = parent.getChild("urls");
+// final Element albConfiguration = parent.getChild("albConfiguration");
+// try {
+// if (LOG.isDebugEnabled()) {
+// LOG.debug("OnlineHilfeUrl: " + urls.getChildText("onlineHelp"));
+// }
+// onlineHelpURL = urls.getChildText("onlineHelp");
+// } catch (Exception ex) {
+// LOG.warn("Fehler beim lesen der OnlineHilfe URL", ex);
+// }
+// try {
+// albURL = albConfiguration.getChildText("albURL");
+// if (albURL != null) {
+// albURL = albURL.trim();
+// }
+// if (LOG.isDebugEnabled()) {
+// LOG.debug("ALBURL: " + albURL.trim());
+// }
+// } catch (Exception ex) {
+// LOG.warn("Fehler beim lesen der ALB Konfiguration", ex);
+// }
+// try {
+// if (LOG.isDebugEnabled()) {
+// LOG.debug("News Url: " + urls.getChildText("onlineHelp"));
+// }
+// newsURL = urls.getChildText("news");
+// } catch (Exception ex) {
+// LOG.warn("Fehler beim lesen der News Url", ex);
+// }
 //
-//        } catch (Exception ex) {
-//            LOG.error("Fehler beim konfigurieren der Watergis Applikation: ", ex);
-//        }
+// } catch (Exception ex) {
+// LOG.error("Fehler beim konfigurieren der Watergis Applikation: ", ex);
+// }
     }
 
     @Override
@@ -1242,5 +1261,23 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         } else {
             this.pack();
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public String getHelpURL() {
+        return helpURL;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public String getInfoURL() {
+        return infoURL;
     }
 }

@@ -473,7 +473,7 @@
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator4">
           <Properties>
             <Property name="separatorSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[2, 0]"/>
+              <Dimension value="[2, 32]"/>
             </Property>
           </Properties>
         </Component>

@@ -3,8 +3,9 @@
 
 <watergis>
     <urls>
-        <onlineHelp>www.cismet.de</onlineHelp>
+        <onlineHelp>https://github.com/cismet/dlm25w_lung</onlineHelp>
         <news>www.cismet.de</news>
+        <info>http://www.lung.mv-regierung.de/insite/cms/infoseiten/infoseitenabt1/impressum.htm</info>
     </urls>
     <cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
         <home default="false" srs="EPSG:4326" metric="false">

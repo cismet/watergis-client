@@ -32,7 +32,6 @@ public class InfoAction extends OpenLinkInExternalWebBrowserAbstractAction {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(InfoAction.class);
-    private static final String URL = "http://www.cismet.de/impressum.html";
 
     //~ Constructors -----------------------------------------------------------
 
@@ -59,10 +58,10 @@ public class InfoAction extends OpenLinkInExternalWebBrowserAbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-                if (LOG.isDebugEnabled()) {
+        if (LOG.isDebugEnabled()) {
             LOG.debug("open Information webpage");
         }
-        openUrlInExternalBrowser(URL);
+        openUrlInExternalBrowser(AppBroker.getInstance().getWatergisApp().getInfoURL());
     }
 
     @Override
