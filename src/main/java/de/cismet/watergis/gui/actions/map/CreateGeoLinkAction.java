@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -44,7 +45,7 @@ public class CreateGeoLinkAction extends AbstractAction {
 
     //~ Instance fields --------------------------------------------------------
 
-    //TODO wrong port
+    // TODO wrong port
     int httpInterfacePort = 9099;
 
     private ClipboardWaitDialog clipboarder;
@@ -65,6 +66,10 @@ public class CreateGeoLinkAction extends AbstractAction {
                 CreateGeoLinkAction.class,
                 "CreateGeoLinkAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+                KeyEvent.VK_C,
+                ActionEvent.CTRL_MASK
+                        + ActionEvent.ALT_MASK));
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-link.png"));
         putValue(SMALL_ICON, icon);
