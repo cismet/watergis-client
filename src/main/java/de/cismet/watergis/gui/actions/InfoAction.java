@@ -27,11 +27,12 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class InfoAction extends AbstractAction {
+public class InfoAction extends OpenLinkInExternalWebBrowserAbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(InfoAction.class);
+    private static final String URL = "http://www.cismet.de/impressum.html";
 
     //~ Constructors -----------------------------------------------------------
 
@@ -58,11 +59,14 @@ public class InfoAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+                if (LOG.isDebugEnabled()) {
+            LOG.debug("open Information webpage");
+        }
+        openUrlInExternalBrowser(URL);
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

@@ -27,11 +27,12 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class OnlineHelpAction extends AbstractAction {
+public class OnlineHelpAction extends OpenLinkInExternalWebBrowserAbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(OnlineHelpAction.class);
+    private static final String URL = "https://github.com/cismet/dlm25w_lung";
 
     //~ Constructors -----------------------------------------------------------
 
@@ -58,11 +59,14 @@ public class OnlineHelpAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("open Online-Help");
+        }
+        openUrlInExternalBrowser(URL);
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
