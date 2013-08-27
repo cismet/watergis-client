@@ -52,6 +52,8 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
+import de.cismet.tools.StaticDebuggingTools;
+
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
@@ -67,6 +69,8 @@ import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
 import de.cismet.watergis.gui.panels.TablePanel;
 import de.cismet.watergis.gui.panels.TopicTreePanel;
+
+import de.cismet.watergis.server.GeoLinkServer;
 
 import static java.awt.Frame.MAXIMIZED_BOTH;
 
@@ -107,6 +111,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     }
 
     //~ Instance fields --------------------------------------------------------
+
+    private Integer httpInterfacePort = 9098;
 
     private RootWindow rootWindow;
     private StringViewMap viewMap = new StringViewMap();
@@ -255,6 +261,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         initDocking();
         initInfoNode();
         doLayoutInfoNode();
+        if (!StaticDebuggingTools.checkHomeForFile("cismetTurnOffInternalWebserver")) { // NOI18N
+            initHttpServer();
+        }
         panMain.add(rootWindow, BorderLayout.CENTER);
         setWindowSize();
         mappingComponent.unlock();
@@ -301,6 +310,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private void initDocking() {
         rootWindow = DockingUtil.createRootWindow(viewMap, true);
         AppBroker.getInstance().setRootWindow(rootWindow);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initHttpServer() {
+        GeoLinkServer.startServer();
     }
 
     /**
@@ -1067,6 +1083,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             LOG.error("Error while loading the help urls (" + prefs.getChildren() + ")", t); // NOI18N
         }
 
+        final Element ports = parent.getChild("ports");
+        final Element httpInterfacePortElement = ports.getChild("httpInterfacePort"); // NOI18N
+
+        try {
+            httpInterfacePort = new Integer(httpInterfacePortElement.getText());
+        } catch (Throwable t) {
+            LOG.warn("httpInterface was not configured. Set default value: " + httpInterfacePort, t); // NOI18N
+        }
+
         // try {
 // // ToDo if it fails all fail better place in the single try catch
 // final Element urls = parent.getChild("urls");
@@ -1278,5 +1303,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      */
     public String getInfoURL() {
         return infoURL;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Integer getHttpInterfacePort() {
+        return httpInterfacePort;
     }
 }

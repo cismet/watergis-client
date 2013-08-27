@@ -30,6 +30,7 @@ import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.GeoLinkUrl;
+import de.cismet.watergis.gui.WatergisApp;
 
 /**
  * DOCUMENT ME!
@@ -44,9 +45,6 @@ public class CreateGeoLinkAction extends AbstractAction {
     private static final Logger LOG = Logger.getLogger(CreateGeoLinkAction.class);
 
     //~ Instance fields --------------------------------------------------------
-
-    // TODO wrong port
-    int httpInterfacePort = 9099;
 
     private ClipboardWaitDialog clipboarder;
 
@@ -89,7 +87,8 @@ public class CreateGeoLinkAction extends AbstractAction {
                 protected Void doInBackground() throws Exception {
                     final XBoundingBox bb = (XBoundingBox)AppBroker.getInstance().getMappingComponent()
                                 .getCurrentBoundingBoxFromCamera();
-                    final String u = "http://localhost:" + httpInterfacePort + "/gotoBoundingBox?x1="
+                    final int port = AppBroker.getInstance().getWatergisApp().getHttpInterfacePort();
+                    final String u = "http://localhost:" + port + "/gotoBoundingBox?x1="
                                 + bb.getX1()                                                       // NOI18N
                                 + "&y1=" + bb.getY1() + "&x2=" + bb.getX2() + "&y2=" + bb.getY2(); // NOI18N
                     final GeoLinkUrl url = new GeoLinkUrl(u);
@@ -107,6 +106,6 @@ public class CreateGeoLinkAction extends AbstractAction {
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
