@@ -17,7 +17,14 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+
+import de.cismet.cismap.commons.gui.MappingComponent;
+
+import de.cismet.cismap.navigatorplugin.CismapPlugin;
+
+import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -62,11 +69,24 @@ public class ScaleAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
+        try {
+            final String s = JOptionPane.showInputDialog(
+                    StaticSwingTools.getParentFrame(mappingComponent),
+                    org.openide.util.NbBundle.getMessage(
+                        ScaleAction.class,
+                        "ScaleAction.actionPerformed().InfoDialog.message"),
+                    ((int)mappingComponent.getScaleDenominator())
+                            + "");                               // NOI18N
+            final Integer i = new Integer(s);
+            mappingComponent.gotoBoundingBoxWithHistory(mappingComponent.getBoundingBoxFromScale(i));
+        } catch (Exception skip) {
+            LOG.error("Error in mniScaleActionPerformed", skip); // NOI18N
+        }
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
