@@ -7,6 +7,9 @@
         <news>www.cismet.de</news>
         <info>http://www.lung.mv-regierung.de/insite/cms/infoseiten/infoseitenabt1/impressum.htm</info>
     </urls>
+    <ports>
+        <httpInterfacePort>9097</httpInterfacePort>
+    </ports>    
     <cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
         <home default="false" srs="EPSG:4326" metric="false">
             <BoundingBox x1="-180.0" y1="-90.0" x2="180.0" y2="90.0" />
