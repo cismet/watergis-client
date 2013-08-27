@@ -95,7 +95,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private static final String FILESEPARATOR = System.getProperty("file.separator");
     private static final String DIRECTORYNAME_WATERGISHOME = ".watergis"
                 + ((DIRECTORYEXTENSION != null) ? DIRECTORYEXTENSION : "");
-    public static final String DIRECTORYPATH_WATERGIS = DIRECTORYPATH_HOME + FILESEPARATOR
+    private static final String DIRECTORYPATH_WATERGIS = DIRECTORYPATH_HOME + FILESEPARATOR
                 + DIRECTORYNAME_WATERGISHOME;
     private static final String FILEPATH_DEFAULT_LAYOUT = DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.layout";
     private static final String FILEPATH_PLUGIN_LAYOUT = DIRECTORYPATH_WATERGIS + FILESEPARATOR
@@ -1312,5 +1312,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      */
     public Integer getHttpInterfacePort() {
         return httpInterfacePort;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static String getDIRECTORYPATH_WATERGIS() {
+        return DIRECTORYPATH_WATERGIS;
     }
 }

@@ -94,10 +94,10 @@ public class OpenProjectAction extends AbstractAction {
         JFileChooser fc;
 
         try {
-            fc = new JFileChooser(WatergisApp.DIRECTORYPATH_WATERGIS);
+            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
         } catch (Exception bug) {
             // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(WatergisApp.DIRECTORYPATH_WATERGIS, new RestrictedFileSystemView());
+            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
         }
 
         fc.setFileFilter(new FileFilter() {
