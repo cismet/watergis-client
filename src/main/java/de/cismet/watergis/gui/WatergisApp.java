@@ -1021,7 +1021,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                     }
                     try {
                         SPLASH = StaticStartupTools.showGhostFrame(FILEPATH_SCREEN, "FIS Gewässer [Startup]");
-                        SPLASH.setLocationRelativeTo(null);
                     } catch (Exception e) {
                         LOG.warn("Problem with displaying the Pre-Loading-Frame", e);
                     }
