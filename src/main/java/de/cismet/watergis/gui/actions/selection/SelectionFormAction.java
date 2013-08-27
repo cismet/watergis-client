@@ -19,6 +19,8 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.watergis.broker.AppBroker;
+
 /**
  * DOCUMENT ME!
  *
@@ -37,7 +39,6 @@ public class SelectionFormAction extends AbstractAction {
      * Creates a new CloseAction object.
      */
     public SelectionFormAction() {
-        setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 SelectionFormAction.class,
                 "SelectionFormAction.toolTipText");
@@ -58,5 +59,10 @@ public class SelectionFormAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }

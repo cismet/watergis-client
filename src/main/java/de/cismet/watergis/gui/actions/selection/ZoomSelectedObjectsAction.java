@@ -19,6 +19,8 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.watergis.broker.AppBroker;
+
 /**
  * DOCUMENT ME!
  *
@@ -37,7 +39,6 @@ public class ZoomSelectedObjectsAction extends AbstractAction {
      * Creates a new CloseAction object.
      */
     public ZoomSelectedObjectsAction() {
-        setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 ZoomSelectedObjectsAction.class,
                 "ZoomSelectedObjectsAction.toolTipText");
@@ -60,5 +61,10 @@ public class ZoomSelectedObjectsAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         LOG.info("Not supported yet.");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
