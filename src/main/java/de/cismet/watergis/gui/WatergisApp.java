@@ -167,12 +167,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdZoomOut;
     private javax.swing.JButton cmdZoomSelectedObjects;
     private de.cismet.watergis.gui.actions.map.CreateGeoLinkAction createGeoLinkAction1;
+    private de.cismet.watergis.gui.actions.DownloadManagerAction downloadManagerAction1;
     private de.cismet.watergis.gui.actions.map.ExportMapAction exportMapAction1;
     private de.cismet.watergis.gui.actions.map.FullExtendAction fullExtendAction1;
     private de.cismet.watergis.gui.actions.map.GoToAction goToAction1;
     private de.cismet.watergis.gui.actions.InfoAction infoAction1;
     private de.cismet.watergis.gui.actions.InfoWindowAction infoWindowAction1;
     private de.cismet.watergis.gui.actions.selection.InvertSelectionAction invertSelectionAction1;
+    private javax.swing.JButton jButton1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
@@ -477,11 +479,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         zoomModeAction1 = new de.cismet.watergis.gui.actions.map.ZoomModeAction();
         selectionModeAction1 = new de.cismet.watergis.gui.actions.map.SelectionModeAction();
         btnGroupMapMode = new javax.swing.ButtonGroup();
+        downloadManagerAction1 = new de.cismet.watergis.gui.actions.DownloadManagerAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
         cmdPrint = new javax.swing.JButton();
         cmdExportMap = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         cmdAddBookmark = new javax.swing.JButton();
         cmdManageBookmarks = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JToolBar.Separator();
@@ -590,6 +594,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdExportMap.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdExportMap.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdExportMap);
+
+        jButton1.setAction(downloadManagerAction1);
+        jButton1.setFocusable(false);
+        jButton1.setHideActionText(true);
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(jButton1);
 
         cmdAddBookmark.setAction(addBookmarkAction1);
         cmdAddBookmark.setFocusable(false);
