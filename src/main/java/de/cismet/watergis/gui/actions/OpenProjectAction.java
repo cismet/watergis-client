@@ -120,19 +120,7 @@ public class OpenProjectAction extends AbstractAction {
 
         if (state == JFileChooser.APPROVE_OPTION) {
             final File file = fc.getSelectedFile();
-            final String name = file.getAbsolutePath();
-
-            final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
-            final ConfigurationManager configurationManager = AppBroker.getConfigManager();
-            if (name.endsWith(".xml")) { // NOI18N
-                // activeLayers.removeAllLayers();
-                mappingComponent.getRasterServiceLayer().removeAllChildren();
-                configurationManager.configure(name);
-            } else {
-                // activeLayers.removeAllLayers();
-                mappingComponent.getRasterServiceLayer().removeAllChildren();
-                configurationManager.configure(name + ".xml"); // NOI18N
-            }
+            new AdoptLocalConfigFileAction(file).adoptConfigFile();
         }
     }
 }

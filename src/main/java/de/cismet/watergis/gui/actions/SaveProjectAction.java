@@ -129,6 +129,7 @@ public class SaveProjectAction extends AbstractAction {
             } else {
                 configurationManager.writeConfiguration(name + ".xml"); // NOI18N
             }
+            AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);
         }
     }
 }
