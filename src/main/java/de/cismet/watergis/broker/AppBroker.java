@@ -38,6 +38,7 @@ import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
 import de.cismet.watergis.gui.WatergisApp;
+import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 /**
  * DOCUMENT ME!
@@ -56,6 +57,8 @@ public class AppBroker implements Configurable {
     private static ConfigurationManager configManager;
 
     //~ Instance fields --------------------------------------------------------
+
+    private RecentlyOpenedFilesList recentlyOpenedFilesList;
 
     private transient ConnectionSession session;
     private MappingComponent mappingComponent;
@@ -271,6 +274,24 @@ public class AppBroker implements Configurable {
      */
     public void addComponent(final ComponentName name, final Component component) {
         components.put(name, component);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public RecentlyOpenedFilesList getRecentlyOpenedFilesList() {
+        return recentlyOpenedFilesList;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  recentlyOpenedFilesList  DOCUMENT ME!
+     */
+    public void setRecentlyOpenedFilesList(final RecentlyOpenedFilesList recentlyOpenedFilesList) {
+        this.recentlyOpenedFilesList = recentlyOpenedFilesList;
     }
 
     /**

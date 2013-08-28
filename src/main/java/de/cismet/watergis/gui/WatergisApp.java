@@ -69,6 +69,8 @@ import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
 import de.cismet.watergis.gui.panels.TablePanel;
 import de.cismet.watergis.gui.panels.TopicTreePanel;
+import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFileMenu;
+import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 import de.cismet.watergis.server.GeoLinkServer;
 
@@ -175,6 +177,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.InfoWindowAction infoWindowAction1;
     private de.cismet.watergis.gui.actions.selection.InvertSelectionAction invertSelectionAction1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
@@ -257,7 +260,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         initComponents();
         initMapModes();
         initCismap();
-        initHistoryButtons();
+        initHistoryButtonsAndRecentlyOpenedFiles();
 
         initDefaultPanels();
         initDocking();
@@ -299,11 +302,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     /**
      * DOCUMENT ME!
      */
-    private void initHistoryButtons() {
+    private void initHistoryButtonsAndRecentlyOpenedFiles() {
         ((JHistoryButton)cmdNextExtend).setDirection(JHistoryButton.DIRECTION_FORWARD);
         ((JHistoryButton)cmdPreviousExtend).setDirection(JHistoryButton.DIRECTION_BACKWARD);
         ((JHistoryButton)cmdNextExtend).setHistoryModel(mappingComponent);
         ((JHistoryButton)cmdPreviousExtend).setHistoryModel(mappingComponent);
+
+        final RecentlyOpenedFilesList recentlyOpenedFilesList = new RecentlyOpenedFilesList();
+        configManager.addConfigurable(recentlyOpenedFilesList);
+        configManager.configure(recentlyOpenedFilesList);
+        AppBroker.getInstance().setRecentlyOpenedFilesList(recentlyOpenedFilesList);
     }
 
     /**
@@ -529,6 +537,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         jMenuItem11 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem9 = new javax.swing.JMenuItem();
+        jMenu1 = new RecentlyOpenedFileMenu();
         jMenuItem12 = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         mniClose = new javax.swing.JMenuItem();
@@ -901,6 +910,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             jMenuItem9,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenuItem9.text")); // NOI18N
         menFile.add(jMenuItem9);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jMenu1,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenu1.text")); // NOI18N
+        menFile.add(jMenu1);
 
         jMenuItem12.setAction(localConfigAction1);
         org.openide.awt.Mnemonics.setLocalizedText(
