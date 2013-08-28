@@ -14,20 +14,19 @@ package de.cismet.watergis.gui.recently_opened_files;
 import org.apache.log4j.Logger;
 
 import org.jdom.Element;
-import org.jdom.Text;
 
 import java.io.File;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.NoWriteError;
 
 /**
- * DOCUMENT ME!
+ * A List which manages the last opened files. The last used file is on the first position in the list. A maximal amount
+ * of files can be set.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
@@ -46,9 +45,10 @@ public class RecentlyOpenedFilesList implements Configurable {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * DOCUMENT ME!
+     * Add a file on the first position of the List. If too many files are in the list (more than maxAmount), then the
+     * oldest files will be removed from the list.
      *
-     * @param  file  DOCUMENT ME!
+     * @param  file  added to the first position of the list
      */
     public void addFile(final File file) {
         if (fileList.contains(file)) {
@@ -61,9 +61,9 @@ public class RecentlyOpenedFilesList implements Configurable {
     }
 
     /**
-     * DOCUMENT ME!
+     * Returns the list with the files, the last opened file is on the first position.
      *
-     * @return  DOCUMENT ME!
+     * @return  list with the files
      */
     public Collection<File> getFileList() {
         if (fileList.size() < maxAmount) {
@@ -119,18 +119,18 @@ public class RecentlyOpenedFilesList implements Configurable {
     }
 
     /**
-     * DOCUMENT ME!
+     * Set the maximal amount of files, which are managed by the list.
      *
-     * @return  DOCUMENT ME!
+     * @return  maximal amount of files
      */
     public int getMaxAmount() {
         return maxAmount;
     }
 
     /**
-     * DOCUMENT ME!
+     * Set the maximal amount of files, which will be managed by the list.
      *
-     * @param  maxAmount  DOCUMENT ME!
+     * @param  maxAmount  maximal amount of files
      */
     public void setMaxAmount(final int maxAmount) {
         this.maxAmount = maxAmount;

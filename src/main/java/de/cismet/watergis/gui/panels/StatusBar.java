@@ -11,7 +11,30 @@
  */
 package de.cismet.watergis.gui.panels;
 
+import org.apache.log4j.Logger;
+
+import org.deegree.model.crs.CRSFactory;
+import org.deegree.model.crs.CoordinateSystem;
+import org.deegree.model.crs.GeoTransformer;
+import org.deegree.model.spatialschema.GeometryFactory;
+import org.deegree.model.spatialschema.Point;
+
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
+import javax.swing.JMenuItem;
+
+import de.cismet.cismap.commons.Crs;
+import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.interaction.StatusListener;
+import de.cismet.cismap.commons.interaction.events.StatusEvent;
+
+import de.cismet.tools.StaticDebuggingTools;
 
 /**
  * DOCUMENT ME!
@@ -19,28 +42,98 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class StatusBar extends javax.swing.JPanel {
+public class StatusBar extends javax.swing.JPanel implements StatusListener {
 
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(StatusBar.class);
+
+    //~ Instance fields --------------------------------------------------------
+
+    private final MappingComponent mappingComponent;
+    private DecimalFormat df = new DecimalFormat("0.000");
+    private boolean developerMode = false;
+    private GeoTransformer transformer = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JLabel lblCoordinates;
+    private javax.swing.JLabel lblCrs;
+    private javax.swing.JLabel lblScale;
+    private javax.swing.JLabel lblWgs84Coordinates;
     private javax.swing.JPanel pnlCoordinateSystem;
+    private javax.swing.JPanel pnlCoordinates;
     private javax.swing.JPanel pnlDecimalDegree;
     private javax.swing.JPanel pnlScale;
+    private javax.swing.JPopupMenu pomCrs;
     // End of variables declaration//GEN-END:variables
 
     //~ Constructors -----------------------------------------------------------
 
     /**
-     * Creates new form MapStatusBar.
+     * Creates a new StatusBar object.
      */
     public StatusBar() {
         initComponents();
+        this.mappingComponent = null;
+    }
+
+    /**
+     * Creates new form MapStatusBar.
+     *
+     * @param  mappingComponent  DOCUMENT ME!
+     */
+    public StatusBar(final MappingComponent mappingComponent) {
+        initComponents();
+        this.mappingComponent = mappingComponent;
+
+        lblCoordinates.setText(""); // NOI18N
+        lblCrs.setText(CismapBroker.getInstance().getSrs().getCode());
+        final DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        df.setDecimalFormatSymbols(dfs);
+
+        try {
+            // initialises the geo transformer that transforms the coordinates from the current
+            // coordinate system to EPSG:4326
+            this.transformer = new GeoTransformer("EPSG:4326");
+        } catch (Exception e) {
+            LOG.error("cannot create a transformer for EPSG:4326.", e);
+        }
+
+        developerMode = StaticDebuggingTools.checkHomeForFile("cismetDeveloper");
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     */
+    public void addCrsPopups() {
+        for (final Crs c : mappingComponent.getCrsList()) {
+            addCrsPopup(c);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  crs  DOCUMENT ME!
+     */
+    private void addCrsPopup(final Crs crs) {
+        final JMenuItem jmi = new JMenuItem(crs.getShortname());
+        jmi.setToolTipText(crs.getName());
+        jmi.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(final ActionEvent e) {
+                    CismapBroker.getInstance().setSrs(crs);
+                }
+            });
+        pomCrs.add(jmi);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The
@@ -51,13 +144,21 @@ public class StatusBar extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        pomCrs = new javax.swing.JPopupMenu();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0),
+                new java.awt.Dimension(0, 0),
+                new java.awt.Dimension(32767, 0));
         pnlDecimalDegree = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        lblWgs84Coordinates = new javax.swing.JLabel();
         pnlCoordinateSystem = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        lblCrs = new javax.swing.JLabel();
+        jSeparator3 = new javax.swing.JSeparator();
         pnlScale = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        lblScale = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
+        pnlCoordinates = new javax.swing.JPanel();
+        lblCoordinates = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
 
         setMaximumSize(new java.awt.Dimension(32769, 20));
         setMinimumSize(new java.awt.Dimension(200, 20));
@@ -70,113 +171,95 @@ public class StatusBar extends javax.swing.JPanel {
                 }
             });
         setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.weightx = 1.0;
+        add(filler1, gridBagConstraints);
+
+        pnlDecimalDegree.setLayout(new java.awt.BorderLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
-            jLabel1,
-            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.jLabel1.text")); // NOI18N
-
-        final javax.swing.GroupLayout pnlDecimalDegreeLayout = new javax.swing.GroupLayout(pnlDecimalDegree);
-        pnlDecimalDegree.setLayout(pnlDecimalDegreeLayout);
-        pnlDecimalDegreeLayout.setHorizontalGroup(
-            pnlDecimalDegreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
-                0,
-                90,
-                Short.MAX_VALUE).addGroup(
-                pnlDecimalDegreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-                    pnlDecimalDegreeLayout.createSequentialGroup().addGap(0, 5, Short.MAX_VALUE).addComponent(
-                        jLabel1).addGap(0, 5, Short.MAX_VALUE))));
-        pnlDecimalDegreeLayout.setVerticalGroup(
-            pnlDecimalDegreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
-                0,
-                16,
-                Short.MAX_VALUE).addGroup(
-                pnlDecimalDegreeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-                    pnlDecimalDegreeLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(
-                        jLabel1).addGap(0, 0, Short.MAX_VALUE))));
+            lblWgs84Coordinates,
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblWgs84Coordinates.text")); // NOI18N
+        pnlDecimalDegree.add(lblWgs84Coordinates, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         add(pnlDecimalDegree, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(
-            jLabel2,
-            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.jLabel2.text")); // NOI18N
+        pnlCoordinateSystem.setLayout(new java.awt.BorderLayout());
 
-        final javax.swing.GroupLayout pnlCoordinateSystemLayout = new javax.swing.GroupLayout(pnlCoordinateSystem);
-        pnlCoordinateSystem.setLayout(pnlCoordinateSystemLayout);
-        pnlCoordinateSystemLayout.setHorizontalGroup(
-            pnlCoordinateSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
-                0,
-                140,
-                Short.MAX_VALUE).addGroup(
-                pnlCoordinateSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-                    pnlCoordinateSystemLayout.createSequentialGroup().addGap(0, 9, Short.MAX_VALUE).addComponent(
-                        jLabel2).addGap(0, 10, Short.MAX_VALUE))));
-        pnlCoordinateSystemLayout.setVerticalGroup(
-            pnlCoordinateSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
-                0,
-                16,
-                Short.MAX_VALUE).addGroup(
-                pnlCoordinateSystemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-                    pnlCoordinateSystemLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(
-                        jLabel2).addGap(0, 0, Short.MAX_VALUE))));
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblCrs,
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblCrs.text")); // NOI18N
+        lblCrs.addMouseListener(new java.awt.event.MouseAdapter() {
+
+                @Override
+                public void mousePressed(final java.awt.event.MouseEvent evt) {
+                    lblCrsMousePressed(evt);
+                }
+            });
+        pnlCoordinateSystem.add(lblCrs, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
+        add(pnlCoordinateSystem, gridBagConstraints);
+
+        jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jSeparator3.setMinimumSize(new java.awt.Dimension(5, 5));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        add(jSeparator3, gridBagConstraints);
+
+        pnlScale.setLayout(new java.awt.BorderLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblScale,
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblScale.text")); // NOI18N
+        pnlScale.add(lblScale, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 0);
-        add(pnlCoordinateSystem, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
+        add(pnlScale, gridBagConstraints);
+
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jSeparator2.setMinimumSize(new java.awt.Dimension(5, 5));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        add(jSeparator2, gridBagConstraints);
+
+        pnlCoordinates.setLayout(new java.awt.BorderLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
-            jLabel3,
-            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.jLabel3.text")); // NOI18N
-
-        final javax.swing.GroupLayout pnlScaleLayout = new javax.swing.GroupLayout(pnlScale);
-        pnlScale.setLayout(pnlScaleLayout);
-        pnlScaleLayout.setHorizontalGroup(
-            pnlScaleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
-                0,
-                62,
-                Short.MAX_VALUE).addGroup(
-                pnlScaleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-                    pnlScaleLayout.createSequentialGroup().addGap(0, 4, Short.MAX_VALUE).addComponent(jLabel3).addGap(
-                        0,
-                        5,
-                        Short.MAX_VALUE))));
-        pnlScaleLayout.setVerticalGroup(
-            pnlScaleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
-                0,
-                16,
-                Short.MAX_VALUE).addGroup(
-                pnlScaleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-                    pnlScaleLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(jLabel3).addGap(
-                        0,
-                        0,
-                        Short.MAX_VALUE))));
+            lblCoordinates,
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblCoordinates.text")); // NOI18N
+        pnlCoordinates.add(lblCoordinates, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 2);
-        add(pnlScale, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
+        add(pnlCoordinates, gridBagConstraints);
 
-        final javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 9, Short.MAX_VALUE));
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(
-                0,
-                15,
-                Short.MAX_VALUE));
-
+        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jSeparator1.setMinimumSize(new java.awt.Dimension(5, 5));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.weightx = 1.0;
-        add(jPanel1, gridBagConstraints);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        add(jSeparator1, gridBagConstraints);
     } // </editor-fold>//GEN-END:initComponents
 
     /**
@@ -184,7 +267,7 @@ public class StatusBar extends javax.swing.JPanel {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void formMouseClicked(final java.awt.event.MouseEvent evt) { //GEN-FIRST:event_formMouseClicked
+    private void formMouseClicked(final java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
         if (evt.getClickCount() > 1) {
             if (!CismapBroker.getInstance().getMappingComponent().isInternalLayerWidgetVisible()) {
                 CismapBroker.getInstance().getMappingComponent().showInternalLayerWidget(true, 300);
@@ -192,5 +275,117 @@ public class StatusBar extends javax.swing.JPanel {
                 CismapBroker.getInstance().getMappingComponent().showInternalLayerWidget(false, 150);
             }
         }
-    }                                                                    //GEN-LAST:event_formMouseClicked
+    }//GEN-LAST:event_formMouseClicked
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void lblCrsMousePressed(final java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblCrsMousePressed
+        if (evt.isPopupTrigger()) {
+            pomCrs.setVisible(true);
+        }
+    }//GEN-LAST:event_lblCrsMousePressed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  e  DOCUMENT ME!
+     */
+    @Override
+    public void statusValueChanged(final StatusEvent e) {
+        final Runnable modifyControls = new Runnable() {
+
+                @Override
+                public void run() {
+                    if (e.getName().equals(StatusEvent.COORDINATE_STRING)) {
+                        lblCoordinates.setText(e.getValue().toString());
+                        lblWgs84Coordinates.setText(transformToWGS84Coords(e.getValue().toString()));
+                    } else if (e.getName().equals(StatusEvent.MEASUREMENT_INFOS)) {
+                        // do nothing
+                    } else if (e.getName().equals(StatusEvent.MAPPING_MODE)) {
+                        // do nothing                                                          // NOI18N
+                    } else if (e.getName().equals(StatusEvent.OBJECT_INFOS)) {
+                        // do nothing
+                    } else if (e.getName().equals(StatusEvent.SCALE)) {
+                        final int sd = (int)(mappingComponent.getScaleDenominator() + 0.5);
+                        if (developerMode) {
+                            lblScale.setText("OGC: " + mappingComponent.getCurrentOGCScale() + " 1:" + sd); // NOI18N
+                        } else {
+                            lblScale.setText("1:" + sd);                                                    // NOI18N
+                        }
+                    } else if (e.getName().equals(StatusEvent.CRS)) {
+                        lblCrs.setText(((Crs)e.getValue()).getShortname());
+                        lblCoordinates.setToolTipText(((Crs)e.getValue()).getShortname());
+                    } else if (e.getName().equals(StatusEvent.RETRIEVAL_STARTED)) {
+                        // do nothing
+                    } else if (e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED)
+                                || e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)
+                                || e.getName().equals(StatusEvent.RETRIEVAL_REMOVED)) {
+                        //do nothing
+                    } else if (e.getName().equals(StatusEvent.RETRIEVAL_ERROR)) {
+                        //do nothing
+                    } else if (e.getName().equals(StatusEvent.MAP_EXTEND_FIXED)) {
+                        //do nothing
+                    } else if (e.getName().equals(StatusEvent.MAP_SCALE_FIXED)) {
+                        //do nothing
+                    }
+                }
+            };
+
+        if (e.getName().equals(StatusEvent.MAPPING_MODE)) {
+            //do nothing
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_STARTED)) {
+            //do nothing
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED)) {
+            //do nothing
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)) {
+            //do nothing
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_ERROR)) {
+            //do nothing
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_REMOVED)) {
+            //do nothing
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_RESET)) {
+            //do nothing
+        }
+
+        if (EventQueue.isDispatchThread()) {
+            modifyControls.run();
+        } else {
+            EventQueue.invokeLater(modifyControls);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   coords  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String transformToWGS84Coords(final String coords) {
+        String result = "";
+
+        try {
+            final String tmp = coords.substring(1, coords.length() - 1);
+            final int commaPosition = tmp.indexOf(",");
+
+            if ((commaPosition != -1) && (transformer != null)) {
+                final double xCoord = Double.parseDouble(tmp.substring(0, commaPosition));
+                final double yCoord = Double.parseDouble(tmp.substring(commaPosition + 1));
+
+                final CoordinateSystem coordSystem = CRSFactory.create(CismapBroker.getInstance().getSrs().getCode());
+                Point currentPoint = GeometryFactory.createPoint(xCoord, yCoord, coordSystem);
+                currentPoint = (Point)transformer.transform(currentPoint);
+                result = "(" + df.format(currentPoint.getX()) + "," + df.format(currentPoint.getY()) + ")"; // NOI18N
+            } else {
+                LOG.error("Cannot transform the current coordinates: " + coords);
+            }
+        } catch (Exception e) {
+            LOG.error("Cannot transform the current coordinates: " + coords, e);
+        }
+
+        return result;
+    }
 }

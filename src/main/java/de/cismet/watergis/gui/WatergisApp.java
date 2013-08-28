@@ -69,6 +69,7 @@ import de.cismet.watergis.broker.ComponentName;
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
+import de.cismet.watergis.gui.panels.StatusBar;
 import de.cismet.watergis.gui.panels.TablePanel;
 import de.cismet.watergis.gui.panels.TopicTreePanel;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFileMenu;
@@ -261,9 +262,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         configManager.addConfigurable(OptionsClient.getInstance());
         configManager.configure(OptionsClient.getInstance());
         AppBroker.setConfigManager(configManager);
+        initCismap();
         initComponents();
         initMapModes();
-        initCismap();
         initHistoryButtonsAndRecentlyOpenedFiles();
 
         initDefaultPanels();
@@ -294,8 +295,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         configManager.configure(mappingModel);
         mappingComponent.preparationSetMappingModel(mappingModel);
         configManager.configure(mappingComponent);
-        // set the interaction mode manually, as no event is fired during the config of the MappingComponent
-        AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
+
         mappingComponent.setMappingModel(mappingModel);
 
         mappingComponent.setInternalLayerWidgetAvailable(true);
@@ -365,6 +365,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         AppBroker.getInstance().addComponent(ComponentName.TABLE, pTable);
 
         AppBroker.getInstance().addComponent(ComponentName.STATUSBAR, statusBar1);
+        // mappingComponent.getFeatureCollection().addFeatureCollectionListener(statusBar1);
+        CismapBroker.getInstance().addStatusListener(statusBar1);
 
         LOG.info("set refernence for the main application in Broker: " + this);
         AppBroker.getInstance().addComponent(ComponentName.MAIN, this);
@@ -377,6 +379,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         AppBroker.getInstance().addMapMode(MappingComponent.PAN, panAction1);
         AppBroker.getInstance().addMapMode(MappingComponent.ZOOM, zoomModeAction1);
         AppBroker.getInstance().addMapMode(MappingComponent.SELECT, selectionModeAction1);
+
+        // set the initial interaction mode
+        AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
     }
 
     /**
@@ -526,7 +531,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdMeasure = new javax.swing.JButton();
         cmdPresentation = new javax.swing.JButton();
         panMain = new javax.swing.JPanel();
-        statusBar1 = new de.cismet.watergis.gui.panels.StatusBar();
+        statusBar1 = new StatusBar(mappingComponent);
         jMenuBar1 = new javax.swing.JMenuBar();
         menFile = new javax.swing.JMenu();
         mniOpenProject = new javax.swing.JMenuItem();
