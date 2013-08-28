@@ -19,33 +19,22 @@ import org.deegree.model.crs.GeoTransformer;
 import org.deegree.model.spatialschema.GeometryFactory;
 import org.deegree.model.spatialschema.Point;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
-import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 import de.cismet.cismap.commons.Crs;
-import de.cismet.cismap.commons.ServiceLayer;
-import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
-import de.cismet.cismap.commons.features.XStyledFeature;
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.StatusListener;
 import de.cismet.cismap.commons.interaction.events.StatusEvent;
 
 import de.cismet.tools.StaticDebuggingTools;
-
-import de.cismet.tools.gui.Static2DTools;
 
 /**
  * DOCUMENT ME!
@@ -60,7 +49,6 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
     private static final Logger LOG = Logger.getLogger(StatusBar.class);
 
     //~ Instance fields --------------------------------------------------------
-
 
     private final MappingComponent mappingComponent;
     private DecimalFormat df = new DecimalFormat("0.000");
@@ -157,7 +145,9 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
         java.awt.GridBagConstraints gridBagConstraints;
 
         pomCrs = new javax.swing.JPopupMenu();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0),
+                new java.awt.Dimension(0, 0),
+                new java.awt.Dimension(32767, 0));
         pnlDecimalDegree = new javax.swing.JPanel();
         lblWgs84Coordinates = new javax.swing.JLabel();
         pnlCoordinateSystem = new javax.swing.JPanel();
@@ -174,10 +164,12 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
         setMinimumSize(new java.awt.Dimension(200, 20));
         setPreferredSize(new java.awt.Dimension(500, 20));
         addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                formMouseClicked(evt);
-            }
-        });
+
+                @Override
+                public void mouseClicked(final java.awt.event.MouseEvent evt) {
+                    formMouseClicked(evt);
+                }
+            });
         setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -188,7 +180,9 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
 
         pnlDecimalDegree.setLayout(new java.awt.BorderLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(lblWgs84Coordinates, org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblWgs84Coordinates.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblWgs84Coordinates,
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblWgs84Coordinates.text")); // NOI18N
         pnlDecimalDegree.add(lblWgs84Coordinates, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -199,12 +193,16 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
 
         pnlCoordinateSystem.setLayout(new java.awt.BorderLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(lblCrs, org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblCrs.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblCrs,
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblCrs.text")); // NOI18N
         lblCrs.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                lblCrsMousePressed(evt);
-            }
-        });
+
+                @Override
+                public void mousePressed(final java.awt.event.MouseEvent evt) {
+                    lblCrsMousePressed(evt);
+                }
+            });
         pnlCoordinateSystem.add(lblCrs, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -223,7 +221,9 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
 
         pnlScale.setLayout(new java.awt.BorderLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(lblScale, org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblScale.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblScale,
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblScale.text")); // NOI18N
         pnlScale.add(lblScale, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -242,7 +242,9 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
 
         pnlCoordinates.setLayout(new java.awt.BorderLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(lblCoordinates, org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblCoordinates.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblCoordinates,
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblCoordinates.text")); // NOI18N
         pnlCoordinates.add(lblCoordinates, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -258,7 +260,7 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         add(jSeparator1, gridBagConstraints);
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
@@ -301,49 +303,11 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
                         lblCoordinates.setText(e.getValue().toString());
                         lblWgs84Coordinates.setText(transformToWGS84Coords(e.getValue().toString()));
                     } else if (e.getName().equals(StatusEvent.MEASUREMENT_INFOS)) {
-                        // lblStatus.setText(e.getValue().toString());
+                        // do nothing
                     } else if (e.getName().equals(StatusEvent.MAPPING_MODE)) {
-                        // lblStatus.setText("");                                                              // NOI18N
+                        // do nothing                                                          // NOI18N
                     } else if (e.getName().equals(StatusEvent.OBJECT_INFOS)) {
-//                        if ((e.getValue() != null) && (e.getValue() instanceof PFeature)
-//                                    && (((PFeature)e.getValue()).getFeature() != null)
-//                                    && (((PFeature)e.getValue()).getFeature() instanceof XStyledFeature)) {
-//                            lblStatus.setText(((XStyledFeature)((PFeature)e.getValue()).getFeature()).getName());
-//                            final ImageIcon ico = ((XStyledFeature)((PFeature)e.getValue()).getFeature())
-//                                        .getIconImage();
-//                            if ((ico != null) && (ico.getIconWidth() > 0) && (ico.getIconHeight() > 0)) {
-//                                final BufferedImage imageToScale = new BufferedImage(ico.getIconWidth(),
-//                                        ico.getIconHeight(),
-//                                        BufferedImage.TYPE_INT_ARGB);
-//                                final Graphics g = imageToScale.createGraphics();
-//                                g.drawImage(ico.getImage(), 0, 0, ico.getImageObserver());
-//                                g.dispose();
-//                                lblStatusImage.setIcon(new ImageIcon(
-//                                        Static2DTools.getFasterScaledInstance(
-//                                            imageToScale,
-//                                            lblStatusImage.getWidth(),
-//                                            lblStatusImage.getHeight(),
-//                                            RenderingHints.VALUE_INTERPOLATION_BILINEAR,
-//                                            true)));
-//                            } else {
-//                                lblStatusImage.setIcon(defaultIcon);
-//                            }
-//                        } else if ((e.getValue() != null) && (e.getValue() instanceof PFeature)
-//                                    && (((PFeature)e.getValue()).getFeature() != null)
-//                                    && (((PFeature)e.getValue()).getFeature() instanceof DefaultFeatureServiceFeature)) {
-//                            if (
-//                                ((DefaultFeatureServiceFeature)((PFeature)e.getValue()).getFeature())
-//                                        .getSecondaryAnnotation()
-//                                        != null) {
-//                                lblStatus.setText(((DefaultFeatureServiceFeature)((PFeature)e.getValue()).getFeature())
-//                                            .getSecondaryAnnotation());
-//                            } else {
-//                                lblStatus.setText("");                                                      // NOI18N
-//                            }
-//                        } else {
-//                            lblStatus.setText("");                                                          // NOI18N
-//                            lblStatusImage.setIcon(defaultIcon);
-//                        }
+                        // do nothing
                     } else if (e.getName().equals(StatusEvent.SCALE)) {
                         final int sd = (int)(mappingComponent.getScaleDenominator() + 0.5);
                         if (developerMode) {
@@ -355,189 +319,35 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
                         lblCrs.setText(((Crs)e.getValue()).getShortname());
                         lblCoordinates.setToolTipText(((Crs)e.getValue()).getShortname());
                     } else if (e.getName().equals(StatusEvent.RETRIEVAL_STARTED)) {
-//                        if ((pnlServicesStatus.getComponentCount() > 0)
-//                                    && !pnlServicesStatus.getComponent(0).equals(servicesBusyPanel)) {
-//                            pnlServicesStatus.removeAll();
-//                            pnlServicesStatus.add(servicesBusyPanel, BorderLayout.CENTER);
-//                            pnlServicesStatus.revalidate();
-//                            pnlServicesStatus.repaint();
-//                        }
+                        // do nothing
                     } else if (e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED)
                                 || e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)
                                 || e.getName().equals(StatusEvent.RETRIEVAL_REMOVED)) {
-//                        if (servicesCounter == 0) {
-//                            pnlServicesStatus.removeAll();
-//                            if (servicesErroneousCounter == 0) {
-//                                pnlServicesStatus.add(servicesRetrievedPanel, BorderLayout.CENTER);
-//                            } else {
-//                                pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
-//                            }
-//                            pnlServicesStatus.revalidate();
-//                            pnlServicesStatus.repaint();
-//                        }
+                        //do nothing
                     } else if (e.getName().equals(StatusEvent.RETRIEVAL_ERROR)) {
-//                        if ((pnlServicesStatus.getComponentCount() > 0)
-//                                    && !pnlServicesStatus.getComponent(0).equals(servicesErrorPanel)) {
-//                            pnlServicesStatus.removeAll();
-//                            pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
-//                            pnlServicesStatus.revalidate();
-//                            pnlServicesStatus.repaint();
-//                        }
+                        //do nothing
                     } else if (e.getName().equals(StatusEvent.MAP_EXTEND_FIXED)) {
-//                        if (e.getValue() instanceof Boolean) {
-//                            pnlFixMapExtent.removeAll();
-//                            if ((Boolean)e.getValue()) {
-//                                pnlFixMapExtent.add(mapExtentFixedPanel, BorderLayout.CENTER);
-//                            } else {
-//                                pnlFixMapExtent.add(mapExtentUnfixedPanel, BorderLayout.CENTER);
-//                            }
-//                            pnlFixMapExtent.revalidate();
-//                            pnlFixMapExtent.repaint();
-//                        }
+                        //do nothing
                     } else if (e.getName().equals(StatusEvent.MAP_SCALE_FIXED)) {
-//                        if (e.getValue() instanceof Boolean) {
-//                            pnlFixMapScale.removeAll();
-//                            if ((Boolean)e.getValue()) {
-//                                pnlFixMapScale.add(mapScaleFixedPanel, BorderLayout.CENTER);
-//                            } else {
-//                                pnlFixMapScale.add(mapScaleUnfixedPanel, BorderLayout.CENTER);
-//                            }
-//                            pnlFixMapScale.revalidate();
-//                            pnlFixMapScale.repaint();
-//                        }
+                        //do nothing
                     }
                 }
             };
 
         if (e.getName().equals(StatusEvent.MAPPING_MODE)) {
-            // mode = ((String)e.getValue());
+            //do nothing
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_STARTED)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Entered RETRIEVAL_STARTED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-//            if (e.getValue() instanceof ServiceLayer) {
-//                final ServiceLayer service = (ServiceLayer)e.getValue();
-//                if (erroneousServices.contains(service)) {
-//                    erroneousServices.remove(service);
-//                    servicesErroneousCounter--;
-//                }
-//                if (!services.contains(service)) {
-//                    services.add(service);
-//                    servicesCounter++;
-//                }
-//            }
-
-//            if (LOG.isDebugEnabled()) {
-//                LOG.debug("RETRIEVAL_STARTED (" + e.getValue() + ", " + System.currentTimeMillis()
-//                            + ") - services started: " + servicesCounter + ", erroneous services: "
-//                            + servicesErroneousCounter);
-//            }
+            //do nothing
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED)) {
-//            if (LOG.isDebugEnabled()) {
-//                LOG.debug("Entered RETRIEVAL_COMPLETED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-//            }
-//
-//            if (e.getValue() instanceof ServiceLayer) {
-//                final ServiceLayer service = (ServiceLayer)e.getValue();
-//                if (services.contains(service)) {
-//                    services.remove(service);
-//                    servicesCounter--;
-//                }
-//            }
-
-//            if (log.isDebugEnabled()) {
-//                log.debug("RETRIEVAL_COMPLETED (" + e.getValue() + ", " + System.currentTimeMillis()
-//                            + ") - services started: " + servicesCounter + ", erroneous services: "
-//                            + servicesErroneousCounter);
-//            }
+            //do nothing
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)) {
-//            if (log.isDebugEnabled()) {
-//                log.debug("Entered RETRIEVAL_ABORTED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-//            }
-//
-//            if (e.getValue() instanceof ServiceLayer) {
-//                final ServiceLayer service = (ServiceLayer)e.getValue();
-//                if (services.contains(service)) {
-//                    services.remove(service);
-//                    servicesCounter--;
-//                }
-//            }
-
-//            if (log.isDebugEnabled()) {
-//                log.debug("RETRIEVAL_ABORTED (" + e.getValue() + ", " + System.currentTimeMillis()
-//                            + ") - services started: " + servicesCounter + ", erroneous services: "
-//                            + servicesErroneousCounter);
-//            }
+            //do nothing
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_ERROR)) {
-//            if (log.isDebugEnabled()) {
-//                log.debug("Entered RETRIEVAL_ERROR: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-//            }
-//
-//            if (e.getValue() instanceof ServiceLayer) {
-//                final ServiceLayer service = (ServiceLayer)e.getValue();
-//                if (services.contains(service)) {
-//                    services.remove(service);
-//                    servicesCounter--;
-//                    erroneousServices.add(service);
-//                    servicesErroneousCounter++;
-//                }
-//            }
-//
-//            if (log.isDebugEnabled()) {
-//                log.debug("RETRIEVAL_ERROR (" + e.getValue() + ", " + System.currentTimeMillis()
-//                            + ") - services started: " + servicesCounter + ", erroneous services: "
-//                            + servicesErroneousCounter);
-//            }
+            //do nothing
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_REMOVED)) {
-//            if (log.isDebugEnabled()) {
-//                log.debug("Entered RETRIEVAL_REMOVED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-//            }
-//
-//            if (e.getValue() instanceof ServiceLayer) {
-//                final ServiceLayer service = (ServiceLayer)e.getValue();
-//                if (services.contains(service)) {
-//                    services.remove(service);
-//                    servicesCounter--;
-//                }
-//                if (erroneousServices.contains(service)) {
-//                    erroneousServices.remove(service);
-//                    servicesErroneousCounter--;
-//                }
-//            }
-//
-//            if (log.isDebugEnabled()) {
-//                log.debug("RETRIEVAL_REMOVED (" + e.getValue() + ", " + System.currentTimeMillis()
-//                            + ") - services started: " + servicesCounter + ", erroneous services: "
-//                            + servicesErroneousCounter);
-//            }
+            //do nothing
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_RESET)) {
-//            if (log.isDebugEnabled()) {
-//                log.debug("Entered RETRIEVAL_RESET: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-//            }
-//
-//            if (e.getValue() instanceof ServiceLayer) {
-//                final ServiceLayer service = (ServiceLayer)e.getValue();
-//                if (services.contains(service)) {
-//                    services.remove(service);
-//                    servicesCounter--;
-//                }
-//                if (erroneousServices.contains(service)) {
-//                    erroneousServices.remove(service);
-//                    servicesErroneousCounter--;
-//                }
-//            }
-//
-//            services.clear();
-//            erroneousServices.clear();
-//            servicesCounter = 0;
-//            servicesErroneousCounter = 0;
-//
-//            if (log.isDebugEnabled()) {
-//                log.debug("RETRIEVAL_RESET (" + e.getValue() + ", " + System.currentTimeMillis()
-//                            + ") - services started: " + servicesCounter + ", erroneous services: "
-//                            + servicesErroneousCounter);
-//            }
+            //do nothing
         }
 
         if (EventQueue.isDispatchThread()) {

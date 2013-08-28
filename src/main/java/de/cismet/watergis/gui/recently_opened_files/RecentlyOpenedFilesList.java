@@ -25,7 +25,8 @@ import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.NoWriteError;
 
 /**
- * A List which manages the last opened files. The last used file is on the first position in the list. A maximal amount of files can be set. 
+ * A List which manages the last opened files. The last used file is on the first position in the list. A maximal amount
+ * of files can be set.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
@@ -44,7 +45,8 @@ public class RecentlyOpenedFilesList implements Configurable {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * Add a file on the first position of the List. If too many files are in the list (more than maxAmount), then the oldest files will be removed from the list.
+     * Add a file on the first position of the List. If too many files are in the list (more than maxAmount), then the
+     * oldest files will be removed from the list.
      *
      * @param  file  added to the first position of the list
      */
@@ -59,7 +61,7 @@ public class RecentlyOpenedFilesList implements Configurable {
     }
 
     /**
-     * Returns the list with the files, the last opened file is on the first position. 
+     * Returns the list with the files, the last opened file is on the first position.
      *
      * @return  list with the files
      */
@@ -128,7 +130,7 @@ public class RecentlyOpenedFilesList implements Configurable {
     /**
      * Set the maximal amount of files, which will be managed by the list.
      *
-     * @param  maxAmount   maximal amount of files
+     * @param  maxAmount  maximal amount of files
      */
     public void setMaxAmount(final int maxAmount) {
         this.maxAmount = maxAmount;
