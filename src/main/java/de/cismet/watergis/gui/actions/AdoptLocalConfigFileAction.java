@@ -26,12 +26,16 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.tools.configuration.ConfigurationManager;
 
 import de.cismet.watergis.broker.AppBroker;
+import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 /**
- * DOCUMENT ME!
+ * An Action, which adopts a local configuration file, with the help of the ConfigurationManager.
+ * Notifies the RecentlyOpenedFilesList, the a new file was loaded.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
+ * @see RecentlyOpenedFilesList
+ * @see ConfigurationManager
  */
 public class AdoptLocalConfigFileAction extends AbstractAction {
 
@@ -44,7 +48,7 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
     /**
      * Creates a new AdoptLocalConfigFileAction object.
      *
-     * @param  file  DOCUMENT ME!
+     * @param  file  the will which will be loaded by the ConfigurationManager
      */
     public AdoptLocalConfigFileAction(final File file) {
         final String tooltip = org.openide.util.NbBundle.getMessage(

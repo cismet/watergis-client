@@ -13,8 +13,6 @@ package de.cismet.watergis.gui.recently_opened_files;
 
 import org.apache.commons.io.FilenameUtils;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import java.io.File;
 
@@ -31,7 +29,7 @@ import de.cismet.watergis.gui.actions.AdoptLocalConfigFileAction;
 import de.cismet.watergis.gui.actions.LocalConfigAction;
 
 /**
- * DOCUMENT ME!
+ * A menu which shows the recently opened files
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$

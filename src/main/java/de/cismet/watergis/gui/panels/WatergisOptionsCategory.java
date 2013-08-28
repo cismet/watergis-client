@@ -7,16 +7,17 @@
 ****************************************************/
 package de.cismet.watergis.gui.panels;
 
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+
+import java.awt.Image;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import de.cismet.lookupoptions.AbstractOptionsCategory;
 import de.cismet.lookupoptions.OptionsCategory;
-import java.awt.Image;
-import org.openide.util.ImageUtilities;
 
 /**
  * DOCUMENT ME!
