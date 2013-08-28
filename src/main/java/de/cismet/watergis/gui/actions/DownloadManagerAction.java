@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 
 import org.openide.util.NbBundle;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import java.net.URL;
@@ -24,13 +23,13 @@ import java.util.MissingResourceException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
+import javax.swing.KeyStroke;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
-import javax.swing.KeyStroke;
 
 /**
  * DOCUMENT ME!

@@ -52,6 +52,8 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
+import de.cismet.lookupoptions.gui.OptionsClient;
+
 import de.cismet.tools.StaticDebuggingTools;
 
 import de.cismet.tools.configuration.Configurable;
@@ -256,6 +258,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         addWindowListener(this);
         configManager.addConfigurable(this);
         configManager.configure(this);
+        configManager.addConfigurable(OptionsClient.getInstance());
+        configManager.configure(OptionsClient.getInstance());
         AppBroker.setConfigManager(configManager);
         initComponents();
         initMapModes();
