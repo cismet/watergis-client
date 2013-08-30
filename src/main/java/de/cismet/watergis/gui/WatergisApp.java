@@ -531,7 +531,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdMeasure = new javax.swing.JButton();
         cmdPresentation = new javax.swing.JButton();
         panMain = new javax.swing.JPanel();
-        statusBar1 = new StatusBar(mappingComponent);
+        statusBar1 = new de.cismet.watergis.gui.panels.StatusBar();
         jMenuBar1 = new javax.swing.JMenuBar();
         menFile = new javax.swing.JMenu();
         mniOpenProject = new javax.swing.JMenuItem();
