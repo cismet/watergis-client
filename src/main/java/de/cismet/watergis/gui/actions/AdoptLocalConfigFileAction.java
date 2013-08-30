@@ -78,6 +78,7 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
             // activeLayers.removeAllLayers();
             mappingComponent.getRasterServiceLayer().removeAllChildren();
             configurationManager.configure(filename + ".xml"); // NOI18N
+            file.renameTo(new File(file.getName() + ".xml"));
         }
         AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);
     }
