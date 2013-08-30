@@ -161,7 +161,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private String infoURL;
     private boolean isInit = true;
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private de.cismet.watergis.gui.actions.AddBookmarkAction addBookmarkAction1;
+    private de.cismet.watergis.gui.actions.ShowCreateBookmarkDialogAction addBookmarkAction1;
     private javax.swing.ButtonGroup btnGroupMapMode;
     private de.cismet.watergis.gui.actions.CentralConfigAction centralConfigAction1;
     private de.cismet.watergis.gui.actions.CloseAction closeAction1;
@@ -535,7 +535,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         optionsAction1 = new de.cismet.watergis.gui.actions.OptionsAction();
         printAction1 = new de.cismet.watergis.gui.actions.PrintAction();
         saveProjectAction1 = new de.cismet.watergis.gui.actions.SaveProjectAction();
-        addBookmarkAction1 = new de.cismet.watergis.gui.actions.AddBookmarkAction();
+        addBookmarkAction1 = new de.cismet.watergis.gui.actions.ShowCreateBookmarkDialogAction();
         manageBookmarksAction1 = new de.cismet.watergis.gui.actions.ManageBookmarksAction();
         windowAction1 = new de.cismet.watergis.gui.actions.WindowAction();
         createGeoLinkAction1 = new de.cismet.watergis.gui.actions.map.CreateGeoLinkAction();
