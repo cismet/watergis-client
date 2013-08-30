@@ -14,7 +14,7 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.SaveProjectAction" name="saveProjectAction1">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.AddBookmarkAction" name="addBookmarkAction1">
+    <Component class="de.cismet.watergis.gui.actions.ShowCreateBookmarkDialogAction" name="addBookmarkAction1">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.ManageBookmarksAction" name="manageBookmarksAction1">
     </Component>

@@ -19,7 +19,13 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.cids.tools.StaticCidsUtilities;
+
+import de.cismet.tools.gui.StaticSwingTools;
+
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.gui.dialog.CreateBookmarkDialog;
 
 /**
  * DOCUMENT ME!
@@ -27,26 +33,26 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class AddBookmarkAction extends AbstractAction {
+public class ShowCreateBookmarkDialogAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(AddBookmarkAction.class);
+    private static final Logger LOG = Logger.getLogger(ShowCreateBookmarkDialogAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new CloseAction object.
      */
-    public AddBookmarkAction() {
+    public ShowCreateBookmarkDialogAction() {
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                AddBookmarkAction.class,
+                ShowCreateBookmarkDialogAction.class,
                 "AddBookmarkAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
-        final String text = org.openide.util.NbBundle.getMessage(AddBookmarkAction.class, "AddBookmarkAction.text");
+        final String text = org.openide.util.NbBundle.getMessage(ShowCreateBookmarkDialogAction.class, "AddBookmarkAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
-                AddBookmarkAction.class,
+                ShowCreateBookmarkDialogAction.class,
                 "AddBookmarkAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
@@ -58,11 +64,14 @@ public class AddBookmarkAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        final CreateBookmarkDialog createBookmarkDialog = new CreateBookmarkDialog(AppBroker.getInstance()
+                        .getWatergisApp(),
+                true);
+        StaticSwingTools.showDialog(AppBroker.getInstance().getWatergisApp(), createBookmarkDialog, true);
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
