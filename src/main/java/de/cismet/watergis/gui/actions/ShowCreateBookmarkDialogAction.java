@@ -49,7 +49,9 @@ public class ShowCreateBookmarkDialogAction extends AbstractAction {
                 ShowCreateBookmarkDialogAction.class,
                 "AddBookmarkAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
-        final String text = org.openide.util.NbBundle.getMessage(ShowCreateBookmarkDialogAction.class, "AddBookmarkAction.text");
+        final String text = org.openide.util.NbBundle.getMessage(
+                ShowCreateBookmarkDialogAction.class,
+                "AddBookmarkAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
                 ShowCreateBookmarkDialogAction.class,
