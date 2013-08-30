@@ -31,7 +31,7 @@ public class ManageBookmarksAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(AddBookmarkAction.class);
+    private static final Logger LOG = Logger.getLogger(ShowCreateBookmarkDialogAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
@@ -40,13 +40,15 @@ public class ManageBookmarksAction extends AbstractAction {
      */
     public ManageBookmarksAction() {
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                AddBookmarkAction.class,
+                ShowCreateBookmarkDialogAction.class,
                 "ManageBookmarksAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
-        final String text = org.openide.util.NbBundle.getMessage(AddBookmarkAction.class, "ManageBookmarksAction.text");
+        final String text = org.openide.util.NbBundle.getMessage(
+                ShowCreateBookmarkDialogAction.class,
+                "ManageBookmarksAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
-                AddBookmarkAction.class,
+                ShowCreateBookmarkDialogAction.class,
                 "ManageBookmarksAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
