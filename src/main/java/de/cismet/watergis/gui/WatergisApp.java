@@ -11,6 +11,10 @@
  */
 package de.cismet.watergis.gui;
 
+import Sirius.navigator.ui.ComponentRegistry;
+import Sirius.navigator.ui.GUIContainer;
+import Sirius.navigator.ui.MutableConstraints;
+
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
 import net.infonode.docking.DockingWindow;
@@ -45,11 +49,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import java.util.HashMap;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableListener;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
+import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.lookupoptions.gui.OptionsClient;
@@ -120,22 +131,22 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private Integer httpInterfacePort = 9098;
 
     private RootWindow rootWindow;
+    private TabWindow tabWindow;
     private StringViewMap viewMap = new StringViewMap();
+    private HashMap<String, View> attributeTableMap = new HashMap<String, View>();
     // Configurable
     private Dimension windowSize = null;
     private Point windowLocation = null;
     // Panels
     private MapPanel pMap;
-    private TopicTreePanel pTopicTree;
+    private ThemeLayerWidget pTopicTree;
     private InfoPanel pInfo;
     private SelectionPanel pSelection;
-    private TablePanel pTable;
     // Views
     private View vMap;
     private View vTopicTree;
     private View vInfo;
     private View vSelection;
-    private View vTable;
     private MappingComponent mappingComponent;
     private ActiveLayerModel mappingModel = new ActiveLayerModel();
 
@@ -266,6 +277,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         initComponents();
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
+        initAttributeTable();
 
         initDefaultPanels();
         initDocking();
@@ -353,16 +365,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      */
     private void initDefaultPanels() {
         pMap = new MapPanel();
-        pTopicTree = new TopicTreePanel();
+        pTopicTree = new ThemeLayerWidget();
         pInfo = new InfoPanel();
         pSelection = new SelectionPanel();
-        pTable = new TablePanel();
+        pTopicTree.setMappingModel(mappingModel);
 
         AppBroker.getInstance().addComponent(ComponentName.MAP, pMap);
         AppBroker.getInstance().addComponent(ComponentName.TREE, pTopicTree);
         AppBroker.getInstance().addComponent(ComponentName.INFO, pInfo);
         AppBroker.getInstance().addComponent(ComponentName.SELECTION, pSelection);
-        AppBroker.getInstance().addComponent(ComponentName.TABLE, pTable);
 
         AppBroker.getInstance().addComponent(ComponentName.STATUSBAR, statusBar1);
         // mappingComponent.getFeatureCollection().addFeatureCollectionListener(statusBar1);
@@ -405,8 +416,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         viewMap.addView(title, vSelection);
 
         title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Table");
-        vTable = new View(title, null, pTable);
-        viewMap.addView(title, vTable);
 
         rootWindow = DockingUtil.createRootWindow(viewMap, true);
         AppBroker.getInstance().setRootWindow(rootWindow);
@@ -444,9 +453,41 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     /**
      * DOCUMENT ME!
      */
+    private void initAttributeTable() {
+        AttributeTableFactory.getInstance().setMappingComponent(mappingComponent);
+        AttributeTableFactory.getInstance().setAttributeTableListener(new AttributeTableListener() {
+
+                @Override
+                public void showPanel(final JPanel panel, final String id, final String name, final String tooltip) {
+                    View view = attributeTableMap.get(id);
+
+                    if (view != null) {
+                        final int viewIndex = tabWindow.getChildWindowIndex(view);
+
+                        if (viewIndex != -1) {
+                            tabWindow.setSelectedTab(viewIndex);
+                        } else {
+                            view = new View(name, null, panel);
+                            viewMap.addView(name, view);
+                            attributeTableMap.put(id, view);
+                            tabWindow.addTab(view);
+                        }
+                    } else {
+                        view = new View(name, null, panel);
+                        viewMap.addView(name, view);
+                        attributeTableMap.put(id, view);
+                        tabWindow.addTab(view);
+                    }
+                }
+            });
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
     public void doLayoutInfoNode() {
-        final TabWindow tab = new TabWindow(new DockingWindow[] { vMap, vInfo, vSelection, vTable });
-        rootWindow.setWindow(new SplitWindow(true, 0.22901994f, vTopicTree, tab));
+        tabWindow = new TabWindow(new DockingWindow[] { vMap, vInfo, vSelection });
+        rootWindow.setWindow(new SplitWindow(true, 0.22901994f, vTopicTree, tabWindow));
         vMap.restoreFocus();
     }
 
