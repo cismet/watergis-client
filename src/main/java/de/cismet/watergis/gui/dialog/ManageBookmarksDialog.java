@@ -20,17 +20,19 @@ package de.cismet.watergis.gui.dialog;
 public class ManageBookmarksDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnShowInMap;
+    private de.cismet.watergis.gui.actions.bookmarks.DeleteBookmarkAction deleteBookmarkAction;
     private javax.swing.Box.Filler filler1;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel lblDescription;
+    private javax.swing.JLabel lblName;
+    private javax.swing.JList lstBookmarks;
+    private de.cismet.watergis.gui.actions.bookmarks.ShowBookmarkInMapAction showBookmarkInMapAction;
+    private javax.swing.JTextField txtName;
+    private javax.swing.JTextArea txtaDescription;
     // End of variables declaration//GEN-END:variables
 
     //~ Constructors -----------------------------------------------------------
@@ -57,17 +59,21 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        showBookmarkInMapAction = new de.cismet.watergis.gui.actions.bookmarks.ShowBookmarkInMapAction();
+        deleteBookmarkAction = new de.cismet.watergis.gui.actions.bookmarks.DeleteBookmarkAction();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
-        jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        lstBookmarks = new javax.swing.JList();
+        lblName = new javax.swing.JLabel();
+        txtName = new javax.swing.JTextField();
+        lblDescription = new javax.swing.JLabel();
+        btnShowInMap = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        txtaDescription = new javax.swing.JTextArea();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0),
+                new java.awt.Dimension(0, 0),
+                new java.awt.Dimension(32767, 0));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.title")); // NOI18N
@@ -75,8 +81,8 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(7, 7, 7, 7));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jList1.setMaximumSize(new java.awt.Dimension(32767, 32767));
-        jScrollPane1.setViewportView(jList1);
+        lstBookmarks.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        jScrollPane1.setViewportView(lstBookmarks);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -88,15 +94,19 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(1, 0, 3, 0);
         jPanel1.add(jScrollPane1, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.jLabel1.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblName,
+            org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.lblName.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 4, 2);
-        jPanel1.add(jLabel1, gridBagConstraints);
+        jPanel1.add(lblName, gridBagConstraints);
 
-        jTextField1.setText(org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.jTextField1.text")); // NOI18N
+        txtName.setText(org.openide.util.NbBundle.getMessage(
+                ManageBookmarksDialog.class,
+                "ManageBookmarksDialog.txtName.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -104,37 +114,41 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 4, 0);
-        jPanel1.add(jTextField1, gridBagConstraints);
+        jPanel1.add(txtName, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.jLabel2.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblDescription,
+            org.openide.util.NbBundle.getMessage(
+                ManageBookmarksDialog.class,
+                "ManageBookmarksDialog.lblDescription.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 4, 2);
-        jPanel1.add(jLabel2, gridBagConstraints);
+        jPanel1.add(lblDescription, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.jButton1.text")); // NOI18N
+        btnShowInMap.setAction(showBookmarkInMapAction);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 4);
-        jPanel1.add(jButton1, gridBagConstraints);
+        jPanel1.add(btnShowInMap, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jButton2, org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.jButton2.text")); // NOI18N
+        btnDelete.setAction(deleteBookmarkAction);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(3, 4, 0, 0);
-        jPanel1.add(jButton2, gridBagConstraints);
+        jPanel1.add(btnDelete, gridBagConstraints);
 
         jScrollPane2.setPreferredSize(new java.awt.Dimension(258, 125));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setPreferredSize(new java.awt.Dimension(250, 120));
-        jScrollPane2.setViewportView(jTextArea1);
+        txtaDescription.setColumns(20);
+        txtaDescription.setRows(5);
+        txtaDescription.setPreferredSize(new java.awt.Dimension(250, 120));
+        jScrollPane2.setViewportView(txtaDescription);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -157,7 +171,7 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
