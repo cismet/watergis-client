@@ -80,6 +80,7 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
             configurationManager.configure(filename + ".xml"); // NOI18N
             file.renameTo(new File(file.getName() + ".xml"));
         }
+        AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
         AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);
     }
 
