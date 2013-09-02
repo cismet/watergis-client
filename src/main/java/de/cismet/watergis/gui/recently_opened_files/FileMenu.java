@@ -44,6 +44,7 @@ import de.cismet.tools.configuration.NoWriteError;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.AdoptLocalConfigFileAction;
+import de.cismet.watergis.gui.actions.AdoptServerConfigFileAction;
 
 /**
  * Filemenu is the "File"-Menu in the menubar of the WatergisApp. The static menu items can be added to the menu via the
@@ -176,21 +177,8 @@ public class FileMenu extends JMenu implements Configurable {
             final String complexDescriptionSwitch = next.getAttributeValue("complexdescr"); // NOI18N
 
             final JMenuItem serverProfileMenuItem = new JMenuItem();
+            serverProfileMenuItem.setAction(new AdoptServerConfigFileAction(path));
             serverProfileMenuItem.setText(name);
-            serverProfileMenuItem.addActionListener(new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(final ActionEvent e) {
-                        try {
-                            final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
-                            ((ActiveLayerModel)mappingComponent.getMappingModel()).removeAllLayers();
-                            AppBroker.getConfigManager().configureFromClasspath(path, null);
-                            AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
-                        } catch (Throwable ex) {
-                            LOG.fatal("No ServerProfile", ex); // NOI18N
-                        }
-                    }
-                });
             serverProfileMenuItem.setName("ServerProfile:" + sorter + ":" + name); // NOI18N
 
             if ((complexDescriptionSwitch != null) && complexDescriptionSwitch.equalsIgnoreCase("true") // NOI18N
