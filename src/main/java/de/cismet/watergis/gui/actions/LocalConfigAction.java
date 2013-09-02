@@ -36,7 +36,7 @@ public class LocalConfigAction extends AbstractAction {
     //~ Constructors -----------------------------------------------------------
 
     /**
-     * Creates a new CloseAction object.
+     * Creates a new LocalConfigAction object.
      */
     public LocalConfigAction() {
         final String tooltip = org.openide.util.NbBundle.getMessage(

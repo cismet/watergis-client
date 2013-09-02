@@ -59,7 +59,9 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0),
+                new java.awt.Dimension(0, 0),
+                new java.awt.Dimension(32767, 0));
         pnlCoordinates = new javax.swing.JPanel();
         lblCoordinates = new javax.swing.JLabel();
 
@@ -67,10 +69,12 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
         setMinimumSize(new java.awt.Dimension(200, 20));
         setPreferredSize(new java.awt.Dimension(500, 20));
         addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                formMouseClicked(evt);
-            }
-        });
+
+                @Override
+                public void mouseClicked(final java.awt.event.MouseEvent evt) {
+                    formMouseClicked(evt);
+                }
+            });
         setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -81,7 +85,9 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
 
         pnlCoordinates.setLayout(new java.awt.BorderLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(lblCoordinates, org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblCoordinates.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblCoordinates,
+            org.openide.util.NbBundle.getMessage(StatusBar.class, "StatusBar.lblCoordinates.text")); // NOI18N
         pnlCoordinates.add(lblCoordinates, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -89,14 +95,14 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         add(pnlCoordinates, gridBagConstraints);
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void formMouseClicked(final java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+    private void formMouseClicked(final java.awt.event.MouseEvent evt) { //GEN-FIRST:event_formMouseClicked
         if (evt.getClickCount() > 1) {
             if (!CismapBroker.getInstance().getMappingComponent().isInternalLayerWidgetVisible()) {
                 CismapBroker.getInstance().getMappingComponent().showInternalLayerWidget(true, 300);
@@ -104,7 +110,7 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
                 CismapBroker.getInstance().getMappingComponent().showInternalLayerWidget(false, 150);
             }
         }
-    }//GEN-LAST:event_formMouseClicked
+    }                                                                    //GEN-LAST:event_formMouseClicked
 
     /**
      * DOCUMENT ME!
