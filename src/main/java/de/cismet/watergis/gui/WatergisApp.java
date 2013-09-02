@@ -26,6 +26,7 @@ import net.infonode.docking.util.DockingUtil;
 import net.infonode.docking.util.PropertiesUtil;
 import net.infonode.docking.util.StringViewMap;
 import net.infonode.gui.componentpainter.AlphaGradientComponentPainter;
+import net.infonode.util.Direction;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -34,26 +35,27 @@ import org.apache.log4j.Logger;
 
 import org.jdom.Element;
 
+import org.openide.util.Exceptions;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
@@ -76,11 +78,9 @@ import de.cismet.watergis.broker.ComponentName;
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
-import de.cismet.watergis.gui.panels.StatusBar;
 import de.cismet.watergis.gui.panels.TablePanel;
 import de.cismet.watergis.gui.panels.TopicTreePanel;
 import de.cismet.watergis.gui.recently_opened_files.FileMenu;
-import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFileMenu;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 import de.cismet.watergis.server.GeoLinkServer;
@@ -149,6 +149,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
     private String helpURL;
     private String infoURL;
+    private boolean isInit = true;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.watergis.gui.actions.AddBookmarkAction addBookmarkAction1;
     private javax.swing.ButtonGroup btnGroupMapMode;
@@ -274,10 +275,27 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         initDocking();
         initInfoNode();
         configureFileMenu();
-        doLayoutInfoNode();
+        if (!EventQueue.isDispatchThread()) {
+            try {
+                EventQueue.invokeAndWait(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            loadLayout(FILEPATH_DEFAULT_LAYOUT);
+                        }
+                    });
+            } catch (InterruptedException ex) {
+                LOG.fatal("Problem during loading layout.", ex);
+            } catch (InvocationTargetException ex) {
+                LOG.fatal("Problem during loading layout.", ex);
+            }
+        } else {
+            loadLayout(FILEPATH_DEFAULT_LAYOUT);
+        }
         if (!StaticDebuggingTools.checkHomeForFile("cismetTurnOffInternalWebserver")) { // NOI18N
             initHttpServer();
         }
+        isInit = false;
         panMain.add(rootWindow, BorderLayout.CENTER);
         setWindowSize();
         mappingComponent.unlock();
@@ -1210,6 +1228,82 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 title,
                 JOptionPane.INFORMATION_MESSAGE);
             LOG.error("A failure occured during writing the layout file " + file, ex);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  file  DOCUMENT ME!
+     */
+    public void loadLayout(final String file) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Load Layout.. from " + file);
+        }
+        final File layoutFile = new File(file);
+
+        if (layoutFile.exists()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Layout File exists");
+            }
+            try {
+                final FileInputStream layoutInput = new FileInputStream(layoutFile);
+                final ObjectInputStream in = new ObjectInputStream(layoutInput);
+                rootWindow.read(in);
+                in.close();
+                rootWindow.getWindowBar(Direction.LEFT).setEnabled(true);
+                rootWindow.getWindowBar(Direction.RIGHT).setEnabled(true);
+                if (isInit) {
+                    final int count = viewMap.getViewCount();
+                    for (int i = 0; i < count; i++) {
+                        final View current = viewMap.getViewAtIndex(i);
+                        if (current.isUndocked()) {
+                            current.dock();
+                        }
+                    }
+                }
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Loading Layout successfull");
+                }
+            } catch (IOException ex) {
+                LOG.error("Layout File IO Exception --> loading default Layout", ex);
+                if (isInit) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "W\u00E4hrend dem Laden des Layouts ist ein Fehler aufgetreten.\n Das Layout wird zur\u00FCckgesetzt.",
+                        "Fehler",
+                        JOptionPane.INFORMATION_MESSAGE);
+                    doLayoutInfoNode();
+                } else {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "W\u00E4hrend dem Laden des Layouts ist ein Fehler aufgetreten.\n Das Layout wird zur\u00FCckgesetzt.",
+                        "Fehler",
+                        JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        } else {
+            if (isInit) {
+                LOG.warn("Datei exitstiert nicht --> default layout (init)");
+                SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            // UGLY WINNING --> Gefixed durch IDW Version 1.5
+                            // setupDefaultLayout();
+                            // DeveloperUtil.createWindowLayoutFrame("nach setup1",rootWindow).setVisible(true);
+                            doLayoutInfoNode();
+                            // DeveloperUtil.createWindowLayoutFrame("nach setup2",rootWindow).setVisible(true);
+                        }
+                    });
+            } else {
+                LOG.warn("Datei exitstiert nicht)");
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Das angegebene Layout konnte nicht gefunden werden.",
+                    "Fehler",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
         }
     }
 
