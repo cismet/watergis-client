@@ -11,6 +11,7 @@
  */
 package de.cismet.watergis.gui.actions;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
@@ -121,6 +122,10 @@ public class OpenProjectAction extends AbstractAction {
         if (state == JFileChooser.APPROVE_OPTION) {
             final File file = fc.getSelectedFile();
             new AdoptLocalConfigFileAction(file).adoptConfigFile();
+
+            final String filePath = file.getAbsolutePath();
+            final String layoutPath = FilenameUtils.getBaseName(filePath) + FilenameUtils.getBaseName(filePath)
+                        + ".layout";
         }
     }
 }

@@ -11,16 +11,23 @@
  */
 package de.cismet.watergis.gui.actions;
 
+import net.infonode.docking.RootWindow;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
@@ -28,7 +35,11 @@ import de.cismet.cismap.commons.RestrictedFileSystemView;
 
 import de.cismet.cismap.navigatorplugin.CismapPlugin;
 
+import de.cismet.tools.CurrentStackTrace;
+
 import de.cismet.tools.configuration.ConfigurationManager;
+
+import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -121,16 +132,19 @@ public class SaveProjectAction extends AbstractAction {
 
         final ConfigurationManager configurationManager = AppBroker.getConfigManager();
         if (state == JFileChooser.APPROVE_OPTION) {
-            final File file = fc.getSelectedFile();
-            final String name = file.getAbsolutePath();
+            File file = fc.getSelectedFile();
+            String name = file.getAbsolutePath();
 
-            if (name.endsWith(".xml")) {                                // NOI18N
-                configurationManager.writeConfiguration(name);
-            } else {
-                configurationManager.writeConfiguration(name + ".xml"); // NOI18N
-                file.renameTo(new File(file.getName() + ".xml"));
+            if (!name.endsWith(".xml")) { // NOI18N
+                file = new File(file.getName() + ".xml");
+                name = name + ".xml";
             }
+
+            configurationManager.writeConfiguration(name);
             AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);
+
+            final String layoutPath = FilenameUtils.getFullPath(name) + FilenameUtils.getBaseName(name) + ".layout";
+            AppBroker.getInstance().getWatergisApp().saveLayout(layoutPath);
         }
     }
 }
