@@ -69,9 +69,8 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(CreateBookmarkDialog.class, "CreateBookmarkDialog.title")); // NOI18N
-        setResizable(false);
-        getContentPane().setLayout(new java.awt.GridBagLayout());
 
+        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(7, 7, 7, 7));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -90,6 +89,7 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 0);
         jPanel1.add(txtName, gridBagConstraints);
 
@@ -128,7 +128,7 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
         jScrollPane1.setPreferredSize(new java.awt.Dimension(253, 138));
 
         txtaDescription.setColumns(20);
-        txtaDescription.setRows(8);
+        txtaDescription.setRows(5);
         txtaDescription.setTabSize(4);
         txtaDescription.setMinimumSize(new java.awt.Dimension(220, 75));
         txtaDescription.setPreferredSize(new java.awt.Dimension(250, 120));
@@ -139,6 +139,9 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.gridheight = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(4, 2, 3, 0);
         jPanel1.add(jScrollPane1, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -150,9 +153,7 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(1, 0, 1, 0);
         jPanel1.add(filler1, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(7, 7, 7, 7);
-        getContentPane().add(jPanel1, gridBagConstraints);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
     } // </editor-fold>//GEN-END:initComponents

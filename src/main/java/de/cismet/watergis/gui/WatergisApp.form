@@ -14,10 +14,6 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.SaveProjectAction" name="saveProjectAction1">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.ShowCreateBookmarkDialogAction" name="addBookmarkAction1">
-    </Component>
-    <Component class="de.cismet.watergis.gui.actions.ManageBookmarksAction" name="manageBookmarksAction1">
-    </Component>
     <Component class="de.cismet.watergis.gui.actions.WindowAction" name="windowAction1">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.map.CreateGeoLinkAction" name="createGeoLinkAction1">
@@ -79,6 +75,10 @@
     <Component class="javax.swing.ButtonGroup" name="btnGroupMapMode">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.DownloadManagerAction" name="downloadManagerAction1">
+    </Component>
+    <Component class="de.cismet.watergis.gui.actions.ShowManageBookmarksDialogAction" name="showManageBookmarksDialogAction1">
+    </Component>
+    <Component class="de.cismet.watergis.gui.actions.ShowCreateBookmarkDialogAction" name="showCreateBookmarkDialogAction1">
     </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
@@ -176,14 +176,14 @@
             <MenuItem class="javax.swing.JMenuItem" name="mniCreateBookmark">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="addBookmarkAction1"/>
+                  <ComponentRef name="showCreateBookmarkDialogAction1"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniManageBookmarks">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="manageBookmarksAction1"/>
+                  <ComponentRef name="showManageBookmarksDialogAction1"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -419,7 +419,7 @@
         <Component class="javax.swing.JButton" name="cmdAddBookmark">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="addBookmarkAction1"/>
+              <ComponentRef name="showCreateBookmarkDialogAction1"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -439,7 +439,7 @@
         <Component class="javax.swing.JButton" name="cmdManageBookmarks">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="manageBookmarksAction1"/>
+              <ComponentRef name="showManageBookmarksDialogAction1"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
