@@ -249,8 +249,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JPopupMenu.Separator sepCentralFilesEnd;
     private javax.swing.JPopupMenu.Separator sepCentralFilesStart;
     private javax.swing.JPopupMenu.Separator sepLocalFilesEnd;
-    private de.cismet.watergis.gui.actions.ShowCreateBookmarkDialogAction showCreateBookmarkDialogAction;
-    private de.cismet.watergis.gui.actions.ShowManageBookmarksDialogAction showManageBookmarksDialogAction;
+    private de.cismet.watergis.gui.actions.bookmarks.ShowCreateBookmarkDialogAction showCreateBookmarkDialogAction;
+    private de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction showManageBookmarksDialogAction;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
     private de.cismet.watergis.gui.actions.TableAction tableAction;
     private javax.swing.JToggleButton tbtnPanMode;
@@ -567,8 +567,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         selectionModeAction = new de.cismet.watergis.gui.actions.map.SelectionModeAction();
         btnGroupMapMode = new javax.swing.ButtonGroup();
         downloadManagerAction = new de.cismet.watergis.gui.actions.DownloadManagerAction();
-        showManageBookmarksDialogAction = new de.cismet.watergis.gui.actions.ShowManageBookmarksDialogAction();
-        showCreateBookmarkDialogAction = new de.cismet.watergis.gui.actions.ShowCreateBookmarkDialogAction();
+        showManageBookmarksDialogAction =
+            new de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction();
+        showCreateBookmarkDialogAction = new de.cismet.watergis.gui.actions.bookmarks.ShowCreateBookmarkDialogAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
