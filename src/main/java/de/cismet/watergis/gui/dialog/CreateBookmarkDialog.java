@@ -22,6 +22,7 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnCreate;
+    private de.cismet.watergis.gui.actions.bookmarks.CreateBookmarkAction createBookmarkAction;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -55,6 +56,7 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        createBookmarkAction = new de.cismet.watergis.gui.actions.bookmarks.CreateBookmarkAction();
         jPanel1 = new javax.swing.JPanel();
         lblName = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
@@ -115,9 +117,7 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 3);
         jPanel1.add(btnCancel, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(
-            btnCreate,
-            org.openide.util.NbBundle.getMessage(CreateBookmarkDialog.class, "CreateBookmarkDialog.btnCreate.text")); // NOI18N
+        btnCreate.setAction(createBookmarkAction);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
