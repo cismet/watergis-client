@@ -14,15 +14,15 @@
         <home default="true" srs="EPSG:35833" metric="true">
             <BoundingBox x1="33206890" y1="5890624" x2="33460858" y2="6060841" />
         </home>
+        <Position CRS="EPSG:35833">
+            <BoundingBox x1="3.3184695056179777E7" y1="5890624.0" x2="3.3483052943820227E7" y2="6060841.0" srs="EPSG:35833" metric="true" />
+        </Position>
         <crsList>
-            <crs shortname="ETRS89 MV -35833 " name="ETRS89 MV - 35833" code="EPSG:35833" metric="true" selected="true"/>
-            <crs shortname="ETRS89 Zone 33 - 5650" name="ETRS89  Zone 33 - 5650" code="EPSG:5650" metric="true" selected="false"/>
-            <crs shortname="WGS 84 - 4326" name="WGS 84 - 4326" code="EPSG:4326" metric="false" selected="false"/>
+            <crs shortname="ETRS89 Zone 33 - 5650" name="ETRS89  Zone 33 - 5650" code="EPSG:5650" metric="true" selected="false" />
+            <crs shortname="WGS 84 - 4326" name="WGS 84 - 4326" code="EPSG:4326" metric="false" selected="false" />
+            <crs shortname="ETRS89 MV" name="ETRS89 MV" code="EPSG:35833" metric="true" selected="true" />
         </crsList>
         <defaultCrs geometrySridAlias="-1"/>
-        <Position>
-            <BoundingBox x1="33206890.6290955" y1="5890624.1889224" x2="33460856.7310355" y2="6060840.0968643"/>
-        </Position>
         <printing>
             <scale selected="false" denominator="0">frei</scale>
             <scale selected="false" denominator="-1">Benutzerdefiniert</scale>
@@ -45,7 +45,7 @@
     <!--TODO Verbessern anständiges Format erstellen-->
 
 
-    <cismapActiveLayerConfiguration>        
+    <cismapActiveLayerConfiguration>
         <Layers>
             <WMSServiceLayer name="Digitale Orthophotos (40 cm)" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
                 <capabilities type="OGC" active="false"><![CDATA[http://www.geodaten-mv.de/dienste/adv_dop?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]>
