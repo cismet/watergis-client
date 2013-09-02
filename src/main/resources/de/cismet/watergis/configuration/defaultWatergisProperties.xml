@@ -11,16 +11,17 @@
         <httpInterfacePort>9097</httpInterfacePort>
     </ports>    
     <cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
-        <home default="false" srs="EPSG:4326" metric="false">
-            <BoundingBox x1="-180.0" y1="-90.0" x2="180.0" y2="90.0" />
+        <home default="true" srs="EPSG:35833" metric="true">
+            <BoundingBox x1="33206890" y1="5890624" x2="33460858" y2="6060841" />
         </home>
-        <home default="true" srs="EPSG:31466" metric="true">
-            <!--<BoundingBox x1="2566470.0" y1="5673088.0" x2="2597175.0" y2="5686286.0" />-->
-            <BoundingBox x1=" 2584473.0" y1=" 5682858.0" x2="2584869.0" y2="5683078.0" />            
-        </home>
+        <crsList>
+            <crs shortname="ETRS89 MV -35833 " name="ETRS89 MV - 35833" code="EPSG:35833" metric="true" selected="true"/>
+            <crs shortname="ETRS89 Zone 33 - 5650" name="ETRS89  Zone 33 - 5650" code="EPSG:5650" metric="true" selected="false"/>
+            <crs shortname="WGS 84 - 4326" name="WGS 84 - 4326" code="EPSG:4326" metric="false" selected="false"/>
+        </crsList>
+        <defaultCrs geometrySridAlias="-1"/>
         <Position>
-            <!--<BoundingBox x1="2579494.723086932" y1="5675637.802734375" x2="2579672.13726463" y2="5675724.306640625" />-->
-            <BoundingBox x1=" 2584473.0" y1=" 5682858.0" x2="2584869.0" y2="5683078.0" />
+            <BoundingBox x1="33206890.6290955" y1="5890624.1889224" x2="33460856.7310355" y2="6060840.0968643"/>
         </Position>
         <printing>
             <scale selected="false" denominator="0">frei</scale>
@@ -45,10 +46,21 @@
 
 
     <cismapActiveLayerConfiguration>        
-        <Layers>   
-            <WMSServiceLayer name="Stadtplanreihe farbig" title="" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-                <capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-                <wmsLayer name="R102:stadtplan2007" title="Stadtplanreihe farbig" enabled="true" style="default" info="false" />
+        <Layers>
+            <WMSServiceLayer name="Digitale Orthophotos (40 cm)" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
+                <capabilities type="OGC" active="false"><![CDATA[http://www.geodaten-mv.de/dienste/adv_dop?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilities>
+                <wmsLayer name="mv_dop" enabled="true" info="false" />
+            </WMSServiceLayer>
+            <WMSServiceLayer name="Topo MV" visible="true" enabled="true" translucency="0.47" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
+                <capabilities type="OGC" active="false"><![CDATA[http://www.geodaten-mv.de/dienste/gdimv_topomv?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilities>
+                <wmsLayer name="gdimv_topomv" enabled="true" info="false" />
+                <wmsLayer name="topomv_bg" enabled="true" info="false" />
+                <wmsLayer name="topomv_sied" enabled="true" info="false" />
+                <wmsLayer name="topomv_veg" enabled="true" info="false" />
+                <wmsLayer name="topomv_wasser" enabled="true" info="false" />
+                <wmsLayer name="topomv_grenzen" enabled="true" info="false" />
+                <wmsLayer name="topomv_trans" enabled="true" info="false" />
+                <wmsLayer name="topomv_text" enabled="true" info="false" />
             </WMSServiceLayer>
         </Layers>
     </cismapActiveLayerConfiguration>

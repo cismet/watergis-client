@@ -4,13 +4,20 @@
 		<window height="794" width="984" x="202" y="60" max="false" />
 	</cismapPluginUIPreferences>
 	<cismapCapabilitiesPreferences>
-		<capabilities type="OGC" active="true"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
+		<capabilities type="OGC" active="true"><![CDATA[http://www.geodaten-mv.de/dienste/adv_dop?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilities>
 	</cismapCapabilitiesPreferences>
 	<cismapWFSFormsPreferences />
 	<cismapMappingPreferences interactionMode="PAN" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
-		<Position>
-			<BoundingBox x1="2578180.645700829" y1="5674390.664334072" x2="2579085.9763914286" y2="5675003.995877041" />
-		</Position>
+        <home default="true" srs="EPSG:35833" metric="true">
+            <BoundingBox x1="33206890" y1="5890624" x2="33460858" y2="6060841" />
+        </home> 
+        <defaultCrs geometrySridAlias="-1"/>
+<Position CRS="EPSG:35833">
+      <BoundingBox x1="3.3274906946093455E7" y1="5898878.000753331" x2="3.3294127426686216E7" y2="5912330.057158704" srs="EPSG:35833" metric="true" />
+    </Position>
+	    <crsList>
+	      <crs shortname="EPSG:35833" name="EPSG:35833" code="EPSG:35833" metric="true" selected="true" />
+	    </crsList>
 		<printing>
 			<scale selected="true" denominator="0">frei</scale>
 			<scale selected="false" denominator="-1">Benutzerdefiniert</scale>
@@ -40,30 +47,10 @@
 	</cismapMappingPreferences>
 	<cismapActiveLayerConfiguration>
 		<Layers>
-		      <WMSServiceLayer name="Stadtplanreihe farbig" title="" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-			<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-			<wmsLayer name="R102:stadtplan2007" title="Stadtplanreihe farbig" enabled="true" style="default" info="false" />
+		      <WMSServiceLayer name="Digitale Orthophotos (Grafik)" title="" visible="true" enabled="true" translucency="0.34" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
+			<capabilities type="OGC" active="false"><![CDATA[http://www.geodaten-mv.de/dienste/adv_dop?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilities>
+			<wmsLayer name="mv_dop" title="Digitale Orthophotos (Grafik)" enabled="true" style="default" info="false" />
 		      </WMSServiceLayer>
-<!--			<WMSServiceLayer name="Wuppertaler Orthofoto 2002" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-				<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-				<wmsLayer name="R102:luftbild2002" enabled="true" style="default" info="false" />
-			</WMSServiceLayer>
-			<WMSServiceLayer name="Digitale Grundkarte (grau)" visible="true" enabled="true" translucency="0.61" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-				<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-				<wmsLayer name="R102:DGK:grau" enabled="true" style="default" info="false" />
-			</WMSServiceLayer>
-			<WMSServiceLayer name="Stadtgrundkarte Hausnummern" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-				<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-				<wmsLayer name="R102:stadtgrundkarte_hausnr" enabled="true" style="default" info="false" />
-			</WMSServiceLayer>
-			<WMSServiceLayer name="Stadtgrenze" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-				<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-				<wmsLayer name="admin:stadtgrenze" enabled="true" style="default" info="false" />
-			</WMSServiceLayer>
-			<WMSServiceLayer name="DGK- und DGK5-Gitternetz" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-				<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-				<wmsLayer name="admin:kartenraster" enabled="true" style="default" info="false" />
-			</WMSServiceLayer>-->
 		</Layers>
 	</cismapActiveLayerConfiguration>
 	<cismapFeatureControl showOnlyObjectsInMap="false" fixedMapExtent="false" fixedMapScale="false" displayObjectInfo="false" holdAll="false" sortedColumn="Name" ascendingSortOrder="true">
