@@ -1,82 +1,83 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <cismetConfigurationManager>
-	<cismapPluginUIPreferences>
-		<window height="794" width="984" x="202" y="60" max="false" />
-	</cismapPluginUIPreferences>
-	<cismapCapabilitiesPreferences>
-		<capabilities type="OGC" active="true"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-	</cismapCapabilitiesPreferences>
-	<cismapWFSFormsPreferences />
-	<cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
-		<Position>
-			<BoundingBox x1="2583621.251964098" y1="5682488.877014957" x2="2584022.9413952776" y2="5682761.008293812" />
-		</Position>
-		<printing>
-			<scale selected="true" denominator="0">frei</scale>
-			<scale selected="false" denominator="-1">Benutzerdefiniert</scale>
-			<scale selected="false" denominator="250">1:250</scale>
-			<scale selected="false" denominator="500">1:500</scale>
-			<scale selected="false" denominator="750">1:750</scale>
-			<scale selected="false" denominator="1000">1:1000</scale>
-			<scale selected="false" denominator="1500">1:1500</scale>
-			<scale selected="false" denominator="2000">1:2000</scale>
-			<scale selected="false" denominator="2500">1:2500</scale>
-			<scale selected="false" denominator="5000">1:5000</scale>
-			<scale selected="false" denominator="7500">1:7500</scale>
-			<scale selected="false" denominator="10000">1:10000</scale>
-			<scale selected="false" denominator="15000">1:15000</scale>
-			<resolution selected="false" dpi="72">72 dpi  (PDF ca. 0,5MB bei DIN A4)</resolution>
-			<resolution selected="true" dpi="100">100 dpi (PDF ca. 1,0MB bei DIN A4)</resolution>
-			<resolution selected="false" dpi="150">150 dpi (PDF ca. 2,0MB bei DIN A4)</resolution>
-			<resolution selected="false" dpi="300">300 dpi (PDF ca. 4,0MB bei DIN A4)</resolution>
-			<template selected="true" title="Standard DIN-A4 hochkant" file="/A4H.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="508" mapHeight="699" scaleDenominatorPlaceholder="scale" />
-			<template selected="false" title="Standard DIN-A4 quer" file="/A4Q.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="751" mapHeight="483" scaleDenominatorPlaceholder="scale" />
-			<template selected="false" title="Standard DIN-A3 hochkant" file="/A3H.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="751" mapHeight="1049" scaleDenominatorPlaceholder="scale" />
-			<template selected="false" title="Standard DIN-A3 quer" file="/A3Q.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="1104" mapHeight="699" scaleDenominatorPlaceholder="scale" />
-			<action selected="false" id="print">Drucken</action>
-			<action selected="false" id="printpreview">Druckvorschau</action>
-			<action selected="true" id="pdf">PDF anzeigen</action>
-		</printing>
-	</cismapMappingPreferences>
-	<cismapActiveLayerConfiguration>
-		<Layers>
-			<WMSServiceLayer name="Digitale Grundkarte (farbig)" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-				<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-				<wmsLayer name="R102:DGK:farbig" enabled="true" style="default" info="false" />
-			</WMSServiceLayer>
-			<WMSServiceLayer name="Stadtgrundkarte Hausnummern" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-				<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-				<wmsLayer name="R102:stadtgrundkarte_hausnr" enabled="true" style="default" info="false" />
-			</WMSServiceLayer>
-			<WMSServiceLayer name="Stadtgrenze" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-				<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-				<wmsLayer name="admin:stadtgrenze" enabled="true" style="default" info="false" />
-			</WMSServiceLayer>
-			<WMSServiceLayer name="DGK- und DGK5-Gitternetz" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-				<capabilities type="OGC" active="false"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]></capabilities>
-				<wmsLayer name="admin:kartenraster" enabled="true" style="default" info="false" />
-			</WMSServiceLayer>
-		</Layers>
-	</cismapActiveLayerConfiguration>
-	<cismapFeatureControl showOnlyObjectsInMap="false" fixedMapExtent="false" fixedMapScale="false" displayObjectInfo="false" holdAll="false" sortedColumn="Name" ascendingSortOrder="true">
-		<columnSequence>
-			<id>Ico</id>
-			<id>Name</id>
-			<id>Typ</id>
-			<id>Geometrie</id>
-			<id>Zentrum</id>
-			<id>Halten</id>
-			<id>Grš§e</id>
-			<id>LŠnge</id>
-		</columnSequence>
-		<column title="Ico" identifier="Ico" visible="true" width="83" />
-		<column title="Name" identifier="Name" visible="true" width="83" />
-		<column title="Typ" identifier="Typ" visible="true" width="82" />
-		<column title="Geometrie" identifier="Geometrie" visible="true" width="84" />
-		<column title="Zentrum" identifier="Zentrum" visible="true" width="83" />
-		<column title="Halten" identifier="Halten" visible="true" width="84" />
-		<column title="Grš§e" identifier="Grš§e" visible="true" width="76" />
-		<column title="LŠnge" identifier="LŠnge" visible="true" width="75" />
-	</cismapFeatureControl>
+    <cismapPluginUIPreferences>
+        <window height="794" width="984" x="202" y="60" max="false" />
+    </cismapPluginUIPreferences>
+    <cismapCapabilitiesPreferences>
+        <capabilities type="OGC" active="true"><![CDATA[http://geoportal.wuppertal.de:8083/deegree/wms?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities&]]>
+        </capabilities>
+    </cismapCapabilitiesPreferences>
+    <cismapWFSFormsPreferences />
+    <cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
+        <home default="true" srs="EPSG:35833" metric="true">
+            <BoundingBox x1="33206890" y1="5890624" x2="33460858" y2="6060841" />
+        </home> 
+        <defaultCrs geometrySridAlias="-1"/>
+        <Position CRS="EPSG:35833">
+            <BoundingBox x1="3.3274906946093455E7" y1="5898878.000753331" x2="3.3294127426686216E7" y2="5912330.057158704" srs="EPSG:35833" metric="true" />
+        </Position>
+        <printing>
+            <scale selected="true" denominator="0">frei</scale>
+            <scale selected="false" denominator="-1">Benutzerdefiniert</scale>
+            <scale selected="false" denominator="250">1:250</scale>
+            <scale selected="false" denominator="500">1:500</scale>
+            <scale selected="false" denominator="750">1:750</scale>
+            <scale selected="false" denominator="1000">1:1000</scale>
+            <scale selected="false" denominator="1500">1:1500</scale>
+            <scale selected="false" denominator="2000">1:2000</scale>
+            <scale selected="false" denominator="2500">1:2500</scale>
+            <scale selected="false" denominator="5000">1:5000</scale>
+            <scale selected="false" denominator="7500">1:7500</scale>
+            <scale selected="false" denominator="10000">1:10000</scale>
+            <scale selected="false" denominator="15000">1:15000</scale>
+            <resolution selected="false" dpi="72">72 dpi  (PDF ca. 0,5MB bei DIN A4)</resolution>
+            <resolution selected="true" dpi="100">100 dpi (PDF ca. 1,0MB bei DIN A4)</resolution>
+            <resolution selected="false" dpi="150">150 dpi (PDF ca. 2,0MB bei DIN A4)</resolution>
+            <resolution selected="false" dpi="300">300 dpi (PDF ca. 4,0MB bei DIN A4)</resolution>
+            <template selected="true" title="Standard DIN-A4 hochkant" file="/A4H.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="508" mapHeight="699" scaleDenominatorPlaceholder="scale" />
+            <template selected="false" title="Standard DIN-A4 quer" file="/A4Q.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="751" mapHeight="483" scaleDenominatorPlaceholder="scale" />
+            <template selected="false" title="Standard DIN-A3 hochkant" file="/A3H.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="751" mapHeight="1049" scaleDenominatorPlaceholder="scale" />
+            <template selected="false" title="Standard DIN-A3 quer" file="/A3Q.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="1104" mapHeight="699" scaleDenominatorPlaceholder="scale" />
+            <action selected="false" id="print">Drucken</action>
+            <action selected="false" id="printpreview">Druckvorschau</action>
+            <action selected="true" id="pdf">PDF anzeigen</action>
+        </printing>
+    </cismapMappingPreferences>
+    <cismapActiveLayerConfiguration>
+        <Layers>
+            <WMSServiceLayer name="Digitale Topographische Karten" title="" visible="true" enabled="true" translucency="0.71" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
+                <capabilities type="OGC" active="false"><![CDATA[http://www.geodaten-mv.de/dienste/gdimv_dtk?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]>
+                </capabilities>
+                <wmsLayer name="gdimv_dtk" title="Digitale Topographische Karten" enabled="true" info="false" />
+                <wmsLayer name="adv_dtk10" title="DTK10" enabled="true" style="farbig" info="false" />
+                <wmsLayer name="adv_dtk25" title="DTK25" enabled="true" style="farbig" info="false" />
+                <wmsLayer name="adv_dtk50" title="DTK50" enabled="true" style="farbig" info="false" />
+                <wmsLayer name="adv_dtk100" title="DTK100" enabled="true" style="farbig" info="false" />
+                <wmsLayer name="gdimv_uek250" title="UEK250" enabled="true" style="farbig" info="false" />
+                <wmsLayer name="gdimv_uek750" title="UEK750" enabled="true" style="farbig" info="false" />
+                <wmsLayer name="gdimv_uek1000" title="UEK1000" enabled="true" style="farbig" info="false" />
+            </WMSServiceLayer>
+        </Layers>
+    </cismapActiveLayerConfiguration>
+    <cismapFeatureControl showOnlyObjectsInMap="false" fixedMapExtent="false" fixedMapScale="false" displayObjectInfo="false" holdAll="false" sortedColumn="Name" ascendingSortOrder="true">
+        <columnSequence>
+            <id>Ico</id>
+            <id>Name</id>
+            <id>Typ</id>
+            <id>Geometrie</id>
+            <id>Zentrum</id>
+            <id>Halten</id>
+            <id>Grš§e</id>
+            <id>LŠnge</id>
+        </columnSequence>
+        <column title="Ico" identifier="Ico" visible="true" width="83" />
+        <column title="Name" identifier="Name" visible="true" width="83" />
+        <column title="Typ" identifier="Typ" visible="true" width="82" />
+        <column title="Geometrie" identifier="Geometrie" visible="true" width="84" />
+        <column title="Zentrum" identifier="Zentrum" visible="true" width="83" />
+        <column title="Halten" identifier="Halten" visible="true" width="84" />
+        <column title="Grš§e" identifier="Grš§e" visible="true" width="76" />
+        <column title="LŠnge" identifier="LŠnge" visible="true" width="75" />
+    </cismapFeatureControl>
 </cismetConfigurationManager>
 
