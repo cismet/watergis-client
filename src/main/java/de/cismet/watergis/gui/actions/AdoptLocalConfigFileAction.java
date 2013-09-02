@@ -49,7 +49,7 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
     /**
      * Creates a new AdoptLocalConfigFileAction object.
      *
-     * @param  file  the will which will be loaded by the ConfigurationManager
+     * @param  file  the file which will be loaded by the ConfigurationManager
      */
     public AdoptLocalConfigFileAction(final File file) {
         final String tooltip = org.openide.util.NbBundle.getMessage(
