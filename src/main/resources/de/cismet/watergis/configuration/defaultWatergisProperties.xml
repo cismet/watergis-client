@@ -52,4 +52,31 @@
             </WMSServiceLayer>
         </Layers>
     </cismapActiveLayerConfiguration>
+    
+        <serverProfiles>
+        <profile id="dgk"
+                 sorter="100"
+                 name="Digitale Grundkarte (DGK)"
+                 descr="Die digitale Grundkarte mit ein paar schönen Zusatzlayern:-"
+                 descrwidth="80"
+                 path="/serverprofiles/dgkpublic.xml"
+                 icon="/serverprofiles/default.png"/>
+        <profile id="aerial"
+                 sorter="020"
+                 name="Luftbildkarte"
+                 descr="Luftbild, DGK grau"
+                 path="/serverprofiles/aerialpublic.xml"
+                 icon="/serverprofiles/default.png"/>
+        <profile id="city"
+                 sorter="030"
+                 name="Stadtplan"
+                 path="/serverprofiles/citymappublic.xml"
+                 icon="/serverprofiles/default.png"
+                 complexdescr="true">
+            <![CDATA[
+            <html>Cool Description<br><img src="http://asset-2.kenai.com/attachments/images/person/thorsten_hell_small.jpg"/></html>
+                ]]>
+        </profile>
+
+    </serverProfiles>
 </watergis>
