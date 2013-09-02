@@ -9,7 +9,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.watergis.gui.actions;
+package de.cismet.watergis.gui.actions.bookmarks;
 
 import org.apache.log4j.Logger;
 
@@ -19,11 +19,13 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.cids.tools.StaticCidsUtilities;
+
 import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.dialog.ManageBookmarksDialog;
+import de.cismet.watergis.gui.dialog.CreateBookmarkDialog;
 
 /**
  * DOCUMENT ME!
@@ -31,32 +33,32 @@ import de.cismet.watergis.gui.dialog.ManageBookmarksDialog;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class ShowManageBookmarksDialogAction extends AbstractAction {
+public class ShowCreateBookmarkDialogAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(ShowManageBookmarksDialogAction.class);
+    private static final Logger LOG = Logger.getLogger(ShowCreateBookmarkDialogAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new CloseAction object.
      */
-    public ShowManageBookmarksDialogAction() {
+    public ShowCreateBookmarkDialogAction() {
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                ShowManageBookmarksDialogAction.class,
-                "ShowManageBookmarksDialogAction.toolTipText");
+                ShowCreateBookmarkDialogAction.class,
+                "ShowCreateBookmarkDialogAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(
-                ShowManageBookmarksDialogAction.class,
-                "ShowManageBookmarksDialogAction.text");
+                ShowCreateBookmarkDialogAction.class,
+                "ShowCreateBookmarkDialogAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
-                ShowManageBookmarksDialogAction.class,
-                "ShowManageBookmarksDialogAction.mnemonic");
+                ShowCreateBookmarkDialogAction.class,
+                "ShowCreateBookmarkDialogAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-bookmark.png"));
+                    "/de/cismet/watergis/res/icons16/icon-bookmarkfour.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -64,10 +66,10 @@ public class ShowManageBookmarksDialogAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        final ManageBookmarksDialog manageBookmarksAction = new ManageBookmarksDialog(AppBroker.getInstance()
+        final CreateBookmarkDialog createBookmarkDialog = new CreateBookmarkDialog(AppBroker.getInstance()
                         .getWatergisApp(),
                 true);
-        StaticSwingTools.showDialog(AppBroker.getInstance().getWatergisApp(), manageBookmarksAction, true);
+        StaticSwingTools.showDialog(AppBroker.getInstance().getWatergisApp(), createBookmarkDialog, true);
     }
 
     @Override

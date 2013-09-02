@@ -76,9 +76,9 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.DownloadManagerAction" name="downloadManagerAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.ShowManageBookmarksDialogAction" name="showManageBookmarksDialogAction">
+    <Component class="de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction" name="showManageBookmarksDialogAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.ShowCreateBookmarkDialogAction" name="showCreateBookmarkDialogAction">
+    <Component class="de.cismet.watergis.gui.actions.bookmarks.ShowCreateBookmarkDialogAction" name="showCreateBookmarkDialogAction">
     </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>

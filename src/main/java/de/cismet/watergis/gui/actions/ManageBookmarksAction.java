@@ -21,6 +21,8 @@ import javax.swing.KeyStroke;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.actions.bookmarks.ShowCreateBookmarkDialogAction;
+
 /**
  * DOCUMENT ME!
  *
