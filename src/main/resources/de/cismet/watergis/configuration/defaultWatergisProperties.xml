@@ -48,11 +48,13 @@
     <cismapActiveLayerConfiguration>        
         <Layers>
             <WMSServiceLayer name="Digitale Orthophotos (40 cm)" visible="true" enabled="true" translucency="1.0" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-                <capabilities type="OGC" active="false"><![CDATA[http://www.geodaten-mv.de/dienste/adv_dop?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilities>
+                <capabilities type="OGC" active="false"><![CDATA[http://www.geodaten-mv.de/dienste/adv_dop?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]>
+                </capabilities>
                 <wmsLayer name="mv_dop" enabled="true" info="false" />
             </WMSServiceLayer>
             <WMSServiceLayer name="Topo MV" visible="true" enabled="true" translucency="0.47" bgColor="0xF0F0F0" imageFormat="image/png" exceptionFormat="application/vnd.ogc.se_xml">
-                <capabilities type="OGC" active="false"><![CDATA[http://www.geodaten-mv.de/dienste/gdimv_topomv?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilities>
+                <capabilities type="OGC" active="false"><![CDATA[http://www.geodaten-mv.de/dienste/gdimv_topomv?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]>
+                </capabilities>
                 <wmsLayer name="gdimv_topomv" enabled="true" info="false" />
                 <wmsLayer name="topomv_bg" enabled="true" info="false" />
                 <wmsLayer name="topomv_sied" enabled="true" info="false" />
@@ -65,11 +67,10 @@
         </Layers>
     </cismapActiveLayerConfiguration>
     
-        <serverProfiles>
+    <serverProfiles>
         <profile id="dgk"
                  sorter="100"
                  name="Digitale Topographische Karte"
-                 descrwidth="80"
                  path="/de/cismet/watergis/serverprofiles/dgkpublic.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"/>
         <profile id="aerial"
@@ -82,12 +83,6 @@
                  sorter="030"
                  name="Neubrandenburg"
                  path="/de/cismet/watergis/serverprofiles/citymappublic.xml"
-                 icon="/de/cismet/watergis/serverprofiles/default.png"
-                 complexdescr="true">
-            <![CDATA[
-            <html>Cool Description<br><img src="http://asset-2.kenai.com/attachments/images/person/thorsten_hell_small.jpg"/></html>
-                ]]>
-        </profile>
-
+                 icon="/de/cismet/watergis/serverprofiles/default.png"/>
     </serverProfiles>
 </watergis>
