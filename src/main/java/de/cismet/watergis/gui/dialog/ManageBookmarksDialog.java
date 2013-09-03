@@ -21,6 +21,7 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.bookmarks.DeleteBookmarkAction;
 import de.cismet.watergis.gui.actions.bookmarks.ZoomBookmarkInMapAction;
+import java.awt.Color;
 
 /**
  * DOCUMENT ME!
@@ -93,33 +94,27 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         btnDelete = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtaDescription = new javax.swing.JTextArea();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0),
-                new java.awt.Dimension(0, 0),
-                new java.awt.Dimension(32767, 0));
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         btnZoom = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.title")); // NOI18N
         setPreferredSize(new java.awt.Dimension(471, 441));
         addWindowListener(new java.awt.event.WindowAdapter() {
-
-                @Override
-                public void windowOpened(final java.awt.event.WindowEvent evt) {
-                    formWindowOpened(evt);
-                }
-            });
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(7, 7, 7, 7));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         lstBookmarks.setMaximumSize(new java.awt.Dimension(32767, 32767));
         lstBookmarks.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-
-                @Override
-                public void valueChanged(final javax.swing.event.ListSelectionEvent evt) {
-                    lstBookmarksValueChanged(evt);
-                }
-            });
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstBookmarksValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(lstBookmarks);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -132,9 +127,7 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(1, 0, 3, 0);
         jPanel1.add(jScrollPane1, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(
-            lblName,
-            org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.lblName.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(lblName, org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.lblName.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -142,9 +135,7 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 4, 2);
         jPanel1.add(lblName, gridBagConstraints);
 
-        txtName.setText(org.openide.util.NbBundle.getMessage(
-                ManageBookmarksDialog.class,
-                "ManageBookmarksDialog.txtName.text")); // NOI18N
+        txtName.setText(org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.txtName.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -154,11 +145,7 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 4, 0);
         jPanel1.add(txtName, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(
-            lblDescription,
-            org.openide.util.NbBundle.getMessage(
-                ManageBookmarksDialog.class,
-                "ManageBookmarksDialog.lblDescription.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(lblDescription, org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.lblDescription.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -217,27 +204,27 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
-    } // </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void formWindowOpened(final java.awt.event.WindowEvent evt) { //GEN-FIRST:event_formWindowOpened
+    private void formWindowOpened(final java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         final DefaultListModel<Bookmark> model = new DefaultListModel<Bookmark>();
         for (final Bookmark b : AppBroker.getInstance().getBookmarkManager().getBookmarks()) {
             model.addElement(b);
         }
         lstBookmarks.setModel(model);
-    }                                                                     //GEN-LAST:event_formWindowOpened
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void lstBookmarksValueChanged(final javax.swing.event.ListSelectionEvent evt) { //GEN-FIRST:event_lstBookmarksValueChanged
+    private void lstBookmarksValueChanged(final javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstBookmarksValueChanged
         final Bookmark bookmark = (Bookmark)lstBookmarks.getSelectedValue();
         if (bookmark != null) {
             txtName.setText(bookmark.getName());
@@ -250,7 +237,7 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
             enableComponents(false);
             addDocumentListeners();
         }
-    }                                                                                       //GEN-LAST:event_lstBookmarksValueChanged
+    }//GEN-LAST:event_lstBookmarksValueChanged
 
     /**
      * DOCUMENT ME!
@@ -298,7 +285,14 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
      */
     private void updateBookMarkName() {
         final Bookmark bookmark = (Bookmark)lstBookmarks.getSelectedValue();
-        bookmark.setName(txtName.getText());
+        String bookmarkName = txtName.getText().trim();
+        if(bookmarkName == null || bookmarkName.equals("")){
+            txtName.setBackground(Color.red);
+        } else {
+            bookmark.setName(txtName.getText());
+            txtName.setBackground(Color.white);
+        }
+
     }
 
     /**
