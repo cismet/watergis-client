@@ -23,7 +23,7 @@ import de.cismet.cids.dynamics.CidsBean;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class Bookmark extends CidsBean {
+public class Bookmark extends CidsBean implements Comparable<Bookmark> {
 
     //~ Instance fields --------------------------------------------------------
 
@@ -102,23 +102,28 @@ public class Bookmark extends CidsBean {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Bookmark other = (Bookmark) obj;
-        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+        final Bookmark other = (Bookmark)obj;
+        if ((this.name == null) ? (other.name != null) : (!this.name.equals(other.name))) {
             return false;
         }
-        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+        if ((this.description == null) ? (other.description != null) : (!this.description.equals(other.description))) {
             return false;
         }
-        if (this.geometry != other.geometry && (this.geometry == null || !this.geometry.equals(other.geometry))) {
+        if ((this.geometry != other.geometry) && ((this.geometry == null) || !this.geometry.equals(other.geometry))) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(final Bookmark o) {
+        return this.name.compareTo(o.name);
     }
 }
