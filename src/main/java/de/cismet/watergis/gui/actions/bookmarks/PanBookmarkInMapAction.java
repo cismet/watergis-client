@@ -83,7 +83,7 @@ public class PanBookmarkInMapAction extends AbstractAction {
         final Geometry geom = bookmark.getGeometry();
         final XBoundingBox xbox = new XBoundingBox(geom);
         AppBroker.getInstance().getMappingComponent().gotoBoundingBox(xbox, true, false, 500);
-        
+
         manageBookmarksDialog.dispose();
     }
 

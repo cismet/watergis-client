@@ -83,7 +83,7 @@ public class ZoomBookmarkInMapAction extends AbstractAction {
         final Geometry geom = bookmark.getGeometry();
         final XBoundingBox xbox = new XBoundingBox(geom);
         AppBroker.getInstance().getMappingComponent().gotoBoundingBox(xbox, true, true, 500);
-        
+
         manageBookmarksDialog.dispose();
     }
 
