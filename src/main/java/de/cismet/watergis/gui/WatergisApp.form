@@ -2,83 +2,83 @@
 
 <Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
-    <Component class="de.cismet.watergis.gui.actions.map.ExportMapAction" name="exportMapAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.ExportMapAction" name="exportMapAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.CloseAction" name="closeAction1">
+    <Component class="de.cismet.watergis.gui.actions.CloseAction" name="closeAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.OpenProjectAction" name="openProjectAction1">
+    <Component class="de.cismet.watergis.gui.actions.OpenProjectAction" name="openProjectAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.OptionsAction" name="optionsAction1">
+    <Component class="de.cismet.watergis.gui.actions.OptionsAction" name="optionsAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.PrintAction" name="printAction1">
+    <Component class="de.cismet.watergis.gui.actions.PrintAction" name="printAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.SaveProjectAction" name="saveProjectAction1">
+    <Component class="de.cismet.watergis.gui.actions.SaveProjectAction" name="saveProjectAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.AddBookmarkAction" name="addBookmarkAction1">
+    <Component class="de.cismet.watergis.gui.actions.WindowAction" name="windowAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.ManageBookmarksAction" name="manageBookmarksAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.CreateGeoLinkAction" name="createGeoLinkAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.WindowAction" name="windowAction1">
+    <Component class="de.cismet.watergis.gui.actions.selection.SelectionAttributeAction" name="selectionAttributeAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.CreateGeoLinkAction" name="createGeoLinkAction1">
+    <Component class="de.cismet.watergis.gui.actions.selection.SelectionFormAction" name="selectionFormAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.SelectionAttributeAction" name="selectionAttributeAction1">
+    <Component class="de.cismet.watergis.gui.actions.selection.SelectionLocationAction" name="selectionLocationAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.SelectionFormAction" name="selectionFormAction1">
+    <Component class="de.cismet.watergis.gui.actions.selection.RemoveSelectionAllTopicsAction" name="removeSelectionAllTopicsAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.SelectionLocationAction" name="selectionLocationAction1">
+    <Component class="de.cismet.watergis.gui.actions.selection.SelectionOptionsAction" name="selectionOptionsAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.RemoveSelectionAllTopicsAction" name="removeSelectionAllTopicsAction1">
+    <Component class="de.cismet.watergis.gui.actions.selection.ZoomSelectedObjectsAction" name="zoomSelectedObjectsAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.SelectionOptionsAction" name="selectionOptionsAction1">
+    <Component class="de.cismet.watergis.gui.actions.selection.SelectAllAction" name="selectAllAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.ZoomSelectedObjectsAction" name="zoomSelectedObjectsAction1">
+    <Component class="de.cismet.watergis.gui.actions.selection.InvertSelectionAction" name="invertSelectionAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.SelectAllAction" name="selectAllAction1">
+    <Component class="de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction" name="removeSelectionCurrentTopicAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.InvertSelectionAction" name="invertSelectionAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.ScaleAction" name="scaleAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction" name="removeSelectionCurrentTopicAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.FullExtendAction" name="fullExtendAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.ScaleAction" name="scaleAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.GoToAction" name="goToAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.FullExtendAction" name="fullExtendAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.MeasureAction" name="measureAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.GoToAction" name="goToAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.NextExtendAction" name="nextExtendAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.MeasureAction" name="measureAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.PanModeAction" name="panAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.NextExtendAction" name="nextExtendAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.PreviousExtendAction" name="previousExtendAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.PanModeAction" name="panAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.ZoomInAction" name="zoomInAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.PreviousExtendAction" name="previousExtendAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.ZoomOutAction" name="zoomOutAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.ZoomInAction" name="zoomInAction1">
+    <Component class="de.cismet.watergis.gui.actions.CentralConfigAction" name="centralConfigAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.ZoomOutAction" name="zoomOutAction1">
+    <Component class="de.cismet.watergis.gui.actions.InfoAction" name="infoAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.CentralConfigAction" name="centralConfigAction1">
+    <Component class="de.cismet.watergis.gui.actions.InfoWindowAction" name="infoWindowAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.InfoAction" name="infoAction1">
+    <Component class="de.cismet.watergis.gui.actions.LocalConfigAction" name="localConfigAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.InfoWindowAction" name="infoWindowAction1">
+    <Component class="de.cismet.watergis.gui.actions.OnlineHelpAction" name="onlineHelpAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.LocalConfigAction" name="localConfigAction1">
+    <Component class="de.cismet.watergis.gui.actions.TableAction" name="tableAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.OnlineHelpAction" name="onlineHelpAction1">
+    <Component class="de.cismet.watergis.gui.actions.PresentationAction" name="presentationAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.TableAction" name="tableAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.ZoomModeAction" name="zoomModeAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.PresentationAction" name="presentationAction1">
-    </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.ZoomModeAction" name="zoomModeAction1">
-    </Component>
-    <Component class="de.cismet.watergis.gui.actions.map.SelectionModeAction" name="selectionModeAction1">
+    <Component class="de.cismet.watergis.gui.actions.map.SelectionModeAction" name="selectionModeAction">
     </Component>
     <Component class="javax.swing.ButtonGroup" name="btnGroupMapMode">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.DownloadManagerAction" name="downloadManagerAction1">
+    <Component class="de.cismet.watergis.gui.actions.DownloadManagerAction" name="downloadManagerAction">
+    </Component>
+    <Component class="de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction" name="showManageBookmarksDialogAction">
+    </Component>
+    <Component class="de.cismet.watergis.gui.actions.bookmarks.ShowCreateBookmarkDialogAction" name="showCreateBookmarkDialogAction">
     </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
@@ -96,49 +96,49 @@
             <MenuItem class="javax.swing.JMenuItem" name="mniOpenProject">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="openProjectAction1"/>
+                  <ComponentRef name="openProjectAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniSaveProject">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="saveProjectAction1"/>
+                  <ComponentRef name="saveProjectAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniWindow">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="windowAction1"/>
+                  <ComponentRef name="windowAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniPrint">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="printAction1"/>
+                  <ComponentRef name="printAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniExportMap">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="exportMapAction1"/>
+                  <ComponentRef name="exportMapAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniCreateGeoLink">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="createGeoLinkAction1"/>
+                  <ComponentRef name="createGeoLinkAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniFileOptions">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="optionsAction1"/>
+                  <ComponentRef name="optionsAction"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -160,7 +160,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="mniClose">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="closeAction1"/>
+                  <ComponentRef name="closeAction"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -176,14 +176,14 @@
             <MenuItem class="javax.swing.JMenuItem" name="mniCreateBookmark">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="addBookmarkAction1"/>
+                  <ComponentRef name="showCreateBookmarkDialogAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniManageBookmarks">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="manageBookmarksAction1"/>
+                  <ComponentRef name="showManageBookmarksDialogAction"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -199,35 +199,35 @@
             <MenuItem class="javax.swing.JMenuItem" name="mniSelectForm">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="selectionFormAction1"/>
+                  <ComponentRef name="selectionFormAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniSelectAttribute">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="selectionAttributeAction1"/>
+                  <ComponentRef name="selectionAttributeAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniSelectLocation">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="selectionLocationAction1"/>
+                  <ComponentRef name="selectionLocationAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniZoomSelectedObjects">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="zoomSelectedObjectsAction1"/>
+                  <ComponentRef name="zoomSelectedObjectsAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniRemoveSelection">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="removeSelectionAllTopicsAction1"/>
+                  <ComponentRef name="removeSelectionAllTopicsAction"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-selectionremove.png"/>
@@ -240,7 +240,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="mniSelectionOptions">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="selectionOptionsAction1"/>
+                  <ComponentRef name="selectionOptionsAction"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-settingsandroid.png"/>
@@ -262,14 +262,14 @@
             <MenuItem class="javax.swing.JMenuItem" name="mniHelp">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="onlineHelpAction1"/>
+                  <ComponentRef name="onlineHelpAction"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniInfo">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="infoAction1"/>
+                  <ComponentRef name="infoAction"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -328,7 +328,7 @@
         <Component class="javax.swing.JButton" name="cmdOpenProject">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="openProjectAction1"/>
+              <ComponentRef name="openProjectAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -348,7 +348,7 @@
         <Component class="javax.swing.JButton" name="cmdSaveProject">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="saveProjectAction1"/>
+              <ComponentRef name="saveProjectAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -368,7 +368,7 @@
         <Component class="javax.swing.JButton" name="cmdPrint">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="printAction1"/>
+              <ComponentRef name="printAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -388,7 +388,7 @@
         <Component class="javax.swing.JButton" name="cmdExportMap">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="exportMapAction1"/>
+              <ComponentRef name="exportMapAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -408,7 +408,7 @@
         <Component class="javax.swing.JButton" name="jButton1">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="downloadManagerAction1"/>
+              <ComponentRef name="downloadManagerAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -419,7 +419,7 @@
         <Component class="javax.swing.JButton" name="cmdAddBookmark">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="addBookmarkAction1"/>
+              <ComponentRef name="showCreateBookmarkDialogAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -439,7 +439,7 @@
         <Component class="javax.swing.JButton" name="cmdManageBookmarks">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="manageBookmarksAction1"/>
+              <ComponentRef name="showManageBookmarksDialogAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -466,7 +466,7 @@
         <Component class="javax.swing.JButton" name="cmdScale">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="scaleAction1"/>
+              <ComponentRef name="scaleAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -486,7 +486,7 @@
         <Component class="javax.swing.JToggleButton" name="tbtnZoomMode">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="zoomModeAction1"/>
+              <ComponentRef name="zoomModeAction"/>
             </Property>
             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
               <ComponentRef name="btnGroupMapMode"/>
@@ -500,7 +500,7 @@
         <Component class="javax.swing.JButton" name="cmdZoomIn">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="zoomInAction1"/>
+              <ComponentRef name="zoomInAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -520,7 +520,7 @@
         <Component class="javax.swing.JButton" name="cmdZoomOut">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="zoomOutAction1"/>
+              <ComponentRef name="zoomOutAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -540,7 +540,7 @@
         <Component class="javax.swing.JToggleButton" name="tbtnPanMode">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="panAction1"/>
+              <ComponentRef name="panAction"/>
             </Property>
             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
               <ComponentRef name="btnGroupMapMode"/>
@@ -554,7 +554,7 @@
         <Component class="javax.swing.JButton" name="cmdGoTo">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="goToAction1"/>
+              <ComponentRef name="goToAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -574,7 +574,7 @@
         <Component class="javax.swing.JButton" name="cmdFullExtend">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="fullExtendAction1"/>
+              <ComponentRef name="fullExtendAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -594,7 +594,7 @@
         <Component class="javax.swing.JButton" name="cmdPreviousExtend">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="previousExtendAction1"/>
+              <ComponentRef name="previousExtendAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -617,7 +617,7 @@
         <Component class="javax.swing.JButton" name="cmdNextExtend">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="nextExtendAction1"/>
+              <ComponentRef name="nextExtendAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -647,7 +647,7 @@
         <Component class="javax.swing.JToggleButton" name="tbtnSelectionMode">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="selectionModeAction1"/>
+              <ComponentRef name="selectionModeAction"/>
             </Property>
             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
               <ComponentRef name="btnGroupMapMode"/>
@@ -664,7 +664,7 @@
         <Component class="javax.swing.JButton" name="cmdSelectionForm">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="selectionFormAction1"/>
+              <ComponentRef name="selectionFormAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -684,7 +684,7 @@
         <Component class="javax.swing.JButton" name="cmdSelectionAttribute">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="selectionAttributeAction1"/>
+              <ComponentRef name="selectionAttributeAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -704,7 +704,7 @@
         <Component class="javax.swing.JButton" name="cmdSelectionLocation">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="selectionLocationAction1"/>
+              <ComponentRef name="selectionLocationAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -724,7 +724,7 @@
         <Component class="javax.swing.JButton" name="cmdZoomSelectedObjects">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="zoomSelectedObjectsAction1"/>
+              <ComponentRef name="zoomSelectedObjectsAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -744,7 +744,7 @@
         <Component class="javax.swing.JButton" name="cmdSelectAll">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="selectAllAction1"/>
+              <ComponentRef name="selectAllAction"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.cmdSelectAll.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -767,7 +767,7 @@
         <Component class="javax.swing.JButton" name="cmdInvertSelection">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="invertSelectionAction1"/>
+              <ComponentRef name="invertSelectionAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -787,7 +787,7 @@
         <Component class="javax.swing.JButton" name="cmdRemoveSelectionAktiveTheme">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="removeSelectionCurrentTopicAction1"/>
+              <ComponentRef name="removeSelectionCurrentTopicAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -807,7 +807,7 @@
         <Component class="javax.swing.JButton" name="cmdRemoveSelectionAllThemes">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="removeSelectionAllTopicsAction1"/>
+              <ComponentRef name="removeSelectionAllTopicsAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -834,7 +834,7 @@
         <Component class="javax.swing.JButton" name="cmdTable">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="tableAction1"/>
+              <ComponentRef name="tableAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -854,7 +854,7 @@
         <Component class="javax.swing.JButton" name="cmdInfo">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="infoWindowAction1"/>
+              <ComponentRef name="infoWindowAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -874,7 +874,7 @@
         <Component class="javax.swing.JButton" name="cmdMeasure">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="measureAction1"/>
+              <ComponentRef name="measureAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -894,7 +894,7 @@
         <Component class="javax.swing.JButton" name="cmdPresentation">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="presentationAction1"/>
+              <ComponentRef name="presentationAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
