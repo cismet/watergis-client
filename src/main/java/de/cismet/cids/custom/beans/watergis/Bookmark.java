@@ -27,7 +27,7 @@ public class Bookmark extends CidsBean {
 
     private String name;
     private String description;
-    private Geometry geom;
+    private Geometry geometry;
 
     //~ Methods ----------------------------------------------------------------
 
@@ -72,16 +72,21 @@ public class Bookmark extends CidsBean {
      *
      * @return  DOCUMENT ME!
      */
-    public Geometry getGeom() {
-        return geom;
+    public Geometry getGeometry() {
+        return geometry;
     }
 
     /**
      * DOCUMENT ME!
      *
-     * @param  geom  DOCUMENT ME!
+     * @param  geometry  DOCUMENT ME!
      */
-    public void setGeom(final Geometry geom) {
-        this.geom = geom;
+    public void setGeometry(final Geometry geometry) {
+        this.geometry = geometry;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
