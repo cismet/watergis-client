@@ -40,6 +40,8 @@ import de.cismet.tools.configuration.ConfigurationManager;
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
+import de.cismet.watergis.utils.BookmarkManager;
+
 /**
  * DOCUMENT ME!
  *
@@ -67,7 +69,7 @@ public class AppBroker implements Configurable {
     private String callserverUrl;
     private String connectionClass;
     private RootWindow rootWindow;
-
+    private BookmarkManager bookmarkManager;
     private EnumMap<ComponentName, Component> components = new EnumMap<ComponentName, Component>(ComponentName.class);
     private HashMap<String, Action> mapModeSelectionActions = new HashMap<String, Action>();
 
@@ -349,6 +351,24 @@ public class AppBroker implements Configurable {
      */
     public static void setConfigManager(final ConfigurationManager configManager) {
         AppBroker.configManager = configManager;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public BookmarkManager getBookmarkManager() {
+        return bookmarkManager;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  bookmarkManager  DOCUMENT ME!
+     */
+    public void setBookmarkManager(final BookmarkManager bookmarkManager) {
+        this.bookmarkManager = bookmarkManager;
     }
 
     //~ Inner Classes ----------------------------------------------------------

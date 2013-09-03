@@ -93,6 +93,8 @@ import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 import de.cismet.watergis.server.GeoLinkServer;
 
+import de.cismet.watergis.utils.BookmarkManager;
+
 import static java.awt.Frame.MAXIMIZED_BOTH;
 
 /**
@@ -286,6 +288,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         initDocking();
         initInfoNode();
         configureFileMenu();
+        initBookmarkManager();
         if (!EventQueue.isDispatchThread()) {
             try {
                 EventQueue.invokeAndWait(new Runnable() {
@@ -511,6 +514,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                     }
                 }
             });
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initBookmarkManager() {
+        final BookmarkManager manager = new BookmarkManager();
+        configManager.addConfigurable(manager);
+        configManager.configure(manager);
+        AppBroker.getInstance().setBookmarkManager(manager);
     }
 
     /**
