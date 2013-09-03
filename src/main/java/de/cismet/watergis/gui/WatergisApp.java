@@ -40,6 +40,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -56,9 +58,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import de.cismet.cismap.commons.Crs;
@@ -282,12 +288,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         initComponents();
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
-        initAttributeTable();
 
         initDefaultPanels();
         initDocking();
         initInfoNode();
+        initAttributeTable();
         configureFileMenu();
+        initLog4JQuickConfig();
         initBookmarkManager();
         if (!EventQueue.isDispatchThread()) {
             try {
@@ -336,6 +343,31 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         mappingComponent.setInternalLayerWidgetAvailable(true);
 
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initLog4JQuickConfig() {
+        final KeyStroke configLoggerKeyStroke = KeyStroke.getKeyStroke(
+                'L',
+                InputEvent.CTRL_DOWN_MASK
+                        + InputEvent.SHIFT_DOWN_MASK);
+        final Action configAction = new AbstractAction() {
+
+                @Override
+                public void actionPerformed(final ActionEvent e) {
+                    java.awt.EventQueue.invokeLater(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                Log4JQuickConfig.getSingletonInstance().setVisible(true);
+                            }
+                        });
+                }
+            };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(configLoggerKeyStroke, "CONFIGLOGGING"); // NOI18N
+        getRootPane().getActionMap().put("CONFIGLOGGING", configAction);
     }
 
     /**
@@ -494,6 +526,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 @Override
                 public void showPanel(final JPanel panel, final String id, final String name, final String tooltip) {
                     View view = attributeTableMap.get(id);
+
+                    if (tabWindow == null) {
+                        tabWindow = (TabWindow)((SplitWindow)rootWindow.getWindow()).getRightWindow();
+                    }
 
                     if (view != null) {
                         final int viewIndex = tabWindow.getChildWindowIndex(view);
@@ -1074,6 +1110,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             });
         initLog4J();
         try {
+            LOG.warn("args: " + args.length);
             final Options options = new Options();
             options.addOption("u", true, "CallserverUrl");
             options.addOption("c", true, "ConnectionClass");
