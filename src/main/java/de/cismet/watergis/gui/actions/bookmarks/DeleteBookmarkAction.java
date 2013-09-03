@@ -22,6 +22,7 @@ import javax.swing.KeyStroke;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.*;
+import de.cismet.watergis.gui.dialog.ManageBookmarksDialog;
 
 /**
  * DOCUMENT ME!
@@ -35,12 +36,25 @@ public class DeleteBookmarkAction extends AbstractAction {
 
     private static final Logger LOG = Logger.getLogger(DeleteBookmarkAction.class);
 
+    //~ Instance fields --------------------------------------------------------
+
+    private ManageBookmarksDialog manageBookmarksDialog;
+
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new DeleteBookmarkAction object.
      */
     public DeleteBookmarkAction() {
+        this(null);
+    }
+
+    /**
+     * Creates a new DeleteBookmarkAction object.
+     *
+     * @param  manageBookmarksDialog  DOCUMENT ME!
+     */
+    public DeleteBookmarkAction(final ManageBookmarksDialog manageBookmarksDialog) {
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 DeleteBookmarkAction.class,
                 "DeleteBookmarkAction.toolTipText");
@@ -53,16 +67,17 @@ public class DeleteBookmarkAction extends AbstractAction {
                 DeleteBookmarkAction.class,
                 "DeleteBookmarkAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
+        this.manageBookmarksDialog = manageBookmarksDialog;
     }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        AppBroker.getInstance().getBookmarkManager().remove(manageBookmarksDialog.getSelectedBookmark());
     }
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
