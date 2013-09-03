@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.dialog;
 
+import java.awt.Color;
+
 import de.cismet.watergis.gui.actions.bookmarks.CreateBookmarkAction;
 
 /**
@@ -243,5 +245,14 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
                     dialog.setVisible(true);
                 }
             });
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  color  DOCUMENT ME!
+     */
+    public void changeTxtNameBG(final Color color) {
+        txtName.setBackground(color);
     }
 }
