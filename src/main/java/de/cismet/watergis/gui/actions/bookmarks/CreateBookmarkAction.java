@@ -52,6 +52,13 @@ public class CreateBookmarkAction extends AbstractAction {
 
     /**
      * Creates a new CreateBookmarkAction object.
+     */
+    public CreateBookmarkAction() {
+        this(null);
+    }
+
+    /**
+     * Creates a new CreateBookmarkAction object.
      *
      * @param  bookmarkDialog  DOCUMENT ME!
      */
