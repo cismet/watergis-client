@@ -68,20 +68,19 @@
         <serverProfiles>
         <profile id="dgk"
                  sorter="100"
-                 name="Digitale Grundkarte (DGK)"
-                 descr="Die digitale Grundkarte mit ein paar schönen Zusatzlayern:-"
+                 name="Digitale Topographische Karte"
                  descrwidth="80"
                  path="/de/cismet/watergis/serverprofiles/dgkpublic.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"/>
         <profile id="aerial"
                  sorter="020"
                  name="Luftbildkarte"
-                 descr="Luftbild, DGK grau"
+                 descr="Satellitenbild"
                  path="/de/cismet/watergis/serverprofiles/aerialpublic.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"/>
         <profile id="city"
                  sorter="030"
-                 name="Stadtplan"
+                 name="Neubrandenburg"
                  path="/de/cismet/watergis/serverprofiles/citymappublic.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"
                  complexdescr="true">
