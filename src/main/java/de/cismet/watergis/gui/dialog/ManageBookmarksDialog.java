@@ -30,6 +30,11 @@ import de.cismet.watergis.gui.actions.bookmarks.ZoomBookmarkInMapAction;
  */
 public class ManageBookmarksDialog extends javax.swing.JDialog {
 
+    //~ Instance fields --------------------------------------------------------
+
+    private DocumentListener txtNameDocumentListener;
+    private DocumentListener txtaDescriptionDocumentListener;
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnPan;
@@ -60,7 +65,8 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         initDocumentListener();
-        enableButtons(false);
+        addDocumentListeners();
+        enableComponents(false);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -236,11 +242,13 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         if (bookmark != null) {
             txtName.setText(bookmark.getName());
             txtaDescription.setText(bookmark.getDescription());
-            enableButtons(true);
+            enableComponents(true);
         } else {
+            removeDocumentListeners();
             txtName.setText("");
             txtaDescription.setText("");
-            enableButtons(false);
+            enableComponents(false);
+            addDocumentListeners();
         }
     }                                                                                       //GEN-LAST:event_lstBookmarksValueChanged
 
@@ -248,7 +256,7 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
      * DOCUMENT ME!
      */
     private void initDocumentListener() {
-        txtName.getDocument().addDocumentListener(new DocumentListener() {
+        txtNameDocumentListener = new DocumentListener() {
 
                 @Override
                 public void insertUpdate(final DocumentEvent e) {
@@ -264,9 +272,9 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
                 public void changedUpdate(final DocumentEvent e) {
                     updateBookMarkName();
                 }
-            });
+            };
 
-        txtaDescription.getDocument().addDocumentListener(new DocumentListener() {
+        txtaDescriptionDocumentListener = new DocumentListener() {
 
                 @Override
                 public void insertUpdate(final DocumentEvent e) {
@@ -282,7 +290,7 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
                 public void changedUpdate(final DocumentEvent e) {
                     updateBookMarkDescription();
                 }
-            });
+            };
     }
 
     /**
@@ -375,9 +383,27 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
      *
      * @param  b  DOCUMENT ME!
      */
-    private void enableButtons(final boolean b) {
+    private void enableComponents(final boolean b) {
         btnDelete.setEnabled(b);
         btnPan.setEnabled(b);
         btnZoom.setEnabled(b);
+        txtaDescription.setEnabled(b);
+        txtName.setEnabled(b);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void addDocumentListeners() {
+        txtName.getDocument().addDocumentListener(txtNameDocumentListener);
+        txtaDescription.getDocument().addDocumentListener(txtaDescriptionDocumentListener);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void removeDocumentListeners() {
+        txtName.getDocument().removeDocumentListener(txtNameDocumentListener);
+        txtaDescription.getDocument().removeDocumentListener(txtaDescriptionDocumentListener);
     }
 }
