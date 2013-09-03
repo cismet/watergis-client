@@ -65,7 +65,7 @@ public class BookmarkManager implements Configurable {
         final MenuBookMarkAction action = new MenuBookMarkAction(bookmark);
         final JMenuItem menuItem = new JMenuItem();
         menuItem.setAction(action);
-        menu.add(menuItem);
+        menu.add(menuItem, 3);
 
         bookmarkMenuItemMap.put(bookmark, menuItem);
 
