@@ -16,12 +16,12 @@ import org.apache.log4j.Logger;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
+
+import de.cismet.cids.custom.beans.watergis.Bookmark;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.actions.*;
 import de.cismet.watergis.gui.dialog.ManageBookmarksDialog;
 
 /**
@@ -74,7 +74,9 @@ public class DeleteBookmarkAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        AppBroker.getInstance().getBookmarkManager().remove(manageBookmarksDialog.getSelectedBookmark());
+        final Bookmark selectedBookmark = manageBookmarksDialog.getSelectedBookmark();
+        manageBookmarksDialog.removeBookmarkFromList(selectedBookmark);
+        AppBroker.getInstance().getBookmarkManager().remove(selectedBookmark);
     }
     @Override
     public boolean isEnabled() {
