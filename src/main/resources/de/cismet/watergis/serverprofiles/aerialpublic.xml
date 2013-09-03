@@ -10,11 +10,11 @@
     <cismapWFSFormsPreferences />
     <cismapMappingPreferences interactionMode="PAN" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
         <home default="true" srs="EPSG:35833" metric="true">
-            <BoundingBox x1="33206890" y1="5890624" x2="33460858" y2="6060841" />
+            <BoundingBox x1="3.3259435405485477E7" y1="5908553.713466976" x2="3.340872159778109E7" y2="6000988.451710285" srs="EPSG:35833" metric="true" />
         </home> 
         <defaultCrs geometrySridAlias="-1"/>
         <Position CRS="EPSG:35833">
-            <BoundingBox x1="3.3274906946093455E7" y1="5898878.000753331" x2="3.3294127426686216E7" y2="5912330.057158704" srs="EPSG:35833" metric="true" />
+            <BoundingBox x1="3.325365549344878E7" y1="5947669.575505416" x2="3.3272941729013387E7" y2="5961121.631910789" srs="EPSG:35833" metric="true" />
         </Position>
         <crsList>
             <crs shortname="EPSG:35833" name="EPSG:35833" code="EPSG:35833" metric="true" selected="true" />
