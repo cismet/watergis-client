@@ -1094,7 +1094,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                         LOG.error("Error while setting the Look & Feel", ex);
                     }
                     try {
-                        SPLASH = StaticStartupTools.showGhostFrame(FILEPATH_SCREEN, "FIS Gewässer [Startup]");
+                        // SPLASH = StaticStartupTools.showGhostFrame(FILEPATH_SCREEN, "FIS Gewässer [Startup]");
                     } catch (Exception e) {
                         LOG.warn("Problem with displaying the Pre-Loading-Frame", e);
                     }
@@ -1106,10 +1106,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                         }
                         final WatergisApp app = new WatergisApp();
                         app.setVisible(true);
-                        if (SPLASH != null) {
-                            SPLASH.dispose();
-                        }
-                        SPLASH = null;
+//                        if (SPLASH != null) {
+//                            SPLASH.dispose();
+//                        }
+//                        SPLASH = null;
                     } catch (Exception ex) {
                         LOG.error("Error during the Loginframe", ex);
                         System.exit(0);
