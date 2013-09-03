@@ -104,12 +104,8 @@ public class CreateBookmarkAction extends AbstractAction {
      */
     private Geometry createGeometrieInMiddleOfMap() {
         final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
-        final XBoundingBox boundingBox = (XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera();
-        final Point middleOfScreen = boundingBox.getGeometry().getCentroid();
-        final DefaultStyledFeature feature = new DefaultStyledFeature();
-        feature.setGeometry(middleOfScreen);
-        mappingComponent.addFeaturesToMap(new Feature[] { feature });
+        final XBoundingBox middleOfScreen = (XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera();
 
-        return middleOfScreen;
+        return middleOfScreen.getGeometry();
     }
 }
