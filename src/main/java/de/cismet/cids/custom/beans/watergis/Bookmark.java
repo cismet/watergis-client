@@ -23,7 +23,7 @@ import de.cismet.cids.dynamics.CidsBean;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class Bookmark extends CidsBean {
+public class Bookmark extends CidsBean implements Comparable<Bookmark> {
 
     //~ Instance fields --------------------------------------------------------
 
@@ -120,5 +120,10 @@ public class Bookmark extends CidsBean {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(final Bookmark o) {
+        return this.name.compareTo(o.name);
     }
 }

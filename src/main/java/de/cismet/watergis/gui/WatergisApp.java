@@ -431,6 +431,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         AppBroker.getInstance().addComponent(ComponentName.SELECTION, pSelection);
         AppBroker.getInstance().addComponent(ComponentName.TABLE, pTable);
 
+        AppBroker.getInstance().addComponent(ComponentName.MENU_BOOKMARK, menBookmark);
+
         AppBroker.getInstance().addComponent(ComponentName.STATUSBAR, statusBar1);
         // mappingComponent.getFeatureCollection().addFeatureCollectionListener(statusBar1);
         CismapBroker.getInstance().addStatusListener(statusBar1);
