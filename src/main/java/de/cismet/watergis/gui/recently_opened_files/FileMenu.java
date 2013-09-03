@@ -17,8 +17,6 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import java.io.File;
 
@@ -31,12 +29,8 @@ import java.util.List;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-
-import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.NoWriteError;
@@ -129,9 +123,12 @@ public class FileMenu extends JMenu implements Configurable {
             this.add(serverProfile);
         }
 
-        this.add(new JSeparator());
+        final Collection<File> fileHistory = AppBroker.getInstance().getRecentlyOpenedFilesList().getFileList();
+        if (!fileHistory.isEmpty()) {
+            this.add(new javax.swing.JPopupMenu.Separator());
+        }
 
-        rebuildLocalFiles();
+        rebuildLocalFiles(fileHistory);
 
         for (final Component component : after) {
             this.add(component);
@@ -141,8 +138,7 @@ public class FileMenu extends JMenu implements Configurable {
     /**
      * DOCUMENT ME!
      */
-    private void rebuildLocalFiles() {
-        final Collection<File> fileHistory = AppBroker.getInstance().getRecentlyOpenedFilesList().getFileList();
+    private void rebuildLocalFiles(Collection<File> fileHistory) {
         for (final File file : fileHistory) {
             final JMenuItem menuItem = new JMenuItem(file.getName());
             menuItem.setAction(new AdoptLocalConfigFileAction(file));
