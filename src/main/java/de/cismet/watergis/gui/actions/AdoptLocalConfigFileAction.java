@@ -13,9 +13,6 @@ package de.cismet.watergis.gui.actions;
 
 import java.awt.event.ActionEvent;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 import java.io.File;
 
 import javax.swing.AbstractAction;

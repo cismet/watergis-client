@@ -15,13 +15,7 @@ import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
-import java.io.File;
-
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
@@ -30,7 +24,6 @@ import de.cismet.tools.configuration.ConfigurationManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.recently_opened_files.FileMenu;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 /**

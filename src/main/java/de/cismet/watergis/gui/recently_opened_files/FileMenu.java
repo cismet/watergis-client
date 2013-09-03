@@ -137,8 +137,10 @@ public class FileMenu extends JMenu implements Configurable {
 
     /**
      * DOCUMENT ME!
+     *
+     * @param  fileHistory  DOCUMENT ME!
      */
-    private void rebuildLocalFiles(Collection<File> fileHistory) {
+    private void rebuildLocalFiles(final Collection<File> fileHistory) {
         for (final File file : fileHistory) {
             final JMenuItem menuItem = new JMenuItem(file.getName());
             menuItem.setAction(new AdoptLocalConfigFileAction(file));
