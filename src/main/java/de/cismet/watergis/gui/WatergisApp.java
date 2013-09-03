@@ -282,11 +282,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         initComponents();
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
-        initAttributeTable();
 
         initDefaultPanels();
         initDocking();
         initInfoNode();
+        initAttributeTable();
         configureFileMenu();
         initBookmarkManager();
         if (!EventQueue.isDispatchThread()) {
@@ -494,6 +494,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 @Override
                 public void showPanel(final JPanel panel, final String id, final String name, final String tooltip) {
                     View view = attributeTableMap.get(id);
+
+                    if (tabWindow == null) {
+                        tabWindow = (TabWindow)((SplitWindow)rootWindow.getWindow()).getRightWindow();
+                    }
 
                     if (view != null) {
                         final int viewIndex = tabWindow.getChildWindowIndex(view);

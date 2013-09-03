@@ -27,7 +27,7 @@
         <properties>
             <jalopy.skip>true</jalopy.skip>
             <exec.classpathScope>runtime</exec.classpathScope>
-            <exec.args>-Xmx512m -classpath ${de.cismet.cids.classpath} de.cismet.watergis.gui.WatergisApp -u "http://localhost:9917/callserver/binary" -c "Sirius.navigator.connection.RESTfulConnection" -d "WRRL_DB_MV"</exec.args>
+            <exec.args>-Xmx1524m -classpath ${de.cismet.cids.classpath} de.cismet.watergis.gui.WatergisApp -u "http://localhost:9917/callserver/binary" -c "Sirius.navigator.connection.RESTfulConnection" -d "WRRL_DB_MV"</exec.args>
             <exec.executable>java</exec.executable>
         </properties>
     </action>
