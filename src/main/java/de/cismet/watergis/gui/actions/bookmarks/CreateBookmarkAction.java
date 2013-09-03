@@ -16,6 +16,7 @@ import com.vividsolutions.jts.geom.Point;
 
 import org.apache.log4j.Logger;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -83,13 +84,19 @@ public class CreateBookmarkAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        final Geometry geom = createGeometrieInMiddleOfMap();
-        final Bookmark bookmark = new Bookmark();
-        bookmark.setGeometry(geom);
-        bookmark.setName(bookmarkDialog.getBookmarkName());
-        bookmark.setDescription(bookmarkDialog.getBookmarkDescription());
-        AppBroker.getInstance().getBookmarkManager().add(bookmark);
-        bookmarkDialog.dispose();
+        final String bookmarkName = bookmarkDialog.getBookmarkName().trim();
+        if ((bookmarkName == null) || bookmarkName.equals("")) {
+            bookmarkDialog.changeTxtNameBG(Color.RED);
+        } else {
+            final Geometry geom = createGeometrieInMiddleOfMap();
+            final Bookmark bookmark = new Bookmark();
+            bookmark.setGeometry(geom);
+            bookmark.setName(bookmarkDialog.getBookmarkName());
+            bookmark.setDescription(bookmarkDialog.getBookmarkDescription());
+            AppBroker.getInstance().getBookmarkManager().add(bookmark);
+            bookmarkDialog.changeTxtNameBG(Color.WHITE);
+            bookmarkDialog.dispose();
+        }
     }
 
     @Override
