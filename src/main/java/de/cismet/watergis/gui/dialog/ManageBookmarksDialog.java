@@ -11,6 +11,17 @@
  */
 package de.cismet.watergis.gui.dialog;
 
+import javax.swing.DefaultListModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import de.cismet.cids.custom.beans.watergis.Bookmark;
+
+import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.gui.actions.bookmarks.DeleteBookmarkAction;
+import de.cismet.watergis.gui.actions.bookmarks.ShowBookmarkInMapAction;
+
 /**
  * DOCUMENT ME!
  *
@@ -46,6 +57,7 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
     public ManageBookmarksDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        initDocumentListener();
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -59,8 +71,8 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        showBookmarkInMapAction = new de.cismet.watergis.gui.actions.bookmarks.ShowBookmarkInMapAction();
-        deleteBookmarkAction = new de.cismet.watergis.gui.actions.bookmarks.DeleteBookmarkAction();
+        showBookmarkInMapAction = new ShowBookmarkInMapAction(this);
+        deleteBookmarkAction = new DeleteBookmarkAction(this);
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstBookmarks = new javax.swing.JList();
@@ -77,11 +89,25 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.title")); // NOI18N
+        addWindowListener(new java.awt.event.WindowAdapter() {
+
+                @Override
+                public void windowOpened(final java.awt.event.WindowEvent evt) {
+                    formWindowOpened(evt);
+                }
+            });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(7, 7, 7, 7));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         lstBookmarks.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        lstBookmarks.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+
+                @Override
+                public void valueChanged(final javax.swing.event.ListSelectionEvent evt) {
+                    lstBookmarksValueChanged(evt);
+                }
+            });
         jScrollPane1.setViewportView(lstBookmarks);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -176,6 +202,87 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
     /**
      * DOCUMENT ME!
      *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void formWindowOpened(final java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        final DefaultListModel<Bookmark> model = new DefaultListModel<Bookmark>();
+        for (final Bookmark b : AppBroker.getInstance().getBookmarkManager().getBookmarks()) {
+            model.addElement(b);
+        }
+        lstBookmarks.setModel(model);
+    }//GEN-LAST:event_formWindowOpened
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void lstBookmarksValueChanged(final javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstBookmarksValueChanged
+        final Bookmark bookmark = (Bookmark)lstBookmarks.getSelectedValue();
+        txtName.setText(bookmark.getName());
+        txtaDescription.setText(bookmark.getDescription());
+    }//GEN-LAST:event_lstBookmarksValueChanged
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initDocumentListener() {
+        txtName.getDocument().addDocumentListener(new DocumentListener() {
+
+                @Override
+                public void insertUpdate(final DocumentEvent e) {
+                    updateBookMarkName();
+                }
+
+                @Override
+                public void removeUpdate(final DocumentEvent e) {
+                    updateBookMarkName();
+                }
+
+                @Override
+                public void changedUpdate(final DocumentEvent e) {
+                    updateBookMarkName();
+                }
+            });
+
+        txtaDescription.getDocument().addDocumentListener(new DocumentListener() {
+
+                @Override
+                public void insertUpdate(final DocumentEvent e) {
+                    updateBookMarkDescription();
+                }
+
+                @Override
+                public void removeUpdate(final DocumentEvent e) {
+                    updateBookMarkDescription();
+                }
+
+                @Override
+                public void changedUpdate(final DocumentEvent e) {
+                    updateBookMarkDescription();
+                }
+            });
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void updateBookMarkName() {
+        final Bookmark bookmark = (Bookmark)lstBookmarks.getSelectedValue();
+        bookmark.setName(txtName.getText()); 
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void updateBookMarkDescription() {
+        final Bookmark bookmark = (Bookmark)lstBookmarks.getSelectedValue();
+        bookmark.setDescription(txtaDescription.getText());
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param  args  the command line arguments
      */
     public static void main(final String[] args) {
@@ -222,5 +329,14 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
                     dialog.setVisible(true);
                 }
             });
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Bookmark getSelectedBookmark() {
+        return (Bookmark)lstBookmarks.getSelectedValue();
     }
 }

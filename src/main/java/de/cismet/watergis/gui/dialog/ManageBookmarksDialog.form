@@ -3,8 +3,14 @@
 <Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <NonVisualComponents>
     <Component class="de.cismet.watergis.gui.actions.bookmarks.ShowBookmarkInMapAction" name="showBookmarkInMapAction">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ShowBookmarkInMapAction(this);"/>
+      </AuxValues>
     </Component>
     <Component class="de.cismet.watergis.gui.actions.bookmarks.DeleteBookmarkAction" name="deleteBookmarkAction">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new DeleteBookmarkAction(this);"/>
+      </AuxValues>
     </Component>
   </NonVisualComponents>
   <Properties>
@@ -16,6 +22,9 @@
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
   </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowOpened" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowOpened"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="1"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -61,13 +70,13 @@
           <SubComponents>
             <Component class="javax.swing.JList" name="lstBookmarks">
               <Properties>
-                <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-                  <StringArray count="0"/>
-                </Property>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[32767, 32767]"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="lstBookmarksValueChanged"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
