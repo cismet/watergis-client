@@ -11,11 +11,11 @@
  */
 package de.cismet.watergis.gui.actions.bookmarks;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
-
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
@@ -23,8 +23,6 @@ import javax.swing.KeyStroke;
 import de.cismet.cids.custom.beans.watergis.Bookmark;
 
 import de.cismet.cismap.commons.XBoundingBox;
-import de.cismet.cismap.commons.features.DefaultStyledFeature;
-import de.cismet.cismap.commons.features.Feature;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -36,11 +34,11 @@ import de.cismet.watergis.gui.dialog.ManageBookmarksDialog;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class ShowBookmarkInMapAction extends AbstractAction {
+public class PanBookmarkInMapAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(ShowBookmarkInMapAction.class);
+    private static final Logger LOG = Logger.getLogger(PanBookmarkInMapAction.class);
 
     //~ Instance fields --------------------------------------------------------
 
@@ -51,7 +49,7 @@ public class ShowBookmarkInMapAction extends AbstractAction {
     /**
      * Creates a new ShowBookmarkInMapAction object.
      */
-    public ShowBookmarkInMapAction() {
+    public PanBookmarkInMapAction() {
         this(null);
     }
 
@@ -60,18 +58,18 @@ public class ShowBookmarkInMapAction extends AbstractAction {
      *
      * @param  manageBookmarksDialog  DOCUMENT ME!
      */
-    public ShowBookmarkInMapAction(final ManageBookmarksDialog manageBookmarksDialog) {
+    public PanBookmarkInMapAction(final ManageBookmarksDialog manageBookmarksDialog) {
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                ShowBookmarkInMapAction.class,
-                "ShowBookmarkInMapAction.toolTipText");
+                PanBookmarkInMapAction.class,
+                "PanBookmarkInMapAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(
-                ShowBookmarkInMapAction.class,
-                "ShowBookmarkInMapAction.text");
+                PanBookmarkInMapAction.class,
+                "PanBookmarkInMapAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
-                ShowBookmarkInMapAction.class,
-                "ShowBookmarkInMapAction.mnemonic");
+                PanBookmarkInMapAction.class,
+                "PanBookmarkInMapAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         this.manageBookmarksDialog = manageBookmarksDialog;
     }
@@ -81,20 +79,14 @@ public class ShowBookmarkInMapAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         final Bookmark bookmark = manageBookmarksDialog.getSelectedBookmark();
-        final DefaultStyledFeature feature = new DefaultStyledFeature();
-        feature.setGeometry(bookmark.getGeometry().buffer(20));
-        final XBoundingBox box = new XBoundingBox(feature.getGeometry());
-//        AppBroker.getInstance().getMappingComponent().getFeatureCollection().removeAllFeatures();
-        AppBroker.getInstance().getMappingComponent().getFeatureCollection().addFeature(feature);
-        // AppBroker.getInstance().getMappingComponent().zoomToFeatureCollection();
-        final ArrayList featureCollection = new ArrayList();
-        featureCollection.add(feature);
-        AppBroker.getInstance().getMappingComponent().zoomToFeatureCollection();
-        // ppBroker.getInstance().getMappingComponent().gotoBoundingBoxWithHistory(box);
+
+        final Geometry geom = bookmark.getGeometry();
+        final XBoundingBox xbox = new XBoundingBox(geom);
+        AppBroker.getInstance().getMappingComponent().gotoBoundingBox(xbox, true, false, 500);
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
