@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.dialog;
 
+import de.cismet.watergis.gui.actions.bookmarks.CreateBookmarkAction;
+
 /**
  * DOCUMENT ME!
  *
@@ -56,7 +58,7 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        createBookmarkAction = new de.cismet.watergis.gui.actions.bookmarks.CreateBookmarkAction();
+        createBookmarkAction = new CreateBookmarkAction(this);
         jPanel1 = new javax.swing.JPanel();
         lblName = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
@@ -110,6 +112,13 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
         org.openide.awt.Mnemonics.setLocalizedText(
             btnCancel,
             org.openide.util.NbBundle.getMessage(CreateBookmarkDialog.class, "CreateBookmarkDialog.btnCancel.text")); // NOI18N
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    btnCancelActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
@@ -157,6 +166,33 @@ public class CreateBookmarkDialog extends javax.swing.JDialog {
 
         pack();
     } // </editor-fold>//GEN-END:initComponents
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
+        this.dispose();
+    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public String getBookmarkName() {
+        return txtName.getText();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public String getBookmarkDescription() {
+        return txtaDescription.getText();
+    }
 
     /**
      * DOCUMENT ME!
