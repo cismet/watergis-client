@@ -91,10 +91,10 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
                 final Integer i = new Integer(array[1].trim());
                 mappingComponent.gotoBoundingBoxWithHistory(mappingComponent.getBoundingBoxFromScale(i));
 
-                this.getEditor().getEditorComponent().setBackground(Color.white);
+                this.setBackground(Color.white, Color.white);
                 CismapBroker.getInstance().addStatusListener(this);
             } else {
-                this.getEditor().getEditorComponent().setBackground(Color.red);
+                this.setBackground(Color.red, Color.white);
             }
         }
     }
@@ -129,5 +129,19 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
     private boolean isValid(final String selectedItem) {
         final Matcher m = p.matcher(selectedItem);
         return m.matches();
+    }
+
+    /**
+     * Sets the background color of the editable field and afterwards the background color of the pop-up. The result of
+     * this is, that the can have different colors.
+     *
+     * @param  editField  DOCUMENT ME!
+     * @param  popUp      DOCUMENT ME!
+     */
+    public void setBackground(final Color editField, final Color popUp) {
+        if ((this.getEditor() != null) && (this.getEditor().getEditorComponent() != null)) {
+            this.getEditor().getEditorComponent().setBackground(editField);
+        }
+        super.setBackground(popUp);
     }
 }
