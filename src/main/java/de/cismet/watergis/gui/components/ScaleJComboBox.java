@@ -50,7 +50,7 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
 
     //~ Instance fields --------------------------------------------------------
 
-    private Pattern p = Pattern.compile("1 *: *\\d+ ");
+    private Pattern p = Pattern.compile("1 *: *\\d+ *");
 
     //~ Constructors -----------------------------------------------------------
 
@@ -97,11 +97,6 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
                 this.setBackground(Color.red, Color.white);
             }
         }
-    }
-
-    @Override
-    public void setModel(final ComboBoxModel aModel) {
-        super.setModel(aModel);
     }
 
     /**
