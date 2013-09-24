@@ -11,8 +11,6 @@
  */
 package de.cismet.watergis.gui.actions;
 
-import net.infonode.docking.RootWindow;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
@@ -20,26 +18,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 import de.cismet.cismap.commons.RestrictedFileSystemView;
 
-import de.cismet.cismap.navigatorplugin.CismapPlugin;
-
-import de.cismet.tools.CurrentStackTrace;
-
 import de.cismet.tools.configuration.ConfigurationManager;
-
-import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -120,8 +108,8 @@ public class SaveProjectAction extends AbstractAction {
                 @Override
                 public String getDescription() {
                     return org.openide.util.NbBundle.getMessage(
-                            CismapPlugin.class,
-                            "CismapPlugin.mniSaveConfigActionPerformed.FileFilter.getDescription.return"); // NOI18N
+                            SaveProjectAction.class,
+                            "SaveProjectAction.save.FileFilter.getDescription.return"); // NOI18N
                 }
             });
 

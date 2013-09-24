@@ -26,11 +26,6 @@ import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 import de.cismet.cismap.commons.RestrictedFileSystemView;
-import de.cismet.cismap.commons.gui.MappingComponent;
-
-import de.cismet.cismap.navigatorplugin.CismapPlugin;
-
-import de.cismet.tools.configuration.ConfigurationManager;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -112,8 +107,8 @@ public class OpenProjectAction extends AbstractAction {
                 @Override
                 public String getDescription() {
                     return org.openide.util.NbBundle.getMessage(
-                            CismapPlugin.class,
-                            "CismapPlugin.mniLoadConfigActionPerformed.FileFiltergetDescription.return"); // NOI18N
+                            OpenProjectAction.class,
+                            "OpenProjectAction.load.FileFilter.getDescription.return"); // NOI18N
                 }
             });
 

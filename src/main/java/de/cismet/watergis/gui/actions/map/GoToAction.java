@@ -19,24 +19,15 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
-import de.cismet.cismap.commons.BoundingBox;
-import de.cismet.cismap.commons.Crs;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
-import de.cismet.cismap.navigatorplugin.GotoPointDialog;
-
 import de.cismet.tools.StaticDecimalTools;
-
-import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
-
-import de.cismet.watergis.gui.actions.selection.*;
 
 /**
  * DOCUMENT ME!
