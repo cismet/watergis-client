@@ -14,6 +14,8 @@ package de.cismet.watergis.gui.components;
 import org.apache.log4j.Logger;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -21,12 +23,9 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.InputVerifier;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
+import javax.swing.Timer;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.printing.Scale;
@@ -47,9 +46,11 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(ScaleJComboBox.class);
+    private static final int TIMER_DELAY = 250;
 
     //~ Instance fields --------------------------------------------------------
 
+    Timer checkIfPending;
     private Pattern p = Pattern.compile("1 *: *\\d+ *");
 
     //~ Constructors -----------------------------------------------------------
@@ -62,6 +63,14 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
         CismapBroker.getInstance().addStatusListener(this);
         this.addItemListener(this);
         setModelWithScales();
+        checkIfPending = new Timer(TIMER_DELAY, new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(final ActionEvent e) {
+                        refreshSelectedItem();
+                    }
+                });
+        checkIfPending.setRepeats(false);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -69,14 +78,22 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
     @Override
     public void statusValueChanged(final StatusEvent e) {
         if (e.getName().equals(StatusEvent.SCALE)) {
-            this.removeItemListener(this);
-
-            final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
-            final int sd = (int)(mappingComponent.getScaleDenominator() + 0.5);
-            this.setSelectedItem("1:" + sd);
-
-            this.addItemListener(this);
+            checkIfPending.restart();
         }
+    }
+
+    /**
+     * This method is executed when the delay of the timer checkIfPending has elapsed. The timer is needed to avoid
+     * multiple updates of the check box during the animation of the rescale of the map.
+     */
+    private void refreshSelectedItem() {
+        this.removeItemListener(this);
+
+        final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
+        final int sd = (int)(mappingComponent.getScaleDenominator() + 0.5);
+        this.setSelectedItem("1:" + sd);
+
+        this.addItemListener(this);
     }
 
     @Override
