@@ -33,7 +33,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Logger;
 
-import org.jdom.DataConversionException;
 import org.jdom.Element;
 
 import java.awt.BorderLayout;
@@ -55,8 +54,6 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -67,8 +64,6 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import de.cismet.cismap.commons.Crs;
-import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableListener;
@@ -90,6 +85,7 @@ import de.cismet.tools.gui.startup.StaticStartupTools;
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
+import de.cismet.watergis.gui.components.ScaleJComboBox;
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
@@ -170,6 +166,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private boolean isInit = true;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup btnGroupMapMode;
+    private javax.swing.JComboBox cboScale;
     private de.cismet.watergis.gui.actions.CentralConfigAction centralConfigAction;
     private de.cismet.watergis.gui.actions.CloseAction closeAction;
     private javax.swing.JButton cmdAddBookmark;
@@ -188,7 +185,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdRemoveSelectionAktiveTheme;
     private javax.swing.JButton cmdRemoveSelectionAllThemes;
     private javax.swing.JButton cmdSaveProject;
-    private javax.swing.JButton cmdScale;
     private javax.swing.JButton cmdSelectAll;
     private javax.swing.JButton cmdSelectionAttribute;
     private javax.swing.JButton cmdSelectionForm;
@@ -207,9 +203,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.selection.InvertSelectionAction invertSelectionAction;
     private javax.swing.JButton jButton1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JToolBar.Separator jSeparator4;
     private javax.swing.JToolBar.Separator jSeparator5;
     private javax.swing.JToolBar.Separator jSeparator6;
+    private javax.swing.JToolBar.Separator jSeparator7;
+    private javax.swing.JToolBar.Separator jSeparator8;
     private de.cismet.watergis.gui.actions.LocalConfigAction localConfigAction;
     private de.cismet.watergis.gui.actions.map.MeasureAction measureAction;
     private javax.swing.JMenu menBookmark;
@@ -247,7 +244,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction
         removeSelectionCurrentTopicAction;
     private de.cismet.watergis.gui.actions.SaveProjectAction saveProjectAction;
-    private de.cismet.watergis.gui.actions.map.ScaleAction scaleAction;
     private de.cismet.watergis.gui.actions.selection.SelectAllAction selectAllAction;
     private de.cismet.watergis.gui.actions.selection.SelectionAttributeAction selectionAttributeAction;
     private de.cismet.watergis.gui.actions.selection.SelectionFormAction selectionFormAction;
@@ -598,7 +594,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         invertSelectionAction = new de.cismet.watergis.gui.actions.selection.InvertSelectionAction();
         removeSelectionCurrentTopicAction =
             new de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction();
-        scaleAction = new de.cismet.watergis.gui.actions.map.ScaleAction();
         fullExtendAction = new de.cismet.watergis.gui.actions.map.FullExtendAction();
         goToAction = new de.cismet.watergis.gui.actions.map.GoToAction();
         measureAction = new de.cismet.watergis.gui.actions.map.MeasureAction();
@@ -629,8 +624,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         jButton1 = new javax.swing.JButton();
         cmdAddBookmark = new javax.swing.JButton();
         cmdManageBookmarks = new javax.swing.JButton();
-        jSeparator4 = new javax.swing.JToolBar.Separator();
-        cmdScale = new javax.swing.JButton();
+        jSeparator8 = new javax.swing.JToolBar.Separator();
+        cboScale = new ScaleJComboBox();
+        jSeparator7 = new javax.swing.JToolBar.Separator();
         tbtnZoomMode = new javax.swing.JToggleButton();
         cmdZoomIn = new javax.swing.JButton();
         cmdZoomOut = new javax.swing.JButton();
@@ -759,18 +755,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdManageBookmarks.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdManageBookmarks);
 
-        jSeparator4.setSeparatorSize(new java.awt.Dimension(2, 32));
-        tobDLM25W.add(jSeparator4);
+        jSeparator8.setSeparatorSize(new java.awt.Dimension(1, 32));
+        tobDLM25W.add(jSeparator8);
 
-        cmdScale.setAction(scaleAction);
-        cmdScale.setFocusable(false);
-        cmdScale.setHideActionText(true);
-        cmdScale.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdScale.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdScale.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdScale.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdScale.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdScale);
+        cboScale.setEditable(true);
+        cboScale.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cboScale.toolTipText")); // NOI18N
+        cboScale.setMaximumSize(new java.awt.Dimension(100, 24));
+        cboScale.setMinimumSize(new java.awt.Dimension(100, 24));
+        cboScale.setPreferredSize(new java.awt.Dimension(100, 24));
+        tobDLM25W.add(cboScale);
+
+        jSeparator7.setSeparatorSize(new java.awt.Dimension(2, 32));
+        tobDLM25W.add(jSeparator7);
 
         tbtnZoomMode.setAction(zoomModeAction);
         btnGroupMapMode.add(tbtnZoomMode);
