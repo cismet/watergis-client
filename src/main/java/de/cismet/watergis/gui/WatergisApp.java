@@ -170,6 +170,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.CentralConfigAction centralConfigAction;
     private de.cismet.watergis.gui.actions.CloseAction closeAction;
     private javax.swing.JButton cmdAddBookmark;
+    private javax.swing.JButton cmdDownloadManager;
     private javax.swing.JButton cmdExportMap;
     private javax.swing.JButton cmdFullExtend;
     private javax.swing.JButton cmdGoTo;
@@ -201,7 +202,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.InfoAction infoAction;
     private de.cismet.watergis.gui.actions.InfoWindowAction infoWindowAction;
     private de.cismet.watergis.gui.actions.selection.InvertSelectionAction invertSelectionAction;
-    private javax.swing.JButton jButton1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JToolBar.Separator jSeparator5;
     private javax.swing.JToolBar.Separator jSeparator6;
@@ -621,7 +621,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdSaveProject = new javax.swing.JButton();
         cmdPrint = new javax.swing.JButton();
         cmdExportMap = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        cmdDownloadManager = new javax.swing.JButton();
         cmdAddBookmark = new javax.swing.JButton();
         cmdManageBookmarks = new javax.swing.JButton();
         jSeparator8 = new javax.swing.JToolBar.Separator();
@@ -728,12 +728,12 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdExportMap.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdExportMap);
 
-        jButton1.setAction(downloadManagerAction);
-        jButton1.setFocusable(false);
-        jButton1.setHideActionText(true);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(jButton1);
+        cmdDownloadManager.setAction(downloadManagerAction);
+        cmdDownloadManager.setFocusable(false);
+        cmdDownloadManager.setHideActionText(true);
+        cmdDownloadManager.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdDownloadManager.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdDownloadManager);
 
         cmdAddBookmark.setAction(showCreateBookmarkDialogAction);
         cmdAddBookmark.setFocusable(false);
