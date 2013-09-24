@@ -454,10 +454,10 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JToolBar$Separator" name="jSeparator4">
+        <Component class="javax.swing.JToolBar$Separator" name="jSeparator8">
           <Properties>
             <Property name="separatorSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[2, 32]"/>
+              <Dimension value="[1, 32]"/>
             </Property>
           </Properties>
         </Component>
