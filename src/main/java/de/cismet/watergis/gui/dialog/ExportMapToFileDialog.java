@@ -31,6 +31,7 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -299,16 +300,16 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
+    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // final Image image = AppBroker.getInstance().getMappingComponent().getImage();
         final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
@@ -321,6 +322,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         if (file != null) {
             final Image image;
             try {
+                //TODO Dauert unter Umständen lange. Siehe clipboarder
                 image = futureImage.get();
                 if (save(file, toBufferedImage(image))) {
                     this.dispose();
@@ -331,7 +333,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
                 Exceptions.printStackTrace(ex);
             }
         }
-    } //GEN-LAST:event_btnSaveActionPerformed
+    }//GEN-LAST:event_btnSaveActionPerformed
     /**
      * DOCUMENT ME!
      *
@@ -343,13 +345,20 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         headlessMapProvider.setDominatingDimension(HeadlessMapProvider.DominatingDimension.SIZE);
         headlessMapProvider.setBoundingBox((XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera());
 
-        for (final Object layer : mappingComponent.getMappingModel().getFeatureServices().values()) {
-            headlessMapProvider.addLayer((RetrievalServiceLayer)layer);
+        //TODO was ist die richtige Reihenfolge? TreeMap der Key ist eine Zahl der die Reihenfolge angibt
+        //TreeMap.getKeys() darauf sort und dann Treemap.get(key) 
+        final Object[] rasterServices = mappingComponent.getMappingModel().getRasterServices().values().toArray();
+        for (int i = rasterServices.length - 1; i >= 0; i--) {
+            headlessMapProvider.addLayer((RetrievalServiceLayer)rasterServices[i]);
         }
 
-        for (final Object layer : mappingComponent.getMappingModel().getRasterServices().values()) {
-            headlessMapProvider.addLayer((RetrievalServiceLayer)layer);
-        }
+//        for (final Object layer : mappingComponent.getMappingModel().getFeatureServices().values()) {
+//            headlessMapProvider.addLayer((RetrievalServiceLayer)layer);
+//        }
+
+//        for (final Object layer : mappingComponent.getMappingModel().getRasterServices().values()) {
+//            headlessMapProvider.addLayer((RetrievalServiceLayer)layer);
+//        }
 
         return headlessMapProvider;
     }
@@ -386,6 +395,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
      * @return  DOCUMENT ME!
      */
     private BufferedImage toBufferedImage(final Image src) {
+        //TODO Bilder werden weiß, wie besser machen?
+        
         final int w = src.getWidth(null);
         final int h = src.getHeight(null);
         final BufferedImage image2 = new BufferedImage(w, h,
