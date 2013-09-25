@@ -46,6 +46,7 @@ import de.cismet.watergis.broker.ComponentName;
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.SaveProjectAction;
 import de.cismet.watergis.gui.components.ValidationJTextField;
+import javax.swing.JOptionPane;
 
 /**
  * DOCUMENT ME!
@@ -356,6 +357,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
             return true;
         } catch (IOException e) {
             LOG.error("Write error for " + file.getPath(), e);
+            showErrorWhileSavingDialog();
             return false;
         }
     }
@@ -465,5 +467,18 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     @Override
     public void windowDeactivated(final WindowEvent e) {
         // throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void showErrorWhileSavingDialog() {
+        String title = org.openide.util.NbBundle.getMessage(
+                ExportMapToFileDialog.class,
+                "ExportMapToFileDialog.showErrorWhileSavingDialog().title");
+        String message = org.openide.util.NbBundle.getMessage(
+                ExportMapToFileDialog.class,
+                "ExportMapToFileDialog.showErrorWhileSavingDialog().message");
+        JOptionPane.showMessageDialog(this,
+        message,
+        title,
+        JOptionPane.ERROR_MESSAGE);
     }
 }
