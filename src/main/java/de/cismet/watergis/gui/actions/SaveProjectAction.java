@@ -124,7 +124,7 @@ public class SaveProjectAction extends AbstractAction {
             String name = file.getAbsolutePath();
 
             if (!name.endsWith(".xml")) { // NOI18N
-                file = new File(file.getName() + ".xml");
+                file = new File(file.getAbsolutePath() + ".xml");
                 name = name + ".xml";
             }
 
