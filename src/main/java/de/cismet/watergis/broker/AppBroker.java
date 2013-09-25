@@ -321,7 +321,12 @@ public class AppBroker implements Configurable {
      * @param  mode  DOCUMENT ME!
      */
     public void switchMapMode(final String mode) {
-        mapModeSelectionActions.get(mode).actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode));
+        final Action action = mapModeSelectionActions.get(mode);
+        if (action != null) {
+            action.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode));
+        } else {
+            LOG.error("Can not switch to mode " + mode + ". It does not exist.");
+        }
     }
 
     /**
