@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
 
@@ -38,8 +39,6 @@ import de.cismet.cismap.commons.RestrictedFileSystemView;
 import de.cismet.cismap.commons.RetrievalServiceLayer;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.gui.MappingComponent;
-
-import de.cismet.tools.configuration.ConfigurationManager;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -287,34 +286,39 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
+    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // final Image image = AppBroker.getInstance().getMappingComponent().getImage();
         final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
         final int height = Integer.parseInt(txtHeight.getText());
         final HeadlessMapProvider headlessMapProvider = createHeadlessMapProvider();
-        Image image = null;
-        try {
-            image = headlessMapProvider.getImageAndWait(72, resolution, width, height);
-        } catch (ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
-        }
 
-        final BufferedImage bufferedImage = toBufferedImage(image);
-        save(bufferedImage);
-        this.dispose();
-    } //GEN-LAST:event_btnSaveActionPerformed
+        final Future<Image> futureImage = headlessMapProvider.getImage(72, resolution, width, height);
+        final File file = chooseFile();
+
+        if (file != null) {
+            final Image image;
+            try {
+                image = futureImage.get();
+                if (save(file, (BufferedImage)image)) {
+                    this.dispose();
+                }
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            } catch (ExecutionException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+    }//GEN-LAST:event_btnSaveActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -326,6 +330,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
         headlessMapProvider.setDominatingDimension(HeadlessMapProvider.DominatingDimension.SIZE);
         headlessMapProvider.setBoundingBox((XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera());
+
         for (final Object layer : mappingComponent.getMappingModel().getFeatureServices().values()) {
             headlessMapProvider.addLayer((RetrievalServiceLayer)layer);
         }
@@ -338,18 +343,20 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     }
 
     /**
-     * DOCUMENT ME!
+     * Returns true, if saving was successful.
      *
-     * @param  image  DOCUMENT ME!
+     * @param   file   DOCUMENT ME!
+     * @param   image  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
      */
-    private void save(final BufferedImage image) {
-        final File file = chooseFile();
-        if (file != null) {
-            try {
-                ImageIO.write(image, "jpg", file);
-            } catch (IOException e) {
-                LOG.error("Write error for " + file.getPath(), e);
-            }
+    private boolean save(final File file, final BufferedImage image) {
+        try {
+            ImageIO.write(image, "jpg", file);
+            return true;
+        } catch (IOException e) {
+            LOG.error("Write error for " + file.getPath(), e);
+            return false;
         }
     }
 
@@ -364,7 +371,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     private BufferedImage toBufferedImage(final Image src) {
         final int w = src.getWidth(null);
         final int h = src.getHeight(null);
-        final int type = BufferedImage.TYPE_INT_RGB;
+        final int type = BufferedImage.TYPE_INT_ARGB;
         final BufferedImage dest = new BufferedImage(w, h, type);
         final Graphics2D g2 = dest.createGraphics();
         g2.drawImage(src, 0, 0, null);
