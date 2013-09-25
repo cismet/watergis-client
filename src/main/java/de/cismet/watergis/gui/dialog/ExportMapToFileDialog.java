@@ -11,10 +11,12 @@
  */
 package de.cismet.watergis.gui.dialog;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import org.openide.util.Exceptions;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.WindowEvent;
@@ -22,7 +24,12 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -31,9 +38,11 @@ import javax.imageio.ImageIO;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.filechooser.FileFilter;
 
+import de.cismet.cismap.commons.BoundingBox;
 import de.cismet.cismap.commons.HeadlessMapProvider;
 import de.cismet.cismap.commons.RestrictedFileSystemView;
 import de.cismet.cismap.commons.RetrievalServiceLayer;
@@ -46,7 +55,6 @@ import de.cismet.watergis.broker.ComponentName;
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.SaveProjectAction;
 import de.cismet.watergis.gui.components.ValidationJTextField;
-import javax.swing.JOptionPane;
 
 /**
  * DOCUMENT ME!
@@ -59,6 +67,10 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(ExportMapToFileDialog.class);
+
+    //~ Instance fields --------------------------------------------------------
+
+    private HeadlessMapProvider headlessMapProvider;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
@@ -287,16 +299,16 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }//GEN-LAST:event_btnCancelActionPerformed
+    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
         // final Image image = AppBroker.getInstance().getMappingComponent().getImage();
         final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
@@ -310,7 +322,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
             final Image image;
             try {
                 image = futureImage.get();
-                if (save(file, (BufferedImage)image)) {
+                if (save(file, toBufferedImage(image))) {
                     this.dispose();
                 }
             } catch (InterruptedException ex) {
@@ -319,15 +331,14 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
                 Exceptions.printStackTrace(ex);
             }
         }
-    }//GEN-LAST:event_btnSaveActionPerformed
-
+    } //GEN-LAST:event_btnSaveActionPerformed
     /**
      * DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
     private HeadlessMapProvider createHeadlessMapProvider() {
-        final HeadlessMapProvider headlessMapProvider = new HeadlessMapProvider();
+        headlessMapProvider = new HeadlessMapProvider();
         final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
         headlessMapProvider.setDominatingDimension(HeadlessMapProvider.DominatingDimension.SIZE);
         headlessMapProvider.setBoundingBox((XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera());
@@ -344,7 +355,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     }
 
     /**
-     * Returns true, if saving was successful.
+     * Returns true, if saving was successful. Saves the buffered image and if wished by the user also initializes the
+     * writing of the world file
      *
      * @param   file   DOCUMENT ME!
      * @param   image  DOCUMENT ME!
@@ -354,6 +366,9 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     private boolean save(final File file, final BufferedImage image) {
         try {
             ImageIO.write(image, "jpg", file);
+            if (chbWorldFile.isSelected()) {
+                writeWorldFile(image, file.getAbsolutePath());
+            }
             return true;
         } catch (IOException e) {
             LOG.error("Write error for " + file.getPath(), e);
@@ -373,12 +388,14 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     private BufferedImage toBufferedImage(final Image src) {
         final int w = src.getWidth(null);
         final int h = src.getHeight(null);
-        final int type = BufferedImage.TYPE_INT_ARGB;
-        final BufferedImage dest = new BufferedImage(w, h, type);
-        final Graphics2D g2 = dest.createGraphics();
-        g2.drawImage(src, 0, 0, null);
-        g2.dispose();
-        return dest;
+        final BufferedImage image2 = new BufferedImage(w, h,
+                BufferedImage.TYPE_INT_RGB);
+        final Graphics2D g = image2.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, w, h);
+        g.drawImage(src, 0, 0, null);
+        g.dispose();
+        return image2;
     }
 
     /**
@@ -469,16 +486,88 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         // throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * DOCUMENT ME!
+     */
     private void showErrorWhileSavingDialog() {
-        String title = org.openide.util.NbBundle.getMessage(
+        final String title = org.openide.util.NbBundle.getMessage(
                 ExportMapToFileDialog.class,
                 "ExportMapToFileDialog.showErrorWhileSavingDialog().title");
-        String message = org.openide.util.NbBundle.getMessage(
+        final String message = org.openide.util.NbBundle.getMessage(
                 ExportMapToFileDialog.class,
                 "ExportMapToFileDialog.showErrorWhileSavingDialog().message");
         JOptionPane.showMessageDialog(this,
-        message,
-        title,
-        JOptionPane.ERROR_MESSAGE);
+            message,
+            title,
+            JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  image          DOCUMENT ME!
+     * @param  imageFilePath  DOCUMENT ME!
+     */
+    private void writeWorldFile(final Image image, final String imageFilePath) {
+        final String worldFileContent = getWorldFileContent(image);
+        final String worldFileName = FilenameUtils.getFullPath(imageFilePath) + FilenameUtils.getBaseName(imageFilePath)
+                    + ".jgw";
+        try {
+            final PrintWriter out = new PrintWriter(worldFileName);
+            out.println(worldFileContent);
+            out.close();
+        } catch (FileNotFoundException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   image  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String getWorldFileContent(final Image image) {
+        final BoundingBox boundingBox = headlessMapProvider.getCurrentBoundingBoxFromMap();
+        final DecimalFormat df = new DecimalFormat("#.");
+        final DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        df.setDecimalFormatSymbols(dfs);
+        df.setMaximumFractionDigits(32);
+        final double widthPixel = image.getWidth(null);
+        final double heightPixel = image.getWidth(null);
+
+        // pixel size in the x-direction in map units/pixel
+        final double xPixelSize = (boundingBox.getX2() - boundingBox.getX1()) / widthPixel;
+
+        // rotation about y-axis
+        final int yRotation = 0;
+        // rotation about x-axis
+        final int xRotation = 0;
+
+        // pixel size in the y-direction in map units, almost always negative
+        final double yPixelSize = (boundingBox.getY1() - boundingBox.getY2()) / heightPixel;
+
+        // x-coordinate of the center of the upper left pixel
+        final double xPixelCenter = boundingBox.getX1() + (xPixelSize / 2);
+
+        // y-coordinate of the center of the upper left pixel
+        final double yPixelCenter = boundingBox.getY1() + (yPixelSize / 2);
+
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(df.format(xPixelSize));
+        stringBuilder.append(System.getProperty("line.separator"));
+        stringBuilder.append(yRotation);
+        stringBuilder.append(System.getProperty("line.separator"));
+        stringBuilder.append(xRotation);
+        stringBuilder.append(System.getProperty("line.separator"));
+        stringBuilder.append(df.format(yPixelSize));
+        stringBuilder.append(System.getProperty("line.separator"));
+        stringBuilder.append(df.format(xPixelCenter));
+        stringBuilder.append(System.getProperty("line.separator"));
+        stringBuilder.append(df.format(yPixelCenter));
+
+        return stringBuilder.toString();
     }
 }
