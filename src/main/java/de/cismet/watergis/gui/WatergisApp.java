@@ -172,6 +172,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdAddBookmark;
     private javax.swing.JButton cmdDownloadManager;
     private javax.swing.JButton cmdExportMap;
+    private javax.swing.JButton cmdExportMap1;
     private javax.swing.JButton cmdFullExtend;
     private javax.swing.JButton cmdGoTo;
     private javax.swing.JButton cmdInfo;
@@ -197,6 +198,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.map.CreateGeoLinkAction createGeoLinkAction;
     private de.cismet.watergis.gui.actions.DownloadManagerAction downloadManagerAction;
     private de.cismet.watergis.gui.actions.map.ExportMapAction exportMapAction;
+    private de.cismet.watergis.gui.actions.map.ExportMapToFileAction exportMapToFileAction;
     private de.cismet.watergis.gui.actions.map.FullExtendAction fullExtendAction;
     private de.cismet.watergis.gui.actions.map.GoToAction goToAction;
     private de.cismet.watergis.gui.actions.InfoAction infoAction;
@@ -616,11 +618,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         showManageBookmarksDialogAction =
             new de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction();
         showCreateBookmarkDialogAction = new de.cismet.watergis.gui.actions.bookmarks.ShowCreateBookmarkDialogAction();
+        exportMapToFileAction = new de.cismet.watergis.gui.actions.map.ExportMapToFileAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
         cmdPrint = new javax.swing.JButton();
         cmdExportMap = new javax.swing.JButton();
+        cmdExportMap1 = new javax.swing.JButton();
         cmdDownloadManager = new javax.swing.JButton();
         cmdAddBookmark = new javax.swing.JButton();
         cmdManageBookmarks = new javax.swing.JButton();
@@ -727,6 +731,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdExportMap.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdExportMap.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdExportMap);
+
+        cmdExportMap1.setAction(exportMapToFileAction);
+        cmdExportMap1.setFocusable(false);
+        cmdExportMap1.setHideActionText(true);
+        cmdExportMap1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdExportMap1.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap1.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap1.setPreferredSize(new java.awt.Dimension(26, 26));
+        cmdExportMap1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdExportMap1);
 
         cmdDownloadManager.setAction(downloadManagerAction);
         cmdDownloadManager.setFocusable(false);
