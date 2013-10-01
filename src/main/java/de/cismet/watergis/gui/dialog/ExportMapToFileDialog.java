@@ -31,7 +31,10 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -314,7 +317,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
         final int height = Integer.parseInt(txtHeight.getText());
-        final HeadlessMapProvider headlessMapProvider = createHeadlessMapProvider();
+        headlessMapProvider = createHeadlessMapProvider();
 
         final Future<Image> futureImage = headlessMapProvider.getImage(72, resolution, width, height);
         final File file = chooseFile();
@@ -322,7 +325,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         if (file != null) {
             final Image image;
             try {
-                //TODO Dauert unter Umständen lange. Siehe clipboarder
+                // TODO Dauert unter Umständen lange. Siehe clipboarder
                 image = futureImage.get();
                 if (save(file, toBufferedImage(image))) {
                     this.dispose();
@@ -345,20 +348,35 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         headlessMapProvider.setDominatingDimension(HeadlessMapProvider.DominatingDimension.SIZE);
         headlessMapProvider.setBoundingBox((XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera());
 
-        //TODO was ist die richtige Reihenfolge? TreeMap der Key ist eine Zahl der die Reihenfolge angibt
-        //TreeMap.getKeys() darauf sort und dann Treemap.get(key) 
-        final Object[] rasterServices = mappingComponent.getMappingModel().getRasterServices().values().toArray();
-        for (int i = rasterServices.length - 1; i >= 0; i--) {
-            headlessMapProvider.addLayer((RetrievalServiceLayer)rasterServices[i]);
+        //Raster Services
+        final TreeMap rasterServices = mappingComponent.getMappingModel().getRasterServices();
+        final List positionsRaster = new ArrayList(rasterServices.keySet());
+        Collections.sort(positionsRaster);
+
+        for (final Object position : positionsRaster) {
+            final Object rasterService = rasterServices.get(position);
+            if (rasterService instanceof RetrievalServiceLayer) {
+                headlessMapProvider.addLayer((RetrievalServiceLayer)rasterService);
+            } else {
+                LOG.warn(
+                    "Layer can not be added to the headlessMapProvider as it is not an instance of RetrievalServiceLayer");
+            }
         }
-
-//        for (final Object layer : mappingComponent.getMappingModel().getFeatureServices().values()) {
-//            headlessMapProvider.addLayer((RetrievalServiceLayer)layer);
-//        }
-
-//        for (final Object layer : mappingComponent.getMappingModel().getRasterServices().values()) {
-//            headlessMapProvider.addLayer((RetrievalServiceLayer)layer);
-//        }
+        
+        //Feature Services
+        TreeMap featureServices = mappingComponent.getMappingModel().getFeatureServices();
+        final List positionsFeatures = new ArrayList(featureServices.keySet());
+        Collections.sort(positionsFeatures);
+        
+        for (final Object position : positionsFeatures) {
+            final Object featureService = featureServices.get(position);
+            if (featureService instanceof RetrievalServiceLayer) {
+                headlessMapProvider.addLayer((RetrievalServiceLayer)featureService);
+            } else {
+                LOG.warn(
+                    "Feature can not be added to the headlessMapProvider as it is not an instance of RetrievalServiceLayer");
+            }
+        }
 
         return headlessMapProvider;
     }
@@ -395,8 +413,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
      * @return  DOCUMENT ME!
      */
     private BufferedImage toBufferedImage(final Image src) {
-        //TODO Bilder werden weiß, wie besser machen?
-        
+        // TODO Bilder werden weiß, wie besser machen?
+
         final int w = src.getWidth(null);
         final int h = src.getHeight(null);
         final BufferedImage image2 = new BufferedImage(w, h,
