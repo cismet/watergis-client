@@ -21,6 +21,8 @@ import org.openide.util.Exceptions;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -47,6 +49,8 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
 
@@ -75,7 +79,7 @@ import de.cismet.watergis.utils.WorldFileDownload;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class ExportMapToFileDialog extends javax.swing.JDialog implements WindowListener {
+public class ExportMapToFileDialog extends javax.swing.JDialog implements ComponentListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -83,7 +87,13 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
 
     //~ Instance fields --------------------------------------------------------
 
+    private double ratio;
+
     private HeadlessMapProvider headlessMapProvider;
+
+    private HeightChangedDocumentListener heightChangedDocumentListener = new HeightChangedDocumentListener();
+
+    private WidthChangedDocumentListener widthChangedDocumentListener = new WidthChangedDocumentListener();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
@@ -113,7 +123,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     public ExportMapToFileDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
-        this.addWindowListener(this);
+        this.addComponentListener(this);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -312,15 +322,15 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }//GEN-LAST:event_btnCancelActionPerformed
+    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
         // final Image image = AppBroker.getInstance().getMappingComponent().getImage();
         final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
@@ -351,7 +361,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
 
             this.dispose();
         }
-    }//GEN-LAST:event_btnSaveActionPerformed
+    } //GEN-LAST:event_btnSaveActionPerformed
     /**
      * DOCUMENT ME!
      *
@@ -445,57 +455,131 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         }
     }
 
-    @Override
-    public void windowOpened(final WindowEvent e) {
-        // throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void windowClosing(final WindowEvent e) {
-        // throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void windowClosed(final WindowEvent e) {
-        // throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void windowIconified(final WindowEvent e) {
-        // new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void windowDeiconified(final WindowEvent e) {
-        // throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void windowActivated(final WindowEvent e) {
-        final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
-        txtHeight.setText(Integer.toString(mappingComponent.getHeight()));
-        txtWidth.setText(Integer.toString(mappingComponent.getWidth()));
-        spnDPI.setValue(72);
-    }
-
-    @Override
-    public void windowDeactivated(final WindowEvent e) {
-        // throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * DOCUMENT ME!
+     */
+    private void addListener() {
+        txtHeight.getDocument().addDocumentListener(heightChangedDocumentListener);
+        txtWidth.getDocument().addDocumentListener(widthChangedDocumentListener);
     }
 
     /**
      * DOCUMENT ME!
      */
-    private void showErrorWhileSavingDialog() {
-        final String title = org.openide.util.NbBundle.getMessage(
-                ExportMapToFileDialog.class,
-                "ExportMapToFileDialog.showErrorWhileSavingDialog().title");
-        final String message = org.openide.util.NbBundle.getMessage(
-                ExportMapToFileDialog.class,
-                "ExportMapToFileDialog.showErrorWhileSavingDialog().message");
-        JOptionPane.showMessageDialog(this,
-            message,
-            title,
-            JOptionPane.ERROR_MESSAGE);
+    private void removeListener() {
+        txtHeight.getDocument().removeDocumentListener(heightChangedDocumentListener);
+        txtWidth.getDocument().removeDocumentListener(widthChangedDocumentListener);
+    }
+
+    @Override
+    public void componentResized(final ComponentEvent e) {
+        // throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void componentMoved(final ComponentEvent e) {
+        // throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void componentShown(final ComponentEvent e) {
+        removeListener();
+
+        final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
+        txtHeight.setText(Integer.toString(mappingComponent.getHeight()));
+        txtWidth.setText(Integer.toString(mappingComponent.getWidth()));
+        ratio = mappingComponent.getHeight() * 1d / mappingComponent.getWidth();
+        spnDPI.setValue(72);
+
+        addListener();
+    }
+
+    @Override
+    public void componentHidden(final ComponentEvent e) {
+        // throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    class HeightChangedDocumentListener implements DocumentListener {
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void insertUpdate(final DocumentEvent e) {
+            heightChanged();
+        }
+
+        @Override
+        public void removeUpdate(final DocumentEvent e) {
+            heightChanged();
+        }
+
+        @Override
+        public void changedUpdate(final DocumentEvent e) {
+            heightChanged();
+        }
+
+        /**
+         * DOCUMENT ME!
+         */
+        private void heightChanged() {
+            if (((ValidationJTextField)txtHeight).isValid()) {
+                ExportMapToFileDialog.this.removeListener();
+
+                final int newHeigth = Integer.parseInt(txtHeight.getText());
+                final double newWidth = newHeigth / ratio;
+                final int newWidthPixel = (int)Math.round(newWidth);
+                txtWidth.setText(Integer.toString(newWidthPixel));
+
+                ExportMapToFileDialog.this.addListener();
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    class WidthChangedDocumentListener implements DocumentListener {
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void insertUpdate(final DocumentEvent e) {
+            widthChanged();
+        }
+
+        @Override
+        public void removeUpdate(final DocumentEvent e) {
+            widthChanged();
+        }
+
+        @Override
+        public void changedUpdate(final DocumentEvent e) {
+            widthChanged();
+        }
+
+        /**
+         * DOCUMENT ME!
+         */
+        private void widthChanged() {
+            if (((ValidationJTextField)txtWidth).isValid()) {
+                ExportMapToFileDialog.this.removeListener();
+
+                final int newWidth = Integer.parseInt(txtWidth.getText());
+                final double newHeigth = newWidth * ratio;
+                final int newHeigthPixel = (int)Math.round(newHeigth);
+                txtHeight.setText(Integer.toString(newHeigthPixel));
+
+                ExportMapToFileDialog.this.addListener();
+            }
+        }
     }
 }
