@@ -16,9 +16,9 @@ import org.apache.log4j.Logger;
 
 import org.openide.util.Exceptions;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -303,16 +303,16 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }//GEN-LAST:event_btnCancelActionPerformed
+    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
         // final Image image = AppBroker.getInstance().getMappingComponent().getImage();
         final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
@@ -327,7 +327,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
             try {
                 // TODO Dauert unter Umständen lange. Siehe clipboarder
                 image = futureImage.get();
-                if (save(file, toBufferedImage(image))) {
+                if (save(file, removeTransparency(image))) {
                     this.dispose();
                 }
             } catch (InterruptedException ex) {
@@ -336,7 +336,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
                 Exceptions.printStackTrace(ex);
             }
         }
-    }//GEN-LAST:event_btnSaveActionPerformed
+    } //GEN-LAST:event_btnSaveActionPerformed
     /**
      * DOCUMENT ME!
      *
@@ -348,7 +348,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         headlessMapProvider.setDominatingDimension(HeadlessMapProvider.DominatingDimension.SIZE);
         headlessMapProvider.setBoundingBox((XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera());
 
-        //Raster Services
+        // Raster Services
         final TreeMap rasterServices = mappingComponent.getMappingModel().getRasterServices();
         final List positionsRaster = new ArrayList(rasterServices.keySet());
         Collections.sort(positionsRaster);
@@ -362,12 +362,12 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
                     "Layer can not be added to the headlessMapProvider as it is not an instance of RetrievalServiceLayer");
             }
         }
-        
-        //Feature Services
-        TreeMap featureServices = mappingComponent.getMappingModel().getFeatureServices();
+
+        // Feature Services
+        final TreeMap featureServices = mappingComponent.getMappingModel().getFeatureServices();
         final List positionsFeatures = new ArrayList(featureServices.keySet());
         Collections.sort(positionsFeatures);
-        
+
         for (final Object position : positionsFeatures) {
             final Object featureService = featureServices.get(position);
             if (featureService instanceof RetrievalServiceLayer) {
@@ -405,26 +405,32 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     }
 
     /**
-     * Has also to be used if <code>src</code> is already an instance of BufferedImage, as it might be that the type is
-     * not correct.
+     * Removes the transparency from an image and returns an opaque image. This method is needed as the image should be
+     * saved as jpg, which is unable to handle transparency.
      *
-     * @param   src  DOCUMENT ME!
+     * @param   transparentImage  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private BufferedImage toBufferedImage(final Image src) {
-        // TODO Bilder werden weiß, wie besser machen?
-
-        final int w = src.getWidth(null);
-        final int h = src.getHeight(null);
-        final BufferedImage image2 = new BufferedImage(w, h,
+    private BufferedImage removeTransparency(final Image transparentImage) {
+        final BufferedImage opaqueImage = new BufferedImage(transparentImage.getWidth(null),
+                transparentImage.getHeight(null),
                 BufferedImage.TYPE_INT_RGB);
-        final Graphics2D g = image2.createGraphics();
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, w, h);
-        g.drawImage(src, 0, 0, null);
-        g.dispose();
-        return image2;
+
+        Graphics2D g2 = null;
+        try {
+            g2 = opaqueImage.createGraphics();
+
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            g2.drawImage(transparentImage, 0, 0, opaqueImage.getWidth(), opaqueImage.getHeight(), null);
+        } finally {
+            if (g2 != null) {
+                g2.dispose();
+            }
+        }
+
+        return (BufferedImage)opaqueImage;
     }
 
     /**
