@@ -14,6 +14,8 @@ package de.cismet.watergis.gui.dialog;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import org.deegree.model.coverage.grid.WorldFile;
+
 import org.openide.util.Exceptions;
 
 import java.awt.Graphics2D;
@@ -30,12 +32,12 @@ import java.io.PrintWriter;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.MessageFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
@@ -44,7 +46,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileSystemView;
 
 import de.cismet.cismap.commons.BoundingBox;
 import de.cismet.cismap.commons.HeadlessMapProvider;
@@ -53,12 +57,17 @@ import de.cismet.cismap.commons.RetrievalServiceLayer;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.gui.MappingComponent;
 
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
+
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.SaveProjectAction;
 import de.cismet.watergis.gui.components.ValidationJTextField;
+
+import de.cismet.watergis.utils.ImageDownload;
+import de.cismet.watergis.utils.WorldFileDownload;
 
 /**
  * DOCUMENT ME!
@@ -303,16 +312,15 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
-
+    }//GEN-LAST:event_btnCancelActionPerformed
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // final Image image = AppBroker.getInstance().getMappingComponent().getImage();
         final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
@@ -323,20 +331,27 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
         final File file = chooseFile();
 
         if (file != null) {
-            final Image image;
-            try {
-                // TODO Dauert unter Umständen lange. Siehe clipboarder
-                image = futureImage.get();
-                if (save(file, removeTransparency(image))) {
-                    this.dispose();
-                }
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-            } catch (ExecutionException ex) {
-                Exceptions.printStackTrace(ex);
+            final String imageFilePath = file.getAbsolutePath();
+            final ImageDownload imageDownload = new ImageDownload(
+                    FilenameUtils.getBaseName(imageFilePath),
+                    FilenameUtils.getExtension(imageFilePath),
+                    file,
+                    futureImage);
+            DownloadManager.instance().add(imageDownload);
+            if (chbWorldFile.isSelected()) {
+                final String worldFileName = FilenameUtils.getFullPath(imageFilePath)
+                            + FilenameUtils.getBaseName(imageFilePath)
+                            + ".jgw";
+                final WorldFileDownload worldFileDownload = new WorldFileDownload(
+                        futureImage,
+                        headlessMapProvider.getCurrentBoundingBoxFromMap(),
+                        worldFileName);
+                DownloadManager.instance().add(worldFileDownload);
             }
+
+            this.dispose();
         }
-    } //GEN-LAST:event_btnSaveActionPerformed
+    }//GEN-LAST:event_btnSaveActionPerformed
     /**
      * DOCUMENT ME!
      *
@@ -382,70 +397,17 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
     }
 
     /**
-     * Returns true, if saving was successful. Saves the buffered image and if wished by the user also initializes the
-     * writing of the world file
-     *
-     * @param   file   DOCUMENT ME!
-     * @param   image  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private boolean save(final File file, final BufferedImage image) {
-        try {
-            ImageIO.write(image, "jpg", file);
-            if (chbWorldFile.isSelected()) {
-                writeWorldFile(image, file.getAbsolutePath());
-            }
-            return true;
-        } catch (IOException e) {
-            LOG.error("Write error for " + file.getPath(), e);
-            showErrorWhileSavingDialog();
-            return false;
-        }
-    }
-
-    /**
-     * Removes the transparency from an image and returns an opaque image. This method is needed as the image should be
-     * saved as jpg, which is unable to handle transparency.
-     *
-     * @param   transparentImage  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private BufferedImage removeTransparency(final Image transparentImage) {
-        final BufferedImage opaqueImage = new BufferedImage(transparentImage.getWidth(null),
-                transparentImage.getHeight(null),
-                BufferedImage.TYPE_INT_RGB);
-
-        Graphics2D g2 = null;
-        try {
-            g2 = opaqueImage.createGraphics();
-
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            g2.drawImage(transparentImage, 0, 0, opaqueImage.getWidth(), opaqueImage.getHeight(), null);
-        } finally {
-            if (g2 != null) {
-                g2.dispose();
-            }
-        }
-
-        return (BufferedImage)opaqueImage;
-    }
-
-    /**
      * DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
     private File chooseFile() {
         JFileChooser fc;
-
         try {
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
+            fc = new JFileChooser(DownloadManager.instance().getDestinationDirectory());
         } catch (Exception bug) {
             // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
+            fc = new JFileChooser(DownloadManager.instance().getDestinationDirectory(), new RestrictedFileSystemView());
         }
 
         fc.setFileFilter(new FileFilter() {
@@ -535,74 +497,5 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Window
             message,
             title,
             JOptionPane.ERROR_MESSAGE);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  image          DOCUMENT ME!
-     * @param  imageFilePath  DOCUMENT ME!
-     */
-    private void writeWorldFile(final Image image, final String imageFilePath) {
-        final String worldFileContent = getWorldFileContent(image);
-        final String worldFileName = FilenameUtils.getFullPath(imageFilePath) + FilenameUtils.getBaseName(imageFilePath)
-                    + ".jgw";
-        try {
-            final PrintWriter out = new PrintWriter(worldFileName);
-            out.println(worldFileContent);
-            out.close();
-        } catch (FileNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   image  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private String getWorldFileContent(final Image image) {
-        final BoundingBox boundingBox = headlessMapProvider.getCurrentBoundingBoxFromMap();
-        final DecimalFormat df = new DecimalFormat("#.");
-        final DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-        dfs.setDecimalSeparator('.');
-        df.setDecimalFormatSymbols(dfs);
-        df.setMaximumFractionDigits(32);
-        final double widthPixel = image.getWidth(null);
-        final double heightPixel = image.getWidth(null);
-
-        // pixel size in the x-direction in map units/pixel
-        final double xPixelSize = (boundingBox.getX2() - boundingBox.getX1()) / widthPixel;
-
-        // rotation about y-axis
-        final int yRotation = 0;
-        // rotation about x-axis
-        final int xRotation = 0;
-
-        // pixel size in the y-direction in map units, almost always negative
-        final double yPixelSize = (boundingBox.getY1() - boundingBox.getY2()) / heightPixel;
-
-        // x-coordinate of the center of the upper left pixel
-        final double xPixelCenter = boundingBox.getX1() + (xPixelSize / 2);
-
-        // y-coordinate of the center of the upper left pixel
-        final double yPixelCenter = boundingBox.getY1() + (yPixelSize / 2);
-
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(df.format(xPixelSize));
-        stringBuilder.append(System.getProperty("line.separator"));
-        stringBuilder.append(yRotation);
-        stringBuilder.append(System.getProperty("line.separator"));
-        stringBuilder.append(xRotation);
-        stringBuilder.append(System.getProperty("line.separator"));
-        stringBuilder.append(df.format(yPixelSize));
-        stringBuilder.append(System.getProperty("line.separator"));
-        stringBuilder.append(df.format(xPixelCenter));
-        stringBuilder.append(System.getProperty("line.separator"));
-        stringBuilder.append(df.format(yPixelCenter));
-
-        return stringBuilder.toString();
     }
 }
