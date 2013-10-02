@@ -87,13 +87,13 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
 
     //~ Instance fields --------------------------------------------------------
 
-    private double ratio;
-
     private HeadlessMapProvider headlessMapProvider;
 
     private HeightChangedDocumentListener heightChangedDocumentListener = new HeightChangedDocumentListener();
 
     private WidthChangedDocumentListener widthChangedDocumentListener = new WidthChangedDocumentListener();
+
+    private PixelDPICalculator pixelDPICalculator;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
@@ -486,10 +486,15 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         removeListener();
 
         final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
-        txtHeight.setText(Integer.toString(mappingComponent.getHeight()));
-        txtWidth.setText(Integer.toString(mappingComponent.getWidth()));
-        ratio = mappingComponent.getHeight() * 1d / mappingComponent.getWidth();
-        spnDPI.setValue(72);
+        final int width = mappingComponent.getWidth();
+        final int height = mappingComponent.getHeight();
+        final int dpi = 72;
+
+        pixelDPICalculator = new PixelDPICalculator(width, height, dpi);
+
+        txtHeight.setText(Integer.toString(height));
+        txtWidth.setText(Integer.toString(width));
+        spnDPI.setValue(dpi);
 
         addListener();
     }
@@ -500,6 +505,96 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     }
 
     //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    class PixelDPICalculator {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private int widthPixel;
+        private int heightPixel;
+        private int DPI;
+        private double aspectRatio; // width / height
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new PixelDPICalculator object.
+         *
+         * @param  widthPixel   DOCUMENT ME!
+         * @param  heightPixel  DOCUMENT ME!
+         * @param  DPI          DOCUMENT ME!
+         */
+        public PixelDPICalculator(final int widthPixel, final int heightPixel, final int DPI) {
+            this.widthPixel = widthPixel;
+            this.heightPixel = heightPixel;
+            this.DPI = DPI;
+
+            this.aspectRatio = widthPixel * 1d / heightPixel;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        public int getHeightPixel() {
+            return heightPixel;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  heightPixel  DOCUMENT ME!
+         */
+        public void setHeightPixel(final int heightPixel) {
+            this.heightPixel = heightPixel;
+            this.widthPixel = (int)Math.round(heightPixel * aspectRatio);
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        public int getDPI() {
+            return DPI;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  DPI  DOCUMENT ME!
+         */
+        public void setDPI(final int DPI) {
+            this.DPI = DPI;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        public int getWidthPixel() {
+            return widthPixel;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  widthPixel  DOCUMENT ME!
+         */
+        public void setWidthPixel(final int widthPixel) {
+            this.widthPixel = widthPixel;
+            this.heightPixel = (int)Math.round(widthPixel * 1d / aspectRatio);
+        }
+    }
 
     /**
      * DOCUMENT ME!
@@ -533,9 +628,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
                 ExportMapToFileDialog.this.removeListener();
 
                 final int newHeigth = Integer.parseInt(txtHeight.getText());
-                final double newWidth = newHeigth / ratio;
-                final int newWidthPixel = (int)Math.round(newWidth);
-                txtWidth.setText(Integer.toString(newWidthPixel));
+                pixelDPICalculator.setHeightPixel(newHeigth);
+                txtWidth.setText(Integer.toString(pixelDPICalculator.getWidthPixel()));
 
                 ExportMapToFileDialog.this.addListener();
             }
@@ -574,9 +668,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
                 ExportMapToFileDialog.this.removeListener();
 
                 final int newWidth = Integer.parseInt(txtWidth.getText());
-                final double newHeigth = newWidth * ratio;
-                final int newHeigthPixel = (int)Math.round(newHeigth);
-                txtHeight.setText(Integer.toString(newHeigthPixel));
+                pixelDPICalculator.setWidthPixel(newWidth);
+                txtHeight.setText(Integer.toString(pixelDPICalculator.getHeightPixel()));
 
                 ExportMapToFileDialog.this.addListener();
             }
