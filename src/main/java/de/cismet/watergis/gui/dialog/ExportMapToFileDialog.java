@@ -322,15 +322,15 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }//GEN-LAST:event_btnCancelActionPerformed
+    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
         // final Image image = AppBroker.getInstance().getMappingComponent().getImage();
         final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
@@ -361,7 +361,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
 
             this.dispose();
         }
-    }//GEN-LAST:event_btnSaveActionPerformed
+    } //GEN-LAST:event_btnSaveActionPerformed
     /**
      * DOCUMENT ME!
      *
@@ -551,11 +551,14 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         /**
          * DOCUMENT ME!
          *
-         * @param  heightPixel  DOCUMENT ME!
+         * @param  newHeightPixel  DOCUMENT ME!
          */
-        public void setHeightPixel(final int heightPixel) {
-            this.heightPixel = heightPixel;
-            this.widthPixel = (int)Math.round(heightPixel * aspectRatio);
+        public void setHeightPixel(final int newHeightPixel) {
+            this.widthPixel = (int)Math.round(newHeightPixel * aspectRatio);
+            final double newDpi = (newHeightPixel * 1d * dpi) / this.heightPixel;
+
+            this.dpi = (int)Math.round(newDpi);
+            this.heightPixel = newHeightPixel;
         }
 
         /**
@@ -570,7 +573,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         /**
          * DOCUMENT ME!
          *
-         * @param  DPI  DOCUMENT ME!
+         * @param  dpi  DPI DOCUMENT ME!
          */
         public void setDPI(final int dpi) {
             this.dpi = dpi;
@@ -588,11 +591,14 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         /**
          * DOCUMENT ME!
          *
-         * @param  widthPixel  DOCUMENT ME!
+         * @param  newWidthPixel  DOCUMENT ME!
          */
-        public void setWidthPixel(final int widthPixel) {
-            this.widthPixel = widthPixel;
-            this.heightPixel = (int)Math.round(widthPixel * 1d / aspectRatio);
+        public void setWidthPixel(final int newWidthPixel) {
+            this.heightPixel = (int)Math.round(newWidthPixel * 1d / aspectRatio);
+            final double newDpi = (newWidthPixel * 1d * dpi) / this.widthPixel;
+
+            this.dpi = (int)Math.round(newDpi);
+            this.widthPixel = newWidthPixel;
         }
     }
 
@@ -630,6 +636,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
                 final int newHeigth = Integer.parseInt(txtHeight.getText());
                 pixelDPICalculator.setHeightPixel(newHeigth);
                 txtWidth.setText(Integer.toString(pixelDPICalculator.getWidthPixel()));
+                spnDPI.setValue(pixelDPICalculator.getDPI());
 
                 ExportMapToFileDialog.this.addListener();
             }
@@ -670,6 +677,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
                 final int newWidth = Integer.parseInt(txtWidth.getText());
                 pixelDPICalculator.setWidthPixel(newWidth);
                 txtHeight.setText(Integer.toString(pixelDPICalculator.getHeightPixel()));
+                spnDPI.setValue(pixelDPICalculator.getDPI());
 
                 ExportMapToFileDialog.this.addListener();
             }
