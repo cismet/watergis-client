@@ -64,7 +64,7 @@ public class ExportMapAction extends AbstractAction {
                 "ExportMapAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-export.png"));
+                    "/de/cismet/watergis/res/icons16/icon-copy.png"));
         putValue(SMALL_ICON, icon);
     }
 
