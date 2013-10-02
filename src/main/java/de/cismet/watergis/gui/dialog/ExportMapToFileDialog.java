@@ -322,15 +322,15 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
+    }//GEN-LAST:event_btnCancelActionPerformed
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // final Image image = AppBroker.getInstance().getMappingComponent().getImage();
         final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
@@ -361,7 +361,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
 
             this.dispose();
         }
-    } //GEN-LAST:event_btnSaveActionPerformed
+    }//GEN-LAST:event_btnSaveActionPerformed
     /**
      * DOCUMENT ME!
      *
@@ -517,7 +517,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
 
         private int widthPixel;
         private int heightPixel;
-        private int DPI;
+        private int dpi;
         private double aspectRatio; // width / height
 
         //~ Constructors -------------------------------------------------------
@@ -527,12 +527,12 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
          *
          * @param  widthPixel   DOCUMENT ME!
          * @param  heightPixel  DOCUMENT ME!
-         * @param  DPI          DOCUMENT ME!
+         * @param  dpi          DOCUMENT ME!
          */
-        public PixelDPICalculator(final int widthPixel, final int heightPixel, final int DPI) {
+        public PixelDPICalculator(final int widthPixel, final int heightPixel, final int dpi) {
             this.widthPixel = widthPixel;
             this.heightPixel = heightPixel;
-            this.DPI = DPI;
+            this.dpi = dpi;
 
             this.aspectRatio = widthPixel * 1d / heightPixel;
         }
@@ -564,7 +564,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
          * @return  DOCUMENT ME!
          */
         public int getDPI() {
-            return DPI;
+            return dpi;
         }
 
         /**
@@ -572,8 +572,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
          *
          * @param  DPI  DOCUMENT ME!
          */
-        public void setDPI(final int DPI) {
-            this.DPI = DPI;
+        public void setDPI(final int dpi) {
+            this.dpi = dpi;
         }
 
         /**
