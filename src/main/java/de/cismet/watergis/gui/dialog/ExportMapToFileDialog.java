@@ -211,7 +211,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 0);
         jPanel1.add(txtWidth, gridBagConstraints);
-        ((ValidationJTextField)txtWidth).setPattern("\\d+");
+        ((ValidationJTextField)txtWidth).setPattern("\\d{1,9}");
 
         txtHeight.setText(org.openide.util.NbBundle.getMessage(
                 ExportMapToFileDialog.class,
@@ -224,7 +224,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 0);
         jPanel1.add(txtHeight, gridBagConstraints);
-        ((ValidationJTextField)txtHeight).setPattern("\\d+");
+        ((ValidationJTextField)txtHeight).setPattern("\\d{1,9}");
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel3,

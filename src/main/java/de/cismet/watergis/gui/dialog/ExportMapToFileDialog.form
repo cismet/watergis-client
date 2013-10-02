@@ -100,7 +100,7 @@
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ValidationJTextField();"/>
-            <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="((ValidationJTextField)txtWidth).setPattern(&quot;\\d+&quot;);"/>
+            <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="((ValidationJTextField)txtWidth).setPattern(&quot;\\d{1,9}&quot;);"/>
           </AuxValues>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -116,7 +116,7 @@
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ValidationJTextField();"/>
-            <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="((ValidationJTextField)txtHeight).setPattern(&quot;\\d+&quot;);"/>
+            <AuxValue name="JavaCodeGenerator_allCodePost" type="java.lang.String" value="((ValidationJTextField)txtHeight).setPattern(&quot;\\d{1,9}&quot;);"/>
           </AuxValues>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
