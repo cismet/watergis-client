@@ -171,4 +171,31 @@ public class ImageDownload extends AbstractDownload implements Cancellable {
             fileToSaveTo.delete();
         }
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = (37 * hash) + ((this.extension != null) ? this.extension.hashCode() : 0);
+        hash = (37 * hash) + ((this.futureImage != null) ? this.futureImage.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ImageDownload other = (ImageDownload)obj;
+        if ((this.extension == null) ? (other.extension != null) : (!this.extension.equals(other.extension))) {
+            return false;
+        }
+        if ((this.futureImage != other.futureImage)
+                    && ((this.futureImage == null) || !this.futureImage.equals(other.futureImage))) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -159,4 +159,33 @@ public class WorldFileDownload extends AbstractDownload {
 
         return stringBuilder.toString();
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = (31 * hash) + ((this.futureImage != null) ? this.futureImage.hashCode() : 0);
+        hash = (31 * hash) + ((this.boundingBoxFromMap != null) ? this.boundingBoxFromMap.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WorldFileDownload other = (WorldFileDownload)obj;
+        if ((this.futureImage != other.futureImage)
+                    && ((this.futureImage == null) || !this.futureImage.equals(other.futureImage))) {
+            return false;
+        }
+        if ((this.boundingBoxFromMap != other.boundingBoxFromMap)
+                    && ((this.boundingBoxFromMap == null) || !this.boundingBoxFromMap.equals(
+                            other.boundingBoxFromMap))) {
+            return false;
+        }
+        return true;
+    }
 }
