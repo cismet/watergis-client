@@ -529,7 +529,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
          * DOCUMENT ME!
          */
         private void heightChanged() {
-            if (((ValidationJTextField)txtHeight).isValid()) {
+            if (((ValidationJTextField)txtHeight).isContentValid()) {
                 ExportMapToFileDialog.this.removeListener();
 
                 final int newHeigth = Integer.parseInt(txtHeight.getText());
@@ -570,7 +570,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
          * DOCUMENT ME!
          */
         private void widthChanged() {
-            if (((ValidationJTextField)txtWidth).isValid()) {
+            if (((ValidationJTextField)txtWidth).isContentValid()) {
                 ExportMapToFileDialog.this.removeListener();
 
                 final int newWidth = Integer.parseInt(txtWidth.getText());

@@ -140,11 +140,10 @@ public class ValidationJTextField extends JTextField {
     /**
      * DOCUMENT ME!
      *
-     * @param   selectedItem  DOCUMENT ME!
-     *
      * @return  DOCUMENT ME!
      */
-    private boolean isValid(final String selectedItem) {
+    public boolean isContentValid() {
+        final String selectedItem = this.getText();
         final Matcher m = pattern.matcher(selectedItem);
         return m.matches();
     }
@@ -153,7 +152,7 @@ public class ValidationJTextField extends JTextField {
      * DOCUMENT ME!
      */
     private void validateText() {
-        if (isValid(this.getText())) {
+        if (isContentValid()) {
             this.setBackground(Color.white);
         } else {
             this.setBackground(Color.red);
