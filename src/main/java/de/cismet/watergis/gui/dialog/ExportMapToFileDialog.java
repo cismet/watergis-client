@@ -49,6 +49,8 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
@@ -94,6 +96,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     private WidthChangedDocumentListener widthChangedDocumentListener = new WidthChangedDocumentListener();
 
     private PixelDPICalculator pixelDPICalculator;
+
+    private DpiChangedDocumentListener dpiChangedDocumentListener = new DpiChangedDocumentListener();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
@@ -337,7 +341,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         final int height = Integer.parseInt(txtHeight.getText());
         headlessMapProvider = createHeadlessMapProvider();
 
-        final Future<Image> futureImage = headlessMapProvider.getImage(72, resolution, width, height);
+        final Future<Image> futureImage = headlessMapProvider.getImage(width, height);
         final File file = chooseFile();
 
         if (file != null) {
@@ -461,6 +465,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     private void addListener() {
         txtHeight.getDocument().addDocumentListener(heightChangedDocumentListener);
         txtWidth.getDocument().addDocumentListener(widthChangedDocumentListener);
+        spnDPI.addChangeListener(dpiChangedDocumentListener);
     }
 
     /**
@@ -469,6 +474,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     private void removeListener() {
         txtHeight.getDocument().removeDocumentListener(heightChangedDocumentListener);
         txtWidth.getDocument().removeDocumentListener(widthChangedDocumentListener);
+        spnDPI.removeChangeListener(dpiChangedDocumentListener);
     }
 
     @Override
@@ -573,10 +579,16 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         /**
          * DOCUMENT ME!
          *
-         * @param  dpi  DPI DOCUMENT ME!
+         * @param  newDpi  DPI DOCUMENT ME!
          */
-        public void setDPI(final int dpi) {
-            this.dpi = dpi;
+        public void setDPI(final int newDpi) {
+            final double newWidthPixel = widthPixel * 1d / dpi * newDpi;
+            this.widthPixel = (int)Math.round(newWidthPixel);
+
+            final double newHeightPixel = heightPixel * 1d / dpi * newDpi;
+            this.heightPixel = (int)Math.round(newHeightPixel);
+
+            this.dpi = newDpi;
         }
 
         /**
@@ -681,6 +693,35 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
 
                 ExportMapToFileDialog.this.addListener();
             }
+        }
+    }
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    class DpiChangedDocumentListener implements ChangeListener {
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void stateChanged(final ChangeEvent e) {
+            dpiChanged();
+        }
+
+        /**
+         * DOCUMENT ME!
+         */
+        private void dpiChanged() {
+            ExportMapToFileDialog.this.removeListener();
+
+            final int newDpi = (Integer)spnDPI.getValue();
+            pixelDPICalculator.setDPI(newDpi);
+
+            txtHeight.setText(Integer.toString(pixelDPICalculator.getHeightPixel()));
+            txtWidth.setText(Integer.toString(pixelDPICalculator.getWidthPixel()));
+
+            ExportMapToFileDialog.this.addListener();
         }
     }
 }
