@@ -335,8 +335,6 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
      * @param  evt  DOCUMENT ME!
      */
     private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
-        // final Image image = AppBroker.getInstance().getMappingComponent().getImage();
-        final int resolution = (Integer)spnDPI.getValue();
         final int width = Integer.parseInt(txtWidth.getText());
         final int height = Integer.parseInt(txtHeight.getText());
         headlessMapProvider = createHeadlessMapProvider();
@@ -524,7 +522,10 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         private int widthPixel;
         private int heightPixel;
         private int dpi;
-        private double aspectRatio; // width / height
+        private final double aspectRatio; // width / height
+        // needed to calculate the dpi. May seem unnecessary, but using the equation newdpi = newWidth * olddpi /
+        // oldWidth has the problem that newdpi can become 0.
+        private final double widthInches;
 
         //~ Constructors -------------------------------------------------------
 
@@ -541,6 +542,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
             this.dpi = dpi;
 
             this.aspectRatio = widthPixel * 1d / heightPixel;
+            this.widthInches = widthPixel * 1d / dpi;
         }
 
         //~ Methods ------------------------------------------------------------
@@ -561,7 +563,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
          */
         public void setHeightPixel(final int newHeightPixel) {
             this.widthPixel = (int)Math.round(newHeightPixel * aspectRatio);
-            final double newDpi = (newHeightPixel * 1d * dpi) / this.heightPixel;
+            final double newDpi = widthPixel / widthInches;
 
             this.dpi = (int)Math.round(newDpi);
             this.heightPixel = newHeightPixel;
@@ -607,10 +609,10 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
          */
         public void setWidthPixel(final int newWidthPixel) {
             this.heightPixel = (int)Math.round(newWidthPixel * 1d / aspectRatio);
-            final double newDpi = (newWidthPixel * 1d * dpi) / this.widthPixel;
-
-            this.dpi = (int)Math.round(newDpi);
             this.widthPixel = newWidthPixel;
+
+            final double newDpi = widthPixel / widthInches;
+            this.dpi = (int)Math.round(newDpi);
         }
     }
 
