@@ -14,6 +14,7 @@ package de.cismet.watergis.utils;
 import org.openide.util.Cancellable;
 import org.openide.util.Exceptions;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -130,22 +131,37 @@ public class ImageDownload extends AbstractDownload implements Cancellable {
      * @return  DOCUMENT ME!
      */
     private BufferedImage removeTransparency(final Image transparentImage) {
-        final BufferedImage opaqueImage = new BufferedImage(transparentImage.getWidth(null),
+        final BufferedImage whiteBackgroundImage = new BufferedImage(transparentImage.getWidth(null),
                 transparentImage.getHeight(null),
-                BufferedImage.TYPE_INT_RGB);
+                BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2 = null;
         try {
-            g2 = opaqueImage.createGraphics();
+            g2 = whiteBackgroundImage.createGraphics();
+
+             g2.setColor(Color.WHITE);
+             g2.fillRect(0, 0, whiteBackgroundImage.getWidth(), whiteBackgroundImage.getHeight());
 
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            g2.drawImage(transparentImage, 0, 0, opaqueImage.getWidth(), opaqueImage.getHeight(), null);
+            g2.drawImage(
+                transparentImage,
+                0,
+                0,
+                whiteBackgroundImage.getWidth(),
+                whiteBackgroundImage.getHeight(),
+                null);
         } finally {
             if (g2 != null) {
                 g2.dispose();
             }
         }
+
+        // BufferedImage bufImg = ImageIO.read( imageURL );
+        final BufferedImage opaqueImage = new BufferedImage(whiteBackgroundImage.getWidth(),
+                whiteBackgroundImage.getHeight(),
+                BufferedImage.TYPE_INT_RGB);
+        opaqueImage.getGraphics().drawImage(whiteBackgroundImage, 0, 0, null);
 
         return (BufferedImage)opaqueImage;
     }

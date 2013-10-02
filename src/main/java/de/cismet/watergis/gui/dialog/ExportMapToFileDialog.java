@@ -162,7 +162,9 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(7, 7, 7, 7));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(lblName, org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.lblName.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            lblName,
+            org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.lblName.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -179,10 +181,12 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 6, 0);
         jPanel1.add(spnDPI, gridBagConstraints);
-        JFormattedTextField tf = ((JSpinner.DefaultEditor)spnDPI.getEditor()).getTextField();
+        final JFormattedTextField tf = ((JSpinner.DefaultEditor)spnDPI.getEditor()).getTextField();
         tf.setHorizontalAlignment(JFormattedTextField.LEFT);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel1.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel1,
+            org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel1.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
@@ -190,7 +194,9 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
         jPanel1.add(jLabel1, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel2.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel2,
+            org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel2.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -198,7 +204,9 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 2);
         jPanel1.add(jLabel2, gridBagConstraints);
 
-        txtWidth.setText(org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.txtWidth.text")); // NOI18N
+        txtWidth.setText(org.openide.util.NbBundle.getMessage(
+                ExportMapToFileDialog.class,
+                "ExportMapToFileDialog.txtWidth.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -209,7 +217,9 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         jPanel1.add(txtWidth, gridBagConstraints);
         ((ValidationJTextField)txtWidth).setPattern("\\d{1,9}");
 
-        txtHeight.setText(org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.txtHeight.text")); // NOI18N
+        txtHeight.setText(org.openide.util.NbBundle.getMessage(
+                ExportMapToFileDialog.class,
+                "ExportMapToFileDialog.txtHeight.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -220,7 +230,9 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         jPanel1.add(txtHeight, gridBagConstraints);
         ((ValidationJTextField)txtHeight).setPattern("\\d{1,9}");
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel3.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel3,
+            org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel3.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -228,7 +240,9 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 2);
         jPanel1.add(jLabel3, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel4.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel4,
+            org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel4.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -236,7 +250,9 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
         jPanel1.add(jLabel4, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel5.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel5,
+            org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.jLabel5.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
@@ -244,7 +260,11 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
         jPanel1.add(jLabel5, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(chbWorldFile, org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.chbWorldFile.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            chbWorldFile,
+            org.openide.util.NbBundle.getMessage(
+                ExportMapToFileDialog.class,
+                "ExportMapToFileDialog.chbWorldFile.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -254,12 +274,16 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(btnSave, org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.btnSave.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            btnSave,
+            org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.btnSave.text")); // NOI18N
         btnSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSaveActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    btnSaveActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 5;
@@ -267,12 +291,16 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         gridBagConstraints.insets = new java.awt.Insets(10, 4, 0, 0);
         jPanel2.add(btnSave, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(btnCancel, org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.btnCancel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            btnCancel,
+            org.openide.util.NbBundle.getMessage(ExportMapToFileDialog.class, "ExportMapToFileDialog.btnCancel.text")); // NOI18N
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    btnCancelActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -290,22 +318,22 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }//GEN-LAST:event_btnCancelActionPerformed
+    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
         final int width = Integer.parseInt(txtWidth.getText());
         final int height = Integer.parseInt(txtHeight.getText());
         headlessMapProvider = createHeadlessMapProvider();
@@ -334,7 +362,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
 
             this.dispose();
         }
-    }//GEN-LAST:event_btnSaveActionPerformed
+    } //GEN-LAST:event_btnSaveActionPerformed
     /**
      * DOCUMENT ME!
      *
