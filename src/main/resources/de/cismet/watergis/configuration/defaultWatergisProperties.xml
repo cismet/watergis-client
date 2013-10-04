@@ -2,6 +2,18 @@
 
 
 <watergis>
+        <cismapOverviewComponentPreferences srs="EPSG:35833">
+        <overviewExtent>
+            <BoundingBox x1="33206890.6290955" y1="5890624.1889224" x2="33460856.7310355" y2="6060840.0968643"/>
+        </overviewExtent>
+        <background>
+            <simpleWms skip="false" enabled="true">
+                <![CDATA[
+                    http://www.geodaten-mv.de/dienste/gdimv_dtk?&VERSION=1.1.1&REQUEST=GetMap&BBOX=<cismap:boundingBox>&WIDTH=<cismap:width>&HEIGHT=<cismap:height>&SRS=EPSG:35833&FORMAT=image/png&TRANSPARENT=TRUE&BGCOLOR=0xF0F0F0&EXCEPTIONS=application/vnd.ogc.se_xml&LAYERS=gdimv_uek1000&STYLES=farbig
+                    ]]>
+            </simpleWms>
+        </background>
+    </cismapOverviewComponentPreferences>
     <urls>
         <onlineHelp>https://github.com/cismet/dlm25w_lung</onlineHelp>
         <news>www.cismet.de</news>
