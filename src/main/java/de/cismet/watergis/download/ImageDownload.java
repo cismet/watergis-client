@@ -11,6 +11,10 @@
  */
 package de.cismet.watergis.download;
 
+import org.apache.log4j.Logger;
+
+import org.jfree.util.Log;
+
 import org.openide.util.Cancellable;
 import org.openide.util.Exceptions;
 
@@ -38,6 +42,10 @@ import de.cismet.tools.gui.downloadmanager.AbstractDownload;
  * @version  $Revision$, $Date$
  */
 public class ImageDownload extends AbstractDownload implements Cancellable {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(ImageDownload.class);
 
     //~ Instance fields --------------------------------------------------------
 
@@ -90,13 +98,10 @@ public class ImageDownload extends AbstractDownload implements Cancellable {
                     deleteFile();
                 }
             } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-                status = State.COMPLETED_WITH_ERROR;
-                stateChanged();
                 deleteFile();
                 return;
             } catch (ExecutionException ex) {
-                Exceptions.printStackTrace(ex);
+                LOG.error("Error while getting the image.", ex);
                 status = State.COMPLETED_WITH_ERROR;
                 stateChanged();
                 deleteFile();
@@ -108,7 +113,7 @@ public class ImageDownload extends AbstractDownload implements Cancellable {
             try {
                 ImageIO.write(removeTransparency(image), extension, fileToSaveTo);
             } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
+                LOG.error("Error while saving the image", ex);
                 status = State.COMPLETED_WITH_ERROR;
                 stateChanged();
                 deleteFile();
