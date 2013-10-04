@@ -9,7 +9,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.watergis.utils;
+package de.cismet.watergis.download;
 
 import org.openide.util.Exceptions;
 
