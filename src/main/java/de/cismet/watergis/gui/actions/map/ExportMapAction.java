@@ -31,7 +31,7 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.gui.ImageSelection;
 
 /**
- * DOCUMENT ME!
+ * An Action which exports the map shown in the mapping component to the system clipboard.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
@@ -64,7 +64,7 @@ public class ExportMapAction extends AbstractAction {
                 "ExportMapAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-export.png"));
+                    "/de/cismet/watergis/res/icons16/icon-copy.png"));
         putValue(SMALL_ICON, icon);
     }
 

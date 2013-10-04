@@ -171,7 +171,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.CloseAction closeAction;
     private javax.swing.JButton cmdAddBookmark;
     private javax.swing.JButton cmdDownloadManager;
-    private javax.swing.JButton cmdExportMap;
+    private javax.swing.JButton cmdExportMap1;
+    private javax.swing.JButton cmdExportMap2;
     private javax.swing.JButton cmdFullExtend;
     private javax.swing.JButton cmdGoTo;
     private javax.swing.JButton cmdInfo;
@@ -197,12 +198,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.map.CreateGeoLinkAction createGeoLinkAction;
     private de.cismet.watergis.gui.actions.DownloadManagerAction downloadManagerAction;
     private de.cismet.watergis.gui.actions.map.ExportMapAction exportMapAction;
+    private de.cismet.watergis.gui.actions.map.ExportMapToFileAction exportMapToFileAction;
     private de.cismet.watergis.gui.actions.map.FullExtendAction fullExtendAction;
     private de.cismet.watergis.gui.actions.map.GoToAction goToAction;
     private de.cismet.watergis.gui.actions.InfoAction infoAction;
     private de.cismet.watergis.gui.actions.InfoWindowAction infoWindowAction;
     private de.cismet.watergis.gui.actions.selection.InvertSelectionAction invertSelectionAction;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JToolBar.Separator jSeparator5;
     private javax.swing.JToolBar.Separator jSeparator6;
     private javax.swing.JToolBar.Separator jSeparator7;
@@ -616,11 +619,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         showManageBookmarksDialogAction =
             new de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction();
         showCreateBookmarkDialogAction = new de.cismet.watergis.gui.actions.bookmarks.ShowCreateBookmarkDialogAction();
+        exportMapToFileAction = new de.cismet.watergis.gui.actions.map.ExportMapToFileAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
         cmdPrint = new javax.swing.JButton();
-        cmdExportMap = new javax.swing.JButton();
+        cmdExportMap2 = new javax.swing.JButton();
+        cmdExportMap1 = new javax.swing.JButton();
         cmdDownloadManager = new javax.swing.JButton();
         cmdAddBookmark = new javax.swing.JButton();
         cmdManageBookmarks = new javax.swing.JButton();
@@ -658,6 +663,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         mniSaveProject = new javax.swing.JMenuItem();
         mniWindow = new javax.swing.JMenuItem();
         mniPrint = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         mniExportMap = new javax.swing.JMenuItem();
         mniCreateGeoLink = new javax.swing.JMenuItem();
         mniFileOptions = new javax.swing.JMenuItem();
@@ -718,15 +724,25 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdPrint.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdPrint);
 
-        cmdExportMap.setAction(exportMapAction);
-        cmdExportMap.setFocusable(false);
-        cmdExportMap.setHideActionText(true);
-        cmdExportMap.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdExportMap.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdExportMap.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdExportMap.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdExportMap.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdExportMap);
+        cmdExportMap2.setAction(exportMapAction);
+        cmdExportMap2.setFocusable(false);
+        cmdExportMap2.setHideActionText(true);
+        cmdExportMap2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdExportMap2.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap2.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap2.setPreferredSize(new java.awt.Dimension(26, 26));
+        cmdExportMap2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdExportMap2);
+
+        cmdExportMap1.setAction(exportMapToFileAction);
+        cmdExportMap1.setFocusable(false);
+        cmdExportMap1.setHideActionText(true);
+        cmdExportMap1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdExportMap1.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap1.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap1.setPreferredSize(new java.awt.Dimension(26, 26));
+        cmdExportMap1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdExportMap1);
 
         cmdDownloadManager.setAction(downloadManagerAction);
         cmdDownloadManager.setFocusable(false);
@@ -1007,6 +1023,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
         mniPrint.setAction(printAction);
         menFile.add(mniPrint);
+
+        jMenuItem1.setAction(exportMapToFileAction);
+        menFile.add(jMenuItem1);
 
         mniExportMap.setAction(exportMapAction);
         menFile.add(mniExportMap);
