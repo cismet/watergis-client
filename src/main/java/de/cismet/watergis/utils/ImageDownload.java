@@ -124,7 +124,8 @@ public class ImageDownload extends AbstractDownload implements Cancellable {
 
     /**
      * Removes the transparency from an image and returns an opaque image. This method is needed as the image should be
-     * saved as jpg, which is unable to handle transparency.
+     * saved as jpg, which is unable to handle transparency. The transparent image is copied to another opaque image
+     * with a white background, which is returned.
      *
      * @param   transparentImage  DOCUMENT ME!
      *
@@ -133,7 +134,7 @@ public class ImageDownload extends AbstractDownload implements Cancellable {
     private BufferedImage removeTransparency(final Image transparentImage) {
         final BufferedImage whiteBackgroundImage = new BufferedImage(transparentImage.getWidth(null),
                 transparentImage.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB);
+                BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g2 = null;
         try {
@@ -157,13 +158,7 @@ public class ImageDownload extends AbstractDownload implements Cancellable {
             }
         }
 
-        // BufferedImage bufImg = ImageIO.read( imageURL );
-        final BufferedImage opaqueImage = new BufferedImage(whiteBackgroundImage.getWidth(),
-                whiteBackgroundImage.getHeight(),
-                BufferedImage.TYPE_INT_RGB);
-        opaqueImage.getGraphics().drawImage(whiteBackgroundImage, 0, 0, null);
-
-        return (BufferedImage)opaqueImage;
+        return whiteBackgroundImage;
     }
 
     @Override
