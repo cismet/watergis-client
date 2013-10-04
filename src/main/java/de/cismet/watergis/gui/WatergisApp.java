@@ -14,6 +14,7 @@ package de.cismet.watergis.gui;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
 import net.infonode.docking.DockingWindow;
+import net.infonode.docking.FloatingWindow;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
@@ -69,6 +70,7 @@ import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableListener;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
+import de.cismet.cismap.commons.gui.overviewwidget.OverviewComponent;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.lookupoptions.gui.OptionsClient;
@@ -152,12 +154,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private InfoPanel pInfo;
     private SelectionPanel pSelection;
     private TablePanel pTable;
+    private OverviewComponent pOverview;
     // Views
     private View vMap;
     private View vTopicTree;
     private View vInfo;
     private View vSelection;
     private View vTable;
+    private View vOverview;
     private MappingComponent mappingComponent;
     private ActiveLayerModel mappingModel = new ActiveLayerModel();
 
@@ -318,6 +322,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         panMain.add(rootWindow, BorderLayout.CENTER);
         setWindowSize();
         mappingComponent.unlock();
+        pOverview.getOverviewMap().unlock();
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -424,11 +429,17 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         pSelection = new SelectionPanel();
         pTopicTree.setMappingModel(mappingModel);
 
+        pOverview = new OverviewComponent();
+        pOverview.setMasterMap(mappingComponent);
+        configManager.addConfigurable(pOverview);
+        configManager.configure(pOverview);
+
         AppBroker.getInstance().addComponent(ComponentName.MAP, pMap);
         AppBroker.getInstance().addComponent(ComponentName.TREE, pTopicTree);
         AppBroker.getInstance().addComponent(ComponentName.INFO, pInfo);
         AppBroker.getInstance().addComponent(ComponentName.SELECTION, pSelection);
         AppBroker.getInstance().addComponent(ComponentName.TABLE, pTable);
+        AppBroker.getInstance().addComponent(ComponentName.OVERVIEW, pOverview);
 
         AppBroker.getInstance().addComponent(ComponentName.MENU_BOOKMARK, menBookmark);
 
@@ -475,6 +486,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Table");
         vTable = new View(title, null, pTable);
         viewMap.addView(title, vTable);
+
+        title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Overview");
+        vOverview = new View(title, null, pOverview);
+        viewMap.addView(title, vOverview);
 
         rootWindow = DockingUtil.createRootWindow(viewMap, true);
         AppBroker.getInstance().setRootWindow(rootWindow);
@@ -568,7 +583,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      */
     public void doLayoutInfoNode() {
         tabWindow = new TabWindow(new DockingWindow[] { vMap, vInfo, vSelection });
-        rootWindow.setWindow(new SplitWindow(true, 0.22901994f, vTopicTree, tabWindow));
+        final SplitWindow treeWindow = new SplitWindow(false, 0.6f, vTopicTree, vOverview);
+        rootWindow.setWindow(new SplitWindow(true, 0.22901994f, treeWindow, tabWindow));
+
         vMap.restoreFocus();
     }
 
