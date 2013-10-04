@@ -80,6 +80,8 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.map.ExportMapToFileAction" name="exportMapToFileAction">
     </Component>
+    <Component class="de.cismet.watergis.gui.actions.window.ShowHideOverviewWindowAction" name="showHideOverviewWindowAction">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menFile">
@@ -107,10 +109,10 @@
                 </Property>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="mniWindow">
+            <MenuItem class="javax.swing.JMenuItem" name="mniOverview">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="windowAction"/>
+                  <ComponentRef name="showHideOverviewWindowAction"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -121,7 +123,7 @@
                 </Property>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+            <MenuItem class="javax.swing.JMenuItem" name="mniSaveMapToFile">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="exportMapToFileAction"/>
