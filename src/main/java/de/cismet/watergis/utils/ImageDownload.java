@@ -138,12 +138,12 @@ public class ImageDownload extends AbstractDownload implements Cancellable {
         Graphics2D g2 = null;
         try {
             g2 = whiteBackgroundImage.createGraphics();
-
-             g2.setColor(Color.WHITE);
-             g2.fillRect(0, 0, whiteBackgroundImage.getWidth(), whiteBackgroundImage.getHeight());
-
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+            g2.setColor(Color.WHITE);
+            g2.fillRect(0, 0, whiteBackgroundImage.getWidth(), whiteBackgroundImage.getHeight());
+
             g2.drawImage(
                 transparentImage,
                 0,
