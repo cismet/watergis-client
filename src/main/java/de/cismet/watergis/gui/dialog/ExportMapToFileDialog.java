@@ -62,6 +62,8 @@ import de.cismet.cismap.commons.RestrictedFileSystemView;
 import de.cismet.cismap.commons.RetrievalServiceLayer;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.raster.wms.AbstractWMS;
+import de.cismet.cismap.commons.raster.wms.AbstractWMSServiceLayer;
 
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
@@ -388,8 +390,18 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         Collections.sort(positionsRaster);
 
         for (final Object position : positionsRaster) {
+            boolean addable = false;
             final Object rasterService = rasterServices.get(position);
-            if (rasterService instanceof RetrievalServiceLayer) {
+            if ((rasterService instanceof RetrievalServiceLayer)
+                        && ((RetrievalServiceLayer)rasterService).isEnabled()) {
+                if ((rasterService instanceof AbstractWMSServiceLayer)
+                            && ((AbstractWMSServiceLayer)rasterService).isVisible()) {
+                    addable = true;
+                } else if ((rasterService instanceof AbstractWMS) && ((AbstractWMS)rasterService).isVisible()) {
+                    addable = true;
+                }
+            }
+            if (addable) {
                 headlessMapProvider.addLayer((RetrievalServiceLayer)rasterService);
             } else {
                 LOG.warn(
