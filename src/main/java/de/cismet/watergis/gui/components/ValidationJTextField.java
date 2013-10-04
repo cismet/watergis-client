@@ -22,7 +22,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
 /**
- * DOCUMENT ME!
+ * A JTextField which checks if its content matches a regular expression and signalizes it, if this is not the case.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$

@@ -31,7 +31,8 @@ import javax.imageio.ImageIO;
 import de.cismet.tools.gui.downloadmanager.AbstractDownload;
 
 /**
- * DOCUMENT ME!
+ * A Download which can be added to the DownloadManager and saves an image to a file. The transparency of the files gets
+ * removed.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$

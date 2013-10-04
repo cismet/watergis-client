@@ -13,26 +13,20 @@ package de.cismet.watergis.gui.actions.map;
 
 import org.apache.log4j.Logger;
 
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
-import javax.swing.SwingWorker;
-
-import de.cismet.cismap.commons.gui.ClipboardWaitDialog;
 
 import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.ImageSelection;
 import de.cismet.watergis.gui.dialog.ExportMapToFileDialog;
 
 /**
- * DOCUMENT ME!
+ * An action which opens a dialog, which allows it to save the map shown in the mapping component to a file.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$

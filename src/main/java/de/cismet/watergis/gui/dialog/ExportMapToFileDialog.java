@@ -76,7 +76,13 @@ import de.cismet.watergis.utils.ImageDownload;
 import de.cismet.watergis.utils.WorldFileDownload;
 
 /**
- * DOCUMENT ME!
+ * A dialog which allows it to save the map shown in the mapping component. This is handled in the following way:
+ *
+ * <ul>
+ *   <li>Set the resolution of the image.</li>
+ *   <li>Choose the file via a file chooser dialog</li>
+ *   <li>More information is shown in the download manager</li>
+ * </ul>
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
@@ -329,7 +335,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         this.dispose();
     }                                                                             //GEN-LAST:event_btnCancelActionPerformed
     /**
-     * DOCUMENT ME!
+     * Creates the future image, then the user can choose the file. If he has chosen a file, then a download is added to
+     * the download manager, which saves the file.
      *
      * @param  evt  DOCUMENT ME!
      */
@@ -364,7 +371,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         }
     } //GEN-LAST:event_btnSaveActionPerformed
     /**
-     * DOCUMENT ME!
+     * Create a HeadlessMapProvider, then set its settings and add the raster layers and feature layers from the mapping
+     * component to it.
      *
      * @return  DOCUMENT ME!
      */
@@ -408,7 +416,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     }
 
     /**
-     * DOCUMENT ME!
+     * Opens a JFileChooser with a filter for jpegs and checks if the chosen file has the right extension. If not the
+     * right extension is added, therefor the extension of a file returned by this method is always .jpg or .jpeg
      *
      * @return  DOCUMENT ME!
      */
@@ -457,7 +466,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     }
 
     /**
-     * DOCUMENT ME!
+     * needed by inner class PixelDPICalculator.
      */
     private void addListener() {
         txtHeight.getDocument().addDocumentListener(heightChangedDocumentListener);
@@ -466,7 +475,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     }
 
     /**
-     * DOCUMENT ME!
+     * needed by inner class PixelDPICalculator.
      */
     private void removeListener() {
         txtHeight.getDocument().removeDocumentListener(heightChangedDocumentListener);
@@ -510,7 +519,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     //~ Inner Classes ----------------------------------------------------------
 
     /**
-     * DOCUMENT ME!
+     * This inner class is responsible to calculate the right resolution if the user changes one value. E.g. if the
+     * height is changed the width and the dpi have to be recalculated.
      *
      * @version  $Revision$, $Date$
      */

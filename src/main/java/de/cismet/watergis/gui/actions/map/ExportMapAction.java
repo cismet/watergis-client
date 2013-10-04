@@ -31,7 +31,7 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.gui.ImageSelection;
 
 /**
- * DOCUMENT ME!
+ * An Action which exports the map shown in the mapping component to the system clipboard.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$

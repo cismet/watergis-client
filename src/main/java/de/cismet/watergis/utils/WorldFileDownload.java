@@ -30,7 +30,7 @@ import de.cismet.cismap.commons.BoundingBox;
 import de.cismet.tools.gui.downloadmanager.AbstractDownload;
 
 /**
- * DOCUMENT ME!
+ * A Download, which creates a world file from a map image and a bounding box and saves it to a file.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
