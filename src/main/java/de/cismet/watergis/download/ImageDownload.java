@@ -62,6 +62,10 @@ public class ImageDownload extends AbstractDownload implements Cancellable {
         this.extension = extension;
         this.futureImage = futureImage;
 
+        title = org.openide.util.NbBundle.getMessage(
+                ImageDownload.class,
+                "ImageDownload.title");
+
         status = State.WAITING;
         this.fileToSaveTo = fileToSaveTo;
     }

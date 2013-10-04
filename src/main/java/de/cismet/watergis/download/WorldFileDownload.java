@@ -56,7 +56,9 @@ public class WorldFileDownload extends AbstractDownload {
             final String fileAbsolutPath) {
         this.futureImage = futureImage;
         this.boundingBoxFromMap = boundingBoxFromMap;
-        this.title = "World-File";
+        title = org.openide.util.NbBundle.getMessage(
+                WorldFileDownload.class,
+                "WorldFileDownload.title");
 
         this.fileToSaveTo = new File(fileAbsolutPath);
 
