@@ -586,8 +586,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
             final double newWidthPixel = widthPixel * 1d / dpi * newDpi;
             this.widthPixel = (int)Math.round(newWidthPixel);
 
-            final double newHeightPixel = heightPixel * 1d / dpi * newDpi;
-            this.heightPixel = (int)Math.round(newHeightPixel);
+            this.heightPixel = (int)Math.round(widthPixel * 1d / aspectRatio);
 
             this.dpi = newDpi;
         }
