@@ -14,7 +14,9 @@ package de.cismet.watergis.gui;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
 import net.infonode.docking.DockingWindow;
+import net.infonode.docking.DockingWindowListener;
 import net.infonode.docking.FloatingWindow;
+import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
@@ -436,46 +438,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         pInfo = new InfoPanel();
         pSelection = new SelectionPanel();
         pTopicTree.setMappingModel(mappingModel);
-        pTopicTree.addAddThemeMenuItemListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(final ActionEvent e) {
-                    showDialog();
-                }
-
-                private View capabilitiesDialog;
-
-                private void showDialog() {
-                    if (capabilitiesDialog == null) {
-                        capabilitiesDialog = createDialog();
-                    }
-
-                    if (capabilitiesDialog.isClosable()) {
-                    }
-                    final FloatingWindow fw = rootWindow.createFloatingWindow(
-                            new Point(50, 50),
-                            new Dimension(300, 200),
-                            vCapability);
-                    fw.getTopLevelAncestor().setVisible(true);
-                }
-
-                private View createDialog() {
-                    final String title = org.openide.util.NbBundle.getMessage(
-                            WatergisApp.class,
-                            "WatergisApp.initInfoNode().Table");
-                    vCapability = new View(title, null, pCapabilities);
-
-//                    final JDialog dialog = new JDialog(WatergisApp.this);
-//                    dialog.setLayout(new BorderLayout());
-//                    // TODO internationalisieren
-//                    dialog.setTitle("Datenquellen");
-//                    dialog.add(pCapabilities, BorderLayout.CENTER);
-//
-//                    dialog.pack();
-//
-                    return vCapability;
-                }
-            });
+        pTopicTree.addAddThemeMenuItemListener(new AddThemeMenuItemListener());
 
         pOverview = new OverviewComponent();
         pOverview.setMasterMap(mappingComponent);
@@ -1619,5 +1582,62 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      */
     public static String getDIRECTORYPATH_WATERGIS() {
         return DIRECTORYPATH_WATERGIS;
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class AddThemeMenuItemListener implements ActionListener {
+
+        //~ Instance fields ----------------------------------------------------
+
+        boolean capabilitiesDialogWasFloating;
+
+        private View capabilitiesDialog;
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            showDialog();
+        }
+
+        /**
+         * DOCUMENT ME!
+         */
+        private void showDialog() {
+            if (capabilitiesDialog == null) {
+                capabilitiesDialog = createDialog();
+            }
+
+            if (capabilitiesDialog.isClosable()) {
+                capabilitiesDialog.restoreFocus();
+            } else if (capabilitiesDialog.getWindowParent() != null) {
+                capabilitiesDialog.restore();
+            } else {
+                final FloatingWindow fw = rootWindow.createFloatingWindow(
+                        new Point(50, 50),
+                        pCapabilities.getPreferredSize(),
+                        vCapability);
+                fw.getTopLevelAncestor().setVisible(true);
+            }
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private View createDialog() {
+            final String title = org.openide.util.NbBundle.getMessage(
+                    WatergisApp.class,
+                    "WatergisApp.initInfoNode().Table");
+            vCapability = new View(title, null, pCapabilities);
+            return vCapability;
+        }
     }
 }
