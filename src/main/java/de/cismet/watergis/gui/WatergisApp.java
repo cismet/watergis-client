@@ -509,10 +509,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         vOverview = new View(title, null, pOverview);
         showHideOverviewWindowAction.setView(vOverview);
         viewMap.addView(title, vOverview);
-        
-        title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Overview");
+
+        title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Capabilities");
         vCapability = new View(title, null, pCapabilities);
-        viewMap.addView(title, vOverview);
+        viewMap.addView(title, vCapability);
 
         rootWindow = DockingUtil.createRootWindow(viewMap, true);
         AppBroker.getInstance().setRootWindow(rootWindow);
