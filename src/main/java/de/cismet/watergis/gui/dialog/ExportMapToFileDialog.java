@@ -61,6 +61,8 @@ import de.cismet.cismap.commons.HeadlessMapProvider;
 import de.cismet.cismap.commons.RestrictedFileSystemView;
 import de.cismet.cismap.commons.RetrievalServiceLayer;
 import de.cismet.cismap.commons.XBoundingBox;
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
+import de.cismet.cismap.commons.featureservice.ShapeFileFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.raster.wms.AbstractWMS;
 import de.cismet.cismap.commons.raster.wms.AbstractWMSServiceLayer;
@@ -96,8 +98,6 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     private static final Logger LOG = Logger.getLogger(ExportMapToFileDialog.class);
 
     //~ Instance fields --------------------------------------------------------
-
-    private HeadlessMapProvider headlessMapProvider;
 
     private HeightChangedDocumentListener heightChangedDocumentListener = new HeightChangedDocumentListener();
 
@@ -345,7 +345,12 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
         final int width = Integer.parseInt(txtWidth.getText());
         final int height = Integer.parseInt(txtHeight.getText());
-        headlessMapProvider = createHeadlessMapProvider();
+
+        final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
+        final HeadlessMapProvider headlessMapProvider = HeadlessMapProvider.createHeadlessMapProviderAndAddLayers(
+                mappingComponent);
+        headlessMapProvider.setDominatingDimension(HeadlessMapProvider.DominatingDimension.SIZE);
+        headlessMapProvider.setBoundingBox((XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera());
 
         final Future<Image> futureImage = headlessMapProvider.getImage(width, height);
         final File file = chooseFile();
@@ -372,60 +377,6 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
             this.dispose();
         }
     } //GEN-LAST:event_btnSaveActionPerformed
-    /**
-     * Create a HeadlessMapProvider, then set its settings and add the raster layers and feature layers from the mapping
-     * component to it.
-     *
-     * @return  DOCUMENT ME!
-     */
-    private HeadlessMapProvider createHeadlessMapProvider() {
-        headlessMapProvider = new HeadlessMapProvider();
-        final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
-        headlessMapProvider.setDominatingDimension(HeadlessMapProvider.DominatingDimension.SIZE);
-        headlessMapProvider.setBoundingBox((XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera());
-
-        // Raster Services
-        final TreeMap rasterServices = mappingComponent.getMappingModel().getRasterServices();
-        final List positionsRaster = new ArrayList(rasterServices.keySet());
-        Collections.sort(positionsRaster);
-
-        for (final Object position : positionsRaster) {
-            boolean addable = false;
-            final Object rasterService = rasterServices.get(position);
-            if ((rasterService instanceof RetrievalServiceLayer)
-                        && ((RetrievalServiceLayer)rasterService).isEnabled()) {
-                if ((rasterService instanceof AbstractWMSServiceLayer)
-                            && ((AbstractWMSServiceLayer)rasterService).isVisible()) {
-                    addable = true;
-                } else if ((rasterService instanceof AbstractWMS) && ((AbstractWMS)rasterService).isVisible()) {
-                    addable = true;
-                }
-            }
-            if (addable) {
-                headlessMapProvider.addLayer((RetrievalServiceLayer)rasterService);
-            } else {
-                LOG.warn(
-                    "Layer can not be added to the headlessMapProvider as it is not an instance of RetrievalServiceLayer");
-            }
-        }
-
-        // Feature Services
-        final TreeMap featureServices = mappingComponent.getMappingModel().getFeatureServices();
-        final List positionsFeatures = new ArrayList(featureServices.keySet());
-        Collections.sort(positionsFeatures);
-
-        for (final Object position : positionsFeatures) {
-            final Object featureService = featureServices.get(position);
-            if (featureService instanceof RetrievalServiceLayer) {
-                headlessMapProvider.addLayer((RetrievalServiceLayer)featureService);
-            } else {
-                LOG.warn(
-                    "Feature can not be added to the headlessMapProvider as it is not an instance of RetrievalServiceLayer");
-            }
-        }
-
-        return headlessMapProvider;
-    }
 
     /**
      * Opens a JFileChooser with a filter for jpegs and checks if the chosen file has the right extension. If not the
