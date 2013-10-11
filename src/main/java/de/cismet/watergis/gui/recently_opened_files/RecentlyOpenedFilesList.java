@@ -68,6 +68,9 @@ public class RecentlyOpenedFilesList implements Configurable {
     private int maxAmount = 5;
     private LinkedList<File> fileList = new LinkedList<File>();
 
+    private String recentlyOpenedFilesFilePath = WatergisApp.getDIRECTORYPATH_WATERGIS()
+                + System.getProperty("file.separator") + "recentlyOpenedFiles.xml";
+
     //~ Methods ----------------------------------------------------------------
 
     /**
@@ -105,21 +108,16 @@ public class RecentlyOpenedFilesList implements Configurable {
     }
 
     /**
-     * DOCUMENT ME!
+     * Load the recently opened files to their own xml-file.
      */
     private void loadFilenames() {
         Element rootObject = null;
         try {
             final SAXBuilder builder = new SAXBuilder(false);
-            final Document doc = builder.build(new File(
-                        WatergisApp.getDIRECTORYPATH_WATERGIS()
-                                + System.getProperty("file.separator")
-                                + "recentlyOpenedFiles.xml"));
+            final Document doc = builder.build(new File(recentlyOpenedFilesFilePath));
 
             rootObject = doc.getRootElement();
         } catch (final Exception e) {
-//            final String message = "Error while reading configuration (User.Home) (" + singleConfig // NOI18N
-//                        + ") if null then all are";                                                 // NOI18N
             LOG.warn("Error while reading the list with the recently opened files", e);
         }
         if (rootObject != null) {
@@ -153,7 +151,7 @@ public class RecentlyOpenedFilesList implements Configurable {
     }
 
     /**
-     * DOCUMENT ME!
+     * Save the recently opened files to their own xml-file.
      */
     private void saveFilenames() {
         OutputStreamWriter writer = null;
@@ -172,10 +170,9 @@ public class RecentlyOpenedFilesList implements Configurable {
             final Document doc = new Document(root);
             final Format format = Format.getPrettyFormat();
             format.setEncoding(XML_ENCODING); // NOI18N
-            // TODO: why not using UTF-8
+            
             final XMLOutputter serializer = new XMLOutputter(format);
-            final File file = new File(WatergisApp.getDIRECTORYPATH_WATERGIS() + System.getProperty("file.separator")
-                            + "recentlyOpenedFiles.xml");
+            final File file = new File(recentlyOpenedFilesFilePath);
             writer = new OutputStreamWriter(new FileOutputStream(file), XML_ENCODING);
             serializer.output(doc, writer);
             writer.flush();
