@@ -170,7 +170,7 @@ public class RecentlyOpenedFilesList implements Configurable {
             final Document doc = new Document(root);
             final Format format = Format.getPrettyFormat();
             format.setEncoding(XML_ENCODING); // NOI18N
-            
+
             final XMLOutputter serializer = new XMLOutputter(format);
             final File file = new File(recentlyOpenedFilesFilePath);
             writer = new OutputStreamWriter(new FileOutputStream(file), XML_ENCODING);
