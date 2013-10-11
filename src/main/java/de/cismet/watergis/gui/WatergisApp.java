@@ -41,7 +41,12 @@ import org.jdom.Element;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.GraphicsConfiguration;
+import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.PointerInfo;
+import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -1612,17 +1617,52 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
          * DOCUMENT ME!
          */
         private void showView() {
-            if (vCapability.isClosable()) {
-                vCapability.restoreFocus();
-            } else if (vCapability.getWindowParent() != null) {
-                vCapability.restore();
+            final Dimension prefSize = pCapabilities.getPreferredSize();
+            final Dimension size = pCapabilities.getSize();
+            Dimension sizeToUse;
+            if ((prefSize.height * prefSize.width) >= (size.height * size.width)) {
+                sizeToUse = prefSize;
             } else {
-                final FloatingWindow fw = rootWindow.createFloatingWindow(
-                        new Point(50, 50),
-                        pCapabilities.getPreferredSize(),
-                        vCapability);
-                fw.getTopLevelAncestor().setVisible(true);
+                sizeToUse = size;
             }
+
+            final FloatingWindow fw = rootWindow.createFloatingWindow(
+                    getPointOfCenterOfScreen(sizeToUse),
+                    sizeToUse,
+                    vCapability);
+            fw.getTopLevelAncestor().setVisible(true);
+        }
+
+        /**
+         * Centers a Dimension instance on the screen on which the mouse pointer is located.
+         *
+         * @param   d  w window instance to be centered
+         *
+         * @return  DOCUMENT ME!
+         *
+         * @see     StaticSwingTools..centerWindowOnScreen()
+         */
+        public Point getPointOfCenterOfScreen(final Dimension d) {
+            final PointerInfo pInfo = MouseInfo.getPointerInfo();
+            final Point pointerLocation = pInfo.getLocation();
+
+            // determine screen boundaries w.r.t. the current mouse position
+            final GraphicsConfiguration[] cfgArr = pInfo.getDevice().getConfigurations();
+
+            Rectangle bounds = null;
+            for (int i = 0; i < cfgArr.length; i++) {
+                bounds = cfgArr[i].getBounds();
+
+                if (pointerLocation.x <= bounds.x) {
+                    break;
+                }
+            }
+
+            // determine coordinates in the center of the current mouse location
+            final int x = (int)(bounds.x + ((bounds.width - d.getWidth()) / 2));
+            final int y = (int)(bounds.y + ((bounds.height - d.getHeight()) / 2));
+
+            return new Point(x, y);
         }
     }
 }
