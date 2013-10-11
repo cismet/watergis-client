@@ -21,7 +21,19 @@
     </urls>
     <ports>
         <httpInterfacePort>9097</httpInterfacePort>
-    </ports>    
+    </ports>
+        <cismapCapabilitiesPreferences>
+
+        <capabilities type="OGC-WMS"><![CDATA[http://www.geodaten-mv.de/dienste/gdimv_dtk?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilities>
+
+     <!--<capabilitiesList titlestring="KategorieName" type="MENU">-->
+        <capabilitiesList titlestring="Topo MV - Web"  type="OGC-WMS"><![CDATA[http://www.geodaten-mv.de/dienste/gdimv_topomv?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilitiesList>
+        <capabilitiesList titlestring="Kombi Topo Karten"  type="OGC-WMS"><![CDATA[http://www.geodaten-mv.de/dienste/gdimv_dtk?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilitiesList>
+        <capabilitiesList titlestring="Ortho MV - 40cm"  type="OGC-WMS"><![CDATA[http://www.geodaten-mv.de/dienste/adv_dop?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilitiesList>
+        <capabilitiesList titlestring="WRRL Katalog v34"  type="OGC-WMS"><![CDATA[http://wms.fis-wasser-mv.de/services?REQUEST=GetCapabilities&version=1.1.1&service=WMS]]></capabilitiesList>
+        <capabilitiesList titlestring="Umweltkarten"  type="OGC-WMS"><![CDATA[http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.1.1]]></capabilitiesList>
+        <capabilitiesList titlestring="" type="SEPARATOR"/>
+    </cismapCapabilitiesPreferences>    
     <cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
         <home default="true" srs="EPSG:35833" metric="true">
             <BoundingBox x1="33206890" y1="5890624" x2="33460858" y2="6060841" />
