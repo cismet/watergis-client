@@ -19,14 +19,8 @@ import org.jdom.Element;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
-import java.io.File;
-
-import javax.swing.JFileChooser;
-
 import de.cismet.lookupoptions.AbstractOptionsPanel;
 import de.cismet.lookupoptions.OptionsPanelController;
-
-import de.cismet.tools.BrowserLauncher;
 
 import de.cismet.tools.configuration.NoWriteError;
 
@@ -35,7 +29,7 @@ import de.cismet.watergis.broker.AppBroker;
 /**
  * DOCUMENT ME!
  *
- * @author   jweintraut
+ * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
 @ServiceProvider(service = OptionsPanelController.class)
@@ -171,12 +165,7 @@ public class WatergisOptionsPanel extends AbstractOptionsPanel implements Option
      */
     @Override
     public Element getConfiguration() throws NoWriteError {
-        final Element root = new Element("watergisOptionsPanel");
-
-        final Element maxAmountLocalConfigFiles = new Element("maxAmountLocalConfigFiles");
-        maxAmountLocalConfigFiles.addContent(Integer.toString(maxShownRecentlyOpenedLocalConfigFiles));
-
-        return root.addContent(maxAmountLocalConfigFiles);
+        return null;
     }
 
     /**
@@ -186,16 +175,6 @@ public class WatergisOptionsPanel extends AbstractOptionsPanel implements Option
      */
     @Override
     public void configure(final Element parent) {
-//        DownloadManager.instance().configure(parent);
-        try {
-            final String maxAmount = parent.getChild("watergisOptionsPanel")
-                        .getChild("maxAmountLocalConfigFiles")
-                        .getText();
-            maxShownRecentlyOpenedLocalConfigFiles = Integer.parseInt(maxAmount);
-            spnShownLocalConfigFiles.setValue(maxShownRecentlyOpenedLocalConfigFiles);
-        } catch (final Exception skip) {
-            LOG.warn("Error while reading the watergisOptionsPanel Element from the XML", skip); // NOI18N
-        }
     }
 
     /**
@@ -205,6 +184,5 @@ public class WatergisOptionsPanel extends AbstractOptionsPanel implements Option
      */
     @Override
     public void masterConfigure(final Element parent) {
-//        DownloadManager.instance().masterConfigure(parent);
     }
 }

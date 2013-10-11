@@ -116,11 +116,9 @@ public class OpenProjectAction extends AbstractAction {
 
         if (state == JFileChooser.APPROVE_OPTION) {
             final File file = fc.getSelectedFile();
-            new AdoptLocalConfigFileAction(file).adoptConfigFile();
-
-            final String filePath = file.getAbsolutePath();
-            final String layoutPath = FilenameUtils.getBaseName(filePath) + FilenameUtils.getBaseName(filePath)
-                        + ".layout";
+            if (file.exists()) {
+                new AdoptLocalConfigFileAction(file).adoptConfigFile();
+            }
         }
     }
 }
