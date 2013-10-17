@@ -321,6 +321,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                         @Override
                         public void run() {
                             loadLayout(FILEPATH_DEFAULT_LAYOUT);
+                            isInit = false;
                         }
                     });
             } catch (InterruptedException ex) {
@@ -330,6 +331,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             }
         } else {
             loadLayout(FILEPATH_DEFAULT_LAYOUT);
+            isInit = false;
         }
         if (!StaticDebuggingTools.checkHomeForFile("cismetTurnOffInternalWebserver")) { // NOI18N
             initHttpServer();
