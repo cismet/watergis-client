@@ -153,7 +153,7 @@ public class RecentlyOpenedFilesList implements Configurable {
     /**
      * Save the recently opened files to their own xml-file.
      */
-    private void saveFilenames() {
+    public void saveFilenames() {
         OutputStreamWriter writer = null;
         try {
             final Element root = new Element("watergisRecentlyOpenedLocalConfigFiles");
