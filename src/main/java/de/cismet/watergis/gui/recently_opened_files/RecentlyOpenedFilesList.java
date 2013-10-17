@@ -69,7 +69,7 @@ public class RecentlyOpenedFilesList implements Configurable {
     private LinkedList<File> fileList = new LinkedList<File>();
 
     private String recentlyOpenedFilesFilePath = WatergisApp.getDIRECTORYPATH_WATERGIS()
-                + System.getProperty("file.separator") + "recentlyOpenedFiles.xml";
+                + System.getProperty("file.separator") + "recentlyOpenedFiles.files";
 
     //~ Methods ----------------------------------------------------------------
 
