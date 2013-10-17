@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.actions;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.awt.event.ActionEvent;
 
 import java.io.File;
@@ -28,7 +30,7 @@ import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 /**
  * An Action, which adopts a local configuration file, with the help of the ConfigurationManager. Notifies the
- * RecentlyOpenedFilesList, the a new file was loaded.
+ * RecentlyOpenedFilesList, that a new file was loaded.
  *
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
@@ -67,16 +69,14 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
 
         final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
         final ConfigurationManager configurationManager = AppBroker.getConfigManager();
-        if (filename.endsWith(".xml")) { // NOI18N
-            // activeLayers.removeAllLayers();
-            mappingComponent.getRasterServiceLayer().removeAllChildren();
-            configurationManager.configure(filename);
-        } else {
-            // activeLayers.removeAllLayers();
-            mappingComponent.getRasterServiceLayer().removeAllChildren();
-            configurationManager.configure(filename + ".xml"); // NOI18N
-            file.renameTo(new File(file.getName() + ".xml"));
-        }
+
+        mappingComponent.getRasterServiceLayer().removeAllChildren();
+        configurationManager.configure(filename);
+
+        final String layoutFilepath = FilenameUtils.getFullPath(filename) + FilenameUtils.getBaseName(filename)
+                    + ".layout";
+        AppBroker.getInstance().getWatergisApp().loadLayout(layoutFilepath);
+
         AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
         AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);
     }
