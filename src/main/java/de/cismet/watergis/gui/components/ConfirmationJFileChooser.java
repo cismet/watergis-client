@@ -114,6 +114,8 @@ public class ConfirmationJFileChooser extends JFileChooser {
                     return;
                 }
             }
+        } else {
+            super.approveSelection();
         }
     }
 }
