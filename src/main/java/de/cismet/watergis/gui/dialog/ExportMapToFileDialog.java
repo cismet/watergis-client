@@ -406,8 +406,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
                 @Override
                 public String getDescription() {
                     return org.openide.util.NbBundle.getMessage(
-                            SaveProjectAction.class,
-                            "SaveProjectAction.save.FileFilter.getDescription.return"); // NOI18N
+                            ExportMapToFileDialog.class,
+                            "ExportMapToFileDialog.save.FileFilter.getDescription.return"); // NOI18N
                 }
             });
 
