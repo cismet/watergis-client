@@ -33,6 +33,7 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.gui.WatergisApp;
+import de.cismet.watergis.gui.components.ConfirmationJFileChooser;
 
 /**
  * DOCUMENT ME!
@@ -91,12 +92,13 @@ public class SaveProjectAction extends AbstractAction {
         JFileChooser fc;
 
         try {
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
+            fc = new ConfirmationJFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
         } catch (Exception bug) {
             // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
             fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
         }
 
+        fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(new FileFilter() {
 
                 @Override

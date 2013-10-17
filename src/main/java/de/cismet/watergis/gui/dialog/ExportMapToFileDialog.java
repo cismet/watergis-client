@@ -77,6 +77,7 @@ import de.cismet.watergis.download.WorldFileDownload;
 
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.SaveProjectAction;
+import de.cismet.watergis.gui.components.ConfirmationJFileChooser;
 import de.cismet.watergis.gui.components.ValidationJTextField;
 
 /**
@@ -345,7 +346,6 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
         final int width = Integer.parseInt(txtWidth.getText());
         final int height = Integer.parseInt(txtHeight.getText());
-
         final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
         final HeadlessMapProvider headlessMapProvider = HeadlessMapProvider.createHeadlessMapProviderAndAddLayers(
                 mappingComponent);
@@ -387,12 +387,13 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     private File chooseFile() {
         JFileChooser fc;
         try {
-            fc = new JFileChooser(DownloadManager.instance().getDestinationDirectory());
+            fc = new ConfirmationJFileChooser(DownloadManager.instance().getDestinationDirectory());
         } catch (Exception bug) {
             // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
             fc = new JFileChooser(DownloadManager.instance().getDestinationDirectory(), new RestrictedFileSystemView());
         }
 
+        fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(new FileFilter() {
 
                 @Override
@@ -405,8 +406,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
                 @Override
                 public String getDescription() {
                     return org.openide.util.NbBundle.getMessage(
-                            SaveProjectAction.class,
-                            "SaveProjectAction.save.FileFilter.getDescription.return"); // NOI18N
+                            ExportMapToFileDialog.class,
+                            "ExportMapToFileDialog.save.FileFilter.getDescription.return"); // NOI18N
                 }
             });
 
