@@ -333,19 +333,18 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
-    }                                                                             //GEN-LAST:event_btnCancelActionPerformed
+    }//GEN-LAST:event_btnCancelActionPerformed
     /**
      * Creates the future image, then the user can choose the file. If he has chosen a file, then a download is added to
      * the download manager, which saves the file.
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSaveActionPerformed
+    private void btnSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         final int width = Integer.parseInt(txtWidth.getText());
         final int height = Integer.parseInt(txtHeight.getText());
-
         final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
         final HeadlessMapProvider headlessMapProvider = HeadlessMapProvider.createHeadlessMapProviderAndAddLayers(
                 mappingComponent);
@@ -376,7 +375,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
 
             this.dispose();
         }
-    } //GEN-LAST:event_btnSaveActionPerformed
+    }//GEN-LAST:event_btnSaveActionPerformed
 
     /**
      * Opens a JFileChooser with a filter for jpegs and checks if the chosen file has the right extension. If not the
@@ -393,6 +392,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
             fc = new JFileChooser(DownloadManager.instance().getDestinationDirectory(), new RestrictedFileSystemView());
         }
 
+        fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(new FileFilter() {
 
                 @Override

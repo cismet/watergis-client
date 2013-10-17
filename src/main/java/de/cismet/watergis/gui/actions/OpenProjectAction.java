@@ -96,6 +96,7 @@ public class OpenProjectAction extends AbstractAction {
             fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
         }
 
+        fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(new FileFilter() {
 
                 @Override
