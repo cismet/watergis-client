@@ -15,9 +15,20 @@ import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
 
+import java.util.List;
+
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
+import javax.swing.tree.TreePath;
+
+import de.cismet.cismap.commons.features.Feature;
+import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.layerwidget.ZoomToFeaturesWorker;
+import de.cismet.cismap.commons.gui.layerwidget.ZoomToLayerWorker;
+import de.cismet.cismap.commons.gui.piccolo.PFeature;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
+import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -60,11 +71,21 @@ public class ZoomSelectedObjectsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
+        final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
+        final List<PFeature> sel = sl.getAllSelectedPFeatures();
+        final Feature[] features = new Feature[sel.size()];
+
+        for (int i = 0; i < sel.size(); ++i) {
+            features[i] = sel.get(i).getFeature();
+        }
+
+        final ZoomToFeaturesWorker worker = new ZoomToFeaturesWorker(features);
+        worker.execute();
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
