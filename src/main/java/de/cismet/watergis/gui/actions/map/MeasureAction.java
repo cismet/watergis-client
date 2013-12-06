@@ -13,15 +13,16 @@ package de.cismet.watergis.gui.actions.map;
 
 import org.apache.log4j.Logger;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
-import de.cismet.watergis.broker.AppBroker;
+import de.cismet.cismap.commons.gui.MappingComponent;
 
-import de.cismet.watergis.gui.actions.selection.*;
+import de.cismet.watergis.broker.AppBroker;
 
 /**
  * DOCUMENT ME!
@@ -63,11 +64,14 @@ public class MeasureAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        final MappingComponent map = AppBroker.getInstance().getMappingComponent();
+        map.setInteractionMode(AppBroker.MEASURE_MODE);
+        map.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        putValue(SELECTED_KEY, Boolean.TRUE);
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
