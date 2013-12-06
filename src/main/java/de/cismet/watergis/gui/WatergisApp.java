@@ -14,9 +14,7 @@ package de.cismet.watergis.gui;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
 import net.infonode.docking.DockingWindow;
-import net.infonode.docking.DockingWindowListener;
 import net.infonode.docking.FloatingWindow;
-import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
@@ -46,7 +44,6 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.Rectangle;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -67,7 +64,6 @@ import java.util.HashMap;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -82,6 +78,8 @@ import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 import de.cismet.cismap.commons.gui.options.CapabilityWidgetOptionsPanel;
 import de.cismet.cismap.commons.gui.overviewwidget.OverviewComponent;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.lookupoptions.gui.OptionsClient;
@@ -91,7 +89,6 @@ import de.cismet.tools.StaticDebuggingTools;
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
-import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.historybutton.JHistoryButton;
 import de.cismet.tools.gui.log4jquickconfig.Log4JQuickConfig;
 import de.cismet.tools.gui.startup.StaticStartupTools;
@@ -99,6 +96,7 @@ import de.cismet.tools.gui.startup.StaticStartupTools;
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
+import de.cismet.watergis.gui.components.MeasureButton;
 import de.cismet.watergis.gui.components.ScaleJComboBox;
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
@@ -196,7 +194,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdInfo;
     private javax.swing.JButton cmdInvertSelection;
     private javax.swing.JButton cmdManageBookmarks;
-    private javax.swing.JButton cmdMeasure;
     private javax.swing.JButton cmdNextExtend;
     private javax.swing.JButton cmdOpenProject;
     private javax.swing.JButton cmdPresentation;
@@ -279,6 +276,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction showManageBookmarksDialogAction;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
     private de.cismet.watergis.gui.actions.TableAction tableAction;
+    private javax.swing.JButton tbtnMeasure;
     private javax.swing.JToggleButton tbtnPanMode;
     private javax.swing.JToggleButton tbtnSelectionMode;
     private javax.swing.JToggleButton tbtnZoomMode;
@@ -304,6 +302,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         AppBroker.setConfigManager(configManager);
         initCismap();
         initComponents();
+        ((MeasureButton)tbtnMeasure).setButtonGroup(btnGroupMapMode);
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
 
@@ -483,6 +482,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         AppBroker.getInstance().addMapMode(MappingComponent.PAN, panAction);
         AppBroker.getInstance().addMapMode(MappingComponent.ZOOM, zoomModeAction);
         AppBroker.getInstance().addMapMode(MappingComponent.SELECT, selectionModeAction);
+        AppBroker.getInstance().addMapMode(AppBroker.MEASURE_MODE, measureAction);
 
         // set the initial interaction mode
         AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
@@ -701,7 +701,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         jSeparator6 = new javax.swing.JToolBar.Separator();
         cmdTable = new javax.swing.JButton();
         cmdInfo = new javax.swing.JButton();
-        cmdMeasure = new javax.swing.JButton();
+        tbtnMeasure = new MeasureButton();
         cmdPresentation = new javax.swing.JButton();
         panMain = new javax.swing.JPanel();
         statusBar1 = new de.cismet.watergis.gui.panels.StatusBar();
@@ -1030,15 +1030,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdInfo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdInfo);
 
-        cmdMeasure.setAction(measureAction);
-        cmdMeasure.setFocusable(false);
-        cmdMeasure.setHideActionText(true);
-        cmdMeasure.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdMeasure.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdMeasure.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdMeasure.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdMeasure.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdMeasure);
+        tbtnMeasure.setAction(measureAction);
+        tbtnMeasure.setFocusable(false);
+        tbtnMeasure.setHideActionText(true);
+        tbtnMeasure.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbtnMeasure.setMaximumSize(new java.awt.Dimension(26, 26));
+        tbtnMeasure.setMinimumSize(new java.awt.Dimension(26, 26));
+        tbtnMeasure.setPreferredSize(new java.awt.Dimension(26, 26));
+        tbtnMeasure.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(tbtnMeasure);
 
         cmdPresentation.setAction(presentationAction);
         cmdPresentation.setFocusable(false);

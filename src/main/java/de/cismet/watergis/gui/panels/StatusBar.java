@@ -11,14 +11,28 @@
  */
 package de.cismet.watergis.gui.panels;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.apache.log4j.Logger;
+
+import org.openide.util.NbBundle;
 
 import java.awt.EventQueue;
 
+import java.text.DecimalFormat;
+
+import java.util.Collection;
+
 import de.cismet.cismap.commons.Crs;
+import de.cismet.cismap.commons.features.Feature;
+import de.cismet.cismap.commons.features.FeatureCollectionEvent;
+import de.cismet.cismap.commons.features.FeatureCollectionListener;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.StatusListener;
 import de.cismet.cismap.commons.interaction.events.StatusEvent;
+
+import de.cismet.watergis.broker.AppBroker;
 
 /**
  * DOCUMENT ME!
@@ -26,16 +40,22 @@ import de.cismet.cismap.commons.interaction.events.StatusEvent;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class StatusBar extends javax.swing.JPanel implements StatusListener {
+public class StatusBar extends javax.swing.JPanel implements StatusListener, FeatureCollectionListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(StatusBar.class);
+    private static int K_DIVISOR = 1000;
+    private static int K_SQUARE_DIVISOR = K_DIVISOR * K_DIVISOR;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblCoordinates;
+    private javax.swing.JLabel lblMeasuring;
     private javax.swing.JPanel pnlCoordinates;
+    private javax.swing.JPanel pnlMeasuring;
     // End of variables declaration//GEN-END:variables
 
     //~ Constructors -----------------------------------------------------------
@@ -46,6 +66,10 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
     public StatusBar() {
         initComponents();
         lblCoordinates.setText(""); // NOI18N
+        try {
+            AppBroker.getInstance().getMappingComponent().getFeatureCollection().addFeatureCollectionListener(this);
+        } catch (NullPointerException e) {
+        }
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -62,8 +86,12 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0),
                 new java.awt.Dimension(0, 0),
                 new java.awt.Dimension(32767, 0));
+        jPanel2 = new javax.swing.JPanel();
+        pnlMeasuring = new javax.swing.JPanel();
+        lblMeasuring = new javax.swing.JLabel();
         pnlCoordinates = new javax.swing.JPanel();
         lblCoordinates = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
 
         setMaximumSize(new java.awt.Dimension(32769, 20));
         setMinimumSize(new java.awt.Dimension(200, 20));
@@ -77,11 +105,24 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
             });
         setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.weightx = 1.0;
         add(filler1, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        add(jPanel2, gridBagConstraints);
+
+        pnlMeasuring.setLayout(new java.awt.BorderLayout());
+        pnlMeasuring.add(lblMeasuring, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 10);
+        add(pnlMeasuring, gridBagConstraints);
 
         pnlCoordinates.setLayout(new java.awt.BorderLayout());
 
@@ -91,10 +132,14 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
         pnlCoordinates.add(lblCoordinates, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         add(pnlCoordinates, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        add(jPanel1, gridBagConstraints);
     } // </editor-fold>//GEN-END:initComponents
 
     /**
@@ -172,5 +217,88 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener {
         } else {
             EventQueue.invokeLater(modifyControls);
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   d  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private double roundTo2Decimals(final double d) {
+        return (((int)(d * 100)) / 100.0);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  f  DOCUMENT ME!
+     */
+    private void showMeasuring(final Feature f) {
+        final Geometry geom = f.getGeometry();
+        double area = geom.getArea();
+        double length = geom.getLength();
+
+        if (length < 10000) {
+            lblMeasuring.setText(NbBundle.getMessage(
+                    StatusBar.class,
+                    "StatusBar.lblMeasuring.text.m",
+                    roundTo2Decimals(length),
+                    roundTo2Decimals(area)));
+        } else {
+            area /= K_SQUARE_DIVISOR;
+            length /= K_DIVISOR;
+            lblMeasuring.setText(NbBundle.getMessage(
+                    StatusBar.class,
+                    "StatusBar.lblMeasuring.text.km",
+                    roundTo2Decimals(length),
+                    roundTo2Decimals(area)));
+        }
+    }
+
+    @Override
+    public void featuresAdded(final FeatureCollectionEvent fce) {
+        final Collection<Feature> features = fce.getEventFeatures();
+
+        if (AppBroker.getInstance().getMappingComponent().getInteractionMode().equals(AppBroker.MEASURE_MODE)) {
+            if ((features != null) && (features.size() == 1)) {
+                final Feature f = features.toArray(new Feature[1])[0];
+                showMeasuring(f);
+            }
+        }
+    }
+
+    @Override
+    public void allFeaturesRemoved(final FeatureCollectionEvent fce) {
+    }
+
+    @Override
+    public void featuresRemoved(final FeatureCollectionEvent fce) {
+        lblMeasuring.setText("");
+    }
+
+    @Override
+    public void featuresChanged(final FeatureCollectionEvent fce) {
+        final Collection<Feature> features = fce.getEventFeatures();
+
+        if (AppBroker.getInstance().getMappingComponent().getInteractionMode().equals(AppBroker.MEASURE_MODE)) {
+            if ((features != null) && (features.size() == 1)) {
+                final Feature f = features.toArray(new Feature[1])[0];
+                showMeasuring(f);
+            }
+        }
+    }
+
+    @Override
+    public void featureSelectionChanged(final FeatureCollectionEvent fce) {
+    }
+
+    @Override
+    public void featureReconsiderationRequested(final FeatureCollectionEvent fce) {
+    }
+
+    @Override
+    public void featureCollectionChanged() {
     }
 }

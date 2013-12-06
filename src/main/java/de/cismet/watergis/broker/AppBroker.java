@@ -32,6 +32,7 @@ import java.util.HashMap;
 import javax.swing.Action;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener;
 
 import de.cismet.tools.configuration.Configurable;
@@ -56,6 +57,7 @@ public class AppBroker implements Configurable {
     // COLORS
     private static final Color blue = new Color(124, 160, 221);
     public static final Color DEFAULT_MODE_COLOR = blue;
+    public static final String MEASURE_MODE = "MEASURE_MODE";
     private static ConfigurationManager configManager;
 
     //~ Instance fields --------------------------------------------------------
@@ -72,6 +74,7 @@ public class AppBroker implements Configurable {
     private BookmarkManager bookmarkManager;
     private EnumMap<ComponentName, Component> components = new EnumMap<ComponentName, Component>(ComponentName.class);
     private HashMap<String, Action> mapModeSelectionActions = new HashMap<String, Action>();
+    private MessenGeometryListener measureListener;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -126,6 +129,8 @@ public class AppBroker implements Configurable {
      */
     public void setMappingComponent(final MappingComponent aMappingComponent) {
         mappingComponent = aMappingComponent;
+        setMeasureListener(new MessenGeometryListener(mappingComponent));
+        mappingComponent.addInputListener(MEASURE_MODE, getMeasureListener());
     }
 
     @Override
@@ -302,7 +307,7 @@ public class AppBroker implements Configurable {
      * @return  DOCUMENT ME!
      */
     public boolean isActionsAlwaysEnabled() {
-        return true;
+        return false;
     }
 
     /**
@@ -374,6 +379,24 @@ public class AppBroker implements Configurable {
      */
     public void setBookmarkManager(final BookmarkManager bookmarkManager) {
         this.bookmarkManager = bookmarkManager;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the measureListener
+     */
+    public MessenGeometryListener getMeasureListener() {
+        return measureListener;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  measureListener  the measureListener to set
+     */
+    public void setMeasureListener(final MessenGeometryListener measureListener) {
+        this.measureListener = measureListener;
     }
 
     //~ Inner Classes ----------------------------------------------------------
