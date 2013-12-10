@@ -26,8 +26,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.Action;
 
@@ -37,6 +39,9 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener
 
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
+
+import de.cismet.watergis.broker.listener.SelectionModeChangedEvent;
+import de.cismet.watergis.broker.listener.SelectionModeListener;
 
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
@@ -75,6 +80,7 @@ public class AppBroker implements Configurable {
     private EnumMap<ComponentName, Component> components = new EnumMap<ComponentName, Component>(ComponentName.class);
     private HashMap<String, Action> mapModeSelectionActions = new HashMap<String, Action>();
     private MessenGeometryListener measureListener;
+    private List<SelectionModeListener> selecionModeListener = new ArrayList<SelectionModeListener>();
 
     //~ Constructors -----------------------------------------------------------
 
@@ -397,6 +403,38 @@ public class AppBroker implements Configurable {
      */
     public void setMeasureListener(final MessenGeometryListener measureListener) {
         this.measureListener = measureListener;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  listener  DOCUMENT ME!
+     */
+    public void addSelecionModeListener(final SelectionModeListener listener) {
+        selecionModeListener.add(listener);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  listener  DOCUMENT ME!
+     */
+    public void removeSelecionModeListener(final SelectionModeListener listener) {
+        selecionModeListener.remove(listener);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  source   DOCUMENT ME!
+     * @param  oldMode  DOCUMENT ME!
+     * @param  newMode  DOCUMENT ME!
+     */
+    public void fireSelectionModeChanged(final Object source, final String oldMode, final String newMode) {
+        final SelectionModeChangedEvent e = new SelectionModeChangedEvent(source, oldMode, newMode);
+        for (final SelectionModeListener tmp : selecionModeListener) {
+            tmp.selectionModeChanged(e);
+        }
     }
 
     //~ Inner Classes ----------------------------------------------------------

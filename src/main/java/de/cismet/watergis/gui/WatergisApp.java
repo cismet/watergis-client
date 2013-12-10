@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GraphicsConfiguration;
@@ -78,7 +79,6 @@ import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 import de.cismet.cismap.commons.gui.options.CapabilityWidgetOptionsPanel;
 import de.cismet.cismap.commons.gui.overviewwidget.OverviewComponent;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
@@ -89,6 +89,7 @@ import de.cismet.tools.StaticDebuggingTools;
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
+import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
 import de.cismet.tools.gui.historybutton.JHistoryButton;
 import de.cismet.tools.gui.log4jquickconfig.Log4JQuickConfig;
 import de.cismet.tools.gui.startup.StaticStartupTools;
@@ -98,6 +99,7 @@ import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.gui.components.MeasureButton;
 import de.cismet.watergis.gui.components.ScaleJComboBox;
+import de.cismet.watergis.gui.components.SelectionButton;
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
@@ -206,6 +208,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdSelectionAttribute;
     private javax.swing.JButton cmdSelectionForm;
     private javax.swing.JButton cmdSelectionLocation;
+    private javax.swing.JButton cmdSelectionMode;
     private javax.swing.JButton cmdTable;
     private javax.swing.JButton cmdZoomIn;
     private javax.swing.JButton cmdZoomOut;
@@ -245,8 +248,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JMenuItem mniSaveMapToFile;
     private javax.swing.JMenuItem mniSaveProject;
     private javax.swing.JMenuItem mniSelectAttribute;
-    private javax.swing.JMenuItem mniSelectForm;
+    private javax.swing.JMenuItem mniSelectEllipse;
     private javax.swing.JMenuItem mniSelectLocation;
+    private javax.swing.JMenuItem mniSelectPolygon;
+    private javax.swing.JMenuItem mniSelectRectangle;
     private javax.swing.JMenuItem mniSelectionOptions;
     private javax.swing.JMenuItem mniZoomSelectedObjects;
     private de.cismet.watergis.gui.actions.map.NextExtendAction nextExtendAction;
@@ -264,10 +269,12 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.SaveProjectAction saveProjectAction;
     private de.cismet.watergis.gui.actions.selection.SelectAllAction selectAllAction;
     private de.cismet.watergis.gui.actions.selection.SelectionAttributeAction selectionAttributeAction;
+    private de.cismet.watergis.gui.actions.selection.SelectionEllipseAction selectionEllipseAction;
     private de.cismet.watergis.gui.actions.selection.SelectionFormAction selectionFormAction;
     private de.cismet.watergis.gui.actions.selection.SelectionLocationAction selectionLocationAction;
     private de.cismet.watergis.gui.actions.map.SelectionModeAction selectionModeAction;
     private de.cismet.watergis.gui.actions.selection.SelectionOptionsAction selectionOptionsAction;
+    private de.cismet.watergis.gui.actions.selection.SelectionPolygonAction selectionPolygonAction;
     private javax.swing.JPopupMenu.Separator sepCentralFilesEnd;
     private javax.swing.JPopupMenu.Separator sepCentralFilesStart;
     private javax.swing.JPopupMenu.Separator sepLocalFilesEnd;
@@ -278,7 +285,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.TableAction tableAction;
     private javax.swing.JButton tbtnMeasure;
     private javax.swing.JToggleButton tbtnPanMode;
-    private javax.swing.JToggleButton tbtnSelectionMode;
     private javax.swing.JToggleButton tbtnZoomMode;
     private javax.swing.JToolBar tobDLM25W;
     private de.cismet.watergis.gui.actions.WindowAction windowAction;
@@ -303,6 +309,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         initCismap();
         initComponents();
         ((MeasureButton)tbtnMeasure).setButtonGroup(btnGroupMapMode);
+        ((SelectionButton)cmdSelectionMode).setButtonGroup(btnGroupMapMode);
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
 
@@ -311,6 +318,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         initInfoNode();
         initAttributeTable();
         configureFileMenu();
+        configureButtons();
         initLog4JQuickConfig();
         initBookmarkManager();
         if (!EventQueue.isDispatchThread()) {
@@ -349,6 +357,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private void initCismap() {
         mappingComponent = new MappingComponent();
         AppBroker.getInstance().setMappingComponent(mappingComponent);
+        final SelectionListener sl = (SelectionListener)mappingComponent.getInputEventListener()
+                    .get(MappingComponent.SELECT);
+        sl.setFeaturesFromServicesSelectable(true);
         mappingModel.setInitalLayerConfigurationFromServer(false);
         configManager.addConfigurable((ActiveLayerModel)mappingModel);
         configManager.addConfigurable(mappingComponent);
@@ -565,6 +576,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     /**
      * DOCUMENT ME!
      */
+    private void configureButtons() {
+        configManager.addConfigurable((SelectionButton)cmdSelectionMode);
+        configManager.configure((SelectionButton)cmdSelectionMode);
+        configManager.addConfigurable((MeasureButton)tbtnMeasure);
+        configManager.configure((MeasureButton)tbtnMeasure);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
     private void initAttributeTable() {
         AttributeTableFactory.getInstance().setMappingComponent(mappingComponent);
         AttributeTableFactory.getInstance().setAttributeTableListener(new AttributeTableListener() {
@@ -668,6 +689,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         showCreateBookmarkDialogAction = new de.cismet.watergis.gui.actions.bookmarks.ShowCreateBookmarkDialogAction();
         exportMapToFileAction = new de.cismet.watergis.gui.actions.map.ExportMapToFileAction();
         showHideOverviewWindowAction = new de.cismet.watergis.gui.actions.window.ShowHideOverviewWindowAction();
+        selectionPolygonAction = new de.cismet.watergis.gui.actions.selection.SelectionPolygonAction();
+        selectionEllipseAction = new de.cismet.watergis.gui.actions.selection.SelectionEllipseAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
@@ -689,7 +712,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdPreviousExtend = new JHistoryButton();
         cmdNextExtend = new JHistoryButton();
         jSeparator5 = new javax.swing.JToolBar.Separator();
-        tbtnSelectionMode = new javax.swing.JToggleButton();
+        cmdSelectionMode = new SelectionButton();
         cmdSelectionForm = new javax.swing.JButton();
         cmdSelectionAttribute = new javax.swing.JButton();
         cmdSelectionLocation = new javax.swing.JButton();
@@ -723,7 +746,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         mniCreateBookmark = new javax.swing.JMenuItem();
         mniManageBookmarks = new javax.swing.JMenuItem();
         menSelection = new javax.swing.JMenu();
-        mniSelectForm = new javax.swing.JMenuItem();
+        mniSelectRectangle = new HighlightingRadioButtonMenuItem(javax.swing.UIManager.getDefaults().getColor(
+                    "ProgressBar.foreground"),
+                Color.WHITE);
+        mniSelectPolygon = new HighlightingRadioButtonMenuItem(javax.swing.UIManager.getDefaults().getColor(
+                    "ProgressBar.foreground"),
+                Color.WHITE);
+        mniSelectEllipse = new HighlightingRadioButtonMenuItem(javax.swing.UIManager.getDefaults().getColor(
+                    "ProgressBar.foreground"),
+                Color.WHITE);
         mniSelectAttribute = new javax.swing.JMenuItem();
         mniSelectLocation = new javax.swing.JMenuItem();
         mniZoomSelectedObjects = new javax.swing.JMenuItem();
@@ -913,16 +944,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         jSeparator5.setSeparatorSize(new java.awt.Dimension(2, 0));
         tobDLM25W.add(jSeparator5);
 
-        tbtnSelectionMode.setAction(selectionModeAction);
-        btnGroupMapMode.add(tbtnSelectionMode);
-        org.openide.awt.Mnemonics.setLocalizedText(
-            tbtnSelectionMode,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.tbtnSelectionMode.text_1")); // NOI18N
-        tbtnSelectionMode.setFocusable(false);
-        tbtnSelectionMode.setHideActionText(true);
-        tbtnSelectionMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        tbtnSelectionMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(tbtnSelectionMode);
+        cmdSelectionMode.setAction(selectionModeAction);
+        cmdSelectionMode.setFocusable(false);
+        cmdSelectionMode.setHideActionText(true);
+        cmdSelectionMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdSelectionMode.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdSelectionMode.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdSelectionMode.setPreferredSize(new java.awt.Dimension(26, 26));
+        cmdSelectionMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdSelectionMode);
 
         cmdSelectionForm.setAction(selectionFormAction);
         cmdSelectionForm.setFocusable(false);
@@ -1115,8 +1145,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             menSelection,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menSelection.text")); // NOI18N
 
-        mniSelectForm.setAction(selectionFormAction);
-        menSelection.add(mniSelectForm);
+        mniSelectRectangle.setAction(selectionFormAction);
+        menSelection.add(mniSelectRectangle);
+
+        mniSelectPolygon.setAction(selectionPolygonAction);
+        menSelection.add(mniSelectPolygon);
+
+        mniSelectEllipse.setAction(selectionEllipseAction);
+        menSelection.add(mniSelectEllipse);
 
         mniSelectAttribute.setAction(selectionAttributeAction);
         menSelection.add(mniSelectAttribute);
