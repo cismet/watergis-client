@@ -34,26 +34,28 @@ import de.cismet.watergis.broker.listener.SelectionModeListener;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class SelectionFormAction extends AbstractAction implements SelectionModeListener {
+public class SelectionEllipseAction extends AbstractAction implements SelectionModeListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(SelectionFormAction.class);
+    private static final Logger LOG = Logger.getLogger(SelectionEllipseAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new CloseAction object.
      */
-    public SelectionFormAction() {
+    public SelectionEllipseAction() {
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                SelectionFormAction.class,
+                SelectionEllipseAction.class,
                 "SelectionFormAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
-        final String text = org.openide.util.NbBundle.getMessage(SelectionFormAction.class, "SelectionFormAction.text");
+        final String text = org.openide.util.NbBundle.getMessage(
+                SelectionEllipseAction.class,
+                "SelectionFormAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
-                SelectionFormAction.class,
+                SelectionEllipseAction.class,
                 "SelectionFormAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
@@ -70,9 +72,9 @@ public class SelectionFormAction extends AbstractAction implements SelectionMode
                     .getInputEventListener()
                     .get(MappingComponent.SELECT);
         String oldMode = sl.getMode();
-        sl.setMode(CreateGeometryListenerInterface.RECTANGLE);
+        sl.setMode(CreateGeometryListenerInterface.ELLIPSE);
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
-        AppBroker.getInstance().fireSelectionModeChanged(this, oldMode, CreateGeometryListenerInterface.RECTANGLE);
+        AppBroker.getInstance().fireSelectionModeChanged(this, oldMode, CreateGeometryListenerInterface.ELLIPSE);
     }
 
     @Override
@@ -82,7 +84,7 @@ public class SelectionFormAction extends AbstractAction implements SelectionMode
 
     @Override
     public void selectionModeChanged(final SelectionModeChangedEvent e) {
-        if (e.getNewMode().equals(CreateGeometryListenerInterface.RECTANGLE)) {
+        if (e.getNewMode().equals(CreateGeometryListenerInterface.ELLIPSE)) {
             putValue(Action.SELECTED_KEY, true);
         } else {
             putValue(Action.SELECTED_KEY, false);
