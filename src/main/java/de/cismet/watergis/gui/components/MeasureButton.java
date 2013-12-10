@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.components;
 
+import org.jdom.Element;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -27,6 +29,9 @@ import javax.swing.JToggleButton;
 
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 
+import de.cismet.tools.configuration.Configurable;
+import de.cismet.tools.configuration.NoWriteError;
+
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
 import de.cismet.tools.gui.JPopupMenuButton;
 
@@ -38,12 +43,14 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class MeasureButton extends JPopupMenuButton implements PropertyChangeListener {
+public class MeasureButton extends JPopupMenuButton implements PropertyChangeListener, Configurable {
 
     //~ Static fields/initializers ---------------------------------------------
 
     private static final int POLYGON_MODE = 1;
     private static final int LINE_MODE = 2;
+    private static final String CONFIGURATION = "MeasureButton";
+    private static final String MODE_ATTRIBUTE = "mode";
 
     //~ Instance fields --------------------------------------------------------
 
@@ -71,7 +78,7 @@ public class MeasureButton extends JPopupMenuButton implements PropertyChangeLis
 
                 @Override
                 public void actionPerformed(final ActionEvent e) {
-                    setMode(LINE_MODE);
+                    setMode(LINE_MODE, false);
                     AppBroker.getInstance().getMeasureListener().setMode(MessenGeometryListener.LINESTRING);
                 }
             });
@@ -80,7 +87,7 @@ public class MeasureButton extends JPopupMenuButton implements PropertyChangeLis
 
                 @Override
                 public void actionPerformed(final ActionEvent e) {
-                    setMode(POLYGON_MODE);
+                    setMode(POLYGON_MODE, false);
                     AppBroker.getInstance().getMeasureListener().setMode(MessenGeometryListener.POLYGON);
                 }
             });
@@ -102,14 +109,20 @@ public class MeasureButton extends JPopupMenuButton implements PropertyChangeLis
     /**
      * DOCUMENT ME!
      *
-     * @param  mode  DOCUMENT ME!
+     * @param  mode      DOCUMENT ME!
+     * @param  internal  DOCUMENT ME!
      */
-    private void setMode(final int mode) {
+    private void setMode(final int mode, final boolean internal) {
         this.mode = mode;
         lineMenu.setSelected(mode == LINE_MODE);
         polygonMenu.setSelected(mode == POLYGON_MODE);
-        AppBroker.getInstance().getMappingComponent().setInteractionMode(AppBroker.MEASURE_MODE);
-        AppBroker.getInstance().getMappingComponent().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+
+        if (!internal) {
+            AppBroker.getInstance().getMappingComponent().setInteractionMode(AppBroker.MEASURE_MODE);
+            AppBroker.getInstance()
+                    .getMappingComponent()
+                    .setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        }
     }
 
     /**
@@ -155,5 +168,48 @@ public class MeasureButton extends JPopupMenuButton implements PropertyChangeLis
                 setSelected(true);
             }
         }
+    }
+
+    @Override
+    public void configure(final Element parent) {
+        if (parent != null) {
+            final Element conf = parent.getChild(CONFIGURATION);
+
+            if (conf != null) {
+                final String modeAttr = conf.getAttributeValue(MODE_ATTRIBUTE);
+                try {
+                    final int mode = Integer.parseInt(modeAttr);
+
+                    setMode(mode, true);
+
+                    switch (mode) {
+                        case 1: {
+                            AppBroker.getInstance().getMeasureListener().setMode(MessenGeometryListener.POLYGON);
+                            break;
+                        }
+                        case 2: {
+                            AppBroker.getInstance().getMeasureListener().setMode(MessenGeometryListener.LINESTRING);
+                            break;
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    // nothing to do
+                }
+            }
+        }
+    }
+
+    @Override
+    public void masterConfigure(final Element parent) {
+        // the server configuration should be handled like the client configuration
+        configure(parent);
+    }
+
+    @Override
+    public Element getConfiguration() throws NoWriteError {
+        final Element conf = new Element(CONFIGURATION);
+        conf.setAttribute(MODE_ATTRIBUTE, String.valueOf(mode));
+
+        return conf;
     }
 }
