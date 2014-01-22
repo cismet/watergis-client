@@ -69,7 +69,7 @@ public class SelectionFormAction extends AbstractAction implements SelectionMode
         final SelectionListener sl = (SelectionListener)AppBroker.getInstance().getMappingComponent()
                     .getInputEventListener()
                     .get(MappingComponent.SELECT);
-        String oldMode = sl.getMode();
+        final String oldMode = sl.getMode();
         sl.setMode(CreateGeometryListenerInterface.RECTANGLE);
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
         AppBroker.getInstance().fireSelectionModeChanged(this, oldMode, CreateGeometryListenerInterface.RECTANGLE);
