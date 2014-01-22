@@ -1146,12 +1146,29 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menSelection.text")); // NOI18N
 
         mniSelectRectangle.setAction(selectionFormAction);
+        mniSelectRectangle.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniSelectRectangle.toolTipText")); // NOI18N
         menSelection.add(mniSelectRectangle);
 
         mniSelectPolygon.setAction(selectionPolygonAction);
+        mniSelectPolygon.setMnemonic('P');
+        mniSelectPolygon.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniSelectPolygon.toolTipText")); // NOI18N
+        mniSelectPolygon.setLabel(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniSelectPolygon.label"));       // NOI18N
         menSelection.add(mniSelectPolygon);
 
         mniSelectEllipse.setAction(selectionEllipseAction);
+        mniSelectEllipse.setMnemonic('E');
+        mniSelectEllipse.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniSelectEllipse.toolTipText")); // NOI18N
+        mniSelectEllipse.setLabel(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniSelectEllipse.label"));       // NOI18N
         menSelection.add(mniSelectEllipse);
 
         mniSelectAttribute.setAction(selectionAttributeAction);

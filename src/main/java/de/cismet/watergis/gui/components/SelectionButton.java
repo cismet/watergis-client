@@ -228,7 +228,7 @@ public class SelectionButton extends JPopupMenuButton implements PropertyChangeL
                                 .getInputEventListener()
                                 .get(MappingComponent.SELECT);
 
-                    String oldMode = sl.getMode();
+                    final String oldMode = sl.getMode();
                     String newMode = null;
                     switch (mode) {
                         case 1: {
@@ -247,9 +247,8 @@ public class SelectionButton extends JPopupMenuButton implements PropertyChangeL
                             break;
                         }
                     }
-                    
-                    AppBroker.getInstance()
-                            .fireSelectionModeChanged(this, oldMode, newMode);
+
+                    AppBroker.getInstance().fireSelectionModeChanged(this, oldMode, newMode);
                 } catch (NumberFormatException e) {
                     // nothing to do
                 }

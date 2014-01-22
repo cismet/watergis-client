@@ -71,7 +71,7 @@ public class SelectionPolygonAction extends AbstractAction implements SelectionM
         final SelectionListener sl = (SelectionListener)AppBroker.getInstance().getMappingComponent()
                     .getInputEventListener()
                     .get(MappingComponent.SELECT);
-        String oldMode = sl.getMode();
+        final String oldMode = sl.getMode();
         sl.setMode(CreateGeometryListenerInterface.POLYGON);
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
         AppBroker.getInstance().fireSelectionModeChanged(this, oldMode, CreateGeometryListenerInterface.POLYGON);

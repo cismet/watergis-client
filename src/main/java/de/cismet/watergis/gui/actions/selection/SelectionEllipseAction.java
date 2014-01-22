@@ -71,7 +71,7 @@ public class SelectionEllipseAction extends AbstractAction implements SelectionM
         final SelectionListener sl = (SelectionListener)AppBroker.getInstance().getMappingComponent()
                     .getInputEventListener()
                     .get(MappingComponent.SELECT);
-        String oldMode = sl.getMode();
+        final String oldMode = sl.getMode();
         sl.setMode(CreateGeometryListenerInterface.ELLIPSE);
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
         AppBroker.getInstance().fireSelectionModeChanged(this, oldMode, CreateGeometryListenerInterface.ELLIPSE);
