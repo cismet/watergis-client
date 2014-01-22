@@ -214,6 +214,9 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="selectionFormAction"/>
                 </Property>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniSelectRectangle.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
               </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new HighlightingRadioButtonMenuItem(javax.swing.UIManager.getDefaults()&#xa;                    .getColor(&#xa;                        &quot;ProgressBar.foreground&quot;),&#xa;            Color.WHITE)"/>
@@ -224,6 +227,13 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="selectionPolygonAction"/>
                 </Property>
+                <Property name="mnemonic" type="int" value="80"/>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniSelectPolygon.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+                <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniSelectPolygon.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
               </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new HighlightingRadioButtonMenuItem(javax.swing.UIManager.getDefaults()&#xa;                    .getColor(&#xa;                        &quot;ProgressBar.foreground&quot;),&#xa;            Color.WHITE)"/>
@@ -233,6 +243,13 @@
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="selectionEllipseAction"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="69"/>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniSelectEllipse.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+                <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniSelectEllipse.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <AuxValues>
