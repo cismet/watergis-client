@@ -22,6 +22,7 @@ import de.cismet.cids.custom.beans.watergis.Bookmark;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.bookmarks.DeleteBookmarkAction;
+import de.cismet.watergis.gui.actions.bookmarks.LoadBookmarksAction;
 import de.cismet.watergis.gui.actions.bookmarks.ZoomBookmarkInMapAction;
 
 /**
@@ -39,20 +40,25 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnLoad;
     private javax.swing.JButton btnPan;
+    private javax.swing.JButton btnSave;
     private javax.swing.JButton btnZoom;
     private de.cismet.watergis.gui.actions.bookmarks.DeleteBookmarkAction deleteBookmarkAction;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblDescription;
     private javax.swing.JLabel lblName;
+    private de.cismet.watergis.gui.actions.bookmarks.LoadBookmarksAction loadBookmarksAction;
     private javax.swing.JList lstBookmarks;
+    private de.cismet.watergis.gui.actions.bookmarks.SaveBookmarksAction saveBookmarksAction;
     private de.cismet.watergis.gui.actions.bookmarks.PanBookmarkInMapAction showBookmarkInMapAction;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextArea txtaDescription;
-    private de.cismet.watergis.gui.actions.bookmarks.ZoomBookmarkInMapAction zoomBookmarkInMapAction1;
+    private de.cismet.watergis.gui.actions.bookmarks.ZoomBookmarkInMapAction zoomBookmarkInMapAction;
     // End of variables declaration//GEN-END:variables
 
     //~ Constructors -----------------------------------------------------------
@@ -84,21 +90,26 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
 
         showBookmarkInMapAction = new de.cismet.watergis.gui.actions.bookmarks.PanBookmarkInMapAction(this);
         deleteBookmarkAction = new DeleteBookmarkAction(this);
-        zoomBookmarkInMapAction1 = new ZoomBookmarkInMapAction(this);
+        zoomBookmarkInMapAction = new ZoomBookmarkInMapAction(this);
+        saveBookmarksAction = new de.cismet.watergis.gui.actions.bookmarks.SaveBookmarksAction();
+        loadBookmarksAction = new LoadBookmarksAction(this);
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstBookmarks = new javax.swing.JList();
         lblName = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         lblDescription = new javax.swing.JLabel();
-        btnPan = new javax.swing.JButton();
-        btnDelete = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtaDescription = new javax.swing.JTextArea();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0),
                 new java.awt.Dimension(0, 0),
                 new java.awt.Dimension(32767, 0));
+        jPanel2 = new javax.swing.JPanel();
+        btnLoad = new javax.swing.JButton();
+        btnSave = new javax.swing.JButton();
         btnZoom = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        btnPan = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(ManageBookmarksDialog.class, "ManageBookmarksDialog.title")); // NOI18N
@@ -167,22 +178,6 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 4, 2);
         jPanel1.add(lblDescription, gridBagConstraints);
 
-        btnPan.setAction(showBookmarkInMapAction);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(3, 4, 0, 4);
-        jPanel1.add(btnPan, gridBagConstraints);
-
-        btnDelete.setAction(deleteBookmarkAction);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(3, 4, 0, 0);
-        jPanel1.add(btnDelete, gridBagConstraints);
-
         jScrollPane2.setPreferredSize(new java.awt.Dimension(258, 125));
 
         txtaDescription.setColumns(20);
@@ -208,13 +203,55 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
         gridBagConstraints.weightx = 1.0;
         jPanel1.add(filler1, gridBagConstraints);
 
-        btnZoom.setAction(zoomBookmarkInMapAction1);
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        btnLoad.setAction(loadBookmarksAction);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 4);
+        jPanel2.add(btnLoad, gridBagConstraints);
+
+        btnSave.setAction(saveBookmarksAction);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 4);
+        jPanel2.add(btnSave, gridBagConstraints);
+
+        btnZoom.setAction(zoomBookmarkInMapAction);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 4);
-        jPanel1.add(btnZoom, gridBagConstraints);
+        jPanel2.add(btnZoom, gridBagConstraints);
+
+        btnDelete.setAction(deleteBookmarkAction);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(3, 4, 0, 0);
+        jPanel2.add(btnDelete, gridBagConstraints);
+
+        btnPan.setAction(showBookmarkInMapAction);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(3, 4, 0, 4);
+        jPanel2.add(btnPan, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel1.add(jPanel2, gridBagConstraints);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
@@ -227,11 +264,7 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void formWindowOpened(final java.awt.event.WindowEvent evt) { //GEN-FIRST:event_formWindowOpened
-        final DefaultListModel<Bookmark> model = new DefaultListModel<Bookmark>();
-        for (final Bookmark b : AppBroker.getInstance().getBookmarkManager().getBookmarks()) {
-            model.addElement(b);
-        }
-        lstBookmarks.setModel(model);
+        updateModel();
     }                                                                     //GEN-LAST:event_formWindowOpened
 
     /**
@@ -253,6 +286,17 @@ public class ManageBookmarksDialog extends javax.swing.JDialog {
             addDocumentListeners();
         }
     }                                                                                       //GEN-LAST:event_lstBookmarksValueChanged
+
+    /**
+     * DOCUMENT ME!
+     */
+    public void updateModel() {
+        final DefaultListModel<Bookmark> model = new DefaultListModel<Bookmark>();
+        for (final Bookmark b : AppBroker.getInstance().getBookmarkManager().getBookmarks()) {
+            model.addElement(b);
+        }
+        lstBookmarks.setModel(model);
+    }
 
     /**
      * DOCUMENT ME!

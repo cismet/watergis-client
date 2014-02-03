@@ -12,10 +12,21 @@
 package de.cismet.cids.custom.beans.watergis;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+
+import org.apache.log4j.Logger;
+
+import org.jdom.Attribute;
+import org.jdom.Element;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.cismet.cids.dynamics.CidsBean;
+
+import de.cismet.commons.converter.ConversionException;
 
 /**
  * DOCUMENT ME!
@@ -25,11 +36,45 @@ import de.cismet.cids.dynamics.CidsBean;
  */
 public class Bookmark extends CidsBean implements Comparable<Bookmark> {
 
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(Bookmark.class);
+
     //~ Instance fields --------------------------------------------------------
 
     private String name;
     private String description;
     private Geometry geometry;
+
+    //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new Bookmark object.
+     */
+    public Bookmark() {
+    }
+
+    /**
+     * Creates a new Bookmark object.
+     *
+     * @param  bookmarkElement  DOCUMENT ME!
+     */
+    public Bookmark(final Element bookmarkElement) {
+        name = bookmarkElement.getAttributeValue("name");
+        description = bookmarkElement.getChildText("description");
+        final Element geometryElement = bookmarkElement.getChild("geometry");
+        final int crs = Integer.parseInt(geometryElement.getAttributeValue("crs"));
+
+        final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), crs);
+        final WKTReader wktReader = new WKTReader(geomFactory);
+        final String geomText = bookmarkElement.getChildText("geometry");
+
+        try {
+            geometry = wktReader.read(geomText);
+        } catch (final ParseException ex) {
+            LOG.error("cannot create geometry from WKT: " + geomText, ex); // NOI18N
+        }
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -125,5 +170,29 @@ public class Bookmark extends CidsBean implements Comparable<Bookmark> {
     @Override
     public int compareTo(final Bookmark o) {
         return this.name.compareTo(o.name);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Element toElement() {
+        final Element bookmark = new Element("bookmark");
+        final Attribute nameAttribute = new Attribute("name", name);
+        final Element geometryElement = new Element("geometry");
+
+        geometryElement.addContent(geometry.toText());
+        geometryElement.setAttribute(new Attribute("crs", String.valueOf(geometry.getSRID())));
+        bookmark.setAttribute(nameAttribute);
+        bookmark.addContent(geometryElement);
+
+        if (description != null) {
+            final Element descriptionElement = new Element("description");
+            descriptionElement.addContent(description);
+            bookmark.addContent(descriptionElement);
+        }
+
+        return bookmark;
     }
 }
