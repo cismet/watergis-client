@@ -12,6 +12,7 @@
 package de.cismet.watergis.gui.panels;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 
 import org.apache.log4j.Logger;
 
@@ -240,20 +241,40 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
         double area = geom.getArea();
         double length = geom.getLength();
 
-        if (length < 10000) {
-            lblMeasuring.setText(NbBundle.getMessage(
-                    StatusBar.class,
-                    "StatusBar.lblMeasuring.text.m",
-                    roundTo2Decimals(length),
-                    roundTo2Decimals(area)));
+        if (geom.getArea() == 0) {
+            final int segments = geom.getNumGeometries() * (geom.getNumPoints() - 1);
+
+            if (length < 10000) {
+                lblMeasuring.setText(NbBundle.getMessage(
+                        StatusBar.class,
+                        "StatusBar.lblMeasuring.text.length.m",
+                        segments,
+                        roundTo2Decimals(length)));
+            } else {
+                area /= K_SQUARE_DIVISOR;
+                length /= K_DIVISOR;
+                lblMeasuring.setText(NbBundle.getMessage(
+                        StatusBar.class,
+                        "StatusBar.lblMeasuring.text.length.km",
+                        segments,
+                        roundTo2Decimals(length)));
+            }
         } else {
-            area /= K_SQUARE_DIVISOR;
-            length /= K_DIVISOR;
-            lblMeasuring.setText(NbBundle.getMessage(
-                    StatusBar.class,
-                    "StatusBar.lblMeasuring.text.km",
-                    roundTo2Decimals(length),
-                    roundTo2Decimals(area)));
+            if (length < 10000) {
+                lblMeasuring.setText(NbBundle.getMessage(
+                        StatusBar.class,
+                        "StatusBar.lblMeasuring.text.m",
+                        roundTo2Decimals(length),
+                        roundTo2Decimals(area)));
+            } else {
+                area /= K_SQUARE_DIVISOR;
+                length /= K_DIVISOR;
+                lblMeasuring.setText(NbBundle.getMessage(
+                        StatusBar.class,
+                        "StatusBar.lblMeasuring.text.km",
+                        roundTo2Decimals(length),
+                        roundTo2Decimals(area)));
+            }
         }
     }
 
