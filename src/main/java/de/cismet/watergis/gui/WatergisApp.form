@@ -20,13 +20,9 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.selection.SelectionAttributeAction" name="selectionAttributeAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.SelectionFormAction" name="selectionFormAction">
-    </Component>
     <Component class="de.cismet.watergis.gui.actions.selection.SelectionLocationAction" name="selectionLocationAction">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.selection.RemoveSelectionAllTopicsAction" name="removeSelectionAllTopicsAction">
-    </Component>
-    <Component class="de.cismet.watergis.gui.actions.selection.SelectionOptionsAction" name="selectionOptionsAction">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.selection.ZoomSelectedObjectsAction" name="zoomSelectedObjectsAction">
     </Component>
@@ -212,7 +208,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="mniSelectRectangle">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="selectionFormAction"/>
+                  <ComponentRef name="default"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniSelectRectangle.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -287,19 +283,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniRemoveSelection.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-                </Property>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="mniSelectionOptions">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="selectionOptionsAction"/>
-                </Property>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-settingsandroid.png"/>
-                </Property>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniSelectionOptions.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -746,26 +729,6 @@
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SelectionButton()"/>
           </AuxValues>
-        </Component>
-        <Component class="javax.swing.JButton" name="cmdSelectionForm">
-          <Properties>
-            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="selectionFormAction"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="hideActionText" type="boolean" value="true"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[26, 26]"/>
-            </Property>
-            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[26, 26]"/>
-            </Property>
-            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[26, 26]"/>
-            </Property>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="cmdSelectionAttribute">
           <Properties>
