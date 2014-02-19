@@ -52,6 +52,7 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
 
     Timer checkIfPending;
     private Pattern p = Pattern.compile("1 *: *\\d+ *");
+    private Pattern p2 = Pattern.compile("\\d+");
 
     //~ Constructors -----------------------------------------------------------
 
@@ -104,8 +105,15 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
                 CismapBroker.getInstance().removeStatusListener(this);
 
                 final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
-                final String[] array = item.split(":");
-                final Integer i = new Integer(array[1].trim());
+                Integer i;
+
+                if (item.indexOf(":") != -1) {
+                    final String[] array = item.split(":");
+                    i = new Integer(array[1].trim());
+                } else {
+                    i = new Integer(item.trim());
+                }
+
                 mappingComponent.gotoBoundingBoxWithHistory(mappingComponent.getBoundingBoxFromScale(i));
 
                 this.setBackground(Color.white, Color.white);
@@ -140,7 +148,8 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
      */
     private boolean isValid(final String selectedItem) {
         final Matcher m = p.matcher(selectedItem);
-        return m.matches();
+        final Matcher m2 = p2.matcher(selectedItem);
+        return m.matches() || m2.matches();
     }
 
     /**
