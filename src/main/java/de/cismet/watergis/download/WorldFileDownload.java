@@ -144,7 +144,7 @@ public class WorldFileDownload extends AbstractDownload {
         final double xPixelCenter = boundingBox.getX1() + (xPixelSize / 2);
 
         // y-coordinate of the center of the upper left pixel
-        final double yPixelCenter = boundingBox.getY1() + (yPixelSize / 2);
+        final double yPixelCenter = boundingBox.getY2() + (yPixelSize / 2);
 
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(df.format(xPixelSize));
