@@ -86,7 +86,7 @@ public class SaveBookmarksAction extends AbstractAction {
                 @Override
                 public boolean accept(final File f) {
                     return f.isDirectory()
-                                || f.getName().toLowerCase().endsWith(".xml"); // NOI18N
+                                || f.getName().toLowerCase().endsWith(".lz"); // NOI18N
                 }
 
                 @Override
@@ -100,7 +100,12 @@ public class SaveBookmarksAction extends AbstractAction {
         final int state = fc.showSaveDialog(AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
         if (state == JFileChooser.APPROVE_OPTION) {
-            final File file = fc.getSelectedFile();
+            File file = fc.getSelectedFile();
+
+            if (!file.getName().endsWith(".lz")) {
+                file = new File(file.getAbsolutePath() + ".lz");
+            }
+
             AppBroker.getInstance().getBookmarkManager().saveToFile(file);
         }
     }
