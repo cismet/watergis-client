@@ -76,7 +76,7 @@ public class BookmarkManager implements Configurable {
     //~ Instance fields --------------------------------------------------------
 
     private String bookmarkFilePath = WatergisApp.getDIRECTORYPATH_WATERGIS()
-                + System.getProperty("file.separator") + "bookmarks.xml";
+                + System.getProperty("file.separator") + "bookmarks.lz";
     private ArrayList<Bookmark> bookmarkList = new ArrayList<Bookmark>();
     private HashMap<Bookmark, JMenuItem> bookmarkMenuItemMap = new HashMap<Bookmark, JMenuItem>();
     private JPopupMenu.Separator separator;

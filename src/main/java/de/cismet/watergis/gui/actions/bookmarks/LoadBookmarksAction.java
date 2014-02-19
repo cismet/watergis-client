@@ -97,7 +97,7 @@ public class LoadBookmarksAction extends AbstractAction {
                 @Override
                 public boolean accept(final File f) {
                     return f.isDirectory()
-                                || f.getName().toLowerCase().endsWith(".xml"); // NOI18N
+                                || f.getName().toLowerCase().endsWith(".lz"); // NOI18N
                 }
 
                 @Override
