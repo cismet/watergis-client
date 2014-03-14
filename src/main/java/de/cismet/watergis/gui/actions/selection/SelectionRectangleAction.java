@@ -34,29 +34,29 @@ import de.cismet.watergis.broker.listener.SelectionModeListener;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class SelectionEllipseAction extends AbstractAction implements SelectionModeListener {
+public class SelectionRectangleAction extends AbstractAction implements SelectionModeListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(SelectionEllipseAction.class);
+    private static final Logger LOG = Logger.getLogger(SelectionRectangleAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
-     * Creates a new CloseAction object.
+     * Creates a new SelectionRectangleAction object.
      */
-    public SelectionEllipseAction() {
+    public SelectionRectangleAction() {
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                SelectionEllipseAction.class,
-                "SelectionEllipseAction.toolTipText");
+                SelectionRectangleAction.class,
+                "SelectionRectangleAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(
-                SelectionEllipseAction.class,
-                "SelectionEllipseAction.text");
+                SelectionRectangleAction.class,
+                "SelectionRectangleAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
-                SelectionEllipseAction.class,
-                "SelectionEllipseAction.mnemonic");
+                SelectionRectangleAction.class,
+                "SelectionRectangleAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-selectionadd.png"));
@@ -72,9 +72,9 @@ public class SelectionEllipseAction extends AbstractAction implements SelectionM
                     .getInputEventListener()
                     .get(MappingComponent.SELECT);
         final String oldMode = sl.getMode();
-        sl.setMode(CreateGeometryListenerInterface.ELLIPSE);
+        sl.setMode(CreateGeometryListenerInterface.RECTANGLE);
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
-        AppBroker.getInstance().fireSelectionModeChanged(this, oldMode, CreateGeometryListenerInterface.ELLIPSE);
+        AppBroker.getInstance().fireSelectionModeChanged(this, oldMode, CreateGeometryListenerInterface.RECTANGLE);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class SelectionEllipseAction extends AbstractAction implements SelectionM
 
     @Override
     public void selectionModeChanged(final SelectionModeChangedEvent e) {
-        if (e.getNewMode().equals(CreateGeometryListenerInterface.ELLIPSE)) {
+        if (e.getNewMode().equals(CreateGeometryListenerInterface.RECTANGLE)) {
             putValue(Action.SELECTED_KEY, true);
         } else {
             putValue(Action.SELECTED_KEY, false);
