@@ -51,8 +51,8 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
     //~ Instance fields --------------------------------------------------------
 
     Timer checkIfPending;
-    private Pattern p = Pattern.compile("1 *: *\\d+ *");
-    private Pattern p2 = Pattern.compile("\\d+");
+    private Pattern p = Pattern.compile("1 *: *[\\d. ]+ *");
+    private Pattern p2 = Pattern.compile("[\\d. ]+");
 
     //~ Constructors -----------------------------------------------------------
 
@@ -100,12 +100,14 @@ public class ScaleJComboBox extends JComboBox implements StatusListener, ItemLis
     @Override
     public void itemStateChanged(final ItemEvent event) {
         if (event.getStateChange() == ItemEvent.SELECTED) {
-            final String item = (String)event.getItem();
+            String item = (String)event.getItem();
             if (isValid(item)) {
                 CismapBroker.getInstance().removeStatusListener(this);
 
                 final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
                 Integer i;
+                item = item.replace('.', ' ');
+                item = item.replace(" ", "");
 
                 if (item.indexOf(":") != -1) {
                     final String[] array = item.split(":");
