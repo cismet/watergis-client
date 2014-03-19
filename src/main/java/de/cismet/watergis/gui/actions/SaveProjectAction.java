@@ -29,11 +29,12 @@ import de.cismet.cismap.commons.RestrictedFileSystemView;
 
 import de.cismet.tools.configuration.ConfigurationManager;
 
+import de.cismet.tools.gui.ConfirmationJFileChooser;
+
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.gui.WatergisApp;
-import de.cismet.watergis.gui.components.ConfirmationJFileChooser;
 
 /**
  * DOCUMENT ME!

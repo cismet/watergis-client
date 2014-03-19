@@ -67,6 +67,7 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.raster.wms.AbstractWMS;
 import de.cismet.cismap.commons.raster.wms.AbstractWMSServiceLayer;
 
+import de.cismet.tools.gui.ConfirmationJFileChooser;
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -77,7 +78,6 @@ import de.cismet.watergis.download.WorldFileDownload;
 
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.SaveProjectAction;
-import de.cismet.watergis.gui.components.ConfirmationJFileChooser;
 import de.cismet.watergis.gui.components.ValidationJTextField;
 
 /**
