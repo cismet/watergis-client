@@ -19,7 +19,11 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.tools.gui.StaticSwingTools;
+
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.gui.components.location.LocationDialog;
 
 /**
  * DOCUMENT ME!
@@ -32,6 +36,10 @@ public class SelectionLocationAction extends AbstractAction {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(SelectionLocationAction.class);
+
+    //~ Instance fields --------------------------------------------------------
+
+    private LocationDialog dialog;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -60,11 +68,16 @@ public class SelectionLocationAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        if (dialog == null) {
+            dialog = new LocationDialog(AppBroker.getInstance().getWatergisApp(), false);
+            dialog.setSize(390, 480);
+        }
+        dialog.refreshSelectedFeatureCount(true);
+        StaticSwingTools.centerWindowOnScreen(dialog);
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
