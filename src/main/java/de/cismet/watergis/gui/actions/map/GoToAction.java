@@ -11,17 +11,27 @@
  */
 package de.cismet.watergis.gui.actions.map;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
+
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.XBoundingBox;
+import de.cismet.cismap.commons.features.DefaultStyledFeature;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.piccolo.FeatureAnnotationSymbol;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.StaticDecimalTools;
@@ -40,6 +50,11 @@ public class GoToAction extends AbstractAction {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(GoToAction.class);
+
+    //~ Instance fields --------------------------------------------------------
+
+    private ImageIcon pointIcon = new javax.swing.ImageIcon(getClass().getResource(
+                "/de/cismet/cismap/commons/gui/res/linRefPoint.png"));
 
     //~ Constructors -----------------------------------------------------------
 
@@ -99,8 +114,37 @@ public class GoToAction extends AbstractAction {
                     currentCrsCode,
                     mappingComponent.isInMetricSRS());
             mappingComponent.gotoBoundingBox(bb, true, false, mappingComponent.getAnimationDuration());
+
+            final Timer t = new Timer();
+            t.schedule(new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        showPointInMap(mappingComponent, gotoX, gotoY);
+                    }
+                }, mappingComponent.getAnimationDuration());
         } catch (Exception skip) {
         }
+    }
+
+    /**
+     * shows the given point on the map.
+     *
+     * @param  mappingComponent  DOCUMENT ME!
+     * @param  x                 DOCUMENT ME!
+     * @param  y                 DOCUMENT ME!
+     */
+    private void showPointInMap(final MappingComponent mappingComponent, final double x, final double y) {
+        final DefaultStyledFeature styledFeature = new DefaultStyledFeature();
+        final String currentCrsCode = CismapBroker.getInstance().getSrs().getCode();
+        final int srid = CrsTransformer.extractSridFromCrs(currentCrsCode);
+        final GeometryFactory gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), srid);
+        styledFeature.setGeometry(gf.createPoint(new Coordinate(x, y)));
+        final FeatureAnnotationSymbol fas = new FeatureAnnotationSymbol(pointIcon.getImage());
+        fas.setSweetSpotX(0.5);
+        fas.setSweetSpotY(0.5);
+        styledFeature.setPointAnnotationSymbol(fas);
+        mappingComponent.highlightFeature(styledFeature, 1500);
     }
 
     @Override
