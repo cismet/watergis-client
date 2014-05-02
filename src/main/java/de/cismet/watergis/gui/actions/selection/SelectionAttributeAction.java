@@ -19,7 +19,13 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
+
+import de.cismet.tools.gui.StaticSwingTools;
+
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.gui.dialog.QuerySearchDialog;
 
 /**
  * DOCUMENT ME!
@@ -60,11 +66,14 @@ public class SelectionAttributeAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        LOG.info("Not supported yet.");
+        final ActiveLayerModel model = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
+                    .getMappingModel();
+        final QuerySearchDialog dialog = new QuerySearchDialog(AppBroker.getInstance().getWatergisApp(), false, model);
+        StaticSwingTools.showDialog(dialog);
     }
 
     @Override
     public boolean isEnabled() {
-        return false || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 }
