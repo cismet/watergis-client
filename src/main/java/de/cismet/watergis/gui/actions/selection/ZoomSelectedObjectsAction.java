@@ -80,7 +80,7 @@ public class ZoomSelectedObjectsAction extends AbstractAction {
             features[i] = sel.get(i).getFeature();
         }
 
-        final ZoomToFeaturesWorker worker = new ZoomToFeaturesWorker(features);
+        final ZoomToFeaturesWorker worker = new ZoomToFeaturesWorker(features, 10);
         worker.execute();
     }
 
