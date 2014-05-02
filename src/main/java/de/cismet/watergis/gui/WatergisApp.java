@@ -11,6 +11,20 @@
  */
 package de.cismet.watergis.gui;
 
+import Sirius.navigator.Navigator;
+import Sirius.navigator.connection.Connection;
+import Sirius.navigator.connection.ConnectionFactory;
+import Sirius.navigator.connection.ConnectionInfo;
+import Sirius.navigator.connection.ConnectionSession;
+import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.connection.proxy.ConnectionProxy;
+import Sirius.navigator.exception.ConnectionException;
+import Sirius.navigator.resource.PropertyManager;
+import Sirius.navigator.ui.dialog.LoginDialog;
+
+import Sirius.server.newuser.UserException;
+import Sirius.server.newuser.permission.PermissionHolder;
+
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
 import net.infonode.docking.DockingWindow;
@@ -34,6 +48,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Logger;
 
+import org.jdesktop.swingx.JXLoginPane;
+import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.auth.DefaultUserNameStore;
+
 import org.jdom.Element;
 
 import java.awt.BorderLayout;
@@ -41,6 +59,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GraphicsConfiguration;
+import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
@@ -61,6 +80,8 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.HashMap;
+import java.util.Properties;
+import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -68,6 +89,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -85,12 +107,15 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.lookupoptions.gui.OptionsClient;
 
+import de.cismet.netutil.Proxy;
+
 import de.cismet.tools.StaticDebuggingTools;
 
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
+import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.historybutton.JHistoryButton;
 import de.cismet.tools.gui.log4jquickconfig.Log4JQuickConfig;
 import de.cismet.tools.gui.startup.StaticStartupTools;
@@ -192,7 +217,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdExportMap2;
     private javax.swing.JButton cmdFullExtend;
     private javax.swing.JButton cmdGoTo;
-    private javax.swing.JButton cmdInfo;
     private javax.swing.JButton cmdInvertSelection;
     private javax.swing.JButton cmdManageBookmarks;
     private javax.swing.JButton cmdNextExtend;
@@ -279,6 +303,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction showManageBookmarksDialogAction;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
     private de.cismet.watergis.gui.actions.TableAction tableAction;
+    private javax.swing.JToggleButton tbtnInfo;
     private javax.swing.JButton tbtnMeasure;
     private javax.swing.JToggleButton tbtnPanMode;
     private javax.swing.JToggleButton tbtnZoomMode;
@@ -304,8 +329,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         AppBroker.setConfigManager(configManager);
         UIManager.put("Table.selectionBackground", new Color(195, 212, 232));
         UIManager.put("Tree.selectionBackground", new Color(195, 212, 232));
+        try {
+            initConnection(Proxy.fromPreferences());
+        } catch (Exception e) {
+            LOG.error("Connection exception", e);
+        }
         initCismap();
         initComponents();
+        cmdTable.setVisible(false);
         ((MeasureButton)tbtnMeasure).setButtonGroup(btnGroupMapMode);
         ((SelectionButton)cmdSelectionMode).setButtonGroup(btnGroupMapMode);
         initMapModes();
@@ -441,7 +472,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 //            System.err.println("Error during the initialisation");
 //            ex.printStackTrace();
 //        }
-        Log4JQuickConfig.configure4LumbermillOnLocalhost();
+        final Properties p = new Properties();
+        p.put("log4j.appender.Remote", "org.apache.log4j.net.SocketAppender"); // NOI18N
+        p.put("log4j.appender.Remote.remoteHost", "localhost");                // NOI18N
+        p.put("log4j.appender.Remote.port", "4445");                           // NOI18N
+        p.put("log4j.appender.Remote.locationInfo", "true");                   // NOI18N
+        p.put("log4j.rootLogger", "WARN,Remote");                              // NOI18N
+        org.apache.log4j.PropertyConfigurator.configure(p);
+//        Log4JQuickConfig.configure4LumbermillOnLocalhost();
     }
 
     /**
@@ -491,6 +529,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         AppBroker.getInstance().addMapMode(MappingComponent.PAN, panAction);
         AppBroker.getInstance().addMapMode(MappingComponent.ZOOM, zoomModeAction);
         AppBroker.getInstance().addMapMode(MappingComponent.SELECT, selectionModeAction);
+        AppBroker.getInstance().addMapMode(MappingComponent.FEATURE_INFO_MULTI_GEOM, infoWindowAction);
         AppBroker.getInstance().addMapMode(AppBroker.MEASURE_MODE, measureAction);
 
         // set the initial interaction mode
@@ -583,6 +622,12 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 @Override
                 public void showPanel(final JPanel panel, final String id, final String name, final String tooltip) {
                     View view = attributeTableMap.get(id);
+
+                    if ((vMap != null) && (vMap.getWindowParent() != null)) {
+                        if (vMap.getWindowParent() instanceof TabWindow) {
+                            tabWindow = (TabWindow)vMap.getWindowParent();
+                        }
+                    }
 
                     if (tabWindow == null) {
                         tabWindow = (TabWindow)((SplitWindow)rootWindow.getWindow()).getRightWindow();
@@ -711,7 +756,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdRemoveSelectionAllThemes = new javax.swing.JButton();
         jSeparator6 = new javax.swing.JToolBar.Separator();
         cmdTable = new javax.swing.JButton();
-        cmdInfo = new javax.swing.JButton();
+        tbtnInfo = new javax.swing.JToggleButton();
         tbtnMeasure = new MeasureButton();
         cmdPresentation = new javax.swing.JButton();
         panMain = new javax.swing.JPanel();
@@ -1027,15 +1072,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdTable.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdTable);
 
-        cmdInfo.setAction(infoWindowAction);
-        cmdInfo.setFocusable(false);
-        cmdInfo.setHideActionText(true);
-        cmdInfo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdInfo.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdInfo.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdInfo.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdInfo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdInfo);
+        tbtnInfo.setAction(infoWindowAction);
+        btnGroupMapMode.add(tbtnInfo);
+        tbtnInfo.setFocusable(false);
+        tbtnInfo.setHideActionText(true);
+        tbtnInfo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbtnInfo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(tbtnInfo);
 
         tbtnMeasure.setAction(measureAction);
         tbtnMeasure.setFocusable(false);
@@ -1181,6 +1224,55 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
         pack();
     } // </editor-fold>//GEN-END:initComponents
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   proxyConfig  DOCUMENT ME!
+     *
+     * @throws  ConnectionException   DOCUMENT ME!
+     * @throws  InterruptedException  DOCUMENT ME!
+     */
+    private void initConnection(final Proxy proxyConfig) throws ConnectionException, InterruptedException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initialising connection using proxy: " + proxyConfig);
+        }
+
+        final PropertyManager propertyManager = PropertyManager.getManager();
+        final Connection connection = ConnectionFactory.getFactory()
+                    .createConnection(AppBroker.getInstance().getConnectionClass(),
+                        AppBroker.getInstance().getCallserverUrl(),
+                        proxyConfig);
+        ConnectionSession session = null;
+        ConnectionProxy proxy = null;
+
+        if (session == null) {
+            if (LOG.isInfoEnabled()) {
+                LOG.info("performing login"); // NOI18N
+            }
+            try {
+                final ConnectionInfo connInfo = new ConnectionInfo();
+                connInfo.setCallserverURL(AppBroker.getInstance().getCallserverUrl());
+                session = ConnectionFactory.getFactory().createSession(connection, connInfo, false);
+            } catch (UserException uexp) {
+            }                                 // should never happen
+            proxy = ConnectionFactory.getFactory()
+                        .createProxy("Sirius.navigator.connection.proxy.DefaultConnectionProxyHandler", session);
+            SessionManager.init(proxy);
+
+            final LoginDialog loginDialog = new LoginDialog(this);
+            StaticSwingTools.showDialog(loginDialog);
+        }
+
+//        PropertyManager.getManager()
+//                .setEditable(this.hasPermission(
+//                        SessionManager.getProxy().getClasses(),
+//                        PermissionHolder.WRITEPERMISSION));
+        // PropertyManager.getManager().setEditable(true);
+//        if (LOG.isInfoEnabled()) {
+//            LOG.info("initConnection(): navigator editor enabled: " + PropertyManager.getManager().isEditable()); // NOI18N
+//        }
+    }
 
     /**
      * DOCUMENT ME!
@@ -1389,6 +1481,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             }
             final FileOutputStream layoutOutput = new FileOutputStream(layoutFile);
             final ObjectOutputStream out = new ObjectOutputStream(layoutOutput);
+
+            // close all attribute table views
+            for (final String key : attributeTableMap.keySet()) {
+                final View attrTableView = attributeTableMap.get(key);
+                if (attrTableView != null) {
+                    attrTableView.close();
+                }
+            }
+
             rootWindow.write(out);
             out.flush();
             out.close();

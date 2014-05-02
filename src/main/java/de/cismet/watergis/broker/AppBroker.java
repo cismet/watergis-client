@@ -186,6 +186,8 @@ public class AppBroker implements Configurable {
      */
     public void setConnectionClass(final String connectionClass) {
         this.connectionClass = connectionClass;
+        this.connectionClass = this.connectionClass.replace('"', ' ');
+        this.connectionClass = this.connectionClass.trim();
     }
 
     /**
@@ -204,6 +206,8 @@ public class AppBroker implements Configurable {
      */
     public void setCallserverUrl(final String callserverUrl) {
         this.callserverUrl = callserverUrl;
+        this.callserverUrl = this.callserverUrl.replace('"', ' ');
+        this.callserverUrl = this.callserverUrl.trim();
     }
 
     /**
@@ -222,6 +226,8 @@ public class AppBroker implements Configurable {
      */
     public void setDomain(final String domain) {
         this.domain = domain;
+        this.domain = this.domain.replace('"', ' ');
+        this.domain = this.domain.trim();
     }
 
     /**
