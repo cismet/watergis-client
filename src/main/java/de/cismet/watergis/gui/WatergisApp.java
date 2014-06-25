@@ -1407,7 +1407,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUndomniUndoPerformed
+    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdUndomniUndoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemUndo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -1425,14 +1425,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }//GEN-LAST:event_cmdUndomniUndoPerformed
+    }                                                              //GEN-LAST:event_cmdUndomniUndoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdRedomniRedoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdRedomniRedoPerformed
+    private void cmdRedomniRedoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdRedomniRedoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemRedo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -1450,14 +1450,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }//GEN-LAST:event_cmdRedomniRedoPerformed
+    }                                                              //GEN-LAST:event_cmdRedomniRedoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeMoveActionPerformed
+    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1468,14 +1468,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeMoveActionPerformed
+    } //GEN-LAST:event_cmdNodeMoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeAddActionPerformed
+    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeAddActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1486,14 +1486,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeAddActionPerformed
+    } //GEN-LAST:event_cmdNodeAddActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRemoveActionPerformed
+    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRemoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1504,14 +1504,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeRemoveActionPerformed
+    } //GEN-LAST:event_cmdNodeRemoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRotateGeometryActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRotateGeometryActionPerformed
+    private void cmdNodeRotateGeometryActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRotateGeometryActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1522,14 +1522,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeRotateGeometryActionPerformed
+    } //GEN-LAST:event_cmdNodeRotateGeometryActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeReflectGeometryActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeReflectGeometryActionPerformed
+    private void cmdNodeReflectGeometryActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeReflectGeometryActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1540,7 +1540,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeReflectGeometryActionPerformed
+    } //GEN-LAST:event_cmdNodeReflectGeometryActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -1597,13 +1597,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
      * @param  args  DOCUMENT ME!
      */
     public static void main(final String[] args) {
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-
-                @Override
-                public void uncaughtException(final Thread t, final Throwable e) {
-                    LOG.error("Uncaught Exception in " + t, e);
-                }
-            });
+        Thread.setDefaultUncaughtExceptionHandler(DefaultNavigatorExceptionHandler.getInstance());
         initLog4J();
         try {
             LOG.warn("args: " + args.length);
