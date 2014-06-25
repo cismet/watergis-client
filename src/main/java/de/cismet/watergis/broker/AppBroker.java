@@ -64,6 +64,7 @@ public class AppBroker implements Configurable {
     public static final Color DEFAULT_MODE_COLOR = blue;
     public static final String MEASURE_MODE = "MEASURE_MODE";
     private static ConfigurationManager configManager;
+    public static final String DOMAIN_NAME = "DLM25W";
 
     //~ Instance fields --------------------------------------------------------
 
@@ -135,6 +136,7 @@ public class AppBroker implements Configurable {
      */
     public void setMappingComponent(final MappingComponent aMappingComponent) {
         mappingComponent = aMappingComponent;
+        mappingComponent.setReadOnly(false);
         setMeasureListener(new MessenGeometryListener(mappingComponent));
         mappingComponent.addInputListener(MEASURE_MODE, getMeasureListener());
     }
