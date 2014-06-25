@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.panels;
 
+import Sirius.navigator.DefaultNavigatorExceptionHandler;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 
@@ -50,6 +52,7 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
     private static int K_SQUARE_DIVISOR = K_DIVISOR * K_DIVISOR;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private de.cismet.tools.gui.exceptionnotification.ExceptionNotificationStatusPanel exceptionNotificationStatusPanel;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -71,6 +74,7 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
             AppBroker.getInstance().getMappingComponent().getFeatureCollection().addFeatureCollectionListener(this);
         } catch (NullPointerException e) {
         }
+        DefaultNavigatorExceptionHandler.getInstance().addListener(exceptionNotificationStatusPanel);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -92,6 +96,8 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
         lblMeasuring = new javax.swing.JLabel();
         pnlCoordinates = new javax.swing.JPanel();
         lblCoordinates = new javax.swing.JLabel();
+        exceptionNotificationStatusPanel =
+            new de.cismet.tools.gui.exceptionnotification.ExceptionNotificationStatusPanel();
         jPanel1 = new javax.swing.JPanel();
 
         setMaximumSize(new java.awt.Dimension(32769, 20));
@@ -137,6 +143,7 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         add(pnlCoordinates, gridBagConstraints);
+        add(exceptionNotificationStatusPanel, new java.awt.GridBagConstraints());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
