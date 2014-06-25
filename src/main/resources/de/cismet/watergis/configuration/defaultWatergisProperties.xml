@@ -32,6 +32,8 @@
         <capabilitiesList titlestring="Ortho MV - 40cm"  type="OGC-WMS"><![CDATA[http://www.geodaten-mv.de/dienste/adv_dop?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilitiesList>
         <capabilitiesList titlestring="WRRL Katalog v34"  type="OGC-WMS"><![CDATA[http://wms.fis-wasser-mv.de/services?REQUEST=GetCapabilities&version=1.1.1&service=WMS]]></capabilitiesList>
         <capabilitiesList titlestring="Umweltkarten"  type="OGC-WMS"><![CDATA[http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.1.1]]></capabilitiesList>
+        <capabilitiesList titlestring="Interne DB"  type="INTERNAL-DB"><![CDATA[file://~/cismap/internal?SERVICE=internal_db]]></capabilitiesList>
+        <capabilitiesList titlestring="Cids Layer"  type="cidsLayer"><![CDATA[domain=DLM25W&service=cids]]></capabilitiesList>
         <capabilitiesList titlestring="" type="SEPARATOR"/>
     </cismapCapabilitiesPreferences>    
     <cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">

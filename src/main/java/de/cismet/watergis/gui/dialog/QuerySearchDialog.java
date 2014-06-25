@@ -56,9 +56,11 @@ public class QuerySearchDialog extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
+        final java.awt.GridBagConstraints gridBagConstraints;
 
-        querySearch1 = new QuerySearch((ActiveLayerModel)AppBroker.getInstance().getMappingComponent().getMappingModel(), new String[] {"de.cismet.cids.search.SelectQuerySearchMethod"});
+        querySearch1 = new QuerySearch((ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
+                        .getMappingModel(),
+                new String[] { "de.cismet.cids.search.SelectQuerySearchMethod" });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(QuerySearchDialog.class, "QuerySearchDialog.title")); // NOI18N
@@ -74,7 +76,7 @@ public class QuerySearchDialog extends javax.swing.JDialog {
         getContentPane().add(querySearch1, gridBagConstraints);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!

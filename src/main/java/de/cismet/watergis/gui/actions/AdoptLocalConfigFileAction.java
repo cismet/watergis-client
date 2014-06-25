@@ -66,7 +66,7 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent event) {
         AppBroker.getInstance().getRecentlyOpenedFilesList().saveFilenames();
-        
+
         final String filename = file.getAbsolutePath();
 
         final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
