@@ -1340,6 +1340,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             });
         tobDLM25W.add(cmdRedo);
 
+        tbtNewObject.setAction(newObjectAction);
+        btnGroupMapMode.add(tbtNewObject);
+        tbtNewObject.setFocusable(false);
+        tbtNewObject.setHideActionText(true);
+        tbtNewObject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbtNewObject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(tbtNewObject);
+
         cmdMerge.setAction(mergeAction);
         cmdMerge.setBorderPainted(false);
         cmdMerge.setEnabled(false);
