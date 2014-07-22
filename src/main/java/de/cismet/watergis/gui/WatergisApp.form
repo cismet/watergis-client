@@ -86,6 +86,8 @@
     </Component>
     <Component class="javax.swing.ButtonGroup" name="editGroup">
     </Component>
+    <Component class="de.cismet.watergis.gui.actions.NewObjectAction" name="newObjectAction">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menFile">

@@ -43,16 +43,12 @@ import net.infonode.docking.util.StringViewMap;
 import net.infonode.gui.componentpainter.AlphaGradientComponentPainter;
 import net.infonode.util.Direction;
 
-import oracle.toplink.essentials.internal.helper.MappingCompare;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Logger;
 
 import org.jdom.Element;
-
-import sun.security.jca.GetInstance;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -94,10 +90,19 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
 
+import de.cismet.cismap.cidslayer.StationLineCreator;
+
+import de.cismet.cismap.commons.features.FeatureCollectionEvent;
+import de.cismet.cismap.commons.features.FeatureCollectionListener;
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableListener;
+import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.capabilitywidget.CapabilityWidget;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
@@ -107,6 +112,8 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.actions.CustomAction;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.memento.MementoInterface;
+
+import de.cismet.cismap.linearreferencing.CreateLinearReferencedLineListener;
 
 import de.cismet.lookupoptions.gui.OptionsClient;
 
@@ -287,6 +294,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JMenuItem mniSelectPolygon;
     private javax.swing.JMenuItem mniSelectRectangle;
     private javax.swing.JMenuItem mniZoomSelectedObjects;
+    private de.cismet.watergis.gui.actions.NewObjectAction newObjectAction;
     private de.cismet.watergis.gui.actions.map.NextExtendAction nextExtendAction;
     private de.cismet.watergis.gui.actions.OnlineHelpAction onlineHelpAction;
     private de.cismet.watergis.gui.actions.OpenProjectAction openProjectAction;
@@ -315,6 +323,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction showManageBookmarksDialogAction;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
     private de.cismet.watergis.gui.actions.TableAction tableAction;
+    private javax.swing.JToggleButton tbtNewObject;
     private javax.swing.JToggleButton tbtnInfo;
     private javax.swing.JButton tbtnMeasure;
     private javax.swing.JToggleButton tbtnPanMode;
@@ -525,6 +534,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         pSelection = new SelectionPanel();
         pTopicTree.setMappingModel(mappingModel);
         pTopicTree.addAddThemeMenuItemListener(new AddThemeMenuItemListener());
+        pTopicTree.addTreeSelectionListener(new TreeSelectionListener() {
+
+                @Override
+                public void valueChanged(final TreeSelectionEvent e) {
+                    topicTreeSelectionChanged(e);
+                }
+            });
 
         pOverview = new OverviewComponent();
         pOverview.setMasterMap(mappingComponent);
@@ -564,6 +580,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         AppBroker.getInstance().addMapMode(MappingComponent.SELECT, selectionModeAction);
         AppBroker.getInstance().addMapMode(MappingComponent.FEATURE_INFO_MULTI_GEOM, infoWindowAction);
         AppBroker.getInstance().addMapMode(AppBroker.MEASURE_MODE, measureAction);
+        AppBroker.getInstance().addMapMode(FeatureCreator.SIMPLE_GEOMETRY_LISTENER_KEY, newObjectAction);
+        AppBroker.getInstance().addMapMode(MappingComponent.LINEAR_REFERENCING, newObjectAction);
+        AppBroker.getInstance()
+                .addMapMode(CreateLinearReferencedLineListener.CREATE_LINEAR_REFERENCED_LINE_MODE, newObjectAction);
 
         // set the initial interaction mode
         AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
@@ -647,6 +667,30 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
 
     /**
      * DOCUMENT ME!
+     *
+     * @param  e  DOCUMENT ME!
+     */
+    private void topicTreeSelectionChanged(final TreeSelectionEvent e) {
+        final TreePath tp = e.getNewLeadSelectionPath();
+        tbtNewObject.setEnabled(false);
+        newObjectAction.setSelectedService(null);
+
+        if (tp != null) {
+            final Object o = tp.getLastPathComponent();
+
+            if (o instanceof AbstractFeatureService) {
+                final AbstractFeatureService service = (AbstractFeatureService)o;
+
+                if (service.isEditable()) {
+                    tbtNewObject.setEnabled(true);
+                    newObjectAction.setSelectedService(service);
+                }
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
      */
     private void initAttributeTable() {
         AttributeTableFactory.getInstance().setMappingComponent(mappingComponent);
@@ -682,6 +726,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                         viewMap.addView(name, view);
                         attributeTableMap.put(id, view);
                         tabWindow.addTab(view);
+                    }
+                }
+
+                @Override
+                public void changeName(final String id, final String name) {
+                    final View view = attributeTableMap.get(id);
+
+                    if (view != null) {
+                        view.getViewProperties().setTitle(name);
                     }
                 }
             });
@@ -759,6 +812,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         selectionEllipseAction = new de.cismet.watergis.gui.actions.selection.SelectionEllipseAction();
         selectionRectangleAction = new de.cismet.watergis.gui.actions.selection.SelectionRectangleAction();
         editGroup = new javax.swing.ButtonGroup();
+        newObjectAction = new de.cismet.watergis.gui.actions.NewObjectAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
@@ -801,6 +855,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdNodeReflectGeometry = new javax.swing.JToggleButton();
         cmdUndo = new javax.swing.JButton();
         cmdRedo = new javax.swing.JButton();
+        tbtNewObject = new javax.swing.JToggleButton();
         panMain = new javax.swing.JPanel();
         statusBar1 = new de.cismet.watergis.gui.panels.StatusBar();
         jMenuBar1 = new javax.swing.JMenuBar();
