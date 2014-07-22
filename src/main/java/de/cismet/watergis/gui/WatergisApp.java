@@ -146,6 +146,7 @@ import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 import de.cismet.watergis.server.GeoLinkServer;
 
 import de.cismet.watergis.utils.BookmarkManager;
+import de.cismet.watergis.utils.SplitGeometryListener;
 
 import static java.awt.Frame.MAXIMIZED_BOTH;
 
@@ -251,6 +252,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JButton cmdSelectionAttribute;
     private javax.swing.JButton cmdSelectionLocation;
     private javax.swing.JButton cmdSelectionMode;
+    private javax.swing.JButton cmdSplit;
     private javax.swing.JButton cmdTable;
     private javax.swing.JButton cmdUndo;
     private javax.swing.JButton cmdZoomIn;
@@ -326,6 +328,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.bookmarks.ShowCreateBookmarkDialogAction showCreateBookmarkDialogAction;
     private de.cismet.watergis.gui.actions.window.ShowHideOverviewWindowAction showHideOverviewWindowAction;
     private de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction showManageBookmarksDialogAction;
+    private de.cismet.watergis.gui.actions.SplitAction splitAction;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
     private de.cismet.watergis.gui.actions.TableAction tableAction;
     private javax.swing.JToggleButton tbtNewObject;
@@ -590,6 +593,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         AppBroker.getInstance().addMapMode(MappingComponent.LINEAR_REFERENCING, newObjectAction);
         AppBroker.getInstance()
                 .addMapMode(CreateLinearReferencedLineListener.CREATE_LINEAR_REFERENCED_LINE_MODE, newObjectAction);
+//        AppBroker.getInstance().addMapMode(SplitGeometryListener.LISTENER_KEY, splitAction);
 
         // set the initial interaction mode
         AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
@@ -820,6 +824,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         editGroup = new javax.swing.ButtonGroup();
         newObjectAction = new de.cismet.watergis.gui.actions.NewObjectAction();
         mergeAction = new de.cismet.watergis.gui.actions.MergeAction();
+        splitAction = new de.cismet.watergis.gui.actions.SplitAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
@@ -864,6 +869,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdRedo = new javax.swing.JButton();
         tbtNewObject = new javax.swing.JToggleButton();
         cmdMerge = new javax.swing.JButton();
+        cmdSplit = new javax.swing.JButton();
         panMain = new javax.swing.JPanel();
         statusBar1 = new de.cismet.watergis.gui.panels.StatusBar();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -1355,14 +1361,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdMerge.setFocusable(false);
         cmdMerge.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdMerge.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        cmdMerge.addActionListener(new java.awt.event.ActionListener() {
-
-                @Override
-                public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    cmdMergemniRedoPerformed(evt);
-                }
-            });
         tobDLM25W.add(cmdMerge);
+
+        cmdSplit.setAction(splitAction);
+        cmdSplit.setBorderPainted(false);
+        cmdSplit.setFocusPainted(false);
+        cmdSplit.setFocusable(false);
+        cmdSplit.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdSplit.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdSplit);
 
         getContentPane().add(tobDLM25W, java.awt.BorderLayout.NORTH);
 
@@ -1628,15 +1635,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 }
             });
     } //GEN-LAST:event_cmdNodeReflectGeometryActionPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
-    private void cmdMergemniRedoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdMergemniRedoPerformed
-        // TODO add your handling code here:
-    } //GEN-LAST:event_cmdMergemniRedoPerformed
 
     /**
      * DOCUMENT ME!
