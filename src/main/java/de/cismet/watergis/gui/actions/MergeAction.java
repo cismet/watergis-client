@@ -72,7 +72,7 @@ public class MergeAction extends AbstractAction {
                 new Object[] { " " });
         putValue(SHORT_DESCRIPTION, tooltip);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-plus-sign.png"));
+                    "/de/cismet/watergis/res/icons16/icon-mergeshapes.png"));
         putValue(SMALL_ICON, icon);
     }
 

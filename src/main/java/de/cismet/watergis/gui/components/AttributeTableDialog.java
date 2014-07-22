@@ -63,7 +63,6 @@ public class AttributeTableDialog extends javax.swing.JDialog {
             new Color(242, 187, 19),
             new Color(217, 159, 126),
             new Color(242, 65, 48),
-            new Color(242, 65, 48),
             new Color(121, 132, 39),
             new Color(184, 206, 233),
             new Color(216, 120, 57)
