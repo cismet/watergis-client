@@ -155,7 +155,10 @@ import static java.awt.Frame.MAXIMIZED_BOTH;
  * @author   thorsten
  * @version  $Revision$, $Date$
  */
-public class WatergisApp extends javax.swing.JFrame implements Configurable, WindowListener, Observer {
+public class WatergisApp extends javax.swing.JFrame implements Configurable,
+    WindowListener,
+    Observer,
+    FeatureCollectionListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -229,6 +232,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JButton cmdGoTo;
     private javax.swing.JButton cmdInvertSelection;
     private javax.swing.JButton cmdManageBookmarks;
+    private javax.swing.JButton cmdMerge;
     private javax.swing.JButton cmdNextExtend;
     private javax.swing.JToggleButton cmdNodeAdd;
     private javax.swing.JToggleButton cmdNodeMove;
@@ -274,6 +278,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
     private javax.swing.JMenu menFile;
     private javax.swing.JMenu menHelp;
     private javax.swing.JMenu menSelection;
+    private de.cismet.watergis.gui.actions.MergeAction mergeAction;
     private javax.swing.JMenuItem mniClose;
     private javax.swing.JMenuItem mniCreateBookmark;
     private javax.swing.JMenuItem mniCreateGeoLink;
@@ -443,6 +448,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         mappingComponent.setInternalLayerWidgetAvailable(true);
         ((Observable)mappingComponent.getMemUndo()).addObserver(this);
         ((Observable)mappingComponent.getMemRedo()).addObserver(this);
+        mappingComponent.getFeatureCollection().addFeatureCollectionListener(this);
 
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
     }
@@ -813,6 +819,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         selectionRectangleAction = new de.cismet.watergis.gui.actions.selection.SelectionRectangleAction();
         editGroup = new javax.swing.ButtonGroup();
         newObjectAction = new de.cismet.watergis.gui.actions.NewObjectAction();
+        mergeAction = new de.cismet.watergis.gui.actions.MergeAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
@@ -856,6 +863,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
         cmdUndo = new javax.swing.JButton();
         cmdRedo = new javax.swing.JButton();
         tbtNewObject = new javax.swing.JToggleButton();
+        cmdMerge = new javax.swing.JButton();
         panMain = new javax.swing.JPanel();
         statusBar1 = new de.cismet.watergis.gui.panels.StatusBar();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -1332,6 +1340,22 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
             });
         tobDLM25W.add(cmdRedo);
 
+        cmdMerge.setAction(mergeAction);
+        cmdMerge.setBorderPainted(false);
+        cmdMerge.setEnabled(false);
+        cmdMerge.setFocusPainted(false);
+        cmdMerge.setFocusable(false);
+        cmdMerge.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdMerge.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        cmdMerge.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    cmdMergemniRedoPerformed(evt);
+                }
+            });
+        tobDLM25W.add(cmdMerge);
+
         getContentPane().add(tobDLM25W, java.awt.BorderLayout.NORTH);
 
         panMain.setLayout(new java.awt.BorderLayout());
@@ -1596,6 +1620,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                 }
             });
     } //GEN-LAST:event_cmdNodeReflectGeometryActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void cmdMergemniRedoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdMergemniRedoPerformed
+        // TODO add your handling code here:
+    } //GEN-LAST:event_cmdMergemniRedoPerformed
 
     /**
      * DOCUMENT ME!
@@ -2135,6 +2168,51 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable, Win
                     });
             }
         }
+    }
+
+    @Override
+    public void featuresAdded(final FeatureCollectionEvent fce) {
+        selectedFeaturesChanged();
+    }
+
+    @Override
+    public void allFeaturesRemoved(final FeatureCollectionEvent fce) {
+        selectedFeaturesChanged();
+    }
+
+    @Override
+    public void featuresRemoved(final FeatureCollectionEvent fce) {
+        selectedFeaturesChanged();
+    }
+
+    @Override
+    public void featuresChanged(final FeatureCollectionEvent fce) {
+        selectedFeaturesChanged();
+    }
+
+    @Override
+    public void featureSelectionChanged(final FeatureCollectionEvent fce) {
+        selectedFeaturesChanged();
+    }
+
+    @Override
+    public void featureReconsiderationRequested(final FeatureCollectionEvent fce) {
+        selectedFeaturesChanged();
+    }
+
+    @Override
+    public void featureCollectionChanged() {
+        selectedFeaturesChanged();
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void selectedFeaturesChanged() {
+        final SelectionListener sl = (SelectionListener)mappingComponent.getInputEventListener()
+                    .get(MappingComponent.SELECT);
+
+        cmdMerge.setEnabled(!sl.getAllSelectedPFeatures().isEmpty());
     }
 
     //~ Inner Classes ----------------------------------------------------------

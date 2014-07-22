@@ -88,6 +88,8 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.NewObjectAction" name="newObjectAction">
     </Component>
+    <Component class="de.cismet.watergis.gui.actions.MergeAction" name="mergeAction">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menFile">
@@ -1105,6 +1107,22 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmdRedomniRedoPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="cmdMerge">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="mergeAction"/>
+            </Property>
+            <Property name="borderPainted" type="boolean" value="false"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmdMergemniRedoPerformed"/>
           </Events>
         </Component>
       </SubComponents>
