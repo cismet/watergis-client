@@ -14,58 +14,28 @@ package de.cismet.watergis.gui.dialog;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import org.deegree.model.coverage.grid.WorldFile;
-
-import org.openide.util.Exceptions;
-
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.image.BufferedImage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.MessageFormat;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
 import java.util.concurrent.Future;
-
-import javax.imageio.ImageIO;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
-import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileSystemView;
 
-import de.cismet.cismap.commons.BoundingBox;
 import de.cismet.cismap.commons.HeadlessMapProvider;
 import de.cismet.cismap.commons.RestrictedFileSystemView;
-import de.cismet.cismap.commons.RetrievalServiceLayer;
 import de.cismet.cismap.commons.XBoundingBox;
-import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
-import de.cismet.cismap.commons.featureservice.ShapeFileFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.raster.wms.AbstractWMS;
-import de.cismet.cismap.commons.raster.wms.AbstractWMSServiceLayer;
+import de.cismet.cismap.commons.tools.WorldFileDownload;
 
 import de.cismet.tools.gui.ConfirmationJFileChooser;
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
@@ -74,10 +44,7 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.download.ImageDownload;
-import de.cismet.watergis.download.WorldFileDownload;
 
-import de.cismet.watergis.gui.WatergisApp;
-import de.cismet.watergis.gui.actions.SaveProjectAction;
 import de.cismet.watergis.gui.components.ValidationJTextField;
 
 /**
@@ -368,6 +335,9 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
                             + FilenameUtils.getBaseName(imageFilePath)
                             + ".jgw";
                 final WorldFileDownload worldFileDownload = new WorldFileDownload(
+                        org.openide.util.NbBundle.getMessage(
+                            ExportMapToFileDialog.class,
+                            "ExportMapToFileDialog.btnSaveActionPerformed.title"),
                         futureImage,
                         headlessMapProvider.getCurrentBoundingBoxFromMap(),
                         worldFileName);
