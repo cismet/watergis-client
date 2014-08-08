@@ -18,9 +18,7 @@ import javax.swing.ImageIcon;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
-import de.cismet.cismap.commons.featureservice.H2FeatureService;
-import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
@@ -64,7 +62,7 @@ public class NewObjectAction extends AbstractAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         if ((service != null) && !(!firstCall && e.getSource().equals(AppBroker.getInstance()))) {
-            final DefaultAttributeTableRuleSet ruleSet = AttributeTable.getTableRuleSetForFeatureService(service);
+            final AttributeTableRuleSet ruleSet = service.getLayerProperties().getAttributeTableRuleSet();
             final FeatureCreator creator = ruleSet.getFeatureCreator();
             final FeatureServiceFeature feature = service.getFeatureFactory().createNewFeature();
             ruleSet.beforeSave(feature);

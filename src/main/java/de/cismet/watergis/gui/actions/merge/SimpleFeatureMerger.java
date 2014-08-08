@@ -12,6 +12,7 @@
 package de.cismet.watergis.gui.actions.merge;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.operation.linemerge.LineMerger;
 
 import de.cismet.cismap.commons.features.CloneableFeature;
 import de.cismet.cismap.commons.features.Feature;
@@ -30,7 +31,17 @@ public class SimpleFeatureMerger implements FeatureMerger {
     @Override
     public Feature merge(final Feature masterFeature, final Feature childFeature) {
         final Geometry g = masterFeature.getGeometry();
-        final Geometry mergedGeom = g.union(childFeature.getGeometry());
+        Geometry mergedGeom = g.union(childFeature.getGeometry());
+
+        if (g.getGeometryType().toUpperCase().contains("LINE")) {
+            // try to merge the lines
+            final LineMerger lineMerger = new LineMerger();
+            lineMerger.add(mergedGeom);
+
+            if (lineMerger.getMergedLineStrings().size() == 1) {
+                mergedGeom = (Geometry)lineMerger.getMergedLineStrings().toArray(new Geometry[1])[0];
+            }
+        }
 
         masterFeature.setGeometry(mergedGeom);
 

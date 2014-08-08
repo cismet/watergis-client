@@ -45,7 +45,7 @@
     </repositories>
 
     <dependencies>
-        <dependency>
+<!--        <dependency>
             <groupId>de.cismet.cids.navigator.plugin</groupId>
             <artifactId>tim-easy</artifactId>
             <version>2.0-SNAPSHOT</version>
@@ -55,7 +55,7 @@
                     <groupId>groovy</groupId>
                 </exclusion>                         
             </exclusions>
-        </dependency>        
+        </dependency>        -->
         <dependency>
             <groupId>de.cismet.todo</groupId>
             <artifactId>wizard</artifactId>

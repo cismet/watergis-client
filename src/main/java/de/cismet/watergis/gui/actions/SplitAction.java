@@ -102,6 +102,9 @@ public class SplitAction extends AbstractAction {
                                                 try {
                                                     ((ModifiableFeature)newFeature).saveChanges();
                                                     ((ModifiableFeature)validFeature).saveChanges();
+                                                    if (LOG.isDebugEnabled()) {
+                                                        LOG.debug("Splitted features saved");
+                                                    }
                                                 } catch (Exception ex) {
                                                     LOG.error("Error while saving changes", ex);
                                                 }
@@ -111,6 +114,8 @@ public class SplitAction extends AbstractAction {
                                                                 .getFeatureService()
                                                                 .retrieve(true);
                                                 }
+                                            } else {
+                                                LOG.error("Feature is not modifiable");
                                             }
                                         }
                                     }

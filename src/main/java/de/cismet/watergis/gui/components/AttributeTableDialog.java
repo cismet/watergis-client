@@ -68,7 +68,8 @@ public class AttributeTableDialog extends javax.swing.JDialog {
             new Color(216, 120, 57)
         };
     private int colorCounter = 0;
-    private Map<FeatureServiceFeature, Paint> oldPaint = new HashMap<FeatureServiceFeature, Paint>();
+    private Map<FeatureServiceFeature, Paint> oldFillingPaint = new HashMap<FeatureServiceFeature, Paint>();
+    private Map<FeatureServiceFeature, Paint> oldLinePaint = new HashMap<FeatureServiceFeature, Paint>();
     private List<PFeature> allPFeature;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -107,19 +108,22 @@ public class AttributeTableDialog extends javax.swing.JDialog {
     public void setData(final AbstractFeatureService service, final List<FeatureServiceFeature> featureList) {
         final Map<String, FeatureServiceAttribute> featureServiceAttributes = service.getFeatureServiceAttributes();
         final List<String> orderedFeatureServiceAttributes = service.getOrderedFeatureServiceAttributes();
-        oldPaint.clear();
+        oldFillingPaint.clear();
+        oldLinePaint.clear();
 
         for (final FeatureServiceFeature fsf : featureList) {
-            final Paint c = fsf.getFillingPaint();
-            oldPaint.put(fsf, c);
-            fsf.setFillingPaint(getNextColor());
+            oldFillingPaint.put(fsf, fsf.getFillingPaint());
+            oldLinePaint.put(fsf, fsf.getLinePaint());
+            Color co = getNextColor();
+            fsf.setFillingPaint(co);
+            fsf.setLinePaint(co);
         }
 
         model = new SimpleAttributeTableModel(
                 orderedFeatureServiceAttributes,
                 featureServiceAttributes,
                 (List<FeatureServiceFeature>)featureList,
-                AttributeTable.getTableRuleSetForFeatureService(service));
+                service.getLayerProperties().getAttributeTableRuleSet());
         attrTab.setModel(model);
         removeSelectionOnAllFeatures();
     }
@@ -276,46 +280,48 @@ public class AttributeTableDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
         returnValue = null;
         resetColors();
         setVisible(false);
-    }                                                                             //GEN-LAST:event_butCancelActionPerformed
+    }//GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
         returnValue = model.getFeatureServiceFeature(attrTab.convertRowIndexToModel(attrTab.getSelectedRow()));
         resetColors();
         setVisible(false);
-    }                                                                         //GEN-LAST:event_butOkActionPerformed
+    }//GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void formWindowClosed(final java.awt.event.WindowEvent evt) { //GEN-FIRST:event_formWindowClosed
+    private void formWindowClosed(final java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         resetColors();
-    }                                                                     //GEN-LAST:event_formWindowClosed
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * DOCUMENT ME!
      */
     private void resetColors() {
-        for (final FeatureServiceFeature fsf : oldPaint.keySet()) {
-            final Paint old = oldPaint.get(fsf);
+        for (final FeatureServiceFeature fsf : oldFillingPaint.keySet()) {
+            final Paint old = oldFillingPaint.get(fsf);
             fsf.setFillingPaint(old);
+            fsf.setLinePaint(oldLinePaint.get(fsf));
         }
 
         for (final PFeature feature : allPFeature) {
             feature.refreshDesign();
         }
 
-        oldPaint.clear();
+        oldFillingPaint.clear();
+        oldLinePaint.clear();
     }
 
     /**
@@ -422,7 +428,6 @@ public class AttributeTableDialog extends javax.swing.JDialog {
                 } else {
                     c.setBackground((Color)fsf.getFillingPaint());
                 }
-                LOG.error("Background: " + c.getBackground());
 
                 return c;
             }
