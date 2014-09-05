@@ -15,7 +15,27 @@
  */
 package de.cismet.watergis.broker;
 
+import Sirius.navigator.connection.ConnectionInfo;
 import Sirius.navigator.connection.ConnectionSession;
+import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.event.CatalogueActivationListener;
+import Sirius.navigator.event.CatalogueSelectionListener;
+import Sirius.navigator.resource.PropertyManager;
+import Sirius.navigator.search.dynamic.SearchDialog;
+import Sirius.navigator.types.treenode.RootTreeNode;
+import Sirius.navigator.ui.ComponentRegistry;
+import Sirius.navigator.ui.DescriptionPane;
+import Sirius.navigator.ui.DescriptionPaneFS;
+import Sirius.navigator.ui.LayoutedContainer;
+import Sirius.navigator.ui.MutableMenuBar;
+import Sirius.navigator.ui.MutablePopupMenu;
+import Sirius.navigator.ui.MutableToolBar;
+import Sirius.navigator.ui.attributes.AttributeViewer;
+import Sirius.navigator.ui.attributes.editor.AttributeEditor;
+import Sirius.navigator.ui.tree.MetaCatalogueTree;
+import Sirius.navigator.ui.tree.SearchResultsTree;
+
+import Sirius.server.middleware.types.Node;
 
 import net.infonode.docking.RootWindow;
 import net.infonode.gui.componentpainter.GradientComponentPainter;
@@ -27,11 +47,17 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.Action;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
+import javax.swing.event.PopupMenuListener;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
@@ -40,10 +66,13 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
+import de.cismet.tools.gui.DefaultPopupMenuListener;
+
 import de.cismet.watergis.broker.listener.SelectionModeChangedEvent;
 import de.cismet.watergis.broker.listener.SelectionModeListener;
 
 import de.cismet.watergis.gui.WatergisApp;
+import de.cismet.watergis.gui.actions.InfoWindowAction;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 import de.cismet.watergis.utils.BookmarkManager;
@@ -82,6 +111,9 @@ public class AppBroker implements Configurable {
     private HashMap<String, Action> mapModeSelectionActions = new HashMap<String, Action>();
     private MessenGeometryListener measureListener;
     private List<SelectionModeListener> selecionModeListener = new ArrayList<SelectionModeListener>();
+    private ComponentRegistry componentRegistry;
+    private ConnectionInfo connectionInfo;
+    private InfoWindowAction infoWindowAction;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -344,7 +376,7 @@ public class AppBroker implements Configurable {
         if (action != null) {
             action.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode));
         } else {
-            LOG.error("Can not switch to mode " + mode + ". It does not exist.");
+            LOG.warn("Can not switch to mode " + mode + ". It does not exist.");
         }
     }
 
@@ -443,6 +475,137 @@ public class AppBroker implements Configurable {
         for (final SelectionModeListener tmp : selecionModeListener) {
             tmp.selectionModeChanged(e);
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   frame  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public void initComponentRegistry(final JFrame frame) throws Exception {
+        PropertyManager.getManager().setEditable(true);
+
+        final SearchResultsTree searchResultsTree = new SearchResultsTree();
+        final MutableToolBar toolBar = new MutableToolBar();
+        final MutableMenuBar menuBar = new MutableMenuBar();
+        final LayoutedContainer container = new LayoutedContainer(toolBar, menuBar, true);
+        final AttributeViewer attributeViewer = new AttributeViewer();
+        final AttributeEditor attributeEditor = new AttributeEditor();
+        final SearchDialog searchDialog = null;
+
+        final DescriptionPane descriptionPane = new DescriptionPaneFS();
+        final MutablePopupMenu popupMenu = new MutablePopupMenu();
+        for (final PopupMenuListener l : popupMenu.getPopupMenuListeners()) {
+            popupMenu.removePopupMenuListener(l);
+        }
+
+        final Collection<Component> toRemoveComponents = new ArrayList<Component>();
+        for (final Component component : popupMenu.getComponents()) {
+            if ((component instanceof JSeparator)
+                        || !((component instanceof JMenuItem)
+                            && ((((JMenuItem)component).getAccelerator() != null)
+                                && ((JMenuItem)component).getAccelerator().equals(
+                                    KeyStroke.getKeyStroke("F5"))))) {
+                toRemoveComponents.add(component);
+            }
+        }
+        for (final Component toRemoveComponent : toRemoveComponents) {
+            popupMenu.remove(toRemoveComponent);
+        }
+
+        final DefaultPopupMenuListener cataloguePopupMenuListener = new DefaultPopupMenuListener(popupMenu);
+        final Node[] roots = SessionManager.getProxy().getRoots();
+        final RootTreeNode rootTreeNode = new RootTreeNode(roots);
+        while (roots.length != rootTreeNode.getChildCount()) {
+            Thread.sleep(100);
+        }
+        final MetaCatalogueTree metaCatalogueTree = new MetaCatalogueTree(
+                rootTreeNode,
+                PropertyManager.getManager().isEditable(),
+                true,
+                PropertyManager.getManager().getMaxConnections());
+        final CatalogueSelectionListener catalogueSelectionListener = new CatalogueSelectionListener(
+                attributeViewer,
+                descriptionPane);
+        final CatalogueActivationListener catalogueActivationListener = new CatalogueActivationListener(
+                metaCatalogueTree,
+                attributeViewer,
+                descriptionPane);
+
+        metaCatalogueTree.addMouseListener(cataloguePopupMenuListener);
+        metaCatalogueTree.addTreeSelectionListener(catalogueSelectionListener);
+        metaCatalogueTree.addComponentListener(catalogueActivationListener);
+
+        ComponentRegistry.registerComponents(
+            frame,
+            container,
+            menuBar,
+            toolBar,
+            popupMenu,
+            metaCatalogueTree,
+            searchResultsTree,
+            attributeViewer,
+            attributeEditor,
+            searchDialog,
+            descriptionPane);
+
+        setComponentRegistry(ComponentRegistry.getRegistry());
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public ComponentRegistry getComponentRegistry() {
+        return componentRegistry;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  componentRegistry  DOCUMENT ME!
+     */
+    public void setComponentRegistry(final ComponentRegistry componentRegistry) {
+        this.componentRegistry = componentRegistry;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the connectionInfo
+     */
+    public ConnectionInfo getConnectionInfo() {
+        return connectionInfo;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  connectionInfo  the connectionInfo to set
+     */
+    public void setConnectionInfo(final ConnectionInfo connectionInfo) {
+        this.connectionInfo = connectionInfo;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the infoWindowAction
+     */
+    public InfoWindowAction getInfoWindowAction() {
+        return infoWindowAction;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  infoWindowAction  the infoWindowAction to set
+     */
+    public void setInfoWindowAction(final InfoWindowAction infoWindowAction) {
+        this.infoWindowAction = infoWindowAction;
     }
 
     //~ Inner Classes ----------------------------------------------------------
