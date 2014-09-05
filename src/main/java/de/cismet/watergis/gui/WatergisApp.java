@@ -22,13 +22,16 @@ import Sirius.navigator.exception.ConnectionException;
 import Sirius.navigator.exception.ExceptionManager;
 import Sirius.navigator.resource.PropertyManager;
 import Sirius.navigator.ui.dialog.LoginDialog;
+import Sirius.navigator.ui.tree.MetaCatalogueTree;
 
 import Sirius.server.newuser.UserException;
 
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
 import net.infonode.docking.DockingWindow;
+import net.infonode.docking.DockingWindowAdapter;
 import net.infonode.docking.FloatingWindow;
+import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
@@ -99,6 +102,7 @@ import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableListener;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
@@ -113,6 +117,7 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.memento.MementoInterface;
 
 import de.cismet.cismap.linearreferencing.CreateLinearReferencedLineListener;
+import de.cismet.cismap.linearreferencing.CreateLinearReferencedPointListener;
 
 import de.cismet.lookupoptions.gui.OptionsClient;
 
@@ -139,7 +144,6 @@ import de.cismet.watergis.gui.components.SelectionButton;
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
-import de.cismet.watergis.gui.panels.TablePanel;
 import de.cismet.watergis.gui.recently_opened_files.FileMenu;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
@@ -204,7 +208,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private ThemeLayerWidget pTopicTree;
     private InfoPanel pInfo;
     private SelectionPanel pSelection;
-    private TablePanel pTable;
+    private MetaCatalogueTree pTable;
     private OverviewComponent pOverview;
     private CapabilityWidget pCapabilities;
     // Views
@@ -398,6 +402,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         configureButtons();
         initLog4JQuickConfig();
         initBookmarkManager();
+        AppBroker.getInstance().setInfoWindowAction(infoWindowAction);
         if (!EventQueue.isDispatchThread()) {
             try {
                 EventQueue.invokeAndWait(new Runnable() {
@@ -437,6 +442,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         final SelectionListener sl = (SelectionListener)mappingComponent.getInputEventListener()
                     .get(MappingComponent.SELECT);
         sl.setFeaturesFromServicesSelectable(true);
+        sl.setSelectMultipleFeatures(true);
         mappingModel.setInitalLayerConfigurationFromServer(false);
         configManager.addConfigurable((ActiveLayerModel)mappingModel);
         configManager.addConfigurable(mappingComponent);
@@ -561,6 +567,12 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         CismapBroker.getInstance().addMapBoundsListener(pCapabilities);
         configManager.addConfigurable(pCapabilities);
         configManager.configure(pCapabilities);
+        try {
+            AppBroker.getInstance().initComponentRegistry(this);
+            pTable = AppBroker.getInstance().getComponentRegistry().getCatalogueTree();
+        } catch (Exception e) {
+            LOG.error("The problem tree cannot be created", e);
+        }
 
         AppBroker.getInstance().addComponent(ComponentName.MAP, pMap);
         AppBroker.getInstance().addComponent(ComponentName.TREE, pTopicTree);
@@ -593,6 +605,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         AppBroker.getInstance().addMapMode(MappingComponent.LINEAR_REFERENCING, newObjectAction);
         AppBroker.getInstance()
                 .addMapMode(CreateLinearReferencedLineListener.CREATE_LINEAR_REFERENCED_LINE_MODE, newObjectAction);
+        AppBroker.getInstance()
+                .addMapMode(CreateLinearReferencedPointListener.CREATE_LINEAR_REFERENCED_POINT_MODE, newObjectAction);
 //        AppBroker.getInstance().addMapMode(SplitGeometryListener.LISTENER_KEY, splitAction);
 
         // set the initial interaction mode
@@ -693,7 +707,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             if (o instanceof AbstractFeatureService) {
                 final AbstractFeatureService service = (AbstractFeatureService)o;
 
-                if (service.isEditable()) {
+                if (service.isEditable() && (service.getLayerProperties() != null)
+                            && (service.getLayerProperties().getAttributeTableRuleSet() != null)
+                            && (service.getLayerProperties().getAttributeTableRuleSet().getFeatureCreator() != null)) {
                     tbtNewObject.setEnabled(true);
                     newObjectAction.setSelectedService(service);
                 }
@@ -729,12 +745,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                             tabWindow.setSelectedTab(viewIndex);
                         } else {
                             view = new View(name, null, panel);
+                            addAttributeTableWindowListener(view, (AttributeTable)panel);
                             viewMap.addView(name, view);
                             attributeTableMap.put(id, view);
                             tabWindow.addTab(view);
                         }
                     } else {
                         view = new View(name, null, panel);
+                        addAttributeTableWindowListener(view, (AttributeTable)panel);
                         viewMap.addView(name, view);
                         attributeTableMap.put(id, view);
                         tabWindow.addTab(view);
@@ -748,6 +766,32 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     if (view != null) {
                         view.getViewProperties().setTitle(name);
                     }
+                }
+            });
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  view   DOCUMENT ME!
+     * @param  table  DOCUMENT ME!
+     */
+    private void addAttributeTableWindowListener(final View view, final AttributeTable table) {
+        view.addListener(new DockingWindowAdapter() {
+
+                @Override
+                public void windowClosing(final DockingWindow window) throws OperationAbortedException {
+                    disposeTable();
+                }
+
+                @Override
+                public void windowClosed(final DockingWindow window) {
+                    disposeTable();
+                }
+
+                private void disposeTable() {
+                    table.dispose();
+                    view.removeListener(this);
                 }
             });
     }
@@ -1368,6 +1412,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         cmdSplit.setAction(splitAction);
         cmdSplit.setBorderPainted(false);
+        cmdSplit.setEnabled(false);
         cmdSplit.setFocusPainted(false);
         cmdSplit.setFocusable(false);
         cmdSplit.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -1892,6 +1937,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             final FileOutputStream layoutOutput = new FileOutputStream(layoutFile);
             final ObjectOutputStream out = new ObjectOutputStream(layoutOutput);
 
+            AppBroker.getInstance().getInfoWindowAction().dispose();
+
             // close all attribute table views
             for (final String key : attributeTableMap.keySet()) {
                 final View attrTableView = attributeTableMap.get(key);
@@ -2224,6 +2271,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     .get(MappingComponent.SELECT);
 
         cmdMerge.setEnabled(!sl.getAllSelectedPFeatures().isEmpty());
+        cmdSplit.setEnabled(!sl.getAllSelectedPFeatures().isEmpty());
     }
 
     //~ Inner Classes ----------------------------------------------------------
