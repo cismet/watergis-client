@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -46,6 +48,7 @@ public class InfoWindowAction extends AbstractAction {
     //~ Instance fields --------------------------------------------------------
 
     private JDialog dialog = null;
+    private FeatureInfoPanel featureInfoPanel;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -72,24 +75,61 @@ public class InfoWindowAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        if (dialog == null) {
-            dialog = new JDialog(AppBroker.getInstance().getWatergisApp(),
-                    NbBundle.getMessage(InfoWindowAction.class, "InfoWindowAction.actionPerformed.JDialog"),
-                    false);
-            dialog.add(new FeatureInfoPanel(
-                    AppBroker.getInstance().getMappingComponent(),
-                    (ThemeLayerWidget)AppBroker.getInstance().getComponent(ComponentName.TREE)));
-            dialog.setAlwaysOnTop(true);
-            dialog.setSize(350, 550);
-        }
+        initDialog();
 
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.FEATURE_INFO_MULTI_GEOM);
         putValue(SELECTED_KEY, Boolean.TRUE);
         dialog.setVisible(true);
     }
 
+    /**
+     * Initializes the info dialog, if it is not already initialized.
+     */
+    private void initDialog() {
+        if (dialog == null) {
+            dialog = new JDialog(AppBroker.getInstance().getWatergisApp(),
+                    NbBundle.getMessage(InfoWindowAction.class, "InfoWindowAction.actionPerformed.JDialog"),
+                    false);
+            featureInfoPanel = new FeatureInfoPanel(
+                    AppBroker.getInstance().getMappingComponent(),
+                    (ThemeLayerWidget)AppBroker.getInstance().getComponent(ComponentName.TREE));
+            dialog.add(featureInfoPanel);
+            dialog.setAlwaysOnTop(true);
+            dialog.setSize(350, 550);
+            dialog.addWindowListener(new WindowAdapter() {
+
+                    @Override
+                    public void windowClosing(final WindowEvent e) {
+                        featureInfoPanel.dispose();
+                    }
+
+                    @Override
+                    public void windowClosed(final WindowEvent e) {
+                        windowClosing(e);
+                    }
+                });
+        }
+    }
+
     @Override
     public boolean isEnabled() {
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
+    }
+
+    /**
+     * opens the info dialog.
+     */
+    public void showDialog() {
+        initDialog();
+        dialog.setVisible(true);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    public void dispose() {
+        if (featureInfoPanel != null) {
+            featureInfoPanel.dispose();
+        }
     }
 }

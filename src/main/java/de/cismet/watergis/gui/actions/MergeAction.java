@@ -68,7 +68,7 @@ public class MergeAction extends AbstractAction {
     public MergeAction() {
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 MergeAction.class,
-                "NewObjectAction.cmdNewObject.toolTipText",
+                "MergeAction.MergeAction().toolTipText",
                 new Object[] { " " });
         putValue(SHORT_DESCRIPTION, tooltip);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
