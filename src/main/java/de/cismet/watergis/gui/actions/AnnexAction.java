@@ -20,12 +20,15 @@ import Sirius.server.middleware.types.MetaObject;
 
 import org.apache.log4j.Logger;
 
+import org.openide.util.NbBundle;
+
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
-import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -35,11 +38,12 @@ import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
-import de.cismet.cismap.commons.features.Feature;
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+
+import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -49,7 +53,7 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class AnnexAction extends AbstractAction {
+public class AnnexAction extends ReleaseAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -115,52 +119,116 @@ public class AnnexAction extends AbstractAction {
     public void actionPerformed(final ActionEvent e) {
         final MappingComponent mc = CismapBroker.getInstance().getMappingComponent();
         final SelectionListener sl = (SelectionListener)mc.getInputEventListener().get(MappingComponent.SELECT);
-        final List<PFeature> features = sl.getAllSelectedPFeatures();
+        final CidsLayerFeature[] features = getRelevantFeatures(sl.getAllSelectedPFeatures());
 
-        for (final PFeature pf : features) {
-            final Feature f = pf.getFeature();
-
-            if (f instanceof CidsLayerFeature) {
-                final CidsLayerFeature cidsFeature = (CidsLayerFeature)f;
-
-                while (!initialized) {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException ex) {
-                        // nothing to do
-                    }
-                }
-
-                if ((WW_GR != null) && !WW_GR.isEmpty()) {
-                    Object newWwGr = null;
-
-                    if (WW_GR.size() > 1) {
-                        final Object answer = JOptionPane.showInputDialog(AppBroker.getInstance().getWatergisApp(),
-                                "Recht wählen",
-                                "Title",
-                                JOptionPane.QUESTION_MESSAGE,
-                                null,
-                                WW_GR.toArray(),
-                                WW_GR.get(0).toString());
-                        newWwGr = answer;
-                    } else {
-                        newWwGr = WW_GR.get(0);
-                    }
-
-                    try {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("annex object with id " + cidsFeature.getId());
-                        }
-                        final CidsBean cidsBean = cidsFeature.getBean();
-                        cidsBean.setProperty("ww_gr", newWwGr);
-                        cidsBean.persist();
-                    } catch (Exception ex) {
-                        LOG.error("Cannot release feature", ex);
-                    }
-                } else {
-                    // todo Fehlemeldung anzeigen
-                }
+        while (!initialized) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                // nothing to do
             }
+        }
+
+        if ((WW_GR == null) || WW_GR.isEmpty()) {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                NbBundle.getMessage(
+                    AnnexAction.class,
+                    "AnnexAction.actionPerformed.noGroup.message",
+                    SessionManager.getSession().getUser().getUserGroup().getName()),
+                NbBundle.getMessage(AnnexAction.class, "AnnexAction.actionPerformed.noGroup.title"),
+                JOptionPane.ERROR_MESSAGE);
+
+            return;
+        }
+
+        if ((features != null) && (features.length > 0)) {
+            final Object newWwGr;
+
+            if (WW_GR.size() > 1) {
+                final Object answer = JOptionPane.showInputDialog(AppBroker.getInstance().getWatergisApp(),
+                        NbBundle.getMessage(AnnexAction.class, "AnnexAction.actionPerformed.possibleOwner.message"),
+                        "AnnexAction.actionPerformed.possibleOwner.title",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        WW_GR.toArray(),
+                        WW_GR.get(0).toString());
+                newWwGr = answer;
+            } else {
+                newWwGr = WW_GR.get(0);
+            }
+
+            final WaitingDialogThread<TreeSet<AbstractFeatureService>> wdt =
+                new WaitingDialogThread<TreeSet<AbstractFeatureService>>(AppBroker.getInstance().getWatergisApp(),
+                    true,
+                    NbBundle.getMessage(AnnexAction.class, "AnnexAction.actionPerformed.WaitingDialogThread.message"),
+                    null,
+                    100) {
+
+                    @Override
+                    protected TreeSet<AbstractFeatureService> doInBackground() throws Exception {
+                        final TreeSet<AbstractFeatureService> services = new TreeSet<AbstractFeatureService>(
+                                new AbstractFeatureServiceComparator());
+                        boolean annexAll = true;
+
+                        for (final CidsLayerFeature cidsFeature : features) {
+                            final CidsBean cidsBean = cidsFeature.getBean();
+                            final CidsBean wwGrBean = (CidsBean)cidsBean.getProperty("ww_gr");
+
+                            if (wwGrBean == null) {
+                                try {
+                                    if (LOG.isDebugEnabled()) {
+                                        LOG.debug("annex object with id " + cidsFeature.getId());
+                                    }
+                                    if ((cidsFeature.getLayerProperties() != null)
+                                                && (cidsFeature.getLayerProperties().getFeatureService() != null)) {
+                                        services.add(cidsFeature.getLayerProperties().getFeatureService());
+                                    }
+                                    cidsBean.setProperty("ww_gr", newWwGr);
+                                    cidsBean.persist();
+                                } catch (Exception ex) {
+                                    LOG.error("Cannot annex feature", ex);
+                                }
+                            } else {
+                                annexAll = false;
+                            }
+                        }
+
+                        if (!annexAll) {
+                            EventQueue.invokeLater(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        JOptionPane.showMessageDialog(
+                                            AppBroker.getInstance().getWatergisApp(),
+                                            NbBundle.getMessage(
+                                                AnnexAction.class,
+                                                "AnnexAction.actionPerformed.all.message"),
+                                            NbBundle.getMessage(
+                                                AnnexAction.class,
+                                                "AnnexAction.actionPerformed.all.title"),
+                                            JOptionPane.ERROR_MESSAGE);
+                                    }
+                                });
+                        }
+                        return services;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            refreshServiceAttributeTables(get());
+                        } catch (Exception e) {
+                            LOG.error("Error while annexing objects.", e);
+                        }
+                    }
+                };
+
+            wdt.start();
+        } else {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                NbBundle.getMessage(AnnexAction.class, "AnnexAction.actionPerformed.noFeature.message"),
+                NbBundle.getMessage(AnnexAction.class, "AnnexAction.actionPerformed.noFeature.title"),
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 
