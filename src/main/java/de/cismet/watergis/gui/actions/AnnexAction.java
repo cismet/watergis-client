@@ -82,7 +82,7 @@ public class AnnexAction extends ReleaseAction {
                 new Object[] { " " });
         putValue(SHORT_DESCRIPTION, tooltip);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-mergeshapes.png"));
+                    "/de/cismet/watergis/res/icons16/icon-addfriend.png"));
         putValue(SMALL_ICON, icon);
 
         if (loadPermissions && (WW_GR == null)) {

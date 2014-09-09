@@ -66,7 +66,7 @@ public class ReleaseAction extends AbstractAction {
                 new Object[] { " " });
         putValue(SHORT_DESCRIPTION, tooltip);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-mergeshapes.png"));
+                    "/de/cismet/watergis/res/icons16/icon-removefriend.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -176,7 +176,7 @@ public class ReleaseAction extends AbstractAction {
     //~ Inner Classes ----------------------------------------------------------
 
     /**
-     * A Simple Comparator implementation for AbstractFeatureServices
+     * A Simple Comparator implementation for AbstractFeatureServices.
      *
      * @version  $Revision$, $Date$
      */
