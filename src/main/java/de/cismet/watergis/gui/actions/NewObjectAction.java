@@ -46,7 +46,7 @@ public class NewObjectAction extends AbstractAction {
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 NewObjectAction.class,
                 "NewObjectAction.cmdNewObject.toolTipText",
-                new Object[] { " " });
+                new Object[] { " ", "" });
         putValue(SHORT_DESCRIPTION, tooltip);
 //        final String text = org.openide.util.NbBundle.getMessage(NewObjectAction.class, "CloseAction.text");
 //        putValue(NAME, text);
@@ -89,13 +89,17 @@ public class NewObjectAction extends AbstractAction {
             final String tooltip = org.openide.util.NbBundle.getMessage(
                     NewObjectAction.class,
                     "NewObjectAction.cmdNewObject.toolTipText",
-                    new Object[] { " " });
+                    new Object[] { " ", "" });
             putValue(SHORT_DESCRIPTION, tooltip);
         } else {
+            final String type = "("
+                        + service.getLayerProperties().getAttributeTableRuleSet().getFeatureCreator().getTypeName()
+                        + ")";
+
             final String tooltip = org.openide.util.NbBundle.getMessage(
                     NewObjectAction.class,
                     "NewObjectAction.cmdNewObject.toolTipText",
-                    new Object[] { " " + service.getName() + " " });
+                    new Object[] { " " + service.getName() + " ", type });
             putValue(SHORT_DESCRIPTION, tooltip);
         }
     }
