@@ -747,7 +747,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     }
 
     /**
-     * DOCUMENT ME!
+     * Initializes the AttributeTableFactory.
      */
     private void initAttributeTable() {
         AttributeTableFactory.getInstance().setMappingComponent(mappingComponent);
@@ -775,14 +775,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         } else {
                             view = new View(name, null, panel);
                             addAttributeTableWindowListener(view, (AttributeTable)panel);
-                            viewMap.addView(name, view);
+                            viewMap.addView(id, view);
                             attributeTableMap.put(id, view);
                             tabWindow.addTab(view);
                         }
                     } else {
                         view = new View(name, null, panel);
                         addAttributeTableWindowListener(view, (AttributeTable)panel);
-                        viewMap.addView(name, view);
+                        viewMap.addView(id, view);
                         attributeTableMap.put(id, view);
                         tabWindow.addTab(view);
                     }
@@ -800,9 +800,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     }
 
     /**
-     * DOCUMENT ME!
+     * Refreshs the content of the AttributeTable of the given service.
      *
-     * @param  service  DOCUMENT ME!
+     * @param  service  is used to determine the AttributeTable that should be refreshed
      */
     public void refreshAttributeTable(final AbstractFeatureService service) {
         final View view = attributeTableMap.get(service.getName());
@@ -819,10 +819,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     }
 
     /**
-     * DOCUMENT ME!
+     * Adds the window listener to the given view.
      *
-     * @param  view   DOCUMENT ME!
-     * @param  table  DOCUMENT ME!
+     * @param  view   the view to add the listener
+     * @param  table  the AttributeTable that is used inside the view
      */
     private void addAttributeTableWindowListener(final View view, final AttributeTable table) {
         view.addListener(new DockingWindowAdapter() {
@@ -840,6 +840,18 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 private void disposeTable() {
                     table.dispose();
                     view.removeListener(this);
+                    if (view.getParent() != null) {
+                        view.getParent().remove(view);
+                    }
+                    viewMap.removeView(table.getFeatureService().getName());
+                    attributeTableMap.remove(table.getFeatureService().getName());
+
+                    // The view is not removed from the root window and this will cause that the layout cannot be saved
+                    // when the application will be closed. So rootWindow.removeView(view) must be invoked. But without
+                    // the invocation of view.close(), the invocation of rootWindow.removeView(view) will do nothing To
+                    // avoid an infinite loop, view.removeListener(this) must be invoked before view.close();
+                    view.close();
+                    rootWindow.removeView(view);
                 }
             });
     }
@@ -1710,7 +1722,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUndomniUndoPerformed
+    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdUndomniUndoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemUndo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -1728,14 +1740,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }//GEN-LAST:event_cmdUndomniUndoPerformed
+    }                                                              //GEN-LAST:event_cmdUndomniUndoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdRedomniRedoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdRedomniRedoPerformed
+    private void cmdRedomniRedoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdRedomniRedoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemRedo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -1753,14 +1765,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }//GEN-LAST:event_cmdRedomniRedoPerformed
+    }                                                              //GEN-LAST:event_cmdRedomniRedoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeMoveActionPerformed
+    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1771,14 +1783,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeMoveActionPerformed
+    } //GEN-LAST:event_cmdNodeMoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeAddActionPerformed
+    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeAddActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1789,14 +1801,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeAddActionPerformed
+    } //GEN-LAST:event_cmdNodeAddActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRemoveActionPerformed
+    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRemoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1807,14 +1819,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeRemoveActionPerformed
+    } //GEN-LAST:event_cmdNodeRemoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRotateGeometryActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRotateGeometryActionPerformed
+    private void cmdNodeRotateGeometryActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRotateGeometryActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1825,14 +1837,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeRotateGeometryActionPerformed
+    } //GEN-LAST:event_cmdNodeRotateGeometryActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeReflectGeometryActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeReflectGeometryActionPerformed
+    private void cmdNodeReflectGeometryActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeReflectGeometryActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1843,20 +1855,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeReflectGeometryActionPerformed
+    } //GEN-LAST:event_cmdNodeReflectGeometryActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRouteActionPerformed
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
         final CidsBean selectedRoute = (CidsBean)cbRoute.getSelectedItem();
         final Geometry geom = (Geometry)selectedRoute.getProperty("geom.geo_field");
         final XBoundingBox bbox = new XBoundingBox(geom);
 
         mappingComponent.gotoBoundingBoxWithHistory(bbox);
-    }//GEN-LAST:event_cbRouteActionPerformed
+    } //GEN-LAST:event_cbRouteActionPerformed
 
     /**
      * DOCUMENT ME!
