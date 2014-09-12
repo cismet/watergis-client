@@ -24,9 +24,13 @@ import Sirius.navigator.resource.PropertyManager;
 import Sirius.navigator.ui.dialog.LoginDialog;
 import Sirius.navigator.ui.tree.MetaCatalogueTree;
 
+import Sirius.server.middleware.types.MetaClass;
+import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.newuser.UserException;
 
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 import net.infonode.docking.DockingWindow;
 import net.infonode.docking.DockingWindowAdapter;
@@ -84,20 +88,29 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
+import de.cismet.cids.dynamics.CidsBean;
+
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
@@ -118,6 +131,8 @@ import de.cismet.cismap.commons.interaction.memento.MementoInterface;
 
 import de.cismet.cismap.linearreferencing.CreateLinearReferencedLineListener;
 import de.cismet.cismap.linearreferencing.CreateLinearReferencedPointListener;
+
+import de.cismet.commons.concurrency.CismetConcurrency;
 
 import de.cismet.lookupoptions.gui.OptionsClient;
 
@@ -220,6 +235,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private View vCapability;
     private MappingComponent mappingComponent;
     private ActiveLayerModel mappingModel = new ActiveLayerModel();
+    private MetaClass routeMc;
 
     private String helpURL;
     private String infoURL;
@@ -227,6 +243,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.watergis.gui.actions.AnnexAction annexAction;
     private javax.swing.ButtonGroup btnGroupMapMode;
+    private javax.swing.JComboBox cbRoute;
     private javax.swing.JComboBox cboScale;
     private de.cismet.watergis.gui.actions.CentralConfigAction centralConfigAction;
     private de.cismet.watergis.gui.actions.CloseAction closeAction;
@@ -396,14 +413,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         UIManager.put("Table.selectionBackground", new Color(195, 212, 232));
         UIManager.put("Tree.selectionBackground", new Color(195, 212, 232));
         initCismap();
+        routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
         initComponents();
         cmdAnnex.setAction(new AnnexAction(true));
+        cmdAnnex.setEnabled(false);
         cmdTable.setVisible(false);
         ((MeasureButton)tbtnMeasure).setButtonGroup(btnGroupMapMode);
         ((SelectionButton)cmdSelectionMode).setButtonGroup(btnGroupMapMode);
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
-
+        initRouteCombo();
         initDefaultPanels();
         initDocking();
         initInfoNode();
@@ -847,6 +866,51 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     }
 
     /**
+     * DOCUMENT ME!
+     */
+    public void initRouteCombo() {
+        cbRoute.setModel(new DefaultComboBoxModel(new Object[] { "Lade ..." }));
+        final SwingWorker sw = new SwingWorker<CidsBean[], Void>() {
+
+                @Override
+                protected CidsBean[] doInBackground() throws Exception {
+                    String query = "select " + routeMc.getID() + ", " + routeMc.getTableName() + "."
+                                + routeMc.getPrimaryKey() + " from "
+                                + routeMc.getTableName(); // NOI18N
+                    query += " join dlm25w.fg_bak bak on (bak_id = bak.id) ";
+                    query += " join dlm25w.kat_ww_gr gr on (bak.ww_gr = gr.id)";
+                    query += " where gr.owner = '" + SessionManager.getSession().getUser().getUserGroup().getName()
+                                + "'";
+//                                query += " or bak.ww_gr is null)";
+                    final MetaObject[] mos = SessionManager.getProxy().getMetaObjectByQuery(query, 0);
+                    final List<CidsBean> beans = new ArrayList<CidsBean>();
+
+                    if (mos != null) {
+                        for (final MetaObject mo : mos) {
+                            beans.add(mo.getBean());
+                        }
+                    }
+
+                    return beans.toArray(new CidsBean[beans.size()]);
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        final CidsBean[] tmp = get();
+                        cbRoute.setModel(new DefaultComboBoxModel(tmp));
+                    } catch (InterruptedException interruptedException) {
+                    } catch (ExecutionException executionException) {
+                        LOG.error("Error while initializing the model of the route combobox", executionException); // NOI18N
+                    }
+                }
+            };
+//        sw.execute();
+
+        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(sw);
+    }
+
+    /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The
      * content of this method is always regenerated by the Form Editor.
      */
@@ -914,6 +978,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdManageBookmarks = new javax.swing.JButton();
         jSeparator8 = new javax.swing.JToolBar.Separator();
         cboScale = new ScaleJComboBox();
+        cbRoute = new javax.swing.JComboBox();
         jSeparator7 = new javax.swing.JToolBar.Separator();
         tbtnZoomMode = new javax.swing.JToggleButton();
         cmdZoomIn = new javax.swing.JButton();
@@ -1088,6 +1153,22 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cboScale.setMinimumSize(new java.awt.Dimension(100, 24));
         cboScale.setPreferredSize(new java.awt.Dimension(100, 24));
         tobDLM25W.add(cboScale);
+
+        cbRoute.setEditable(true);
+        cbRoute.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cbRoute.toolTipText")); // NOI18N
+        cbRoute.setMaximumSize(new java.awt.Dimension(100, 24));
+        cbRoute.setMinimumSize(new java.awt.Dimension(100, 24));
+        cbRoute.setPreferredSize(new java.awt.Dimension(100, 24));
+        cbRoute.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    cbRouteActionPerformed(evt);
+                }
+            });
+        tobDLM25W.add(cbRoute);
 
         jSeparator7.setSeparatorSize(new java.awt.Dimension(2, 32));
         tobDLM25W.add(jSeparator7);
@@ -1762,7 +1843,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    } //GEN-LAST:event_cmdNodeReflectGeometryActionPerformed
+    }//GEN-LAST:event_cmdNodeReflectGeometryActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRouteActionPerformed
+        final CidsBean selectedRoute = (CidsBean)cbRoute.getSelectedItem();
+        final Geometry geom = (Geometry)selectedRoute.getProperty("geom.geo_field");
+        final XBoundingBox bbox = new XBoundingBox(geom);
+
+        mappingComponent.gotoBoundingBoxWithHistory(bbox);
+    }//GEN-LAST:event_cbRouteActionPerformed
 
     /**
      * DOCUMENT ME!
