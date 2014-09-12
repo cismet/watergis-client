@@ -217,6 +217,7 @@ public class AnnexAction extends ReleaseAction {
                     protected void done() {
                         try {
                             refreshServiceAttributeTables(get());
+                            AppBroker.getInstance().getWatergisApp().initRouteCombo();
                         } catch (Exception e) {
                             LOG.error("Error while annexing objects.", e);
                         }

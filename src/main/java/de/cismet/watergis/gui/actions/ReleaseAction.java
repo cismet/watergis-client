@@ -117,6 +117,7 @@ public class ReleaseAction extends AbstractAction {
                     protected void done() {
                         try {
                             refreshServiceAttributeTables(get());
+                            AppBroker.getInstance().getWatergisApp().initRouteCombo();
                         } catch (Exception e) {
                             LOG.error("Error while releasing objects", e);
                         }
