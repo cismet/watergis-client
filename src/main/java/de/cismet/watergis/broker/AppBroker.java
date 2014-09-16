@@ -72,6 +72,7 @@ import de.cismet.watergis.broker.listener.SelectionModeChangedEvent;
 import de.cismet.watergis.broker.listener.SelectionModeListener;
 
 import de.cismet.watergis.gui.WatergisApp;
+import de.cismet.watergis.gui.actions.CleanUpAction;
 import de.cismet.watergis.gui.actions.InfoWindowAction;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
@@ -114,6 +115,7 @@ public class AppBroker implements Configurable {
     private ComponentRegistry componentRegistry;
     private ConnectionInfo connectionInfo;
     private InfoWindowAction infoWindowAction;
+    private Action lastActionMode;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -375,6 +377,12 @@ public class AppBroker implements Configurable {
         final Action action = mapModeSelectionActions.get(mode);
         if (action != null) {
             action.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode));
+
+            if (lastActionMode instanceof CleanUpAction) {
+                ((CleanUpAction)lastActionMode).cleanUp();
+            }
+
+            lastActionMode = action;
         } else {
             LOG.warn("Can not switch to mode " + mode + ". It does not exist.");
         }
