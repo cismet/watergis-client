@@ -20,9 +20,13 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.cismap.commons.features.DefaultFeatureCollection;
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.gui.MappingComponent;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.gui.actions.CleanUpAction;
 
 /**
  * DOCUMENT ME!
@@ -30,7 +34,7 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class MeasureAction extends AbstractAction {
+public class MeasureAction extends AbstractAction implements CleanUpAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -73,5 +77,11 @@ public class MeasureAction extends AbstractAction {
     @Override
     public boolean isEnabled() {
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
+    }
+
+    @Override
+    public void cleanUp() {
+        ((DefaultFeatureCollection)(AppBroker.getInstance().getMappingComponent().getFeatureCollection()))
+                .removeFeaturesByInstance(Feature.class);
     }
 }
