@@ -11,12 +11,6 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
-import com.vividsolutions.jts.geom.Geometry;
-
-import java.sql.Date;
-import java.sql.Timestamp;
 
 
 //import java.util.Date;
@@ -25,10 +19,11 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
+import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
-import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 /**
  * DOCUMENT ME!
@@ -36,14 +31,13 @@ import de.cismet.cismap.linearreferencing.StationTableCellEditor;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBaRlRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBaStatRuleSet extends DefaultAttributeTableRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("object_id") && !columnName.equals("geo_field");
+        return false;
     }
 
     @Override
@@ -58,13 +52,7 @@ public class FgBaRlRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("von")) {
-            return new StationTableCellEditor(columnName);
-        } else if (columnName.equals("bis")) {
-            return new StationTableCellEditor(columnName);
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override
@@ -74,8 +62,8 @@ public class FgBaRlRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+//        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
+//        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
     }
 
     @Override
@@ -94,6 +82,11 @@ public class FgBaRlRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
+        return null;
+    }
+
+    @Override
+    public FeatureCreator getFeatureCreator() {
         return null;
     }
 }

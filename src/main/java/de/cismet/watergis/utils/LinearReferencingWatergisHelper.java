@@ -19,6 +19,8 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.LinearReferencedPointFeature;
+
 import de.cismet.cismap.linearreferencing.LinearReferencingHelper;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -60,25 +62,34 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final String CN_FG_LA_STATIONLINE = "dlm25w.FG_LA_LINIE";
     private static final String CN_FG_LA_STATION = "dlm25w.FG_LA_PUNKT";
 
-    //~ Instance fields --------------------------------------------------------
-
-    private MetaClass MC_GEOM = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, CN_GEOM);
-    private MetaClass MC_FG_BAK_STATION = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, CN_FG_BAK_STATION);
-    private MetaClass MC_FG_BA_STATION = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, CN_FG_BA_STATION);
-    private MetaClass MC_FG_LAK_STATION = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, CN_FG_LAK_STATION);
-    private MetaClass MC_FG_LA_STATION = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, CN_FG_LA_STATION);
-    private MetaClass MC_FG_BAK_STATIONLINIE = ClassCacheMultiple.getMetaClass(
+    private static final MetaClass MC_GEOM = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, CN_GEOM);
+    private static final MetaClass MC_FG_BAK_STATION = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_FG_BAK_STATION);
+    private static final MetaClass MC_FG_BA_STATION = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_FG_BA_STATION);
+    private static final MetaClass MC_FG_LAK_STATION = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_FG_LAK_STATION);
+    private static final MetaClass MC_FG_LA_STATION = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_FG_LA_STATION);
+    private static final MetaClass MC_FG_BAK_STATIONLINIE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_FG_BAK_STATIONLINE);
-    private MetaClass MC_FG_BA_STATIONLINIE = ClassCacheMultiple.getMetaClass(
+    private static final MetaClass MC_FG_BA_STATIONLINIE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_FG_BA_STATIONLINE);
-    private MetaClass MC_FG_LAK_STATIONLINIE = ClassCacheMultiple.getMetaClass(
+    private static final MetaClass MC_FG_LAK_STATIONLINIE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_FG_LAK_STATIONLINE);
-    private MetaClass MC_FG_LA_STATIONLINIE = ClassCacheMultiple.getMetaClass(
+    private static final MetaClass MC_FG_LA_STATIONLINIE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_FG_LA_STATIONLINE);
+
+    //~ Instance fields --------------------------------------------------------
+
     private int NEW_STATION_ID = -1;
     private int NEW_LINE_ID = -1;
 
@@ -291,7 +302,15 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
             stationBean.setProperty(PROP_STATION_ROUTE, routeBean);
             stationBean.setProperty(PROP_STATION_VALUE, value);
             stationBean.setProperty(PROP_STATION_GEOM, geomBean);
+            geomBean.setProperty(CN_GEOM, value);
 
+            try {
+                final CidsBean routeGeomBean = (CidsBean)routeBean.getProperty(PROP_ROUTE_GEOM);
+                final Geometry geom = (Geometry)routeGeomBean.getProperty(PROP_GEOM_GEOFIELD);
+                setPointGeometryToStationBean(LinearReferencedPointFeature.getPointOnLine(value, geom), stationBean);
+            } catch (Exception e) {
+                LOG.error("Cannot set the geometry of the station", e);
+            }
             stationBean.setProperty("id", newStationId);
             stationBean.getMetaObject().setID(newStationId);
         } catch (Exception ex) {
@@ -455,5 +474,10 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     @Override
     public void setRouteBeanToStationBean(final CidsBean routeBean, final CidsBean stationBean) throws Exception {
         stationBean.setProperty(PROP_STATION_ROUTE, routeBean);
+    }
+
+    @Override
+    public String[] getAllUsedDomains() {
+        return new String[] { "DLM25W" };
     }
 }
