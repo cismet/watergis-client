@@ -25,6 +25,8 @@ import java.awt.EventQueue;
 import java.text.DecimalFormat;
 
 import java.util.Collection;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.cismet.cismap.commons.Crs;
 import de.cismet.cismap.commons.features.Feature;
@@ -51,6 +53,10 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
     private static int K_DIVISOR = 1000;
     private static int K_SQUARE_DIVISOR = K_DIVISOR * K_DIVISOR;
 
+    //~ Instance fields --------------------------------------------------------
+
+    private Timer timer;
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.tools.gui.exceptionnotification.ExceptionNotificationStatusPanel exceptionNotificationStatusPanel;
     private javax.swing.Box.Filler filler1;
@@ -58,8 +64,10 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblCoordinates;
     private javax.swing.JLabel lblMeasuring;
+    private javax.swing.JLabel lblNotification;
     private javax.swing.JPanel pnlCoordinates;
     private javax.swing.JPanel pnlMeasuring;
+    private javax.swing.JPanel pnlNotification;
     // End of variables declaration//GEN-END:variables
 
     //~ Constructors -----------------------------------------------------------
@@ -92,6 +100,8 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
                 new java.awt.Dimension(0, 0),
                 new java.awt.Dimension(32767, 0));
         jPanel2 = new javax.swing.JPanel();
+        pnlNotification = new javax.swing.JPanel();
+        lblNotification = new javax.swing.JLabel();
         pnlMeasuring = new javax.swing.JPanel();
         lblMeasuring = new javax.swing.JLabel();
         pnlCoordinates = new javax.swing.JPanel();
@@ -121,6 +131,15 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         add(jPanel2, gridBagConstraints);
+
+        pnlNotification.setLayout(new java.awt.BorderLayout());
+        pnlNotification.add(lblNotification, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 10);
+        add(pnlNotification, gridBagConstraints);
 
         pnlMeasuring.setLayout(new java.awt.BorderLayout());
         pnlMeasuring.add(lblMeasuring, java.awt.BorderLayout.CENTER);
@@ -164,6 +183,28 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
             }
         }
     }                                                                    //GEN-LAST:event_formMouseClicked
+
+    /**
+     * Shows the given text in the status bar. After 5 seconds it will be removed.
+     *
+     * @param  text  text to show in the status bar
+     */
+    public synchronized void showNotification(final String text) {
+        if (timer != null) {
+            timer.cancel();
+        }
+        lblNotification.setText(text);
+
+        timer = new Timer();
+
+        timer.schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+                    lblNotification.setText("");
+                }
+            }, 5000);
+    }
 
     /**
      * DOCUMENT ME!

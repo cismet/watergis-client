@@ -261,14 +261,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JButton cmdNextExtend;
     private javax.swing.JToggleButton cmdNodeAdd;
     private javax.swing.JToggleButton cmdNodeMove;
-    private javax.swing.JToggleButton cmdNodeReflectGeometry;
     private javax.swing.JToggleButton cmdNodeRemove;
-    private javax.swing.JToggleButton cmdNodeRotateGeometry;
     private javax.swing.JButton cmdOpenProject;
     private javax.swing.JButton cmdPresentation;
     private javax.swing.JButton cmdPreviousExtend;
     private javax.swing.JButton cmdPrint;
-    private javax.swing.JButton cmdRedo;
     private javax.swing.JButton cmdRelease;
     private javax.swing.JButton cmdRemoveSelectionAktiveTheme;
     private javax.swing.JButton cmdRemoveSelectionAllThemes;
@@ -288,6 +285,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.ButtonGroup editGroup;
     private de.cismet.watergis.gui.actions.map.ExportMapAction exportMapAction;
     private de.cismet.watergis.gui.actions.map.ExportMapToFileAction exportMapToFileAction;
+    private de.cismet.watergis.gui.actions.map.FlipAction flipAction;
     private de.cismet.watergis.gui.actions.map.FullExtendAction fullExtendAction;
     private de.cismet.watergis.gui.actions.map.GoToAction goToAction;
     private de.cismet.watergis.gui.actions.InfoAction infoAction;
@@ -303,7 +301,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JToolBar.Separator jSeparator9;
     private de.cismet.watergis.gui.actions.LocalConfigAction localConfigAction;
     private de.cismet.watergis.gui.actions.map.MeasureAction measureAction;
-    private de.cismet.watergis.gui.actions.map.MeasureLineAction measureLineAction1;
+    private de.cismet.watergis.gui.actions.map.MeasureLineAction measureLineAction;
     private javax.swing.JMenu menBookmark;
     private javax.swing.JMenu menFile;
     private javax.swing.JMenu menHelp;
@@ -631,7 +629,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         AppBroker.getInstance().addMapMode(MappingComponent.FEATURE_INFO_MULTI_GEOM, infoWindowAction);
         AppBroker.getInstance().addMapMode(AppBroker.MEASURE_MODE, measureAction);
         AppBroker.getInstance().addMapMode(FeatureCreator.SIMPLE_GEOMETRY_LISTENER_KEY, newObjectAction);
-        AppBroker.getInstance().addMapMode(MappingComponent.LINEAR_REFERENCING, measureLineAction1);
+        AppBroker.getInstance().addMapMode(MappingComponent.LINEAR_REFERENCING, measureLineAction);
         AppBroker.getInstance()
                 .addMapMode(CreateLinearReferencedLineListener.CREATE_LINEAR_REFERENCED_LINE_MODE, newObjectAction);
         AppBroker.getInstance()
@@ -886,24 +884,29 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
                 @Override
                 protected CidsBean[] doInBackground() throws Exception {
-                    String query = "select " + routeMc.getID() + ", " + routeMc.getTableName() + "."
-                                + routeMc.getPrimaryKey() + " from "
-                                + routeMc.getTableName(); // NOI18N
-                    query += " join dlm25w.fg_bak bak on (bak_id = bak.id) ";
-                    query += " join dlm25w.kat_ww_gr gr on (bak.ww_gr = gr.id)";
-                    query += " where gr.owner = '" + SessionManager.getSession().getUser().getUserGroup().getName()
-                                + "'";
-//                                query += " or bak.ww_gr is null)";
-                    final MetaObject[] mos = SessionManager.getProxy().getMetaObjectByQuery(query, 0);
-                    final List<CidsBean> beans = new ArrayList<CidsBean>();
+                    if (routeMc != null) {
+                        String query = "select " + routeMc.getID() + ", " + routeMc.getTableName() + "."
+                                    + routeMc.getPrimaryKey() + " from "
+                                    + routeMc.getTableName(); // NOI18N
+                        query += " join dlm25w.fg_bak bak on (bak_id = bak.id) ";
+                        query += " join dlm25w.kat_ww_gr gr on (bak.ww_gr = gr.id)";
+                        query += " where gr.owner = '" + SessionManager.getSession().getUser().getUserGroup().getName()
+                                    + "'";
+                        // query += " or bak.ww_gr is null)";
+                        final MetaObject[] mos = SessionManager.getProxy().getMetaObjectByQuery(query, 0);
+                        final List<CidsBean> beans = new ArrayList<CidsBean>();
 
-                    if (mos != null) {
-                        for (final MetaObject mo : mos) {
-                            beans.add(mo.getBean());
+                        if (mos != null) {
+                            for (final MetaObject mo : mos) {
+                                beans.add(mo.getBean());
+                            }
                         }
-                    }
 
-                    return beans.toArray(new CidsBean[beans.size()]);
+                        return beans.toArray(new CidsBean[beans.size()]);
+                    } else {
+                        // The user has no read permissions for the route meta class
+                        return new CidsBean[0];
+                    }
                 }
 
                 @Override
@@ -978,7 +981,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         splitAction = new de.cismet.watergis.gui.actions.SplitAction();
         releaseAction = new de.cismet.watergis.gui.actions.ReleaseAction();
         annexAction = new de.cismet.watergis.gui.actions.AnnexAction();
-        measureLineAction1 = new de.cismet.watergis.gui.actions.map.MeasureLineAction();
+        measureLineAction = new de.cismet.watergis.gui.actions.map.MeasureLineAction();
+        flipAction = new de.cismet.watergis.gui.actions.map.FlipAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
@@ -1014,16 +1018,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         tbtnInfo = new javax.swing.JToggleButton();
         tbtnMeasureLineMode = new javax.swing.JToggleButton();
         tbtnMeasure = new MeasureButton();
-        cmdPresentation = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         cmdNodeMove = new javax.swing.JToggleButton();
         cmdNodeAdd = new javax.swing.JToggleButton();
         cmdNodeRemove = new javax.swing.JToggleButton();
-        cmdNodeRotateGeometry = new javax.swing.JToggleButton();
-        cmdNodeReflectGeometry = new javax.swing.JToggleButton();
+        cmdPresentation = new javax.swing.JButton();
         jSeparator9 = new javax.swing.JToolBar.Separator();
         cmdUndo = new javax.swing.JButton();
-        cmdRedo = new javax.swing.JButton();
         jSeparator10 = new javax.swing.JToolBar.Separator();
         tbtNewObject = new javax.swing.JToggleButton();
         cmdMerge = new javax.swing.JButton();
@@ -1368,7 +1369,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         tbtnInfo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(tbtnInfo);
 
-        tbtnMeasureLineMode.setAction(measureLineAction1);
+        tbtnMeasureLineMode.setAction(measureLineAction);
         btnGroupMapMode.add(tbtnMeasureLineMode);
         tbtnMeasureLineMode.setFocusable(false);
         tbtnMeasureLineMode.setHideActionText(true);
@@ -1385,16 +1386,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         tbtnMeasure.setPreferredSize(new java.awt.Dimension(26, 26));
         tbtnMeasure.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(tbtnMeasure);
-
-        cmdPresentation.setAction(presentationAction);
-        cmdPresentation.setFocusable(false);
-        cmdPresentation.setHideActionText(true);
-        cmdPresentation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdPresentation.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdPresentation.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdPresentation.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdPresentation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdPresentation);
         tobDLM25W.add(jSeparator1);
 
         editGroup.add(cmdNodeMove);
@@ -1455,43 +1446,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             });
         tobDLM25W.add(cmdNodeRemove);
 
-        editGroup.add(cmdNodeRotateGeometry);
-        cmdNodeRotateGeometry.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/rotate.png"))); // NOI18N
-        cmdNodeRotateGeometry.setToolTipText(org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.cmdNodeRotateGeometry.toolTipText"));                                              // NOI18N
-        cmdNodeRotateGeometry.setBorderPainted(false);
-        cmdNodeRotateGeometry.setFocusPainted(false);
-        cmdNodeRotateGeometry.setFocusable(false);
-        cmdNodeRotateGeometry.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdNodeRotateGeometry.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        cmdNodeRotateGeometry.addActionListener(new java.awt.event.ActionListener() {
-
-                @Override
-                public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    cmdNodeRotateGeometryActionPerformed(evt);
-                }
-            });
-        tobDLM25W.add(cmdNodeRotateGeometry);
-
-        editGroup.add(cmdNodeReflectGeometry);
-        cmdNodeReflectGeometry.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/mirror.png"))); // NOI18N
-        cmdNodeReflectGeometry.setToolTipText(org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.cmdNodeReflectGeometry.toolTipText"));                                              // NOI18N
-        cmdNodeReflectGeometry.setBorderPainted(false);
-        cmdNodeReflectGeometry.setFocusPainted(false);
-        cmdNodeReflectGeometry.setFocusable(false);
-        cmdNodeReflectGeometry.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdNodeReflectGeometry.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        cmdNodeReflectGeometry.addActionListener(new java.awt.event.ActionListener() {
-
-                @Override
-                public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    cmdNodeReflectGeometryActionPerformed(evt);
-                }
-            });
-        tobDLM25W.add(cmdNodeReflectGeometry);
+        cmdPresentation.setAction(flipAction);
+        cmdPresentation.setFocusable(false);
+        cmdPresentation.setHideActionText(true);
+        cmdPresentation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdPresentation.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdPresentation.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdPresentation.setPreferredSize(new java.awt.Dimension(26, 26));
+        cmdPresentation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdPresentation);
 
         jSeparator9.setSeparatorSize(new java.awt.Dimension(2, 32));
         tobDLM25W.add(jSeparator9);
@@ -1514,25 +1477,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 }
             });
         tobDLM25W.add(cmdUndo);
-
-        cmdRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/redo.png"))); // NOI18N
-        cmdRedo.setToolTipText(org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.cmdRedo.toolTipText"));                                                                    // NOI18N
-        cmdRedo.setBorderPainted(false);
-        cmdRedo.setEnabled(false);
-        cmdRedo.setFocusPainted(false);
-        cmdRedo.setFocusable(false);
-        cmdRedo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdRedo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        cmdRedo.addActionListener(new java.awt.event.ActionListener() {
-
-                @Override
-                public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    cmdRedomniRedoPerformed(evt);
-                }
-            });
-        tobDLM25W.add(cmdRedo);
 
         jSeparator10.setSeparatorSize(new java.awt.Dimension(2, 32));
         tobDLM25W.add(jSeparator10);
@@ -1747,31 +1691,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdRedomniRedoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdRedomniRedoPerformed
-        final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemRedo().getLastAction();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("... execute action: " + a.info());                        // NOI18N
-        }
-
-        try {
-            a.doAction();
-        } catch (Exception e) {
-            LOG.error("Error while executing action", e); // NOI18N
-        }
-
-        final CustomAction inverse = a.getInverse();
-        CismapBroker.getInstance().getMappingComponent().getMemUndo().addAction(inverse);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
-            LOG.debug("... completed");                            // NOI18N
-        }
-    }                                                              //GEN-LAST:event_cmdRedomniRedoPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
     private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
@@ -1820,42 +1739,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 }
             });
     } //GEN-LAST:event_cmdNodeRemoveActionPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
-    private void cmdNodeRotateGeometryActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRotateGeometryActionPerformed
-        EventQueue.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    CismapBroker.getInstance()
-                            .getMappingComponent()
-                            .setHandleInteractionMode(MappingComponent.ROTATE_POLYGON);
-                    CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
-                }
-            });
-    } //GEN-LAST:event_cmdNodeRotateGeometryActionPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
-    private void cmdNodeReflectGeometryActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeReflectGeometryActionPerformed
-        EventQueue.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    CismapBroker.getInstance()
-                            .getMappingComponent()
-                            .setHandleInteractionMode(MappingComponent.REFLECT_POLYGON);
-                    CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
-                }
-            });
-    } //GEN-LAST:event_cmdNodeReflectGeometryActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -2373,30 +2256,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         @Override
                         public void run() {
                             cmdUndo.setEnabled(false);
-                        }
-                    });
-            }
-        } else if (o.equals(mapC.getMemRedo())) {
-            if (arg.equals(MementoInterface.ACTIVATE) && !cmdRedo.isEnabled()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("activate REDO button"); // NOI18N
-                }
-                EventQueue.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            cmdRedo.setEnabled(true);
-                        }
-                    });
-            } else if (arg.equals(MementoInterface.DEACTIVATE) && cmdRedo.isEnabled()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("deactivate REDO button"); // NOI18N
-                }
-                EventQueue.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            cmdRedo.setEnabled(false);
                         }
                     });
             }
