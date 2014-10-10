@@ -247,6 +247,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.watergis.gui.actions.AnnexAction annexAction;
     private javax.swing.ButtonGroup btnGroupMapMode;
+    private javax.swing.JButton butIntermediateSave;
     private javax.swing.JComboBox cbRoute;
     private javax.swing.JComboBox cboScale;
     private de.cismet.watergis.gui.actions.CentralConfigAction centralConfigAction;
@@ -278,7 +279,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JButton cmdSelectionLocation;
     private javax.swing.JButton cmdSelectionMode;
     private javax.swing.JButton cmdSplit;
-    private javax.swing.JButton cmdTable;
     private javax.swing.JButton cmdUndo;
     private javax.swing.JButton cmdZoomIn;
     private javax.swing.JButton cmdZoomOut;
@@ -293,6 +293,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.map.GoToAction goToAction;
     private de.cismet.watergis.gui.actions.InfoAction infoAction;
     private de.cismet.watergis.gui.actions.InfoWindowAction infoWindowAction;
+    private de.cismet.watergis.gui.actions.IntermediateSaveAction intermediateSaveAction;
     private de.cismet.watergis.gui.actions.selection.InvertSelectionAction invertSelectionAction;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JToolBar.Separator jSeparator1;
@@ -358,7 +359,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction showManageBookmarksDialogAction;
     private de.cismet.watergis.gui.actions.SplitAction splitAction;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
-    private de.cismet.watergis.gui.actions.TableAction tableAction;
     private javax.swing.JToggleButton tbtNewObject;
     private javax.swing.JToggleButton tbtnInfo;
     private javax.swing.JButton tbtnMeasure;
@@ -416,7 +416,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         initComponents();
         cmdAnnex.setAction(new AnnexAction(true));
         cmdAnnex.setEnabled(false);
-        cmdTable.setVisible(false);
         ((MeasureButton)tbtnMeasure).setButtonGroup(btnGroupMapMode);
         ((SelectionButton)cmdSelectionMode).setButtonGroup(btnGroupMapMode);
         initMapModes();
@@ -824,6 +823,65 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     }
 
     /**
+     * switches the processing mode of the given service.
+     *
+     * @param   service  DOCUMENT ME!
+     *
+     * @return  true, if the processing mode was switched
+     */
+    public boolean switchProcessingMode(final AbstractFeatureService service) {
+        return switchProcessingMode(service, false);
+    }
+
+    /**
+     * switches the processing mode of the given service.
+     *
+     * @param   service    DOCUMENT ME!
+     * @param   forceSave  if true, the changed data will be saved without confirmation
+     *
+     * @return  true, if the processing mode was switched
+     */
+    public boolean switchProcessingMode(final AbstractFeatureService service, final boolean forceSave) {
+        final View view = attributeTableMap.get(service.getName());
+
+        if (view != null) {
+            final Component c = view.getComponent();
+
+            if (c instanceof AttributeTable) {
+                final AttributeTable attrTable = (AttributeTable)c;
+
+                attrTable.changeProcessingMode(forceSave);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determines, if the processing mode of the given service is active.
+     *
+     * @param   service  DOCUMENT ME!
+     *
+     * @return  true, if the processing mode is active
+     */
+    public boolean isProcessingModeActive(final AbstractFeatureService service) {
+        final View view = attributeTableMap.get(service.getName());
+
+        if (view != null) {
+            final Component c = view.getComponent();
+
+            if (c instanceof AttributeTable) {
+                final AttributeTable attrTable = (AttributeTable)c;
+
+                return attrTable.isProcessingModeActive();
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Adds the window listener to the given view.
      *
      * @param  view   the view to add the listener
@@ -966,7 +1024,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         infoWindowAction = new de.cismet.watergis.gui.actions.InfoWindowAction();
         localConfigAction = new de.cismet.watergis.gui.actions.LocalConfigAction();
         onlineHelpAction = new de.cismet.watergis.gui.actions.OnlineHelpAction();
-        tableAction = new de.cismet.watergis.gui.actions.TableAction();
         presentationAction = new de.cismet.watergis.gui.actions.PresentationAction();
         zoomModeAction = new de.cismet.watergis.gui.actions.map.ZoomModeAction();
         selectionModeAction = new de.cismet.watergis.gui.actions.map.SelectionModeAction();
@@ -988,12 +1045,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         annexAction = new de.cismet.watergis.gui.actions.AnnexAction();
         measureLineAction = new de.cismet.watergis.gui.actions.map.MeasureLineAction();
         flipAction = new de.cismet.watergis.gui.actions.map.FlipAction();
+        intermediateSaveAction = new de.cismet.watergis.gui.actions.IntermediateSaveAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
         cmdPrint = new javax.swing.JButton();
-        cmdExportMap2 = new javax.swing.JButton();
         cmdExportMap1 = new javax.swing.JButton();
+        cmdExportMap2 = new javax.swing.JButton();
         cmdDownloadManager = new javax.swing.JButton();
         cmdAddBookmark = new javax.swing.JButton();
         cmdManageBookmarks = new javax.swing.JButton();
@@ -1018,7 +1076,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdInvertSelection = new javax.swing.JButton();
         cmdRemoveSelectionAllThemes = new javax.swing.JButton();
         jSeparator6 = new javax.swing.JToolBar.Separator();
-        cmdTable = new javax.swing.JButton();
         tbtnInfo = new javax.swing.JToggleButton();
         tbtnMeasureLineMode = new javax.swing.JToggleButton();
         tbtnMeasure = new MeasureButton();
@@ -1029,6 +1086,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdPresentation = new javax.swing.JButton();
         jSeparator9 = new javax.swing.JToolBar.Separator();
         cmdUndo = new javax.swing.JButton();
+        butIntermediateSave = new javax.swing.JButton();
         jSeparator10 = new javax.swing.JToolBar.Separator();
         tbtNewObject = new javax.swing.JToggleButton();
         cmdMerge = new javax.swing.JButton();
@@ -1112,16 +1170,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdPrint.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdPrint);
 
-        cmdExportMap2.setAction(exportMapAction);
-        cmdExportMap2.setFocusable(false);
-        cmdExportMap2.setHideActionText(true);
-        cmdExportMap2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdExportMap2.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdExportMap2.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdExportMap2.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdExportMap2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdExportMap2);
-
         cmdExportMap1.setAction(exportMapToFileAction);
         cmdExportMap1.setFocusable(false);
         cmdExportMap1.setHideActionText(true);
@@ -1131,6 +1179,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdExportMap1.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdExportMap1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdExportMap1);
+
+        cmdExportMap2.setAction(exportMapAction);
+        cmdExportMap2.setFocusable(false);
+        cmdExportMap2.setHideActionText(true);
+        cmdExportMap2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdExportMap2.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap2.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdExportMap2.setPreferredSize(new java.awt.Dimension(26, 26));
+        cmdExportMap2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdExportMap2);
 
         cmdDownloadManager.setAction(downloadManagerAction);
         cmdDownloadManager.setFocusable(false);
@@ -1345,16 +1403,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         jSeparator6.setSeparatorSize(new java.awt.Dimension(2, 0));
         tobDLM25W.add(jSeparator6);
 
-        cmdTable.setAction(tableAction);
-        cmdTable.setFocusable(false);
-        cmdTable.setHideActionText(true);
-        cmdTable.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdTable.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdTable.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdTable.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdTable.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdTable);
-
         tbtnInfo.setAction(infoWindowAction);
         btnGroupMapMode.add(tbtnInfo);
         tbtnInfo.setFocusable(false);
@@ -1471,6 +1519,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 }
             });
         tobDLM25W.add(cmdUndo);
+
+        butIntermediateSave.setAction(intermediateSaveAction);
+        butIntermediateSave.setFocusable(false);
+        butIntermediateSave.setHideActionText(true);
+        butIntermediateSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        butIntermediateSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(butIntermediateSave);
 
         jSeparator10.setSeparatorSize(new java.awt.Dimension(2, 32));
         tobDLM25W.add(jSeparator10);
@@ -2497,30 +2552,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
                 }
             }
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param   service  DOCUMENT ME!
-         *
-         * @return  DOCUMENT ME!
-         */
-        private boolean switchProcessingMode(final AbstractFeatureService service) {
-            final View view = attributeTableMap.get(service.getName());
-
-            if (view != null) {
-                final Component c = view.getComponent();
-
-                if (c instanceof AttributeTable) {
-                    final AttributeTable attrTable = (AttributeTable)c;
-
-                    attrTable.changeProcessingMode();
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

@@ -56,8 +56,6 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.OnlineHelpAction" name="onlineHelpAction">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.TableAction" name="tableAction">
-    </Component>
     <Component class="de.cismet.watergis.gui.actions.PresentationAction" name="presentationAction">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.map.ZoomModeAction" name="zoomModeAction">
@@ -97,6 +95,8 @@
     <Component class="de.cismet.watergis.gui.actions.map.MeasureLineAction" name="measureLineAction">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.map.FlipAction" name="flipAction">
+    </Component>
+    <Component class="de.cismet.watergis.gui.actions.IntermediateSaveAction" name="intermediateSaveAction">
     </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
@@ -436,10 +436,10 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="cmdExportMap2">
+        <Component class="javax.swing.JButton" name="cmdExportMap1">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="exportMapAction"/>
+              <ComponentRef name="exportMapToFileAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -456,10 +456,10 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="cmdExportMap1">
+        <Component class="javax.swing.JButton" name="cmdExportMap2">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="exportMapToFileAction"/>
+              <ComponentRef name="exportMapAction"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="hideActionText" type="boolean" value="true"/>
@@ -895,26 +895,6 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="cmdTable">
-          <Properties>
-            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="tableAction"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="hideActionText" type="boolean" value="true"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[26, 26]"/>
-            </Property>
-            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[26, 26]"/>
-            </Property>
-            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[26, 26]"/>
-            </Property>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JToggleButton" name="tbtnInfo">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
@@ -1077,6 +1057,17 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmdUndomniUndoPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="butIntermediateSave">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="intermediateSaveAction"/>
+            </Property>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="hideActionText" type="boolean" value="true"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator10">
           <Properties>
