@@ -36,7 +36,6 @@ import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.style.BasicStyle;
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
@@ -58,7 +57,7 @@ public class AttributeTableDialog extends javax.swing.JDialog {
 
     private FeatureServiceFeature returnValue;
     private SimpleAttributeTableModel model;
-    private Color[] colors = new Color[] {
+    private final Color[] colors = new Color[] {
             new Color(217, 215, 204),
             new Color(242, 187, 19),
             new Color(217, 159, 126),
@@ -68,8 +67,8 @@ public class AttributeTableDialog extends javax.swing.JDialog {
             new Color(216, 120, 57)
         };
     private int colorCounter = 0;
-    private Map<FeatureServiceFeature, Paint> oldFillingPaint = new HashMap<FeatureServiceFeature, Paint>();
-    private Map<FeatureServiceFeature, Paint> oldLinePaint = new HashMap<FeatureServiceFeature, Paint>();
+    private final Map<FeatureServiceFeature, Paint> oldFillingPaint = new HashMap<FeatureServiceFeature, Paint>();
+    private final Map<FeatureServiceFeature, Paint> oldLinePaint = new HashMap<FeatureServiceFeature, Paint>();
     private List<PFeature> allPFeature;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -114,7 +113,7 @@ public class AttributeTableDialog extends javax.swing.JDialog {
         for (final FeatureServiceFeature fsf : featureList) {
             oldFillingPaint.put(fsf, fsf.getFillingPaint());
             oldLinePaint.put(fsf, fsf.getLinePaint());
-            Color co = getNextColor();
+            final Color co = getNextColor();
             fsf.setFillingPaint(co);
             fsf.setLinePaint(co);
         }
@@ -280,31 +279,31 @@ public class AttributeTableDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         returnValue = null;
         resetColors();
         setVisible(false);
-    }//GEN-LAST:event_butCancelActionPerformed
+    }                                                                             //GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         returnValue = model.getFeatureServiceFeature(attrTab.convertRowIndexToModel(attrTab.getSelectedRow()));
         resetColors();
         setVisible(false);
-    }//GEN-LAST:event_butOkActionPerformed
+    }                                                                         //GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void formWindowClosed(final java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+    private void formWindowClosed(final java.awt.event.WindowEvent evt) { //GEN-FIRST:event_formWindowClosed
         resetColors();
-    }//GEN-LAST:event_formWindowClosed
+    }                                                                     //GEN-LAST:event_formWindowClosed
 
     /**
      * DOCUMENT ME!

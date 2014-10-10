@@ -11,19 +11,15 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-
-
 //import java.util.Date;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
-
 
 /**
  * DOCUMENT ME!

@@ -13,7 +13,7 @@
 package de.cismet.watergis.gui.actions;
 
 /**
- * After every change of the MappingComponent modus, the cleanUp method will be invoked
+ * After every change of the MappingComponent modus, the cleanUp method will be invoked.
  *
  * @author   therter
  * @version  $Revision$, $Date$
@@ -23,7 +23,7 @@ public interface CleanUpAction {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * After every change of the MappingComponent modus, the cleanUp method will be invoked
+     * After every change of the MappingComponent modus, the cleanUp method will be invoked.
      */
     void cleanUp();
 }
