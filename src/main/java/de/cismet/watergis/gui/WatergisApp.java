@@ -57,6 +57,8 @@ import org.apache.log4j.Logger;
 
 import org.jdom.Element;
 
+import org.openide.util.NbBundle;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -121,6 +123,7 @@ import de.cismet.cismap.commons.gui.attributetable.AttributeTableListener;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.capabilitywidget.CapabilityWidget;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
+import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerMenuItem;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 import de.cismet.cismap.commons.gui.options.CapabilityWidgetOptionsPanel;
 import de.cismet.cismap.commons.gui.overviewwidget.OverviewComponent;
@@ -145,6 +148,7 @@ import de.cismet.tools.configuration.ConfigurationManager;
 
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
 import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.WaitingDialogThread;
 import de.cismet.tools.gui.historybutton.JHistoryButton;
 import de.cismet.tools.gui.log4jquickconfig.Log4JQuickConfig;
 import de.cismet.tools.gui.startup.StaticStartupTools;
@@ -267,7 +271,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JButton cmdPreviousExtend;
     private javax.swing.JButton cmdPrint;
     private javax.swing.JButton cmdRelease;
-    private javax.swing.JButton cmdRemoveSelectionAktiveTheme;
     private javax.swing.JButton cmdRemoveSelectionAllThemes;
     private javax.swing.JButton cmdSaveProject;
     private javax.swing.JButton cmdSelectAll;
@@ -339,8 +342,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.PrintAction printAction;
     private de.cismet.watergis.gui.actions.ReleaseAction releaseAction;
     private de.cismet.watergis.gui.actions.selection.RemoveSelectionAllTopicsAction removeSelectionAllTopicsAction;
-    private de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction
-        removeSelectionCurrentTopicAction;
     private de.cismet.watergis.gui.actions.SaveProjectAction saveProjectAction;
     private de.cismet.watergis.gui.actions.selection.SelectAllAction selectAllAction;
     private de.cismet.watergis.gui.actions.selection.SelectionAttributeAction selectionAttributeAction;
@@ -583,7 +584,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     topicTreeSelectionChanged(e);
                 }
             });
-
+        pTopicTree.insertMenuItemIntoContextMenu(15, new EditModeMenuItem());
         pOverview = new OverviewComponent();
         pOverview.setMasterMap(mappingComponent);
         configManager.addConfigurable(pOverview);
@@ -754,16 +755,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 @Override
                 public void showPanel(final JPanel panel, final String id, final String name, final String tooltip) {
                     View view = attributeTableMap.get(id);
-
-                    if ((vMap != null) && (vMap.getWindowParent() != null)) {
-                        if (vMap.getWindowParent() instanceof TabWindow) {
-                            tabWindow = (TabWindow)vMap.getWindowParent();
-                        }
-                    }
-
-                    if (tabWindow == null) {
-                        tabWindow = (TabWindow)((SplitWindow)rootWindow.getWindow()).getRightWindow();
-                    }
+                    setTabWindow();
 
                     if (view != null) {
                         final int viewIndex = tabWindow.getChildWindowIndex(view);
@@ -795,6 +787,21 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
                 }
             });
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void setTabWindow() {
+        if ((vMap != null) && (vMap.getWindowParent() != null)) {
+            if (vMap.getWindowParent() instanceof TabWindow) {
+                tabWindow = (TabWindow)vMap.getWindowParent();
+            }
+        }
+
+        if (tabWindow == null) {
+            tabWindow = (TabWindow)((SplitWindow)rootWindow.getWindow()).getRightWindow();
+        }
     }
 
     /**
@@ -946,8 +953,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         zoomSelectedObjectsAction = new de.cismet.watergis.gui.actions.selection.ZoomSelectedObjectsAction();
         selectAllAction = new de.cismet.watergis.gui.actions.selection.SelectAllAction();
         invertSelectionAction = new de.cismet.watergis.gui.actions.selection.InvertSelectionAction();
-        removeSelectionCurrentTopicAction =
-            new de.cismet.watergis.gui.actions.selection.RemoveSelectionCurrentTopicAction();
         fullExtendAction = new de.cismet.watergis.gui.actions.map.FullExtendAction();
         goToAction = new de.cismet.watergis.gui.actions.map.GoToAction();
         measureAction = new de.cismet.watergis.gui.actions.map.MeasureAction();
@@ -1011,7 +1016,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdZoomSelectedObjects = new javax.swing.JButton();
         cmdSelectAll = new javax.swing.JButton();
         cmdInvertSelection = new javax.swing.JButton();
-        cmdRemoveSelectionAktiveTheme = new javax.swing.JButton();
         cmdRemoveSelectionAllThemes = new javax.swing.JButton();
         jSeparator6 = new javax.swing.JToolBar.Separator();
         cmdTable = new javax.swing.JButton();
@@ -1327,16 +1331,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdInvertSelection.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdInvertSelection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdInvertSelection);
-
-        cmdRemoveSelectionAktiveTheme.setAction(removeSelectionCurrentTopicAction);
-        cmdRemoveSelectionAktiveTheme.setFocusable(false);
-        cmdRemoveSelectionAktiveTheme.setHideActionText(true);
-        cmdRemoveSelectionAktiveTheme.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdRemoveSelectionAktiveTheme.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdRemoveSelectionAktiveTheme.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdRemoveSelectionAktiveTheme.setPreferredSize(new java.awt.Dimension(26, 26));
-        cmdRemoveSelectionAktiveTheme.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdRemoveSelectionAktiveTheme);
 
         cmdRemoveSelectionAllThemes.setAction(removeSelectionAllTopicsAction);
         cmdRemoveSelectionAllThemes.setFocusable(false);
@@ -1774,6 +1768,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         ConnectionSession session = null;
         ConnectionProxy proxy = null;
 
+        if (AppBroker.getInstance().getConnectionInfo() != null) {
+            try {
+                session = ConnectionFactory.getFactory()
+                            .createSession(connection, AppBroker.getInstance().getConnectionInfo(), true);
+                proxy = ConnectionFactory.getFactory()
+                            .createProxy("Sirius.navigator.connection.proxy.DefaultConnectionProxyHandler", session);
+                SessionManager.init(proxy);
+            } catch (UserException uexp) {
+                LOG.error("autologin failed", uexp); // NOI18N
+                session = null;
+            }
+        }
+
         if (session == null) {
             if (LOG.isInfoEnabled()) {
                 LOG.info("performing login"); // NOI18N
@@ -1807,6 +1814,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             options.addOption("u", true, "CallserverUrl");
             options.addOption("c", true, "ConnectionClass");
             options.addOption("d", true, "Domain");
+            options.addOption("l", true, "Login");
             final PosixParser parser = new PosixParser();
             final CommandLine cmd = parser.parse(options, args);
             if (cmd.hasOption("u")) {
@@ -1826,6 +1834,30 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             } else {
                 LOG.error("No Domain specified, please specify it with the option -d.");
                 System.exit(1);
+            }
+            if (cmd.hasOption("l")) {
+                final String loginInfos = cmd.getOptionValue("l");
+
+                final StringTokenizer st = new StringTokenizer(loginInfos, ";");
+
+                if (st.countTokens() == 6) {
+                    final String callServer = st.nextToken();
+                    final String password = st.nextToken();
+                    final String userDomain = st.nextToken();
+                    final String userGroup = st.nextToken();
+                    final String usergroupDomain = st.nextToken();
+                    final String username = st.nextToken();
+
+                    final ConnectionInfo i = new ConnectionInfo();
+                    i.setCallserverURL(callServer);
+                    i.setPassword(password);
+                    i.setUserDomain(userDomain);
+                    i.setUsergroup(userGroup);
+                    i.setUsergroupDomain(usergroupDomain);
+                    i.setUsername(username);
+
+                    AppBroker.getInstance().setConnectionInfo(i);
+                }
             }
         } catch (Exception ex) {
             LOG.error("Error while reading the command-line parameters.", ex);
@@ -2380,6 +2412,115 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             final int y = (int)(bounds.y + ((bounds.height - d.getHeight()) / 2));
 
             return new Point(x, y);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class EditModeMenuItem extends ThemeLayerMenuItem {
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new EditModeMenuItem object.
+         */
+        public EditModeMenuItem() {
+            super(NbBundle.getMessage(EditModeMenuItem.class, "WatergisApp.EditModeMenuItem.EditModeMenuItem().title"),
+                NODE
+                        | MULTI
+                        | FEATURE_SERVICE);
+            newSection = true;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            final TreePath[] paths = pTopicTree.getSelectionPath();
+
+            for (final TreePath path : paths) {
+                if (path.getLastPathComponent() instanceof AbstractFeatureService) {
+                    final AbstractFeatureService service = (AbstractFeatureService)path.getLastPathComponent();
+
+                    if (!switchProcessingMode(service)) {
+                        setTabWindow();
+                        int index = -1;
+
+                        if ((tabWindow != null) && (tabWindow.getSelectedWindow() != null)) {
+                            index = tabWindow.getChildWindowIndex(tabWindow.getSelectedWindow());
+                        }
+
+                        AttributeTableFactory.getInstance().showAttributeTable(service);
+
+                        if ((index != -1) && (index < tabWindow.getChildWindowCount())) {
+                            tabWindow.setSelectedTab(index);
+                        }
+
+                        final WaitingDialogThread<Void> wdt = new WaitingDialogThread<Void>(
+                                WatergisApp.this,
+                                true,
+                                NbBundle.getMessage(
+                                    EditModeMenuItem.class,
+                                    "WatergisApp.EditModeMenuItem.actionPerformed().wait"),
+                                null,
+                                200) {
+
+                                @Override
+                                protected Void doInBackground() throws Exception {
+                                    final View view = attributeTableMap.get(service.getName());
+
+                                    if (view != null) {
+                                        final Component c = view.getComponent();
+
+                                        if (c instanceof AttributeTable) {
+                                            final AttributeTable attrTable = (AttributeTable)c;
+
+                                            while (attrTable.isLoading()) {
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    return null;
+                                }
+
+                                @Override
+                                protected void done() {
+                                    switchProcessingMode(service);
+                                }
+                            };
+
+                        wdt.start();
+                    }
+                }
+            }
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   service  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private boolean switchProcessingMode(final AbstractFeatureService service) {
+            final View view = attributeTableMap.get(service.getName());
+
+            if (view != null) {
+                final Component c = view.getComponent();
+
+                if (c instanceof AttributeTable) {
+                    final AttributeTable attrTable = (AttributeTable)c;
+
+                    attrTable.changeProcessingMode();
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
