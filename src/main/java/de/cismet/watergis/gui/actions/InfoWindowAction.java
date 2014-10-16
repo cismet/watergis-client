@@ -96,11 +96,14 @@ public class InfoWindowAction extends AbstractAction {
             dialog.add(featureInfoPanel);
             dialog.setAlwaysOnTop(true);
             dialog.setSize(350, 550);
+            dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
             dialog.addWindowListener(new WindowAdapter() {
 
                     @Override
                     public void windowClosing(final WindowEvent e) {
-                        featureInfoPanel.dispose();
+                        if (featureInfoPanel.dispose()) {
+                            dialog.setVisible(false);
+                        }
                     }
 
                     @Override

@@ -897,11 +897,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
                 @Override
                 public void windowClosed(final DockingWindow window) {
-                    disposeTable();
+//                    disposeTable();
                 }
 
-                private void disposeTable() {
-                    table.dispose();
+                private void disposeTable() throws OperationAbortedException {
+                    final boolean disposeCompleted = table.dispose();
+
+                    if (!disposeCompleted) {
+                        throw new OperationAbortedException();
+                    }
+
                     view.removeListener(this);
                     if (view.getParent() != null) {
                         view.getParent().remove(view);
@@ -2039,6 +2044,58 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
     @Override
     public void dispose() {
+        final List<AttributeTable> unsavedTables = new ArrayList<AttributeTable>();
+
+        for (final String key : attributeTableMap.keySet()) {
+            final View attributeTableView = attributeTableMap.get(key);
+
+            if (attributeTableView != null) {
+                final Component c = attributeTableView.getComponent();
+
+                if (c instanceof AttributeTable) {
+                    final AttributeTable attrTable = (AttributeTable)c;
+
+                    if (attrTable.isProcessingModeActive()) {
+                        unsavedTables.add(attrTable);
+                    }
+                }
+            }
+        }
+
+        if (!unsavedTables.isEmpty()) {
+            String message;
+
+            if (unsavedTables.size() == 1) {
+                message = NbBundle.getMessage(
+                        WatergisApp.class,
+                        "WatergisApp.dispose().singleTable.message",
+                        unsavedTables.get(0).getFeatureService().getName());
+            } else {
+                message = NbBundle.getMessage(
+                        WatergisApp.class,
+                        "WatergisApp.dispose().multiTable.message",
+                        unsavedTables.size());
+            }
+
+            final int ans = JOptionPane.showConfirmDialog(
+                    WatergisApp.this,
+                    message,
+                    NbBundle.getMessage(WatergisApp.class, "WatergisApp.dispose().title"),
+                    JOptionPane.YES_NO_CANCEL_OPTION);
+
+            if (ans == JOptionPane.YES_OPTION) {
+                for (final AttributeTable table : unsavedTables) {
+                    table.changeProcessingMode(true);
+                }
+            } else if (ans == JOptionPane.NO_OPTION) {
+                for (final AttributeTable table : unsavedTables) {
+                    table.unlockAll();
+                }
+            } else {
+                return;
+            }
+        }
+
         try {
             StaticStartupTools.saveScreenshotOfFrame(this, FILEPATH_SCREEN);
         } catch (Exception ex) {
