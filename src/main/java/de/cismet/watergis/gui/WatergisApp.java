@@ -87,6 +87,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -290,6 +291,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.map.ExportMapToFileAction exportMapToFileAction;
     private de.cismet.watergis.gui.actions.map.FlipAction flipAction;
     private de.cismet.watergis.gui.actions.map.FullExtendAction fullExtendAction;
+    private de.cismet.watergis.gui.actions.checks.GWKConnectionCheckAction gWKConnectionCheckAction;
     private de.cismet.watergis.gui.actions.map.GoToAction goToAction;
     private de.cismet.watergis.gui.actions.InfoAction infoAction;
     private de.cismet.watergis.gui.actions.InfoWindowAction infoWindowAction;
@@ -298,6 +300,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator10;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator5;
     private javax.swing.JToolBar.Separator jSeparator6;
     private javax.swing.JToolBar.Separator jSeparator7;
@@ -306,14 +310,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.LocalConfigAction localConfigAction;
     private de.cismet.watergis.gui.actions.map.MeasureAction measureAction;
     private de.cismet.watergis.gui.actions.map.MeasureLineAction measureLineAction;
+    private javax.swing.JMenu menBasisChecks;
     private javax.swing.JMenu menBookmark;
+    private javax.swing.JMenu menExtendedChecks;
     private javax.swing.JMenu menFile;
     private javax.swing.JMenu menHelp;
     private javax.swing.JMenu menSelection;
+    private javax.swing.JMenu menTools;
     private de.cismet.watergis.gui.actions.MergeAction mergeAction;
+    private javax.swing.JMenuItem mniCheckLawaConnection;
     private javax.swing.JMenuItem mniClose;
     private javax.swing.JMenuItem mniCreateBookmark;
     private javax.swing.JMenuItem mniCreateGeoLink;
+    private javax.swing.JMenuItem mniExport;
     private javax.swing.JMenuItem mniExportMap;
     private javax.swing.JMenuItem mniFileOptions;
     private javax.swing.JMenuItem mniHelp;
@@ -785,6 +794,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         view.getViewProperties().setTitle(name);
                     }
                 }
+
+            @Override
+            public void processingModeChanged(AbstractFeatureService service, boolean active) {
+                pTopicTree.switchProcessingMode(service);
+            }
             });
     }
 
@@ -1046,6 +1060,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         measureLineAction = new de.cismet.watergis.gui.actions.map.MeasureLineAction();
         flipAction = new de.cismet.watergis.gui.actions.map.FlipAction();
         intermediateSaveAction = new de.cismet.watergis.gui.actions.IntermediateSaveAction();
+        gWKConnectionCheckAction = new de.cismet.watergis.gui.actions.checks.GWKConnectionCheckAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveProject = new javax.swing.JButton();
@@ -1127,6 +1142,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniSelectLocation = new javax.swing.JMenuItem();
         mniZoomSelectedObjects = new javax.swing.JMenuItem();
         mniRemoveSelection = new javax.swing.JMenuItem();
+        menTools = new javax.swing.JMenu();
+        menBasisChecks = new javax.swing.JMenu();
+        menExtendedChecks = new javax.swing.JMenu();
+        mniCheckLawaConnection = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        mniExport = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         menHelp = new javax.swing.JMenu();
         mniHelp = new javax.swing.JMenuItem();
         mniInfo = new javax.swing.JMenuItem();
@@ -1694,6 +1716,31 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         jMenuBar1.add(menSelection);
 
         org.openide.awt.Mnemonics.setLocalizedText(
+            menTools,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menTools.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            menBasisChecks,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menBasisChecks.text")); // NOI18N
+        menTools.add(menBasisChecks);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            menExtendedChecks,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menExtendedChecks.text")); // NOI18N
+
+        mniCheckLawaConnection.setAction(gWKConnectionCheckAction);
+        menExtendedChecks.add(mniCheckLawaConnection);
+
+        menTools.add(menExtendedChecks);
+        menTools.add(jSeparator2);
+
+        mniExport.setAction(onlineHelpAction);
+        menTools.add(mniExport);
+        menTools.add(jSeparator3);
+
+        jMenuBar1.add(menTools);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
             menHelp,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menHelp.text")); // NOI18N
 
@@ -1715,7 +1762,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdUndomniUndoPerformed
+    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUndomniUndoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemUndo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -1733,14 +1780,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }                                                              //GEN-LAST:event_cmdUndomniUndoPerformed
+    }//GEN-LAST:event_cmdUndomniUndoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
+    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1751,14 +1798,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    } //GEN-LAST:event_cmdNodeMoveActionPerformed
+    }//GEN-LAST:event_cmdNodeMoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeAddActionPerformed
+    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeAddActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1769,14 +1816,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    } //GEN-LAST:event_cmdNodeAddActionPerformed
+    }//GEN-LAST:event_cmdNodeAddActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRemoveActionPerformed
+    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRemoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1787,20 +1834,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    } //GEN-LAST:event_cmdNodeRemoveActionPerformed
+    }//GEN-LAST:event_cmdNodeRemoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRouteActionPerformed
         final CidsBean selectedRoute = (CidsBean)cbRoute.getSelectedItem();
         final Geometry geom = (Geometry)selectedRoute.getProperty("geom.geo_field");
         final XBoundingBox bbox = new XBoundingBox(geom);
 
         mappingComponent.gotoBoundingBoxWithHistory(bbox);
-    } //GEN-LAST:event_cbRouteActionPerformed
+    }//GEN-LAST:event_cbRouteActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -2085,8 +2132,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             AppBroker.getInstance().getInfoWindowAction().dispose();
 
             // close all attribute table views
-            for (final String key : attributeTableMap.keySet()) {
-                final View attrTableView = attributeTableMap.get(key);
+            final Map<String, View> attributeTables = new HashMap<String, View>(attributeTableMap);
+            for (final String key : attributeTables.keySet()) {
+                final View attrTableView = attributeTables.get(key);
                 if (attrTableView != null) {
                     attrTableView.close();
                 }
@@ -2545,10 +2593,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                                 @Override
                                 protected void done() {
                                     switchProcessingMode(service);
+                                    pTopicTree.switchProcessingMode(service);
                                 }
                             };
 
                         wdt.start();
+                    } else {
+                        pTopicTree.switchProcessingMode(service);
                     }
                 }
             }

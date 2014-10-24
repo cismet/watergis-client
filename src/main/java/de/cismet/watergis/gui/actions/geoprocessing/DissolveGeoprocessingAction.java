@@ -45,7 +45,7 @@ public class DissolveGeoprocessingAction extends AbstractGeoprocessingAction {
     //~ Constructors -----------------------------------------------------------
 
     /**
-     * Creates a new CloseAction object.
+     * Creates a new DissolveGeoprocessingAction object.
      *
      * @param  button  DOCUMENT ME!
      * @param  mode    DOCUMENT ME!
