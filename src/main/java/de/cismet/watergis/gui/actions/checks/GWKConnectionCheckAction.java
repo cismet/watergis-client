@@ -45,18 +45,24 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final MetaClass GWK_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gwk");
-    private static final String QUERY = "select " + GWK_MC.getID() + ", " + GWK_MC.getPrimaryKey()
-                + "  from dlm25w.fg_bak_gwk where gwk in (select gwk.gwk from dlm25w.fg_bak_gwk gwk join "
-                + "dlm25w.fg_bak_linie linie on (gwk.bak_st = linie.id) join dlm25w.fg_bak_punkt"
-                + " von on (linie.von = von.id) join dlm25w.fg_bak_punkt bis on (linie.bis = bis.id)\n"
-                + "join dlm25w.fg_bak bak on (von.route = bak.id) join geom on (bak.geom = geom.id) \n"
-                + "group by gwk.gwk\n"
-                + "having st_geometrytype(st_union(st_line_substring(\n"
-                + "geo_field, \n"
-                + "von.wert / st_length(geo_field), \n"
-                + "case when (bis.wert / st_length(geo_field)) <= 1.0 then (bis.wert / st_length(geo_field)) else 1.0 end\n"
-                + ") )) <> 'ST_LineString'\n"
-                + "order by gwk)";
+    private static String QUERY = null;
+
+    static {
+        if (GWK_MC != null) {
+            QUERY = "select " + GWK_MC.getID() + ", " + GWK_MC.getPrimaryKey()
+                        + "  from dlm25w.fg_bak_gwk where gwk in (select gwk.gwk from dlm25w.fg_bak_gwk gwk join "
+                        + "dlm25w.fg_bak_linie linie on (gwk.bak_st = linie.id) join dlm25w.fg_bak_punkt"
+                        + " von on (linie.von = von.id) join dlm25w.fg_bak_punkt bis on (linie.bis = bis.id)\n"
+                        + "join dlm25w.fg_bak bak on (von.route = bak.id) join geom on (bak.geom = geom.id) \n"
+                        + "group by gwk.gwk\n"
+                        + "having st_geometrytype(st_union(st_line_substring(\n"
+                        + "geo_field, \n"
+                        + "von.wert / st_length(geo_field), \n"
+                        + "case when (bis.wert / st_length(geo_field)) <= 1.0 then (bis.wert / st_length(geo_field)) else 1.0 end\n"
+                        + ") )) <> 'ST_LineString'\n"
+                        + "order by gwk)";
+        }
+    }
 
     //~ Constructors -----------------------------------------------------------
 
