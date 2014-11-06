@@ -16,20 +16,24 @@ import org.apache.log4j.Logger;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.tree.TreePath;
 
+import de.cismet.cismap.commons.MappingModel;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
-
-import de.cismet.watergis.gui.components.GeometryOpButton;
 
 /**
  * DOCUMENT ME!
@@ -45,20 +49,18 @@ public abstract class AbstractGeoprocessingAction extends AbstractAction {
 
     //~ Instance fields --------------------------------------------------------
 
-    protected GeometryOpButton button;
-    protected int mode;
+    protected Collection<ActionListener> listeners = new ArrayList<ActionListener>();
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new AbstractGeoprocessingAction object.
-     *
-     * @param  button  DOCUMENT ME!
-     * @param  mode    DOCUMENT ME!
      */
-    public AbstractGeoprocessingAction(final GeometryOpButton button, final int mode) {
-        this.button = button;
-        this.mode = mode;
+    public AbstractGeoprocessingAction() {
+        putValue(SHORT_DESCRIPTION, getShortDescription());
+        putValue(NAME, getName());
+        putValue(SMALL_ICON, getSmallIcon());
+        setEnabled(false);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -88,13 +90,67 @@ public abstract class AbstractGeoprocessingAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        setMode();
+        fireActionEvent(e);
     }
 
     /**
      * DOCUMENT ME!
+     *
+     * @param   listener  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
      */
-    protected void setMode() {
-        button.setMode(mode);
+    public boolean addActionListener(final ActionListener listener) {
+        return this.listeners.add(listener);
     }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   listener  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean removeModeListener(final ActionListener listener) {
+        return this.listeners.remove(listener);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  e  DOCUMENT ME!
+     */
+    protected void fireActionEvent(final ActionEvent e) {
+        for (final ActionListener listener : listeners) {
+            listener.actionPerformed(e);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public abstract String getName();
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public abstract String getShortDescription();
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public abstract ImageIcon getSmallIcon();
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public abstract int getSortOrder();
 }

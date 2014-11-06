@@ -27,7 +27,7 @@ import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.dialog.DissolveDialog;
+import de.cismet.watergis.gui.dialog.BufferDialog;
 
 /**
  * DOCUMENT ME!
@@ -36,14 +36,14 @@ import de.cismet.watergis.gui.dialog.DissolveDialog;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = AbstractGeoprocessingAction.class)
-public class DissolveGeoprocessingAction extends AbstractGeoprocessingAction {
+public class BufferGeoprocessingAction extends AbstractGeoprocessingAction {
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new CloseAction object.
      */
-    public DissolveGeoprocessingAction() {
+    public BufferGeoprocessingAction() {
         super();
     }
 
@@ -52,23 +52,23 @@ public class DissolveGeoprocessingAction extends AbstractGeoprocessingAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         super.actionPerformed(e);
-        final List<AbstractFeatureService> services = getSelectedServices();
-
-        if (services.size() == 1) {
-            final AbstractFeatureService service = services.get(0);
-            final DissolveDialog dialog = new DissolveDialog(AppBroker.getInstance().getWatergisApp(), true, service);
-            dialog.pack();
-            StaticSwingTools.showDialog(dialog);
-        } else {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                NbBundle.getMessage(
-                    DissolveGeoprocessingAction.class,
-                    "DissolveGeoprocessingAction.actionPerformed.moreThanOneService"),
-                NbBundle.getMessage(
-                    DissolveGeoprocessingAction.class,
-                    "DissolveGeoprocessingAction.actionPerformed.moreThanOneService.title"),
-                JOptionPane.ERROR_MESSAGE);
-        }
+//        final List<AbstractFeatureService> services = getSelectedServices();
+//
+//        if (services.size() == 1) {
+//            final AbstractFeatureService service = services.get(0);
+        final BufferDialog dialog = new BufferDialog(AppBroker.getInstance().getWatergisApp(), true);
+        dialog.pack();
+        StaticSwingTools.showDialog(dialog);
+//        } else {
+//            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                NbBundle.getMessage(
+//                    BufferGeoprocessingAction.class,
+//                    "BufferGeoprocessingAction.actionPerformed.moreThanOneService"),
+//                NbBundle.getMessage(
+//                    BufferGeoprocessingAction.class,
+//                    "BufferGeoprocessingAction.actionPerformed.moreThanOneService.title"),
+//                JOptionPane.ERROR_MESSAGE);
+//        }
     }
     @Override
     public boolean isEnabled() {
@@ -79,24 +79,24 @@ public class DissolveGeoprocessingAction extends AbstractGeoprocessingAction {
     public final String getName() {
         return org.openide.util.NbBundle.getMessage(
                 AbstractGeoprocessingAction.class,
-                "DissolveGeoprocessingAction.text");
+                "BufferGeoprocessingAction.text");
     }
 
     @Override
     public final String getShortDescription() {
         return org.openide.util.NbBundle.getMessage(
                 AbstractGeoprocessingAction.class,
-                "DissolveGeoprocessingAction.toolTipText");
+                "BufferGeoprocessingAction.toolTipText");
     }
 
     @Override
     public final ImageIcon getSmallIcon() {
-        return new javax.swing.ImageIcon(DissolveGeoprocessingAction.class.getResource(
+        return new javax.swing.ImageIcon(BufferGeoprocessingAction.class.getResource(
                     "/de/cismet/watergis/res/icons16/icon-zoom.png"));
     }
 
     @Override
     public int getSortOrder() {
-        return 10;
+        return 20;
     }
 }
