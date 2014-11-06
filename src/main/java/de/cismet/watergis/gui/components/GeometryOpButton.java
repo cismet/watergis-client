@@ -13,9 +13,18 @@ package de.cismet.watergis.gui.components;
 
 import org.jdom.Element;
 
+import org.openide.util.Lookup;
+
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -27,7 +36,7 @@ import de.cismet.tools.configuration.NoWriteError;
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
 import de.cismet.tools.gui.JPopupMenuButton;
 
-import de.cismet.watergis.gui.actions.geoprocessing.DissolveGeoprocessingAction;
+import de.cismet.watergis.gui.actions.geoprocessing.AbstractGeoprocessingAction;
 
 /**
  * DOCUMENT ME!
@@ -39,22 +48,14 @@ public class GeometryOpButton extends JPopupMenuButton implements Configurable {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    public static final int DISSOLVE_MODE = 1;
     private static final String CONFIGURATION = "GeometryOpButton";
     private static final String MODE_ATTRIBUTE = "mode";
 
     //~ Instance fields --------------------------------------------------------
 
     private final JPopupMenu popup = new JPopupMenu();
-    private final JRadioButtonMenuItem dissolveMenu = new HighlightingRadioButtonMenuItem(javax.swing.UIManager
-                    .getDefaults().getColor(
-                "ProgressBar.foreground"),
-            Color.WHITE);
-    private final JRadioButtonMenuItem intersectMenu = new HighlightingRadioButtonMenuItem(javax.swing.UIManager
-                    .getDefaults().getColor(
-                "ProgressBar.foreground"),
-            Color.WHITE);
-    private int mode = DISSOLVE_MODE;
+    private final List<AbstractGeoprocessingAction> geoprocessingActions = new ArrayList<AbstractGeoprocessingAction>();
+    private AbstractGeoprocessingAction currentGeoprocessingAction = null;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -64,21 +65,51 @@ public class GeometryOpButton extends JPopupMenuButton implements Configurable {
     public GeometryOpButton() {
         setModel(new JToggleButton.ToggleButtonModel());
 
-        dissolveMenu.setAction(new DissolveGeoprocessingAction(this, DISSOLVE_MODE));
+        geoprocessingActions.addAll(Lookup.getDefault().lookupAll(AbstractGeoprocessingAction.class));
+        Collections.sort(geoprocessingActions, new Comparator<AbstractGeoprocessingAction>() {
 
-        dissolveMenu.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-calcequals.png")));
-        popup.add(dissolveMenu);
+                @Override
+                public int compare(final AbstractGeoprocessingAction o1, final AbstractGeoprocessingAction o2) {
+                    return new Integer(o1.getSortOrder()).compareTo(o2.getSortOrder());
+                }
+            });
+
+        for (final AbstractGeoprocessingAction geoProcessingAction : geoprocessingActions) {
+            if (currentGeoprocessingAction == null) {
+                setCurrentGeoprocessingAction(geoProcessingAction);
+            }
+            final JRadioButtonMenuItem geoprocessingMenu = new HighlightingRadioButtonMenuItem(javax.swing.UIManager
+                            .getDefaults().getColor(
+                        "ProgressBar.foreground"),
+                    Color.WHITE);
+
+            geoprocessingMenu.setIcon(new javax.swing.ImageIcon(
+                    getClass().getResource("/de/cismet/watergis/res/icons16/icon-calcequals.png")));
+
+            geoprocessingMenu.setAction(geoProcessingAction);
+
+            geoProcessingAction.addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(final ActionEvent e) {
+                        if (e.getSource() instanceof HighlightingRadioButtonMenuItem) {
+                            final HighlightingRadioButtonMenuItem menu = (HighlightingRadioButtonMenuItem)e.getSource();
+                            setCurrentGeoprocessingAction((AbstractGeoprocessingAction)menu.getAction());
+                        }
+                    }
+                });
+
+            popup.add(geoprocessingMenu);
+        }
 
         setPopupMenu(popup);
-//        setUI(new JToggleButton().getUI());
 
         addActionListener(new ActionListener() {
 
                 @Override
                 public void actionPerformed(final ActionEvent e) {
-                    if (mode == DISSOLVE_MODE) {
-                        dissolveMenu.getAction().actionPerformed(e);
+                    if (currentGeoprocessingAction != null) {
+                        currentGeoprocessingAction.actionPerformed(e);
                     }
                 }
             });
@@ -91,9 +122,28 @@ public class GeometryOpButton extends JPopupMenuButton implements Configurable {
      *
      * @param  mode  DOCUMENT ME!
      */
-    public void setMode(final int mode) {
-        this.mode = mode;
-        dissolveMenu.setSelected(mode == DISSOLVE_MODE);
+    public void setMode(final String mode) {
+        for (final AbstractGeoprocessingAction geoprocessingAction : geoprocessingActions) {
+            if (geoprocessingAction.getName().equals(mode)) {
+                setCurrentGeoprocessingAction(geoprocessingAction);
+                break;
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  currentGeoprocessingAction  DOCUMENT ME!
+     */
+    public void setCurrentGeoprocessingAction(final AbstractGeoprocessingAction currentGeoprocessingAction) {
+        this.currentGeoprocessingAction = currentGeoprocessingAction;
+        for (final Component component : popup.getComponents()) {
+            if (component instanceof HighlightingRadioButtonMenuItem) {
+                final HighlightingRadioButtonMenuItem menu = (HighlightingRadioButtonMenuItem)component;
+                menu.setSelected(menu.getAction().equals(currentGeoprocessingAction));
+            }
+        }
     }
 
     @Override
@@ -109,7 +159,7 @@ public class GeometryOpButton extends JPopupMenuButton implements Configurable {
             if (conf != null) {
                 final String modeAttr = conf.getAttributeValue(MODE_ATTRIBUTE);
                 try {
-                    final int mode = Integer.parseInt(modeAttr);
+                    final String mode = modeAttr;
 
                     setMode(mode);
                 } catch (NumberFormatException e) {
@@ -128,7 +178,11 @@ public class GeometryOpButton extends JPopupMenuButton implements Configurable {
     @Override
     public Element getConfiguration() throws NoWriteError {
         final Element conf = new Element(CONFIGURATION);
-        conf.setAttribute(MODE_ATTRIBUTE, String.valueOf(mode));
+        if (currentGeoprocessingAction == null) {
+            conf.setAttribute(MODE_ATTRIBUTE, null);
+        } else {
+            conf.setAttribute(MODE_ATTRIBUTE, currentGeoprocessingAction.getName());
+        }
 
         return conf;
     }
