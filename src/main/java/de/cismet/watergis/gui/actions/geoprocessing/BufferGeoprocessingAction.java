@@ -12,16 +12,9 @@
  */
 package de.cismet.watergis.gui.actions.geoprocessing;
 
-import org.openide.util.NbBundle;
-
 import java.awt.event.ActionEvent;
 
-import java.util.List;
-
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-
-import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 
 import de.cismet.tools.gui.StaticSwingTools;
 
@@ -38,6 +31,10 @@ import de.cismet.watergis.gui.dialog.BufferDialog;
 @org.openide.util.lookup.ServiceProvider(service = AbstractGeoprocessingAction.class)
 public class BufferGeoprocessingAction extends AbstractGeoprocessingAction {
 
+    //~ Instance fields --------------------------------------------------------
+
+    private BufferDialog dialog;
+
     //~ Constructors -----------------------------------------------------------
 
     /**
@@ -52,23 +49,13 @@ public class BufferGeoprocessingAction extends AbstractGeoprocessingAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         super.actionPerformed(e);
-//        final List<AbstractFeatureService> services = getSelectedServices();
-//
-//        if (services.size() == 1) {
-//            final AbstractFeatureService service = services.get(0);
-        final BufferDialog dialog = new BufferDialog(AppBroker.getInstance().getWatergisApp(), true);
-        dialog.pack();
-        StaticSwingTools.showDialog(dialog);
-//        } else {
-//            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-//                NbBundle.getMessage(
-//                    BufferGeoprocessingAction.class,
-//                    "BufferGeoprocessingAction.actionPerformed.moreThanOneService"),
-//                NbBundle.getMessage(
-//                    BufferGeoprocessingAction.class,
-//                    "BufferGeoprocessingAction.actionPerformed.moreThanOneService.title"),
-//                JOptionPane.ERROR_MESSAGE);
-//        }
+
+        if (dialog == null) {
+            dialog = new BufferDialog(AppBroker.getInstance().getWatergisApp(), false);
+            dialog.pack();
+        }
+
+        StaticSwingTools.centerWindowOnScreen(dialog);
     }
     @Override
     public boolean isEnabled() {
@@ -92,7 +79,7 @@ public class BufferGeoprocessingAction extends AbstractGeoprocessingAction {
     @Override
     public final ImageIcon getSmallIcon() {
         return new javax.swing.ImageIcon(BufferGeoprocessingAction.class.getResource(
-                    "/de/cismet/watergis/res/icons16/icon-zoom.png"));
+                    "/de/cismet/watergis/res/icons16/icon-resize.png"));
     }
 
     @Override

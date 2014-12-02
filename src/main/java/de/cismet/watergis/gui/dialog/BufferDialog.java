@@ -12,29 +12,49 @@
  */
 package de.cismet.watergis.gui.dialog;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.index.strtree.STRtree;
+
 import org.apache.log4j.Logger;
 
-import java.awt.Color;
+import org.openide.util.NbBundle;
+
 import java.awt.Component;
+import java.awt.EventQueue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+import javax.swing.JOptionPane;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 
-import de.cismet.cids.editors.DefaultBindableReferenceCombo;
-
-import de.cismet.cismap.commons.MappingModel;
+import de.cismet.cismap.commons.features.FeatureCollectionEvent;
+import de.cismet.cismap.commons.features.FeatureCollectionListener;
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
+import de.cismet.cismap.commons.featureservice.H2FeatureService;
+import de.cismet.cismap.commons.featureservice.LayerProperties;
+import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
+import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.tools.FeatureTools;
+
+import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.utils.FeatureServiceHelper;
 
 /**
  * DOCUMENT ME!
@@ -48,6 +68,10 @@ public class BufferDialog extends javax.swing.JDialog {
 
     private static final Logger LOG = Logger.getLogger(BufferDialog.class);
 
+    //~ Instance fields --------------------------------------------------------
+
+    private int selectedThemeFeatureCount = 0;
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgBuffer;
     private javax.swing.JButton butCancel;
@@ -60,6 +84,8 @@ public class BufferDialog extends javax.swing.JDialog {
     private javax.swing.JDialog jDialog1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JLabel labSelected;
     private javax.swing.JLabel labTableName;
     private javax.swing.JLabel labTheme;
     private javax.swing.JRadioButton rbFieldBuffer;
@@ -90,24 +116,98 @@ public class BufferDialog extends javax.swing.JDialog {
                         final int index,
                         final boolean isSelected,
                         final boolean cellHasFocus) {
-                    if (value != null) {
-                        return super.getListCellRendererComponent(
-                                list,
-                                ((AbstractFeatureService)value).getName(),
-                                index,
-                                isSelected,
-                                cellHasFocus);
+                    final String name;
+
+                    if (value instanceof String) {
+                        name = (String)value;
                     } else {
-                        return super.getListCellRendererComponent(
-                                list,
-                                " ",
-                                index,
-                                isSelected,
-                                cellHasFocus);
+                        name = ((value != null) ? ((AbstractFeatureService)value).getName() : " ");
                     }
+                    return super.getListCellRendererComponent(
+                            list,
+                            name,
+                            index,
+                            isSelected,
+                            cellHasFocus);
+                }
+            });
+        txtTable.setText("Puffer");
+        CismapBroker.getInstance()
+                .getMappingComponent()
+                .getFeatureCollection()
+                .addFeatureCollectionListener(new FeatureCollectionListener() {
+
+                        @Override
+                        public void featuresAdded(final FeatureCollectionEvent fce) {
+                        }
+
+                        @Override
+                        public void allFeaturesRemoved(final FeatureCollectionEvent fce) {
+                        }
+
+                        @Override
+                        public void featuresRemoved(final FeatureCollectionEvent fce) {
+                        }
+
+                        @Override
+                        public void featuresChanged(final FeatureCollectionEvent fce) {
+                        }
+
+                        @Override
+                        public void featureSelectionChanged(final FeatureCollectionEvent fce) {
+                            EventQueue.invokeLater(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        final AbstractFeatureService service = (AbstractFeatureService)
+                                            cbTheme.getSelectedItem();
+                                        selectedThemeFeatureCount = refreshSelectedFeatureCount(
+                                                false,
+                                                ckbSelected,
+                                                service,
+                                                selectedThemeFeatureCount,
+                                                labSelected);
+                                    }
+                                });
+                        }
+
+                        @Override
+                        public void featureReconsiderationRequested(final FeatureCollectionEvent fce) {
+                        }
+
+                        @Override
+                        public void featureCollectionChanged() {
+                        }
+                    });
+
+        final ActiveLayerModel layerModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
+                    .getMappingModel();
+        layerModel.addTreeModelWithoutProgressListener(new TreeModelListener() {
+
+                @Override
+                public void treeNodesChanged(final TreeModelEvent e) {
+                    setLayerModel();
+                }
+
+                @Override
+                public void treeNodesInserted(final TreeModelEvent e) {
+                    setLayerModel();
+                }
+
+                @Override
+                public void treeNodesRemoved(final TreeModelEvent e) {
+                    setLayerModel();
+                }
+
+                @Override
+                public void treeStructureChanged(final TreeModelEvent e) {
+                    setLayerModel();
                 }
             });
 
+        setLayerModel();
+        cbField.setEnabled(rbFieldBuffer.isSelected());
+        txtBuffer.setEnabled(rbFixBuffer.isSelected());
         enabledOrNot();
     }
 
@@ -128,7 +228,6 @@ public class BufferDialog extends javax.swing.JDialog {
         cbTheme = new javax.swing.JComboBox();
         labTableName = new javax.swing.JLabel();
         txtTable = new javax.swing.JTextField();
-        ckbSelected = new javax.swing.JCheckBox();
         ckbIndividual = new javax.swing.JCheckBox();
         rbFixBuffer = new javax.swing.JRadioButton();
         rbFieldBuffer = new javax.swing.JRadioButton();
@@ -139,12 +238,17 @@ public class BufferDialog extends javax.swing.JDialog {
         butOk = new javax.swing.JButton();
         butCancel = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        ckbSelected = new javax.swing.JCheckBox();
+        labSelected = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.title", new Object[] {})); // NOI18N
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(labTheme, org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.labTheme.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labTheme,
+            org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.labTheme.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -156,10 +260,12 @@ public class BufferDialog extends javax.swing.JDialog {
         cbTheme.setMinimumSize(new java.awt.Dimension(200, 27));
         cbTheme.setPreferredSize(new java.awt.Dimension(200, 27));
         cbTheme.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbThemeActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    cbThemeActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -169,7 +275,12 @@ public class BufferDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(15, 10, 10, 10);
         getContentPane().add(cbTheme, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(labTableName, org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.labTableName.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labTableName,
+            org.openide.util.NbBundle.getMessage(
+                BufferDialog.class,
+                "BufferDialog.labTableName.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -189,16 +300,12 @@ public class BufferDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(txtTable, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(ckbSelected, org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.ckbSelected.text", new Object[] {})); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(ckbSelected, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(ckbIndividual, org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.ckbIndividual.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbIndividual,
+            org.openide.util.NbBundle.getMessage(
+                BufferDialog.class,
+                "BufferDialog.ckbIndividual.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -209,12 +316,19 @@ public class BufferDialog extends javax.swing.JDialog {
 
         bgBuffer.add(rbFixBuffer);
         rbFixBuffer.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(rbFixBuffer, org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.rbFixBuffer.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            rbFixBuffer,
+            org.openide.util.NbBundle.getMessage(
+                BufferDialog.class,
+                "BufferDialog.rbFixBuffer.text",
+                new Object[] {})); // NOI18N
         rbFixBuffer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbFixBufferActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    rbFixBufferActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
@@ -224,12 +338,19 @@ public class BufferDialog extends javax.swing.JDialog {
         getContentPane().add(rbFixBuffer, gridBagConstraints);
 
         bgBuffer.add(rbFieldBuffer);
-        org.openide.awt.Mnemonics.setLocalizedText(rbFieldBuffer, org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.rbFieldBuffer.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            rbFieldBuffer,
+            org.openide.util.NbBundle.getMessage(
+                BufferDialog.class,
+                "BufferDialog.rbFieldBuffer.text",
+                new Object[] {})); // NOI18N
         rbFieldBuffer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbFieldBufferActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    rbFieldBufferActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
@@ -263,7 +384,12 @@ public class BufferDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(cbField, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(ckbMergeBuffer, org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.ckbMergeBuffer.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbMergeBuffer,
+            org.openide.util.NbBundle.getMessage(
+                BufferDialog.class,
+                "BufferDialog.ckbMergeBuffer.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
@@ -274,14 +400,18 @@ public class BufferDialog extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(butOk, org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.butOk.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butOk,
+            org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.butOk.text", new Object[] {})); // NOI18N
         butOk.setMinimumSize(new java.awt.Dimension(80, 29));
         butOk.setPreferredSize(new java.awt.Dimension(80, 29));
         butOk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                butOkActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butOkActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -290,12 +420,16 @@ public class BufferDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(15, 10, 15, 10);
         jPanel1.add(butOk, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(butCancel, org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.butCancel.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butCancel,
+            org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.butCancel.text", new Object[] {})); // NOI18N
         butCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                butCancelActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butCancelActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
@@ -316,17 +450,46 @@ public class BufferDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(jPanel1, gridBagConstraints);
 
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbSelected,
+            org.openide.util.NbBundle.getMessage(
+                BufferDialog.class,
+                "BufferDialog.ckbSelected.text",
+                new Object[] {})); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel4.add(ckbSelected, gridBagConstraints);
+
+        labSelected.setPreferredSize(new java.awt.Dimension(200, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel4.add(labSelected, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        getContentPane().add(jPanel4, gridBagConstraints);
+
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }//GEN-LAST:event_butCancelActionPerformed
+    }                                                                             //GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -354,225 +517,367 @@ public class BufferDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
-//        final FeatureFactory factory = service.getFeatureFactory();
-//        final Object serviceQuery = service.getQuery();
-//        final String propertyName = cbTheme.getSelectedItem().toString();
-//        final String tableName = txtTable.getText();
-//        final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
-//                        .getInstance().getWatergisApp(),
-//                true,
-//                "Dissolve",
-//                null,
-//                100) {
-//
-//                @Override
-//                protected H2FeatureService doInBackground() throws Exception {
-//                    final Geometry g = ZoomToLayerWorker.getServiceBounds(service);
-//                    XBoundingBox bb = null;
-//                    int progress = 0;
-//                    wd.setText(NbBundle.getMessage(
-//                            BufferDialog.class,
-//                            "DissolveDialog.butOkActionPerformed.doInBackground.retrieving"));
-//                    wd.setMax(100);
-//                    if (LOG.isDebugEnabled()) {
-//                        LOG.debug("retrieve all features from the service");
-//                    }
-//
-//                    if (g != null) {
-//                        bb = new XBoundingBox(g);
-//
-//                        try {
-//                            final CrsTransformer transformer = new CrsTransformer(CismapBroker.getInstance().getSrs()
-//                                            .getCode());
-//                            bb = transformer.transformBoundingBox(bb);
-//                        } catch (Exception e) {
-//                            LOG.error("Cannot transform CRS.", e);
-//                        }
-//                    }
-//
-//                    final List<FeatureServiceFeature> featureList = factory.createFeatures(
-//                            serviceQuery,
-//                            bb,
-//                            null,
-//                            0,
-//                            0,
-//                            null);
-//                    if (LOG.isDebugEnabled()) {
-//                        LOG.debug("sort the features");
-//                    }
-//
-//                    final Map<Object, List<FeatureServiceFeature>> featureMap =
-//                        new HashMap<Object, List<FeatureServiceFeature>>();
-//                    int n = 0;
-//                    int featureCount = featureList.size();
-//                    wd.setText(NbBundle.getMessage(
-//                            BufferDialog.class,
-//                            "DissolveDialog.butOkActionPerformed.doInBackground.sorting"));
-//
-//                    for (final FeatureServiceFeature f : featureList) {
-//                        final Object propValue = f.getProperty(propertyName);
-//
-//                        List<FeatureServiceFeature> dissolvedFeature = featureMap.get(propValue);
-//
-//                        if (dissolvedFeature == null) {
-//                            dissolvedFeature = new ArrayList<FeatureServiceFeature>();
-//                            dissolvedFeature.add(f);
-//                            featureMap.put(propValue, dissolvedFeature);
-//                        } else {
-//                            dissolvedFeature.add(f);
-//                        }
-//
-//                        ++n;
-//
-//                        if ((progress) < (n * 20 / featureCount)) {
-//                            progress = (n * 20 / featureCount);
-//
-//                            wd.setProgress(progress);
-//                        }
-//                    }
-//                    if (LOG.isDebugEnabled()) {
-//                        LOG.debug("merge geometries");
-//                    }
-//                    wd.setText(NbBundle.getMessage(
-//                            BufferDialog.class,
-//                            "DissolveDialog.butOkActionPerformed.doInBackground.merging"));
-//                    final List<FeatureServiceFeature> dissolvedFeatures = new ArrayList<FeatureServiceFeature>();
-//                    featureCount = featureMap.keySet().size();
-//                    n = 0;
-//
-//                    for (final Object key : featureMap.keySet()) {
-//                        final List<FeatureServiceFeature> features = featureMap.get(key);
-//                        final FeatureServiceFeature f = features.get(0);
-//                        final List<Geometry> geomList = new ArrayList<Geometry>();
-//
-//                        for (final FeatureServiceFeature feature : features) {
-//                            geomList.add(feature.getGeometry());
-//                        }
-//
-//                        final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
-//                                geomList.get(0).getSRID());
-//                        Geometry geom = factory.buildGeometry(geomList);
-//
-//                        if (geom instanceof GeometryCollection) {
-//                            geom = ((GeometryCollection)geom).union();
-//                        }
-//
-//                        f.setGeometry(geom);
-//                        dissolvedFeatures.add(f);
-//                        ++n;
-//
-//                        if ((progress) < (20 + (n * 55 / featureCount))) {
-//                            progress = 20 + (n * 55 / featureCount);
-//
-//                            wd.setProgress(progress);
-//                        }
-//                    }
-//
-//                    wd.setText(NbBundle.getMessage(
-//                            BufferDialog.class,
-//                            "DissolveDialog.butOkActionPerformed.doInBackground.creatingDatasource"));
-//                    final H2FeatureService internalService = new H2FeatureService(
-//                            tableName,
-//                            H2FeatureServiceFactory.DB_NAME,
-//                            tableName,
-//                            null,
-//                            null,
-//                            dissolvedFeatures);
-//                    if (LOG.isDebugEnabled()) {
-//                        LOG.debug("create the new data source");
-//                    }
-//                    internalService.initAndWait();
-//
-//                    return internalService;
-//                }
-//
-//                @Override
-//                protected void done() {
-//                    try {
-//                        final H2FeatureService service = get();
-//                        AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(service);
-//                        final Component capComponent = AppBroker.getInstance().getComponent(ComponentName.CAPABILITIES);
-//
-//                        if (capComponent instanceof CapabilityWidget) {
-//                            final CapabilityWidget cap = (CapabilityWidget)capComponent;
-//                            cap.refreshJdbcTrees();
-//                        }
-//                    } catch (Exception ex) {
-//                        LOG.error("Error while dissolving features.", ex);
-//                    }
-//                }
-//            };
-//
-//        if (H2FeatureService.tableAlreadyExists(tableName)) {
-//            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-//                NbBundle.getMessage(
-//                    BufferDialog.class,
-//                    "DissolveDialog.butOkActionPerformed.tableAlreadyExists",
-//                    tableName),
-//                NbBundle.getMessage(
-//                    BufferDialog.class,
-//                    "DissolveDialog.butOkActionPerformed.tableAlreadyExists.title"),
-//                JOptionPane.ERROR_MESSAGE);
-//        } else {
-//            this.setVisible(false);
-//            wdt.start();
-//        }
-    }//GEN-LAST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+        final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
+        final String tableName = txtTable.getText();
+        final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
+                        .getInstance().getWatergisApp(),
+                true,
+                "Puffer",
+                null,
+                100) {
+
+                @Override
+                protected H2FeatureService doInBackground() throws Exception {
+                    // retrieve Features
+                    int progress = 10;
+                    wd.setText(NbBundle.getMessage(
+                            BufferDialog.class,
+                            "BufferDialog.butOkActionPerformed.doInBackground.retrieving"));
+                    wd.setMax(100);
+                    wd.setProgress(5);
+                    final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
+                            service,
+                            ckbSelected.isSelected());
+                    wd.setProgress(10);
+
+                    // initialise variables for the geoperation
+                    double buffer = 0;
+                    final List<FeatureServiceFeature> resultedFeatures = new ArrayList<FeatureServiceFeature>();
+                    final LayerProperties serviceLayerProperties = featureList.get(0).getLayerProperties();
+                    final LayerProperties newLayerProperties = serviceLayerProperties.clone();
+                    int count = 0;
+                    final int percentageToBuffer = (ckbMergeBuffer.isSelected() ? 80 : 40);
+                    String distanceAttribute = "";
+
+                    newLayerProperties.setFeatureService((AbstractFeatureService)
+                        serviceLayerProperties.getFeatureService().clone());
+                    newLayerProperties.getFeatureService()
+                            .setFeatureServiceAttributes(FeatureServiceHelper
+                                .createGeometryOnlyFeatureServiceAttributes(
+                                    serviceLayerProperties.getFeatureService().getFeatureServiceAttributes()));
+
+                    if (rbFixBuffer.isSelected()) {
+                        if (txtBuffer.isEnabled() && !txtBuffer.getText().equals("")) {
+                            try {
+                                buffer = Double.parseDouble(txtBuffer.getText());
+                            } catch (NumberFormatException e) {
+                                // todo Ausgabe für den Nutzer
+                                LOG.error("Invalid buffer entered. No buffer is used", e);
+                            }
+                        }
+                    } else {
+                        distanceAttribute = cbField.getSelectedItem().toString();
+                    }
+
+                    wd.setText(NbBundle.getMessage(
+                            BufferDialog.class,
+                            "BufferDialog.butOkActionPerformed.doInBackground.createFeatures"));
+
+                    // buffer geometries
+                    for (final FeatureServiceFeature f : featureList) {
+                        Geometry geom = f.getGeometry();
+                        ++count;
+
+                        if (geom != null) {
+                            if (rbFixBuffer.isSelected()) {
+                                geom = geom.buffer(buffer);
+                            } else {
+                                final double bufferValue = toDouble(f.getProperty(distanceAttribute));
+                                geom = geom.buffer(bufferValue);
+                            }
+                        }
+
+                        if (ckbIndividual.isSelected() && (geom.getNumGeometries() > 1)) {
+                            for (int geomIndex = 0; geomIndex < geom.getNumGeometries(); ++geomIndex) {
+                                final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
+                                newFeature.setLayerProperties(newLayerProperties);
+                                newFeature.setGeometry(geom.getGeometryN(geomIndex));
+                                resultedFeatures.add(newFeature);
+                            }
+                        } else {
+                            if (!geom.isEmpty()) {
+                                final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
+                                newFeature.setGeometry(geom);
+                                resultedFeatures.add(newFeature);
+                            }
+                        }
+
+                        // refresh the progress bar
+                        if (progress < (10 + (count * percentageToBuffer / featureList.size()))) {
+                            progress = 10 + (count * percentageToBuffer / featureList.size());
+                            wd.setProgress(progress);
+                        }
+                    }
+
+                    // merge geometries of required
+                    if (!ckbMergeBuffer.isSelected()) {
+                        final List<FeatureServiceFeature> bufferedFeatures = new ArrayList<FeatureServiceFeature>(
+                                resultedFeatures);
+                        resultedFeatures.clear();
+                        final TreeSet<FeatureServiceFeature> usedFeatureMap = new TreeSet<FeatureServiceFeature>();
+                        count = 0;
+
+                        final STRtree tree = FeatureServiceHelper.getFeatureTree(bufferedFeatures);
+
+                        for (final FeatureServiceFeature f : bufferedFeatures) {
+                            ++count;
+
+                            // refresh the progress bar
+                            if (progress
+                                        < (10 + percentageToBuffer
+                                            + (count * (80 - percentageToBuffer) / featureList.size()))) {
+                                progress = 10 + percentageToBuffer
+                                            + (count * (80 - percentageToBuffer) / featureList.size());
+                                wd.setProgress(progress);
+                            }
+
+                            if (usedFeatureMap.contains(f)) {
+                                continue;
+                            } else {
+                                usedFeatureMap.add(f);
+                            }
+
+                            if (f.getGeometry() != null) {
+                                boolean geometryIncreased;
+                                do {
+                                    geometryIncreased = false;
+                                    final List<FeatureServiceFeature> suitableFeatures = tree.query(f.getGeometry()
+                                                    .getEnvelopeInternal());
+
+                                    for (final FeatureServiceFeature intersectionCandidate : suitableFeatures) {
+                                        if (!f.equals(intersectionCandidate)
+                                                    && f.getGeometry().intersects(intersectionCandidate.getGeometry())
+                                                    && !usedFeatureMap.contains(intersectionCandidate)) {
+                                            f.setGeometry(f.getGeometry().union(intersectionCandidate.getGeometry()));
+                                            usedFeatureMap.add(intersectionCandidate);
+                                            geometryIncreased = true;
+                                            ++count;
+
+                                            // refresh the progress bar
+                                            if (progress
+                                                        < (10 + percentageToBuffer
+                                                            + (count * (80 - percentageToBuffer) / featureList.size()))) {
+                                                progress = 10 + percentageToBuffer
+                                                            + (count * (80 - percentageToBuffer) / featureList.size());
+                                                wd.setProgress(progress);
+                                            }
+                                        }
+                                    }
+                                } while (geometryIncreased);
+                            }
+
+                            f.setLayerProperties(newLayerProperties);
+                            resultedFeatures.add(f);
+                        }
+                    }
+
+                    final List<String> orderedAttributeNames = new ArrayList();
+                    orderedAttributeNames.addAll(service.getOrderedFeatureServiceAttributes());
+
+                    // create the service
+                    wd.setText(NbBundle.getMessage(
+                            BufferDialog.class,
+                            "BufferDialog.butOkActionPerformed.doInBackground.creatingDatasource"));
+                    return FeatureServiceHelper.createNewService(AppBroker.getInstance().getWatergisApp(),
+                            resultedFeatures,
+                            tableName,
+                            orderedAttributeNames);
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        final H2FeatureService service = get();
+
+                        FeatureServiceHelper.addServiceLayerToTheTree(service);
+                    } catch (Exception ex) {
+                        LOG.error("Error while execute the buffer operation.", ex);
+                    }
+                }
+            };
+
+        if (H2FeatureService.tableAlreadyExists(tableName)) {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                NbBundle.getMessage(
+                    BufferDialog.class,
+                    "BufferDialog.butOkActionPerformed.tableAlreadyExists",
+                    tableName),
+                NbBundle.getMessage(
+                    BufferDialog.class,
+                    "BufferDialog.butOkActionPerformed.tableAlreadyExists.title"),
+                JOptionPane.ERROR_MESSAGE);
+        } else {
+            this.setVisible(false);
+            wdt.start();
+        }
+    } //GEN-LAST:event_butOkActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   o  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private double toDouble(final Object o) {
+        if (o == null) {
+            return 0;
+        } else {
+            final String doubleAsString = o.toString();
+
+            try {
+                return Double.parseDouble(doubleAsString);
+            } catch (NumberFormatException e) {
+                LOG.error(o.toString() + " is not a number.", e);
+                return 0;
+            }
+        }
+    }
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
+        selectedThemeFeatureCount = refreshSelectedFeatureCount(
+                false,
+                ckbSelected,
+                service,
+                selectedThemeFeatureCount,
+                labSelected);
+        refreshFieldModel();
+        enabledOrNot();
+    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void rbFieldBufferActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_rbFieldBufferActionPerformed
+        cbField.setEnabled(rbFieldBuffer.isSelected());
+        txtBuffer.setEnabled(rbFixBuffer.isSelected());
+    }                                                                                 //GEN-LAST:event_rbFieldBufferActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void rbFixBufferActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_rbFixBufferActionPerformed
+        cbField.setEnabled(rbFieldBuffer.isSelected());
+        txtBuffer.setEnabled(rbFixBuffer.isSelected());
+    }                                                                               //GEN-LAST:event_rbFixBufferActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void refreshFieldModel() {
+        final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
+
         if (service != null) {
-            final List attributes = new ArrayList();
-            attributes.add(null);
-            attributes.addAll(service.getOrderedFeatureServiceAttributes());
-            cbField.setModel(new DefaultComboBoxModel(attributes.toArray(new String[0])));
-            cbField.setSelectedItem(null);
-//            cbField.setEnabled(rbFieldBuffer.isSelected());
+            final List<String> fields = getAllFieldNames(service, Number.class);
+            cbField.setModel(new DefaultComboBoxModel(fields.toArray(new String[fields.size()])));
         } else {
             cbField.setModel(new DefaultComboBoxModel());
-//            cbField.setEnabled(false);
         }
-        enabledOrNot();
-    }//GEN-LAST:event_cbThemeActionPerformed
+    }
 
     /**
      * DOCUMENT ME!
      *
-     * @param  evt  DOCUMENT ME!
+     * @param   service  DOCUMENT ME!
+     * @param   cl       DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
      */
-    private void rbFieldBufferActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFieldBufferActionPerformed
-        enabledOrNot();
-    }//GEN-LAST:event_rbFieldBufferActionPerformed
+    private List<String> getAllFieldNames(final AbstractFeatureService service, final Class<?> cl) {
+        Map<String, FeatureServiceAttribute> attributeMap = service.getFeatureServiceAttributes();
+        final List<String> resultList = new ArrayList<String>();
+
+        if (attributeMap == null) {
+            try {
+                service.initAndWait();
+            } catch (Exception e) {
+                LOG.error("Error while initializing the feature service.", e);
+            }
+            attributeMap = service.getFeatureServiceAttributes();
+        }
+
+        for (final String name : attributeMap.keySet()) {
+            final FeatureServiceAttribute attr = attributeMap.get(name);
+
+            if (cl.isAssignableFrom(FeatureTools.getClass(attr))) {
+                resultList.add(name);
+            }
+        }
+
+        return resultList;
+    }
+
+    /**
+     * refreshes the labSelectedFeatures label.
+     *
+     * @param   forceGuiRefresh           DOCUMENT ME!
+     * @param   box                       DOCUMENT ME!
+     * @param   featureService            DOCUMENT ME!
+     * @param   lastSelectedFeatureCount  DOCUMENT ME!
+     * @param   selectionCountlab         DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public int refreshSelectedFeatureCount(final boolean forceGuiRefresh,
+            final JCheckBox box,
+            final AbstractFeatureService featureService,
+            final int lastSelectedFeatureCount,
+            final JLabel selectionCountlab) {
+        final int count = ((featureService == null) ? 0
+                                                    : FeatureServiceHelper.getSelectedFeatures(featureService).size());
+
+        selectionCountlab.setText(NbBundle.getMessage(
+                UnionDialog.class,
+                "BufferDialog.refreshSelectedFeatureCount.text",
+                count));
+
+        if (forceGuiRefresh || (count != lastSelectedFeatureCount)) {
+            box.setSelected(count > 0);
+        }
+
+        return count;
+    }
 
     /**
      * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
      */
-    private void rbFixBufferActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFixBufferActionPerformed
-        enabledOrNot();
-    }//GEN-LAST:event_rbFixBufferActionPerformed
+    private void setLayerModel() {
+        cbTheme.setModel(new DefaultComboBoxModel(
+                new String[] { NbBundle.getMessage(UnionDialog.class,
+                        "BufferDialog.setlayerModel.searchServices") }));
+
+        final Thread t = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        cbTheme.setModel(
+                            new DefaultComboBoxModel(
+                                FeatureServiceHelper.getServices(null).toArray(
+                                    new AbstractFeatureService[0])));
+                        cbTheme.setSelectedItem(null);
+                    }
+                });
+
+        t.start();
+    }
 
     /**
      * DOCUMENT ME!
      */
     private void enabledOrNot() {
-        final boolean isServiceSelected = cbTheme.getSelectedItem() != null;
-        txtBuffer.setEnabled(isServiceSelected && rbFixBuffer.isSelected());
-        cbField.setEnabled(isServiceSelected && rbFieldBuffer.isSelected());
-        txtTable.setEnabled(isServiceSelected);
-        labTableName.setEnabled(isServiceSelected);
-        ckbIndividual.setEnabled(isServiceSelected);
-        ckbMergeBuffer.setEnabled(isServiceSelected);
-        ckbSelected.setEnabled(isServiceSelected);
-        rbFieldBuffer.setEnabled(isServiceSelected);
-        rbFixBuffer.setEnabled(isServiceSelected);
+        final boolean isServiceSelected = (cbTheme.getSelectedItem() instanceof AbstractFeatureService);
+
         butOk.setEnabled(isServiceSelected);
     }
 }
