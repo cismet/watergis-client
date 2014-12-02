@@ -126,7 +126,8 @@ public abstract class AbstractCheckAction extends AbstractAction {
             final H2FeatureService internalService = new H2FeatureService(
                     tableName,
                     H2FeatureServiceFactory.DB_NAME,
-                    tableName,
+                    tableName
+                            + "_1",
                     null,
                     null,
                     featureList);
