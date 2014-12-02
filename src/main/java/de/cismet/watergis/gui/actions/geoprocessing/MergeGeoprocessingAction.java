@@ -16,13 +16,11 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.ImageIcon;
 
-import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
-
 import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.dialog.DissolveDialog;
+import de.cismet.watergis.gui.dialog.MergeDialog;
 
 /**
  * DOCUMENT ME!
@@ -31,18 +29,18 @@ import de.cismet.watergis.gui.dialog.DissolveDialog;
  * @version  $Revision$, $Date$
  */
 @org.openide.util.lookup.ServiceProvider(service = AbstractGeoprocessingAction.class)
-public class DissolveGeoprocessingAction extends AbstractGeoprocessingAction {
+public class MergeGeoprocessingAction extends AbstractGeoprocessingAction {
 
     //~ Instance fields --------------------------------------------------------
 
-    private DissolveDialog dialog;
+    private MergeDialog dialog;
 
     //~ Constructors -----------------------------------------------------------
 
     /**
-     * Creates a new CloseAction object.
+     * Creates a new DissolveGeoprocessingAction object.
      */
-    public DissolveGeoprocessingAction() {
+    public MergeGeoprocessingAction() {
         super();
     }
 
@@ -53,12 +51,13 @@ public class DissolveGeoprocessingAction extends AbstractGeoprocessingAction {
         super.actionPerformed(e);
 
         if (dialog == null) {
-            dialog = new DissolveDialog(AppBroker.getInstance().getWatergisApp(), false);
+            dialog = new MergeDialog(AppBroker.getInstance().getWatergisApp(), false);
             dialog.pack();
         }
 
         StaticSwingTools.centerWindowOnScreen(dialog);
     }
+
     @Override
     public boolean isEnabled() {
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
@@ -68,24 +67,24 @@ public class DissolveGeoprocessingAction extends AbstractGeoprocessingAction {
     public final String getName() {
         return org.openide.util.NbBundle.getMessage(
                 AbstractGeoprocessingAction.class,
-                "DissolveGeoprocessingAction.text");
+                "MergeGeoprocessingAction.text");
     }
 
     @Override
     public final String getShortDescription() {
         return org.openide.util.NbBundle.getMessage(
                 AbstractGeoprocessingAction.class,
-                "DissolveGeoprocessingAction.toolTipText");
+                "MergeGeoprocessingAction.toolTipText");
     }
 
     @Override
     public final ImageIcon getSmallIcon() {
         return new javax.swing.ImageIcon(DissolveGeoprocessingAction.class.getResource(
-                    "/de/cismet/watergis/res/icons16/icon-addshape.png"));
+                    "/de/cismet/watergis/res/icons16/icon-mergeshapes.png"));
     }
 
     @Override
     public int getSortOrder() {
-        return 10;
+        return 60;
     }
 }
