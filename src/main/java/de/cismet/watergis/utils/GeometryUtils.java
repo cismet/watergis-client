@@ -12,10 +12,12 @@
 package de.cismet.watergis.utils;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
 /**
  * DOCUMENT ME!
@@ -123,6 +127,50 @@ public class GeometryUtils {
         }
 
         return (Geometry[])polys.toArray(new Geometry[0]);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   sourceFeatures  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static Geometry unionFeatureGeometries(final List<FeatureServiceFeature> sourceFeatures) {
+        final List<Geometry> geomList = new ArrayList<Geometry>();
+
+        for (final FeatureServiceFeature fsf : sourceFeatures) {
+            final Geometry geom = fsf.getGeometry();
+
+            if (geom != null) {
+                geomList.add(geom);
+            }
+        }
+
+        return unionGeometries(geomList);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geomList  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static Geometry unionGeometries(final List<Geometry> geomList) {
+        Geometry geom = null;
+
+        if (geomList.size() > 0) {
+            final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                    geomList.get(0).getSRID());
+            geom = factory.buildGeometry(geomList);
+
+            if (geom instanceof GeometryCollection) {
+                geom = ((GeometryCollection)geom).union();
+            }
+        }
+
+        return geom;
     }
 
     /**
