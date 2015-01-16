@@ -37,8 +37,22 @@ import Sirius.navigator.ui.tree.SearchResultsTree;
 
 import Sirius.server.middleware.types.Node;
 
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.util.java2xml.Java2XML;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
+
+import de.latlon.deejump.plugin.style.BitmapVertexStyle;
+import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
+
 import net.infonode.docking.RootWindow;
 import net.infonode.gui.componentpainter.GradientComponentPainter;
+
+import org.deegree.style.persistence.sld.SLDParser;
 
 import org.jdom.Element;
 
@@ -46,11 +60,17 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.JFrame;
@@ -59,7 +79,10 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.event.PopupMenuListener;
 
+import javax.xml.stream.XMLInputFactory;
+
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener;
 
@@ -108,14 +131,16 @@ public class AppBroker implements Configurable {
     private String connectionClass;
     private RootWindow rootWindow;
     private BookmarkManager bookmarkManager;
-    private EnumMap<ComponentName, Component> components = new EnumMap<ComponentName, Component>(ComponentName.class);
-    private HashMap<String, Action> mapModeSelectionActions = new HashMap<String, Action>();
+    private final EnumMap<ComponentName, Component> components = new EnumMap<ComponentName, Component>(
+            ComponentName.class);
+    private final HashMap<String, Action> mapModeSelectionActions = new HashMap<String, Action>();
     private MessenGeometryListener measureListener;
-    private List<SelectionModeListener> selecionModeListener = new ArrayList<SelectionModeListener>();
+    private final List<SelectionModeListener> selecionModeListener = new ArrayList<SelectionModeListener>();
     private ComponentRegistry componentRegistry;
     private ConnectionInfo connectionInfo;
     private InfoWindowAction infoWindowAction;
     private Action lastActionMode;
+    private Layer drawingStyleLayer;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -123,6 +148,24 @@ public class AppBroker implements Configurable {
      * Creates a new AppBroker object.
      */
     private AppBroker() {
+        final LayerManager layerManager = new LayerManager();
+        final FeatureSchema featureSchema = new FeatureSchema();
+        final FeatureCollection features = new FeatureDataset(featureSchema);
+
+        layerManager.setFiringEvents(false);
+        drawingStyleLayer = new Layer("default", Color.RED, features, layerManager);
+//        BasicStyle basicStyle = new BasicStyle(Color.RED);
+////        basicStyle.set;
+//        String file = "/home/therter/c.png";
+////        String file = PFeature.class.getResource(
+////                "/de/cismet/cismap/commons/gui/res/pushpinSelected.png").toString();
+////        BitmapVertexStyle vertexStyle = new BitmapVertexStyle(file);
+//////        BitmapVertexStyle vertexStyle = new BitmapVertexStyle("/de/cismet/cismap/commons/gui/res/pushpin.png");
+////        vertexStyle.setEnabled(true);
+//        PushpinVertexStyle style = new PushpinVertexStyle();
+//        style.setEnabled(true);
+////        vertexStyle.setFileName(domain);
+//        drawingStyleLayer.addStyle(style);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -614,6 +657,87 @@ public class AppBroker implements Configurable {
      */
     public void setInfoWindowAction(final InfoWindowAction infoWindowAction) {
         this.infoWindowAction = infoWindowAction;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the drawingStyleLayer
+     */
+    public Layer getDrawingStyleLayer() {
+        return drawingStyleLayer;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  drawingStyleLayer  the drawingStyleLayer to set
+     */
+    public void setDrawingStyleLayer(final Layer drawingStyleLayer) {
+        this.drawingStyleLayer = drawingStyleLayer;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   layer         DOCUMENT ME!
+     * @param   geometryType  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String exportSLD(final Layer layer, final String geometryType) {
+        String sld = null;
+        try {
+            final Java2XML java2Xml = new Java2XML();
+            final StringWriter xmlWriter = new StringWriter();
+//            final Geometry geom = firstFeature.getGeometry();
+            final String name = "default";
+
+            java2Xml.write(layer, "layer", xmlWriter);
+            final HashMap<String, String> params = new HashMap<String, String>();
+            params.put("wmsLayerName", name);
+            params.put("featureTypeStyle", name);
+            params.put("styleName", name);
+            params.put("styleTitle", name);
+            params.put("Namespace", "http://cismet.de");
+            params.put("NamespacePrefix", "");
+            params.put("geoType", geometryType);
+            params.put("geomProperty", "geom");
+            if (layer.getMinScale() != null) {
+                params.put("maxScale", "" + layer.getMinScale());
+            }
+            if (layer.getMaxScale() != null) {
+                params.put("minScale", "" + layer.getMaxScale());
+            }
+
+            sld = LayerStyle2SLDPlugIn.transformContext(new StringReader(xmlWriter.toString()), params);
+        } catch (Exception e) {
+            LOG.info("could not save sld definition", e);
+        }
+        return sld;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geometryType  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Map<String, LinkedList<org.deegree.style.se.unevaluated.Style>> getDrawingStyles(final String geometryType) {
+        final Reader input = new StringReader(exportSLD(drawingStyleLayer, geometryType));
+        Map<String, LinkedList<org.deegree.style.se.unevaluated.Style>> styles = null;
+        final XMLInputFactory factory = XMLInputFactory.newInstance();
+
+        try {
+            styles = SLDParser.getStyles(factory.createXMLStreamReader(input));
+        } catch (Exception ex) {
+            LOG.error("Fehler in der SLD", ex);
+        }
+        if (styles == null) {
+            LOG.info("SLD Parser funtkioniert nicht");
+        }
+        return styles;
     }
 
     //~ Inner Classes ----------------------------------------------------------

@@ -70,6 +70,13 @@ public class RemoveSelectionAllTopicsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
+        removeSelectionInAllTopics();
+    }
+
+    /**
+     * Removes the selection of all features.
+     */
+    public static void removeSelectionInAllTopics() {
         final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
         final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
         final List<PFeature> sel = sl.getAllSelectedPFeatures();

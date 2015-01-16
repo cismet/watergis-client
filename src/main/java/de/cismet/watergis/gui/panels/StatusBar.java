@@ -13,16 +13,14 @@ package de.cismet.watergis.gui.panels;
 
 import Sirius.navigator.DefaultNavigatorExceptionHandler;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
 
 import org.apache.log4j.Logger;
 
 import org.openide.util.NbBundle;
 
 import java.awt.EventQueue;
-
-import java.text.DecimalFormat;
 
 import java.util.Collection;
 import java.util.Timer;
@@ -32,7 +30,7 @@ import de.cismet.cismap.commons.Crs;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
+import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.StatusListener;
 import de.cismet.cismap.commons.interaction.events.StatusEvent;
@@ -218,7 +216,8 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener, Fea
                 @Override
                 public void run() {
                     if (e.getName().equals(StatusEvent.COORDINATE_STRING)) {
-                        lblCoordinates.setText(e.getValue().toString());
+                        final Coordinate c = (Coordinate)e.getValue();
+                        lblCoordinates.setText(MappingComponent.getCoordinateString(c.x, c.y));
                     } else if (e.getName().equals(StatusEvent.MEASUREMENT_INFOS)) {
                         // do nothing
                     } else if (e.getName().equals(StatusEvent.MAPPING_MODE)) {
