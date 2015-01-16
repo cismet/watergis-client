@@ -57,8 +57,7 @@ public class PointInLineGeoprocessingAction extends AbstractGeoprocessingAction 
 
         StaticSwingTools.centerWindowOnScreen(dialog);
     }
-    
-    
+
     @Override
     public boolean isEnabled() {
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
