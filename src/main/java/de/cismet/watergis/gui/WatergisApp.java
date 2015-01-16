@@ -629,6 +629,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 }
             });
         pTopicTree.insertMenuItemIntoContextMenu(15, new EditModeMenuItem());
+        pTopicTree.insertMenuItemIntoContextMenu(17, new MetaDocumentMenuItem());
         pOverview = new OverviewComponent();
         pOverview.setMasterMap(mappingComponent);
         configManager.addConfigurable(pOverview);
@@ -1928,7 +1929,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUndomniUndoPerformed
+    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdUndomniUndoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemUndo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -1946,14 +1947,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }//GEN-LAST:event_cmdUndomniUndoPerformed
+    }                                                              //GEN-LAST:event_cmdUndomniUndoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeMoveActionPerformed
+    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1964,14 +1965,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeMoveActionPerformed
+    } //GEN-LAST:event_cmdNodeMoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeAddActionPerformed
+    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeAddActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -1982,14 +1983,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeAddActionPerformed
+    } //GEN-LAST:event_cmdNodeAddActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRemoveActionPerformed
+    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRemoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -2000,20 +2001,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
                 }
             });
-    }//GEN-LAST:event_cmdNodeRemoveActionPerformed
+    } //GEN-LAST:event_cmdNodeRemoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRouteActionPerformed
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
         final CidsBean selectedRoute = (CidsBean)cbRoute.getSelectedItem();
         final Geometry geom = (Geometry)selectedRoute.getProperty("geom.geo_field");
         final XBoundingBox bbox = new XBoundingBox(geom);
 
         mappingComponent.gotoBoundingBoxWithHistory(bbox);
-    }//GEN-LAST:event_cbRouteActionPerformed
+    } //GEN-LAST:event_cbRouteActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -2821,6 +2822,70 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class MetaDocumentMenuItem extends ThemeLayerMenuItem {
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new EditModeMenuItem object.
+         */
+        public MetaDocumentMenuItem() {
+            super(NbBundle.getMessage(
+                    EditModeMenuItem.class,
+                    "WatergisApp.MetaDocumentMenuItem.MetaDocumentMenuItem().title"),
+                NODE
+                        | FEATURE_SERVICE);
+//            newSection = true;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            final TreePath[] paths = pTopicTree.getSelectionPath();
+
+            for (final TreePath path : paths) {
+                if (path.getLastPathComponent() instanceof CidsLayer) {
+                    final CidsLayer service = (CidsLayer)path.getLastPathComponent();
+
+                    try {
+                        final URL u = new URL(service.getMetaDocumentLink());
+
+                        try {
+                            de.cismet.tools.BrowserLauncher.openURL(u.toString());
+                        } catch (Exception ex) {
+                            LOG.error("Cannot open the url:" + u, ex);
+                        }
+                    } catch (MalformedURLException ex) {
+                        // nothing to do
+                    }
+                }
+            }
+        }
+
+        @Override
+        public boolean isVisible(final int mask) {
+            final boolean isVisible = super.isVisible(mask);
+
+            if (isVisible) {
+                final TreePath[] paths = pTopicTree.getSelectionPath();
+
+                if ((paths.length == 1) && (paths[0].getLastPathComponent() instanceof CidsLayer)) {
+                    final CidsLayer layer = (CidsLayer)paths[0].getLastPathComponent();
+
+                    return layer.getMetaDocumentLink() != null;
+                }
+            }
+
+            return false;
         }
     }
 }
