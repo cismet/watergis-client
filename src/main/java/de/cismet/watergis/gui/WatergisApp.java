@@ -21,11 +21,14 @@ import Sirius.navigator.connection.proxy.ConnectionProxy;
 import Sirius.navigator.exception.ConnectionException;
 import Sirius.navigator.exception.ExceptionManager;
 import Sirius.navigator.resource.PropertyManager;
+import Sirius.navigator.types.treenode.PureTreeNode;
+import Sirius.navigator.types.treenode.RootTreeNode;
 import Sirius.navigator.ui.dialog.LoginDialog;
 import Sirius.navigator.ui.tree.MetaCatalogueTree;
 
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
+import Sirius.server.middleware.types.Node;
 import Sirius.server.newuser.UserException;
 
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
@@ -88,6 +91,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,9 +117,14 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
+import de.cismet.cids.custom.watergis.server.search.MergeLawa;
+import de.cismet.cids.custom.watergis.server.search.ValidLawaCodes;
+
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cids.server.search.CidsServerSearch;
 
 import de.cismet.cismap.DrawingManager;
 
@@ -123,6 +133,7 @@ import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
@@ -170,6 +181,7 @@ import de.cismet.watergis.gui.components.MeasureButton;
 import de.cismet.watergis.gui.components.NewDrawingButton;
 import de.cismet.watergis.gui.components.ScaleJComboBox;
 import de.cismet.watergis.gui.components.SelectionButton;
+import de.cismet.watergis.gui.components.SnappingButton;
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
@@ -194,6 +206,80 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     FeatureCollectionListener {
 
     //~ Static fields/initializers ---------------------------------------------
+
+    private static String tmpText = "select  distinct -1 as id,\n"
+                + "	cs_class.name as name,\n"
+                + "	-1 class_id,\n"
+                + "	-1 as object_id,\n"
+                + "	'N' as node_type, \n"
+                + "	null as icon, \n"
+                + "	invalidBakLinesByClass(cs_class.id, $user) as dynamic_children, \n"
+                + "	false as sql_sort, \n"
+                + "	null as url\n"
+                + "from cs_attr join cs_class on (cs_attr.class_id = cs_class.id) where foreign_key_references_to in (7)\n"
+                + "and testwhetherresultexists(invalidBakLinesByClass(cs_class.id))\n"
+                + "union\n"
+                + "select  distinct -1 as id,\n"
+                + "	cs_class.name as name,\n"
+                + "	-1 class_id,\n"
+                + "	-1 as object_id,\n"
+                + "	'N' as node_type, \n"
+                + "	null as icon, \n"
+                + "	invalidBaLinesByClass(cs_class.id, $user) as dynamic_children, \n"
+                + "	false as sql_sort, \n"
+                + "	null as url\n"
+                + "from cs_attr join cs_class on (cs_attr.class_id = cs_class.id) where foreign_key_references_to in (19)\n"
+                + "and testwhetherresultexists(invalidBaLinesByClass(cs_class.id))\n"
+                + "union\n"
+                + "select  distinct -1 as id,\n"
+                + "	cs_class.name as name,\n"
+                + "	-1 class_id,\n"
+                + "	-1 as object_id,\n"
+                + "	'N' as node_type, \n"
+                + "	null as icon, \n"
+                + "	invalidLakLinesByClass(cs_class.id, $user) as dynamic_children, \n"
+                + "	false as sql_sort, \n"
+                + "	null as url\n"
+                + "from cs_attr join cs_class on (cs_attr.class_id = cs_class.id) where foreign_key_references_to in (14)\n"
+                + "and testwhetherresultexists(invalidLakLinesByClass(cs_class.id))\n"
+                + "\n"
+                + "union\n"
+                + "select  distinct -1 as id,\n"
+                + "	cs_class.name as name,\n"
+                + "	-1 class_id,\n"
+                + "	-1 as object_id,\n"
+                + "	'N' as node_type, \n"
+                + "	null as icon, \n"
+                + "	invalidBakStationsByClass(cs_class.id, $user) as dynamic_children, \n"
+                + "	false as sql_sort, \n"
+                + "	null as url\n"
+                + "from cs_attr join cs_class on (cs_attr.class_id = cs_class.id) where foreign_key_references_to in (6) and cs_class.id not in (19,14,7)\n"
+                + "and testwhetherresultexists(invalidBakStationsByClass(cs_class.id))\n"
+                + "union\n"
+                + "select  distinct -1 as id,\n"
+                + "	cs_class.name as name,\n"
+                + "	-1 class_id,\n"
+                + "	-1 as object_id,\n"
+                + "	'N' as node_type, \n"
+                + "	null as icon, \n"
+                + "	invalidBaStationsByClass(cs_class.id, $user) as dynamic_children, \n"
+                + "	false as sql_sort, \n"
+                + "	null as url\n"
+                + "from cs_attr join cs_class on (cs_attr.class_id = cs_class.id) where (foreign_key_references_to = 18 and cs_class.id not in (19,14,7))\n"
+                + "and testwhetherresultexists(invalidBaStationsByClass(cs_class.id))\n"
+                + "union \n"
+                + "select  distinct -1 as id,\n"
+                + "	cs_class.name as name,\n"
+                + "	-1 class_id,\n"
+                + "	-1 as object_id,\n"
+                + "	'N' as node_type, \n"
+                + "	null as icon, \n"
+                + "	invalidLakStationsByClass(cs_class.id, $user) as dynamic_children, \n"
+                + "	false as sql_sort, \n"
+                + "	null as url\n"
+                + "from cs_attr join cs_class on (cs_attr.class_id = cs_class.id) \n"
+                + "where (foreign_key_references_to = 13 and cs_class.id not in (19,14,7))\n"
+                + "and testwhetherresultexists(invalidLakStationsByClass(cs_class.id))";
 
     private static final Logger LOG = Logger.getLogger(WatergisApp.class);
     private static JFrame SPLASH;
@@ -249,6 +335,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private MappingComponent mappingComponent;
     private ActiveLayerModel mappingModel = new ActiveLayerModel();
     private MetaClass routeMc;
+    private MetaClass wwGrMc;
     private DrawingManager drawingManager;
 
     private String helpURL;
@@ -298,6 +385,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JButton cmdSelectionAttribute;
     private javax.swing.JButton cmdSelectionLocation;
     private javax.swing.JButton cmdSelectionMode;
+    private javax.swing.JButton cmdSnappingMode;
     private javax.swing.JButton cmdSplit;
     private javax.swing.JButton cmdUndo;
     private javax.swing.JButton cmdZoomIn;
@@ -451,6 +539,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         UIManager.put("Tree.selectionBackground", new Color(195, 212, 232));
         initCismap();
         routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        wwGrMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_ww_gr");
         initComponents();
         cmdAnnex.setAction(new AnnexAction(true));
         cmdAnnex.setEnabled(false);
@@ -474,6 +563,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         configureButtons();
         initLog4JQuickConfig();
         initBookmarkManager();
+        retrievePermissionbeans();
+        retrieveValidLawaCodes();
         AppBroker.getInstance().setInfoWindowAction(infoWindowAction);
         if (!EventQueue.isDispatchThread()) {
             try {
@@ -530,8 +621,69 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         ((Observable)mappingComponent.getMemUndo()).addObserver(this);
         ((Observable)mappingComponent.getMemRedo()).addObserver(this);
         mappingComponent.getFeatureCollection().addFeatureCollectionListener(this);
+//        mappingComponent.setSnappingEnabled(true);
+//        mappingComponent.setSnappingOnLineEnabled(true);
+//        mappingComponent.setVisualizeSnappingRectEnabled(true);
 
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void retrievePermissionbeans() {
+        try {
+            final String query = "select " + wwGrMc.getID() + ", " + wwGrMc.getTableName() + "."
+                        + wwGrMc.getPrimaryKey() + " from "
+                        + wwGrMc.getTableName() + " WHERE owner ilike '"
+                        + SessionManager.getSession().getUser().getUserGroup() + "'"; // NOI18N
+            final MetaObject[] mos = SessionManager.getProxy().getMetaObjectByQuery(query, 0);
+            final List<CidsBean> beans = new ArrayList<CidsBean>();
+
+            if (mos != null) {
+                for (final MetaObject mo : mos) {
+                    beans.add(mo.getBean());
+                }
+            }
+
+            AppBroker.getInstance().setOwnWwGr(beans);
+
+            final String NoOneQuery = "select " + wwGrMc.getID() + ", " + wwGrMc.getTableName() + "."
+                        + wwGrMc.getPrimaryKey() + " from "
+                        + wwGrMc.getTableName() + " WHERE owner = 'NIEMAND'"; // NOI18N
+            final MetaObject[] noOneMos = SessionManager.getProxy().getMetaObjectByQuery(NoOneQuery, 0);
+
+            if (noOneMos != null) {
+                for (final MetaObject mo : noOneMos) {
+                    AppBroker.getInstance().setNiemandWwGr(mo.getBean());
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Cannot retrieve premission beans", e);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void retrieveValidLawaCodes() {
+        try {
+            final CidsServerSearch search = new ValidLawaCodes();
+            final ArrayList<ArrayList> res = (ArrayList<ArrayList>)SessionManager.getProxy()
+                        .customServerSearch(SessionManager.getSession().getUser(), search);
+
+            final String[] lawaCodes = new String[res.size()];
+
+            for (int i = 0; i < res.size(); ++i) {
+                lawaCodes[i] = res.get(i).get(0).toString();
+            }
+
+            Arrays.sort(lawaCodes);
+
+            AppBroker.getInstance().setValidLawaCodes(lawaCodes);
+        } catch (Exception e) {
+            LOG.error("Cannot retrieve premission beans", e);
+        }
     }
 
     /**
@@ -643,6 +795,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         try {
             AppBroker.getInstance().initComponentRegistry(this);
             pTable = AppBroker.getInstance().getComponentRegistry().getCatalogueTree();
+            final RootTreeNode n = (RootTreeNode)pTable.getModel().getRoot();
+            final PureTreeNode treeNode = (PureTreeNode)((RootTreeNode)pTable.getModel().getRoot()).getChildAt(0);
+            String childStat = treeNode.getMetaNode().getDynamicChildrenStatement();
+//            String childStat = tmpText;
+            String user = "null";
+            if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")) {
+                user = "'" + AppBroker.getInstance().getOwner() + "'";
+            }
+            childStat = childStat.replace("$user", user);
+            treeNode.getMetaNode().setDynamicChildrenStatement(childStat);
         } catch (Exception e) {
             LOG.error("The problem tree cannot be created", e);
         }
@@ -765,6 +927,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         configManager.configure((MeasureButton)tbtnMeasure);
         configManager.addConfigurable((GeometryOpButton)cmdGeometryOpMode);
         configManager.configure((GeometryOpButton)cmdGeometryOpMode);
+        configManager.addConfigurable((NewDrawingButton)cmdDrawingMode);
+        configManager.configure((NewDrawingButton)cmdDrawingMode);
+        configManager.addConfigurable((SnappingButton)cmdSnappingMode);
+        configManager.configure((SnappingButton)cmdSnappingMode);
     }
 
     /**
@@ -872,6 +1038,29 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 final AttributeTable attrTable = (AttributeTable)c;
 
                 attrTable.reload();
+            }
+        }
+    }
+
+    /**
+     * Add the given feature to its attribute table, if it is open.
+     *
+     * @param  feature  the feature to add
+     */
+    public void addFeatureToAttributeTable(final FeatureServiceFeature feature) {
+        if (feature.getLayerProperties() == null) {
+            return;
+        }
+        final AbstractFeatureService service = feature.getLayerProperties().getFeatureService();
+        final View view = attributeTableMap.get(service.getName());
+
+        if (view != null) {
+            final Component c = view.getComponent();
+
+            if (c instanceof AttributeTable) {
+                final AttributeTable attrTable = (AttributeTable)c;
+
+                attrTable.addFeature(feature);
             }
         }
     }
@@ -1013,8 +1202,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                                     + routeMc.getPrimaryKey() + " from "
                                     + routeMc.getTableName(); // NOI18N
                         query += " join dlm25w.fg_bak bak on (bak_id = bak.id) ";
-                        query += " join dlm25w.kat_ww_gr gr on (bak.ww_gr = gr.id)";
-                        query += " where gr.owner = '" + SessionManager.getSession().getUser().getUserGroup().getName()
+                        query += " join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)";
+                        query += " where gr.owner = '" + AppBroker.getInstance().getOwner()
                                     + "'";
                         // query += " or bak.ww_gr is null)";
                         final MetaObject[] mos = SessionManager.getProxy().getMetaObjectByQuery(query, 0);
@@ -1154,6 +1343,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdNodeRemove = new javax.swing.JToggleButton();
         cmdMoveGeometry = new javax.swing.JToggleButton();
         cmdPresentation = new javax.swing.JButton();
+        cmdSnappingMode = new SnappingButton();
         jSeparator9 = new javax.swing.JToolBar.Separator();
         cmdUndo = new javax.swing.JButton();
         butIntermediateSave = new javax.swing.JButton();
@@ -1600,6 +1790,17 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdPresentation.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdPresentation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdPresentation);
+
+        cmdSnappingMode.setIcon(new javax.swing.ImageIcon(
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-snaptogrid.png"))); // NOI18N
+        cmdSnappingMode.setFocusable(false);
+        cmdSnappingMode.setHideActionText(true);
+        cmdSnappingMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdSnappingMode.setMaximumSize(new java.awt.Dimension(26, 26));
+        cmdSnappingMode.setMinimumSize(new java.awt.Dimension(26, 26));
+        cmdSnappingMode.setPreferredSize(new java.awt.Dimension(26, 26));
+        cmdSnappingMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdSnappingMode);
 
         jSeparator9.setSeparatorSize(new java.awt.Dimension(2, 32));
         tobDLM25W.add(jSeparator9);
