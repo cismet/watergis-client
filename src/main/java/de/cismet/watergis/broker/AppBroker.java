@@ -43,10 +43,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
-import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
-import de.latlon.deejump.plugin.style.BitmapVertexStyle;
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
 
 import net.infonode.docking.RootWindow;
@@ -81,8 +78,9 @@ import javax.swing.event.PopupMenuListener;
 
 import javax.xml.stream.XMLInputFactory;
 
+import de.cismet.cids.dynamics.CidsBean;
+
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener;
 
@@ -141,6 +139,9 @@ public class AppBroker implements Configurable {
     private InfoWindowAction infoWindowAction;
     private Action lastActionMode;
     private Layer drawingStyleLayer;
+    private List<CidsBean> ownWwGr = new ArrayList<CidsBean>();
+    private String[] validLawaCodes;
+    private CidsBean niemandWwGr = null;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -738,6 +739,69 @@ public class AppBroker implements Configurable {
             LOG.info("SLD Parser funtkioniert nicht");
         }
         return styles;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the ownWwGr
+     */
+    public List<CidsBean> getOwnWwGr() {
+        return ownWwGr;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  ownWwGr  the ownWwGr to set
+     */
+    public void setOwnWwGr(final List<CidsBean> ownWwGr) {
+        this.ownWwGr = ownWwGr;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the validLawaCodes
+     */
+    public String[] getValidLawaCodes() {
+        return validLawaCodes;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  validLawaCodes  the validLawaCodes to set
+     */
+    public void setValidLawaCodes(final String[] validLawaCodes) {
+        this.validLawaCodes = validLawaCodes;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the niemandWwGr
+     */
+    public CidsBean getNiemandWwGr() {
+        return niemandWwGr;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  niemandWwGr  the niemandWwGr to set
+     */
+    public void setNiemandWwGr(final CidsBean niemandWwGr) {
+        this.niemandWwGr = niemandWwGr;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public String getOwner() {
+        return SessionManager.getSession().getUser().getUserGroup().getName();
     }
 
     //~ Inner Classes ----------------------------------------------------------

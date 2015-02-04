@@ -43,15 +43,15 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final String PROP_ROUTE_GEOM = "geom";
     private static final String PROP_FG_BAK_NAME = "ba_cd";
     private static final String PROP_FG_BA_NAME = "ba_cd";
-    private static final String PROP_FG_LAK_NAME = "gwk";
-    private static final String PROP_FG_LA_NAME = "gwk";
+    private static final String PROP_FG_LAK_NAME = "la_cd";
+    private static final String PROP_FG_LA_NAME = "la_cd";
     private static final String PROP_STATIONLINIE_FROM = "von";
     private static final String PROP_STATIONLINIE_TO = "bis";
     private static final String PROP_STATIONLINIE_GEOM = "geom";
-    private static final String MC_NAME_FG_BAK = "FG_BAK";
-    private static final String MC_NAME_FG_BA = "FG_BA";
-    private static final String MC_NAME_FG_LA = "FG_LA";
-    private static final String MC_NAME_FG_LAK = "FG_LAK";
+    private static final String MC_NAME_FG_BAK = "fg_bak";
+    private static final String MC_NAME_FG_BA = "fg_ba";
+    private static final String MC_NAME_FG_LA = "fg_la";
+    private static final String MC_NAME_FG_LAK = "fg_lak";
     private static final String CN_GEOM = "GEOM";
     private static final String CN_FG_BAK_STATIONLINE = "dlm25w.FG_BAK_LINIE";
     private static final String CN_FG_BAK_STATION = "dlm25w.FG_BAK_PUNKT";
@@ -302,7 +302,6 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
             stationBean.setProperty(PROP_STATION_ROUTE, routeBean);
             stationBean.setProperty(PROP_STATION_VALUE, value);
             stationBean.setProperty(PROP_STATION_GEOM, geomBean);
-            geomBean.setProperty(CN_GEOM, value);
 
             try {
                 final CidsBean routeGeomBean = (CidsBean)routeBean.getProperty(PROP_ROUTE_GEOM);
@@ -479,5 +478,10 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     @Override
     public String[] getAllUsedDomains() {
         return new String[] { "DLM25W" };
+    }
+
+    @Override
+    public Geometry getGeometryFromRoute(final CidsBean routeBean) {
+        return (Geometry)routeBean.getProperty(PROP_STATIONLINIE_GEOM + "." + PROP_GEOM_GEOFIELD);
     }
 }
