@@ -106,7 +106,9 @@ public class BufferDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
 
-        cbTheme.setModel(new DefaultComboBoxModel(getServices().toArray(new AbstractFeatureService[0])));
+        cbTheme.setModel(new DefaultComboBoxModel(
+                FeatureServiceHelper.getServices(null).toArray(
+                    new AbstractFeatureService[0])));
         cbTheme.setSelectedItem(null);
         cbTheme.setRenderer(new DefaultListCellRenderer() {
 
@@ -490,27 +492,6 @@ public class BufferDialog extends javax.swing.JDialog {
     private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
     }                                                                             //GEN-LAST:event_butCancelActionPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    protected List<AbstractFeatureService> getServices() {
-        final List<AbstractFeatureService> serviceList = new ArrayList<AbstractFeatureService>();
-        serviceList.add(null);
-        final ActiveLayerModel mappingModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
-                    .getMappingModel();
-        final TreeMap treeMap = mappingModel.getMapServices();
-        for (final Iterator it = treeMap.keySet().iterator(); it.hasNext();) {
-            final Object service = treeMap.get(it.next());
-            if (service instanceof AbstractFeatureService) {
-                serviceList.add((AbstractFeatureService)service);
-            }
-        }
-
-        return serviceList;
-    }
 
     /**
      * DOCUMENT ME!

@@ -11,11 +11,23 @@
  */
 package de.cismet.watergis.gui.dialog;
 
-import de.cismet.cids.search.QuerySearch;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeMap;
 
+import javax.swing.DefaultComboBoxModel;
+
+import de.cismet.cids.search.QuerySearch;
+import de.cismet.cids.search.QuerySearchMethod;
+
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
+import de.cismet.cismap.commons.rasterservice.MapService;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.utils.SelectQuerySearchMethod;
 
 /**
  * DOCUMENT ME!
@@ -28,6 +40,7 @@ public class QuerySearchDialog extends javax.swing.JDialog {
     //~ Instance fields --------------------------------------------------------
 
     private ActiveLayerModel model;
+    private AbstractFeatureService[] choosenLayer;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.cids.search.QuerySearch querySearch1;
     // End of variables declaration//GEN-END:variables
@@ -44,6 +57,24 @@ public class QuerySearchDialog extends javax.swing.JDialog {
     public QuerySearchDialog(final java.awt.Frame parent, final boolean modal, final ActiveLayerModel model) {
         super(parent, modal);
         this.model = model;
+
+        final ActiveLayerModel layerModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
+                    .getMappingModel();
+        final List<AbstractFeatureService> sourceLayer = new ArrayList<AbstractFeatureService>();
+        final TreeMap<Integer, MapService> serviceMap = layerModel.getMapServices();
+        final List<Integer> keyList = new ArrayList<Integer>(serviceMap.keySet());
+        Collections.sort(keyList, Collections.reverseOrder());
+
+        for (final Integer key : keyList) {
+            final MapService service = serviceMap.get(key);
+
+            if (service instanceof AbstractFeatureService) {
+                sourceLayer.add((AbstractFeatureService)service);
+            }
+        }
+
+        choosenLayer = sourceLayer.toArray(new AbstractFeatureService[sourceLayer.size()]);
+
         initComponents();
     }
 
@@ -60,7 +91,9 @@ public class QuerySearchDialog extends javax.swing.JDialog {
 
         querySearch1 = new QuerySearch((ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
                         .getMappingModel(),
-                new String[] { "de.cismet.cids.search.SelectQuerySearchMethod" });
+                new String[] {},
+                choosenLayer,
+                new QuerySearchMethod[] { new SelectQuerySearchMethod() });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(QuerySearchDialog.class, "QuerySearchDialog.title")); // NOI18N
