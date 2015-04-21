@@ -746,7 +746,7 @@ public class AppBroker implements Configurable {
      *
      * @return  the ownWwGr
      */
-    public List<CidsBean> getOwnWwGr() {
+    public List<CidsBean> getOwnWwGrList() {
         return ownWwGr;
     }
 
@@ -802,6 +802,52 @@ public class AppBroker implements Configurable {
      */
     public String getOwner() {
         return SessionManager.getSession().getUser().getUserGroup().getName();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public CidsBean getOwnWwGr() {
+        if ((getOwnWwGrList() != null) && !getOwnWwGrList().isEmpty()) {
+            CidsBean min = null;
+
+            for (int i = 0; i < getOwnWwGrList().size(); ++i) {
+                if ((min == null)
+                            || ((Integer)min.getProperty("ww_gr")
+                                < (Integer)getOwnWwGrList().get(i).getProperty("ww_gr"))) {
+                    min = getOwnWwGrList().get(i);
+                }
+            }
+
+            return min;
+        } else {
+            return getNiemandWwGr();
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   wwGr  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isOwnerWwGr(final Integer wwGr) {
+        if (wwGr == null) {
+            return false;
+        }
+
+        if ((getOwnWwGrList() != null) && !getOwnWwGrList().isEmpty()) {
+            for (int i = 0; i < getOwnWwGrList().size(); ++i) {
+                if (wwGr.equals(getOwnWwGrList().get(i).getProperty("ww_gr"))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     //~ Inner Classes ----------------------------------------------------------
