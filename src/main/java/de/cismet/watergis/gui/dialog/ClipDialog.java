@@ -12,21 +12,13 @@ import com.vividsolutions.jts.index.strtree.STRtree;
 
 import org.apache.log4j.Logger;
 
-import org.deegree.datatypes.Types;
-
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
 import java.awt.Component;
 import java.awt.EventQueue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -41,18 +33,13 @@ import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
-import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
-import de.cismet.cismap.commons.featureservice.LayerProperties;
-import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
-
-import de.cismet.watergis.gui.components.location.SpatialSelectionMethodInterface;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.GeometryUtils;

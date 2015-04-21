@@ -12,6 +12,7 @@
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="1"/>
@@ -30,7 +31,7 @@
   <SubComponents>
     <Component class="de.cismet.cids.search.QuerySearch" name="querySearch1">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new QuerySearch((ActiveLayerModel)AppBroker.getInstance().getMappingComponent().getMappingModel(), new String[] {&quot;de.cismet.cids.search.SelectQuerySearchMethod&quot;})"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new QuerySearch((ActiveLayerModel)AppBroker.getInstance().getMappingComponent().getMappingModel(), new String[] {}, choosenLayer, new QuerySearchMethod[] {new SelectQuerySearchMethod()})"/>
       </AuxValues>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">

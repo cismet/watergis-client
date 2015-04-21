@@ -23,6 +23,7 @@ import java.awt.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -331,8 +332,11 @@ public class FeatureServiceHelper {
         final ActiveLayerModel mappingModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
                     .getMappingModel();
         final TreeMap treeMap = mappingModel.getMapServices();
+        final List<Integer> keyList = new ArrayList<Integer>(treeMap.keySet());
+        Collections.sort(keyList, Collections.reverseOrder());
+        final Iterator it = keyList.iterator();
 
-        for (final Iterator it = treeMap.keySet().iterator(); it.hasNext();) {
+        while (it.hasNext()) {
             final Object service = treeMap.get(it.next());
             if (service instanceof AbstractFeatureService) {
                 final AbstractFeatureService featureService = (AbstractFeatureService)service;

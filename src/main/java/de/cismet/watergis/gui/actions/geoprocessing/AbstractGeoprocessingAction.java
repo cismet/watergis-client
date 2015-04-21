@@ -20,15 +20,12 @@ import java.awt.event.ActionListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.tree.TreePath;
 
-import de.cismet.cismap.commons.MappingModel;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 
