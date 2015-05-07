@@ -12,18 +12,37 @@
  */
 package de.cismet.watergis.gui.actions.checks;
 
+import Sirius.navigator.connection.SessionManager;
+
 import Sirius.server.middleware.types.MetaClass;
+
+import org.deegree.datatypes.Types;
 
 import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
+
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import de.cismet.cids.custom.watergis.server.search.LawaConnected;
+import de.cismet.cids.custom.watergis.server.search.LawaCount;
+import de.cismet.cids.custom.watergis.server.search.LawaDirection;
+import de.cismet.cids.custom.watergis.server.search.MergeLawa;
+
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
+import de.cismet.cids.server.search.CidsServerSearch;
+
+import de.cismet.cismap.commons.XBoundingBox;
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
+import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
@@ -44,23 +63,23 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final MetaClass GWK_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gwk");
-    private static String QUERY = null;
+    private static final MetaClass LAK_AE_MC = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_lak_ae");
+    private static String QUERY_AE = null;
+    // dlm25w.merge_fg_bak_gwk()
 
     static {
-        if (GWK_MC != null) {
-            QUERY = "select " + GWK_MC.getID() + ", " + GWK_MC.getPrimaryKey()
-                        + "  from dlm25w.fg_bak_gwk where gwk in (select gwk.gwk from dlm25w.fg_bak_gwk gwk join "
-                        + "dlm25w.fg_bak_linie linie on (gwk.bak_st = linie.id) join dlm25w.fg_bak_punkt"
-                        + " von on (linie.von = von.id) join dlm25w.fg_bak_punkt bis on (linie.bis = bis.id)\n"
-                        + "join dlm25w.fg_bak bak on (von.route = bak.id) join geom on (bak.geom = geom.id) \n"
-                        + "group by gwk.gwk\n"
-                        + "having st_geometrytype(st_union(st_line_substring(\n"
-                        + "geo_field, \n"
-                        + "von.wert / st_length(geo_field), \n"
-                        + "case when (bis.wert / st_length(geo_field)) <= 1.0 then (bis.wert / st_length(geo_field)) else 1.0 end\n"
-                        + ") )) <> 'ST_LineString'\n"
-                        + "order by gwk)";
+        if (LAK_AE_MC != null) {
+            QUERY_AE = "select " + LAK_AE_MC.getID() + ", ae." + LAK_AE_MC.getPrimaryKey()
+                        + " from dlm25w.fg_lak_ae ae \n"
+                        + "join dlm25w.fg_lak_linie linie on (ae.lak_st = linie.id) \n"
+                        + "join dlm25w.fg_lak_punkt von on (linie.von = von.id)\n"
+                        + "join dlm25w.fg_lak_punkt bis on (linie.bis = bis.id)\n"
+                        + "join dlm25w.fg_lak lak on (von.route = lak.id) \n"
+                        + "join geom on (lak.geom = geom.id) \n"
+                        + "where (von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
+                        + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1);";
         }
     }
 
@@ -87,8 +106,8 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(StaticSwingTools
-                        .getParentFrame(AppBroker.getInstance().getWatergisApp()),
+        final WaitingDialogThread<CheckResult> wdt = new WaitingDialogThread<CheckResult>(
+                StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                 true,
                 NbBundle.getMessage(
                     GWKConnectionCheckAction.class,
@@ -97,26 +116,131 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                 100) {
 
                 @Override
-                protected H2FeatureService doInBackground() throws Exception {
-                    return analyseByQuery(QUERY, "Nicht_geschlossene_LAWA_Routen");
+                protected CheckResult doInBackground() throws Exception {
+                    final CheckResult result = new CheckResult();
+                    String user = AppBroker.getInstance().getOwner();
+
+                    if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
+                        user = null;
+                    }
+
+                    // start auto correction
+                    final CidsServerSearch search = new MergeLawa(user);
+                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), search);
+                    final List<FeatureServiceAttribute> serviceAttributeDefinition =
+                        new ArrayList<FeatureServiceAttribute>();
+
+                    FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
+                            "la_cd",
+                            String.valueOf(Types.VARCHAR),
+                            true);
+                    serviceAttributeDefinition.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+                    serviceAttributeDefinition.add(serviceAttribute);
+
+                    // start checks
+                    result.setConnectionService(analyseByCustomSearch(
+                            new LawaConnected(user),
+                            "Prüfungen->LAWA-Routen->Konnektivität",
+                            serviceAttributeDefinition));
+                    result.setDirectionService(analyseByCustomSearch(
+                            new LawaDirection(user),
+                            "Prüfungen->LAWA-Routen->Gerichtetheit",
+                            serviceAttributeDefinition));
+                    result.setLakAeService(analyseByQuery(QUERY_AE, "Prüfungen->LAWA-Routen->Aus-/Einleitung"));
+
+                    final ArrayList<ArrayList> lawaCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
+                                .customServerSearch(SessionManager.getSession().getUser(), new LawaCount(user));
+
+                    if ((lawaCountList != null) && !lawaCountList.isEmpty()) {
+                        final ArrayList innerList = lawaCountList.get(0);
+
+                        if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
+                            result.setLawaCount(((Number)innerList.get(0)).intValue());
+                        }
+                    }
+
+                    if (result.getConnectionService() != null) {
+                        final H2FeatureServiceFactory fac = (H2FeatureServiceFactory)result.getConnectionService()
+                                    .getFeatureFactory();
+                        final XBoundingBox boundingBox = new XBoundingBox(fac.getEnvelope());
+                        final List<FeatureServiceFeature> features = fac.createFeatures(
+                                null,
+                                boundingBox,
+                                null,
+                                0,
+                                0,
+                                null);
+                        final TreeSet<Object> laCdSet = new TreeSet<Object>();
+
+                        for (final FeatureServiceFeature fsf : features) {
+                            Object laCdCode = fsf.getProperty("la_cd");
+                            if (laCdCode == null) {
+                                laCdCode = "";
+                            }
+                            laCdSet.add(laCdCode);
+                        }
+
+                        result.setConnectionErrors(laCdSet.size());
+                    }
+                    if (result.getDirectionService() != null) {
+                        final H2FeatureServiceFactory fac = (H2FeatureServiceFactory)result.getDirectionService()
+                                    .getFeatureFactory();
+                        final XBoundingBox boundingBox = new XBoundingBox(fac.getEnvelope());
+                        final List<FeatureServiceFeature> features = fac.createFeatures(
+                                null,
+                                boundingBox,
+                                null,
+                                0,
+                                0,
+                                null);
+                        final TreeSet<Object> laCdSet = new TreeSet<Object>();
+
+                        for (final FeatureServiceFeature fsf : features) {
+                            Object laCdCode = fsf.getProperty("la_cd");
+                            if (laCdCode == null) {
+                                laCdCode = "";
+                            }
+                            laCdSet.add(laCdCode);
+                        }
+                        result.setDirectionErrors(laCdSet.size());
+                    }
+
+                    if (result.getLakAeService() != null) {
+                        result.setLakAeErrors(result.getLakAeService().getFeatureCount(null));
+                    }
+
+                    return result;
                 }
 
                 @Override
                 protected void done() {
                     try {
-                        final H2FeatureService service = get();
+                        final CheckResult result = get();
 
-                        if (service == null) {
-                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                                NbBundle.getMessage(
-                                    GWKConnectionCheckAction.class,
-                                    "GWKConnectionCheckAction.actionPerformed().noResult"),
-                                NbBundle.getMessage(
-                                    GWKConnectionCheckAction.class,
-                                    "GWKConnectionCheckAction.actionPerformed().noResult.title"),
-                                JOptionPane.ERROR_MESSAGE);
-                        } else {
-                            showService(service);
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            NbBundle.getMessage(
+                                GWKConnectionCheckAction.class,
+                                "GWKConnectionCheckAction.actionPerformed().result.text",
+                                new Object[] {
+                                    result.getLawaCount(),
+                                    result.getConnectionErrors(),
+                                    result.getDirectionErrors(),
+                                    result.getLakAeErrors()
+                                }),
+                            NbBundle.getMessage(
+                                GWKConnectionCheckAction.class,
+                                "GWKConnectionCheckAction.actionPerformed().result.title"),
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                        if (result.getConnectionService() != null) {
+                            showService(result.getConnectionService(), "Prüfungen->LAWA-Routen");
+                        }
+                        if (result.getDirectionService() != null) {
+                            showService(result.getDirectionService(), "Prüfungen->LAWA-Routen");
+                        }
+                        if (result.getLakAeService() != null) {
+                            showService(result.getLakAeService(), "Prüfungen->LAWA-Routen");
                         }
                     } catch (Exception e) {
                         LOG.error("Error while performing the lawa connection analyse.", e);
@@ -129,6 +253,155 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
 
     @Override
     public boolean isEnabled() {
-        return true || AppBroker.getInstance().isActionsAlwaysEnabled();
+        return true
+                    || AppBroker.getInstance().isActionsAlwaysEnabled();
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class CheckResult {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private int connectionErrors;
+        private int directionErrors;
+        private int lakAeErrors;
+        private int lawaCount;
+        private H2FeatureService directionService;
+        private H2FeatureService connectionService;
+        private H2FeatureService lakAeService;
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the connectionErrors
+         */
+        public int getConnectionErrors() {
+            return connectionErrors;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  connectionErrors  the connectionErrors to set
+         */
+        public void setConnectionErrors(final int connectionErrors) {
+            this.connectionErrors = connectionErrors;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the directionErrors
+         */
+        public int getDirectionErrors() {
+            return directionErrors;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  directionErrors  the directionErrors to set
+         */
+        public void setDirectionErrors(final int directionErrors) {
+            this.directionErrors = directionErrors;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the lakAeErrors
+         */
+        public int getLakAeErrors() {
+            return lakAeErrors;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  lakAeErrors  the lakAeErrors to set
+         */
+        public void setLakAeErrors(final int lakAeErrors) {
+            this.lakAeErrors = lakAeErrors;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the directionService
+         */
+        public H2FeatureService getDirectionService() {
+            return directionService;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  directionService  the directionService to set
+         */
+        public void setDirectionService(final H2FeatureService directionService) {
+            this.directionService = directionService;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the connectionService
+         */
+        public H2FeatureService getConnectionService() {
+            return connectionService;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  connectionService  the connectionService to set
+         */
+        public void setConnectionService(final H2FeatureService connectionService) {
+            this.connectionService = connectionService;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the lakAeService
+         */
+        public H2FeatureService getLakAeService() {
+            return lakAeService;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  lakAeService  the lakAeService to set
+         */
+        public void setLakAeService(final H2FeatureService lakAeService) {
+            this.lakAeService = lakAeService;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the lawaCount
+         */
+        public int getLawaCount() {
+            return lawaCount;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  lawaCount  the lawaCount to set
+         */
+        public void setLawaCount(final int lawaCount) {
+            this.lawaCount = lawaCount;
+        }
     }
 }
