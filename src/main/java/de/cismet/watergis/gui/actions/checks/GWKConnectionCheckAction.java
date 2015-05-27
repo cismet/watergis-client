@@ -67,7 +67,6 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_lak_ae");
     private static String QUERY_AE = null;
-    // dlm25w.merge_fg_bak_gwk()
 
     static {
         if (LAK_AE_MC != null) {
@@ -82,6 +81,11 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                         + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1);";
         }
     }
+
+    //~ Instance fields --------------------------------------------------------
+
+    // dlm25w.merge_fg_bak_gwk()
+    private boolean successful = true;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -105,7 +109,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
     //~ Methods ----------------------------------------------------------------
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public boolean startCheck(final boolean isExport) {
         final WaitingDialogThread<CheckResult> wdt = new WaitingDialogThread<CheckResult>(
                 StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                 true,
@@ -182,6 +186,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                         }
 
                         result.setConnectionErrors(laCdSet.size());
+                        successful = false;
                     }
                     if (result.getDirectionService() != null) {
                         final H2FeatureServiceFactory fac = (H2FeatureServiceFactory)result.getDirectionService()
@@ -204,10 +209,12 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                             laCdSet.add(laCdCode);
                         }
                         result.setDirectionErrors(laCdSet.size());
+                        successful = false;
                     }
 
                     if (result.getLakAeService() != null) {
                         result.setLakAeErrors(result.getLakAeService().getFeatureCount(null));
+                        successful = false;
                     }
 
                     return result;
@@ -217,6 +224,10 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                 protected void done() {
                     try {
                         final CheckResult result = get();
+
+                        if (isExport) {
+                            return;
+                        }
 
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                             NbBundle.getMessage(
@@ -244,11 +255,14 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                         }
                     } catch (Exception e) {
                         LOG.error("Error while performing the lawa connection analyse.", e);
+                        successful = false;
                     }
                 }
             };
 
         wdt.start();
+
+        return successful;
     }
 
     @Override
