@@ -132,6 +132,12 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.geoprocessing.UnionGeoprocessingAction" name="unionGeoprocessingAction">
     </Component>
+    <Component class="de.cismet.watergis.gui.actions.checks.BasicRoutesCheckAction" name="basicRoutesCheckAction1">
+    </Component>
+    <Component class="de.cismet.watergis.gui.actions.ExportAction" name="exportAction1">
+    </Component>
+    <Component class="de.cismet.watergis.gui.actions.checks.LawaCheckAction" name="lawaCheckAction">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menFile">
@@ -494,6 +500,21 @@
                       <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.menBasicChecks.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
+                  <SubComponents>
+                    <MenuItem class="javax.swing.JMenuItem" name="mniCheckBasisRoutes">
+                      <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                          <ComponentRef name="basicRoutesCheckAction1"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniCheckBasisRoutes.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
+                        </Property>
+                        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniCheckBasisRoutes.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
+                        </Property>
+                      </Properties>
+                    </MenuItem>
+                  </SubComponents>
                 </Menu>
                 <Menu class="javax.swing.JMenu" name="menExtendedChecks">
                   <Properties>
@@ -509,6 +530,13 @@
                         </Property>
                       </Properties>
                     </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="mniCheckLawa">
+                      <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                          <ComponentRef name="lawaCheckAction"/>
+                        </Property>
+                      </Properties>
+                    </MenuItem>
                   </SubComponents>
                 </Menu>
               </SubComponents>
@@ -518,7 +546,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="mniExport">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="onlineHelpAction"/>
+                  <ComponentRef name="exportAction1"/>
                 </Property>
               </Properties>
             </MenuItem>

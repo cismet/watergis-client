@@ -184,6 +184,10 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
         }
     }
 
+    //~ Instance fields --------------------------------------------------------
+
+    private boolean successful = true;
+
     //~ Constructors -----------------------------------------------------------
 
     /**
@@ -206,7 +210,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
     //~ Methods ----------------------------------------------------------------
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public boolean startCheck(final boolean isExport) {
         final WaitingDialogThread<CheckResult> wdt = new WaitingDialogThread<CheckResult>(
                 StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                 true,
@@ -285,24 +289,31 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
 
                     if (result.getAusEinleitungService() != null) {
                         result.setAusEinleitungErrors(result.getAusEinleitungService().getFeatureCount(null));
+                        successful = false;
                     }
                     if (result.getCrossedService() != null) {
                         result.setCrossedErrors(result.getCrossedService().getFeatureCount(null));
+                        successful = false;
                     }
                     if (result.getMissingCodeService() != null) {
                         result.setMissingCodeErrors(result.getMissingCodeService().getFeatureCount(null));
+                        successful = false;
                     }
                     if (result.getNotUniqueCodeService() != null) {
                         result.setNotUniqueCodeErrors(result.getNotUniqueCodeService().getFeatureCount(null));
+                        successful = false;
                     }
                     if (result.getPrefixService() != null) {
                         result.setPrefixErrors(result.getPrefixService().getFeatureCount(null));
+                        successful = false;
                     }
                     if (result.getShortService() != null) {
                         result.setShortErrors(result.getShortService().getFeatureCount(null));
+                        successful = false;
                     }
                     if (result.getWwGrService() != null) {
                         result.setWwGrErrors(result.getWwGrService().getFeatureCount(null));
+                        successful = false;
                     }
 
                     return result;
@@ -312,6 +323,10 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                 protected void done() {
                     try {
                         final CheckResult result = get();
+
+                        if (isExport) {
+                            return;
+                        }
 
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                             NbBundle.getMessage(
@@ -356,11 +371,14 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                         }
                     } catch (Exception e) {
                         LOG.error("Error while performing the route analyse.", e);
+                        successful = false;
                     }
                 }
             };
 
         wdt.start();
+
+        return successful;
     }
 
     @Override

@@ -26,6 +26,7 @@ import com.vividsolutions.jts.io.WKBReader;
 import org.apache.log4j.Logger;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,6 +85,20 @@ public abstract class AbstractCheckAction extends AbstractAction {
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   isExport  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public abstract boolean startCheck(boolean isExport);
+
+    @Override
+    public void actionPerformed(final ActionEvent e) {
+        startCheck(false);
+    }
 
     /**
      * Uses the given query to execute an analyse.
