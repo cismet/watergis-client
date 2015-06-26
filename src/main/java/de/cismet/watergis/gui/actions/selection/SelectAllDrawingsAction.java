@@ -29,6 +29,10 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.actions.map.NewRectangleModeAction;
+
+import static javax.swing.Action.NAME;
+
 /**
  * DOCUMENT ME!
  *
@@ -51,6 +55,10 @@ public class SelectAllDrawingsAction extends AbstractAction {
                 SelectAllDrawingsAction.class,
                 "SelectAllDrawingsAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
+        final String text = org.openide.util.NbBundle.getMessage(
+                SelectAllDrawingsAction.class,
+                "SelectAllDrawingsAction.text");
+        putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-newwindow.png"));
         putValue(SMALL_ICON, icon);

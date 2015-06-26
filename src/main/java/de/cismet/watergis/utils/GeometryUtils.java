@@ -12,12 +12,10 @@
 package de.cismet.watergis.utils;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 
@@ -29,7 +27,7 @@ import java.util.List;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
 /**
- * DOCUMENT ME!
+ * Contains some useful geometry processing operations.
  *
  * @author   therter
  * @version  $Revision$, $Date$
@@ -39,11 +37,11 @@ public class GeometryUtils {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * DOCUMENT ME!
+     * Converts a single part geometry to a multi part geometry.
      *
-     * @param   g  DOCUMENT ME!
+     * @param   g  a single part geometry
      *
-     * @return  DOCUMENT ME!
+     * @return  a multi part geometry
      */
     public static Geometry toMultiGeometry(final Geometry g) {
         final GeometryFactory factory = g.getFactory();
@@ -60,12 +58,12 @@ public class GeometryUtils {
     }
 
     /**
-     * DOCUMENT ME!
+     * Splits the given geometry at the given line.
      *
-     * @param   geom       DOCUMENT ME!
-     * @param   splitLine  DOCUMENT ME!
+     * @param   geom       the geometry to split
+     * @param   splitLine  the geometry will be splitted at this linestring
      *
-     * @return  DOCUMENT ME!
+     * @return  An array with the two resulted geometries
      */
     public static Geometry[] splitGeom(final Geometry geom, final LineString splitLine) {
         if (geom.getGeometryType().equalsIgnoreCase("LINESTRING")) {
@@ -96,7 +94,7 @@ public class GeometryUtils {
      * @param   sourceGeom  a polygon
      * @param   splitter    the linestring to split the polygon
      *
-     * @return  DOCUMENT ME!
+     * @return  An array with the two resulted geometries
      */
     public static Geometry[] splitPolygon(final Polygon sourceGeom, final LineString splitter) {
         final Geometry geom = sourceGeom.getBoundary();
@@ -130,9 +128,9 @@ public class GeometryUtils {
     }
 
     /**
-     * DOCUMENT ME!
+     * Unions the geometries of the given features.
      *
-     * @param   sourceFeatures  DOCUMENT ME!
+     * @param   sourceFeatures  the features the union
      *
      * @return  DOCUMENT ME!
      */
@@ -147,38 +145,35 @@ public class GeometryUtils {
             }
         }
 
-        return unionGeometries(geomList);
+        return unionGeometries(geomList, 0, geomList.size() - 1);
     }
 
     /**
-     * DOCUMENT ME!
+     * An union method that is faster the the iterativ approach with the union() method.
      *
-     * @param   geomList  DOCUMENT ME!
+     * @param   geom  the list with the geometries to union
+     * @param   from  the index of the first element that should be used for the union operation
+     * @param   to    the index of the last element that should be used for the union operation
      *
      * @return  DOCUMENT ME!
      */
-    public static Geometry unionGeometries(final List<Geometry> geomList) {
-        Geometry geom = null;
+    public static Geometry unionGeometries(final List<Geometry> geom, final int from, final int to) {
+        if (to == from) {
+            return geom.get(from);
+        } else {
+            final Geometry g1 = unionGeometries(geom, from, from + ((to - from) / 2));
+            final Geometry g2 = unionGeometries(geom, from + ((to - from) / 2) + 1, to);
 
-        if (geomList.size() > 0) {
-            final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
-                    geomList.get(0).getSRID());
-            geom = factory.buildGeometry(geomList);
-
-            if (geom instanceof GeometryCollection) {
-                geom = ((GeometryCollection)geom).union();
-            }
+            return g1.union(g2);
         }
-
-        return geom;
     }
 
     /**
-     * DOCUMENT ME!
+     * Converts a multi-point/polygon/linestring to a point/polygon/linestring.
      *
-     * @param   g  DOCUMENT ME!
+     * @param   g  the geometry to convert
      *
-     * @return  DOCUMENT ME!
+     * @return  the point/polygon/linestring
      */
     public static Geometry toSimpleGeometry(final Geometry g) {
         if (g.getGeometryType().equalsIgnoreCase("multipoint")) {

@@ -20,15 +20,10 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
-import javax.swing.tree.TreePath;
 
 import de.cismet.cismap.commons.features.Feature;
-import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.layerwidget.ZoomToFeaturesWorker;
-import de.cismet.cismap.commons.gui.layerwidget.ZoomToLayerWorker;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
-import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -71,16 +66,9 @@ public class ZoomSelectedObjectsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
-        final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
-        final List<PFeature> sel = sl.getAllSelectedPFeatures();
-        final Feature[] features = new Feature[sel.size()];
+        final List<Feature> sel = SelectionManager.getInstance().getSelectedFeatures();
 
-        for (int i = 0; i < sel.size(); ++i) {
-            features[i] = sel.get(i).getFeature();
-        }
-
-        final ZoomToFeaturesWorker worker = new ZoomToFeaturesWorker(features, 10);
+        final ZoomToFeaturesWorker worker = new ZoomToFeaturesWorker(sel.toArray(new Feature[sel.size()]), 10);
         worker.execute();
     }
 

@@ -24,6 +24,7 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 /**
  * DOCUMENT ME!
@@ -37,53 +38,13 @@ public class SelectFeaturesFromSelectionMethod implements SelectionMethodInterfa
     //~ Methods ----------------------------------------------------------------
 
     @Override
-    public void executeMethod(final List<PFeature> features,
+    public void executeMethod(final List<FeatureServiceFeature> features,
             final AbstractFeatureService source,
             final List<AbstractFeatureService> target) {
-        final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
-        final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
-        final List<Feature> toBeSelected = new ArrayList<Feature>();
-        final List<Feature> toBeUnselected = new ArrayList<Feature>();
+        final ArrayList list = new ArrayList();
+        list.addAll(features);
 
-        for (final PFeature feature : sl.getAllSelectedPFeatures()) {
-            if (feature.getFeature() instanceof FeatureServiceFeature) {
-                final FeatureServiceFeature f = (FeatureServiceFeature)feature.getFeature();
-                if (containedInService(target, f)) {
-                    feature.setSelected(false);
-                    sl.removeSelectedFeature(feature);
-                    toBeUnselected.add(feature.getFeature());
-                }
-            }
-        }
-
-        for (final PFeature feature : features) {
-            if (!feature.isSelected()) {
-                feature.setSelected(true);
-                sl.addSelectedFeature(feature);
-                toBeSelected.add(feature.getFeature());
-            }
-        }
-
-        ((DefaultFeatureCollection)map.getFeatureCollection()).unselect(toBeUnselected);
-        ((DefaultFeatureCollection)map.getFeatureCollection()).select(toBeSelected);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   target   DOCUMENT ME!
-     * @param   feature  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private boolean containedInService(final List<AbstractFeatureService> target, final FeatureServiceFeature feature) {
-        for (final AbstractFeatureService service : target) {
-            if (feature.getLayerProperties() == service.getLayerProperties()) {
-                return true;
-            }
-        }
-
-        return false;
+        SelectionManager.getInstance().setSelectedFeatures(list);
     }
 
     @Override

@@ -14,8 +14,11 @@ package de.cismet.watergis.gui.components.location;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.geom.TopologyException;
+import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
+import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
+import com.vividsolutions.jump.geom.precision.NumberPrecisionReducer;
 
 import org.apache.log4j.Logger;
 
@@ -28,34 +31,35 @@ import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.TreeMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 
+import de.cismet.cismap.commons.CrsTransformer;
+import de.cismet.cismap.commons.XBoundingBox;
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
-import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.LayerCollection;
 import de.cismet.cismap.commons.gui.layerwidget.ReadOnlyThemeLayerWidget;
-import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
+import de.cismet.cismap.commons.gui.layerwidget.ZoomToLayerWorker;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
-import de.cismet.cismap.commons.rasterservice.MapService;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.utils.FeatureServiceHelper;
 
 /**
  * DOCUMENT ME!
@@ -212,20 +216,7 @@ public class LocationDialog extends javax.swing.JDialog {
      * DOCUMENT ME!
      */
     private void setLayerModel() {
-        final ActiveLayerModel layerModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
-                    .getMappingModel();
-        final List<AbstractFeatureService> sourceLayer = new ArrayList<AbstractFeatureService>();
-        final TreeMap<Integer, MapService> serviceMap = layerModel.getMapServices();
-        final List<Integer> keyList = new ArrayList<Integer>(serviceMap.keySet());
-        Collections.sort(keyList, Collections.reverseOrder());
-
-        for (final Integer key : keyList) {
-            final MapService service = serviceMap.get(key);
-
-            if (service instanceof AbstractFeatureService) {
-                sourceLayer.add((AbstractFeatureService)service);
-            }
-        }
+        final List<AbstractFeatureService> sourceLayer = FeatureServiceHelper.getServices(null);
 
         cboSource.setModel(new DefaultComboBoxModel(
                 sourceLayer.toArray(new AbstractFeatureService[sourceLayer.size()])));
@@ -561,17 +552,19 @@ public class LocationDialog extends javax.swing.JDialog {
      */
     public void refreshSelectedFeatureCount(final boolean forceGuiRefresh) {
         final AbstractFeatureService featureService = (AbstractFeatureService)cboSource.getSelectedItem();
-        final int count = getSelectedFeatures(featureService).size();
+        if (featureService != null) {
+            final int count = getSelectedFeatures(featureService).size();
 
-        labSelectedFeatures.setText(NbBundle.getMessage(
-                LocationDialog.class,
-                "LocationDialog.labSelectedFeatures.text",
-                count));
+            labSelectedFeatures.setText(NbBundle.getMessage(
+                    LocationDialog.class,
+                    "LocationDialog.labSelectedFeatures.text",
+                    count));
 
-        if (forceGuiRefresh || (count != lastSelectedFeatureCount)) {
-            chUseSelectedFeatures.setSelected(count > 0);
+            if (forceGuiRefresh || (count != lastSelectedFeatureCount)) {
+                chUseSelectedFeatures.setSelected(count > 0);
+            }
+            lastSelectedFeatureCount = count;
         }
-        lastSelectedFeatureCount = count;
     }
 
     /**
@@ -627,18 +620,14 @@ public class LocationDialog extends javax.swing.JDialog {
      */
     private List<FeatureServiceFeature> getSelectedFeatures(final AbstractFeatureService service) {
         final List<FeatureServiceFeature> result = new ArrayList<FeatureServiceFeature>();
-        final AbstractFeatureService featureService = (AbstractFeatureService)cboSource.getSelectedItem();
-        final SelectionListener sl = (SelectionListener)AppBroker.getInstance().getMappingComponent()
-                    .getInputEventListener()
-                    .get(MappingComponent.SELECT);
-        final Collection<PFeature> selectedPFeatures = sl.getAllSelectedPFeatures();
+        final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures(service);
 
-        for (final PFeature feature : selectedPFeatures) {
-            final Object internFeature = feature.getFeature();
-            if (internFeature instanceof FeatureServiceFeature) {
-                if (((FeatureServiceFeature)internFeature).getLayerProperties()
-                            == featureService.getLayerProperties()) {
-                    result.add((FeatureServiceFeature)internFeature);
+        if (selectedFeatures != null) {
+            final List<Feature> selectedFeaturesCopy = new ArrayList<Feature>(selectedFeatures);
+
+            for (final Feature feature : selectedFeaturesCopy) {
+                if (feature instanceof FeatureServiceFeature) {
+                    result.add((FeatureServiceFeature)feature);
                 }
             }
         }
@@ -709,7 +698,7 @@ public class LocationDialog extends javax.swing.JDialog {
      *
      * @version  $Revision$, $Date$
      */
-    private class SelectionCalculator extends WaitingDialogThread<List<PFeature>> {
+    private class SelectionCalculator extends WaitingDialogThread<List<FeatureServiceFeature>> {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -760,7 +749,7 @@ public class LocationDialog extends javax.swing.JDialog {
         //~ Methods ------------------------------------------------------------
 
         @Override
-        protected List<PFeature> doInBackground() throws Exception {
+        protected List<FeatureServiceFeature> doInBackground() throws Exception {
             final List<Geometry> geomList = new ArrayList<Geometry>();
             final List<FeatureServiceFeature> sourceFeatures;
             Geometry geom = null;
@@ -768,13 +757,25 @@ public class LocationDialog extends javax.swing.JDialog {
             if (useSelectedFeatures) {
                 sourceFeatures = getSelectedFeatures(sourceService);
             } else {
-                sourceFeatures = sourceService.getFeatureFactory().getLastCreatedFeatures();
+                final Geometry g = ZoomToLayerWorker.getServiceBounds(sourceService);
+                XBoundingBox bounds = null;
+
+                if (g != null) {
+                    bounds = new XBoundingBox(g);
+                    final String crs;
+                    crs = CismapBroker.getInstance().getSrs().getCode();
+
+                    final CrsTransformer trans = new CrsTransformer(crs);
+                    bounds = trans.transformBoundingBox(bounds);
+                }
+                sourceFeatures = sourceService.getFeatureFactory()
+                            .createFeatures(sourceService.getQuery(), bounds, null, 0, 0, null);
             }
 
             for (final FeatureServiceFeature fsf : sourceFeatures) {
                 final Geometry newGeom = fsf.getGeometry();
 
-                if (newGeom != null) {
+                if ((newGeom != null) && fsf.getGeometry().isValid()) {
                     geomList.add(fsf.getGeometry());
                 }
             }
@@ -785,7 +786,22 @@ public class LocationDialog extends javax.swing.JDialog {
                 geom = factory.buildGeometry(geomList);
 
                 if (geom instanceof GeometryCollection) {
-                    geom = ((GeometryCollection)geom).union();
+                    try {
+                        geom = ((GeometryCollection)geom).union();
+                    } catch (TopologyException e) {
+                        LOG.error("Topology exception occured during an union operation", e);
+                        geom = null;
+
+                        for (final Geometry g : geomList) {
+                            if ((geom == null) && g.isValid()) {
+                                geom = g;
+                            } else {
+                                if ((g != null) && g.isValid()) {
+                                    geom = geom.union(g);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -799,7 +815,7 @@ public class LocationDialog extends javax.swing.JDialog {
         @Override
         protected void done() {
             try {
-                final List<PFeature> correspondingFeatures = get();
+                final List<FeatureServiceFeature> correspondingFeatures = get();
 
                 meth.executeMethod(correspondingFeatures, sourceService, targetServices);
             } catch (Exception e) {
@@ -817,19 +833,36 @@ public class LocationDialog extends javax.swing.JDialog {
          *
          * @return  all features, which fulfil the requirements of the given spatial selection method
          */
-        private List<PFeature> calculateCorrespondingFeatures(final Geometry source,
+        private List<FeatureServiceFeature> calculateCorrespondingFeatures(final Geometry source,
                 final List<AbstractFeatureService> targetLayer,
                 final double distance,
                 final SpatialSelectionMethodInterface spatMethod) {
-            final List<PFeature> resultFeatureList = new ArrayList<PFeature>();
+            final List<FeatureServiceFeature> resultFeatureList = new ArrayList<FeatureServiceFeature>();
 
             if (source != null) {
+                Geometry simplifiedGeometry = source;
+
+                if (!chUseSelectedFeatures.isSelected()) {
+                    simplifiedGeometry = TopologyPreservingSimplifier.simplify(source, 30);
+                }
+                Geometry bufferedGeometry = source.getEnvelope();
+
+                if (distance > 0) {
+                    bufferedGeometry = bufferedGeometry.buffer(distance);
+                }
+
                 for (final AbstractFeatureService service : targetLayer) {
-                    for (final Object featureObject : service.getPNode().getChildrenReference()) {
-                        final PFeature feature = (PFeature)featureObject;
+                    final List<FeatureServiceFeature> featureList = getAllFeatures(service, bufferedGeometry);
+
+                    if (featureList == null) {
+                        continue;
+                    }
+
+                    for (final Object featureObject : featureList) {
+                        final FeatureServiceFeature feature = (FeatureServiceFeature)featureObject;
                         if (spatMethod.featureGeometryFulfilsRequirements(
-                                        source,
-                                        feature.getFeature().getGeometry(),
+                                        simplifiedGeometry,
+                                        feature.getGeometry(),
                                         distance)) {
                             resultFeatureList.add(feature);
                         }
@@ -838,6 +871,40 @@ public class LocationDialog extends javax.swing.JDialog {
             }
 
             return resultFeatureList;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   service  DOCUMENT ME!
+         * @param   geom     DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private List<FeatureServiceFeature> getAllFeatures(final AbstractFeatureService service, final Geometry geom) {
+            try {
+                Geometry g = geom;
+
+                if (geom == null) {
+                    g = ZoomToLayerWorker.getServiceBounds(service);
+                }
+                XBoundingBox bounds = null;
+
+                if (g != null) {
+                    bounds = new XBoundingBox(g);
+                    final String crs;
+                    crs = CismapBroker.getInstance().getSrs().getCode();
+
+                    final CrsTransformer trans = new CrsTransformer(crs);
+                    bounds = trans.transformBoundingBox(bounds);
+                }
+
+                return service.getFeatureFactory().createFeatures(service.getQuery(), bounds, null, 0, 0, null);
+            } catch (Exception e) {
+                LOG.error("Error while retrieving features.", e);
+
+                return null;
+            }
         }
     }
 }
