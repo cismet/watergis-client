@@ -34,7 +34,9 @@ public interface SelectionMethodInterface {
      * @param  source    DOCUMENT ME!
      * @param  target    DOCUMENT ME!
      */
-    void executeMethod(List<PFeature> features, AbstractFeatureService source, List<AbstractFeatureService> target);
+    void executeMethod(List<FeatureServiceFeature> features,
+            AbstractFeatureService source,
+            List<AbstractFeatureService> target);
 
     /**
      * DOCUMENT ME!

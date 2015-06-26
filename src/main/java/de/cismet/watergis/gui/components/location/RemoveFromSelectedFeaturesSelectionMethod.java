@@ -32,6 +32,7 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 /**
  * DOCUMENT ME!
@@ -45,22 +46,39 @@ public class RemoveFromSelectedFeaturesSelectionMethod implements SelectionMetho
     //~ Methods ----------------------------------------------------------------
 
     @Override
-    public void executeMethod(final List<PFeature> features,
+    public void executeMethod(final List<FeatureServiceFeature> features,
             final AbstractFeatureService source,
             final List<AbstractFeatureService> target) {
-        final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
-        final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
-        final List<Feature> toBeUnselected = new ArrayList<Feature>();
+        final List<Feature> staySelected = new ArrayList<Feature>();
+//        final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
+//        final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
+//        final List<Feature> toBeUnselected = new ArrayList<Feature>();
+//
+//        for (final PFeature feature : features) {
+//            if (feature.isSelected()) {
+//                feature.setSelected(false);
+//                sl.removeSelectedFeature(feature);
+//                toBeUnselected.add(feature.getFeature());
+//            }
+//        }
+//
+//        ((DefaultFeatureCollection)map.getFeatureCollection()).unselect(toBeUnselected);
 
-        for (final PFeature feature : features) {
-            if (feature.isSelected()) {
-                feature.setSelected(false);
-                sl.removeSelectedFeature(feature);
-                toBeUnselected.add(feature.getFeature());
+        for (final Feature feature : SelectionManager.getInstance().getSelectedFeatures()) {
+            if (feature instanceof FeatureServiceFeature) {
+                if (containedInService(target, (FeatureServiceFeature)feature)) {
+                    if (!features.contains(feature)) {
+                        staySelected.add(feature);
+                    }
+                } else {
+                    staySelected.add(feature);
+                }
+            } else {
+                staySelected.add(feature);
             }
         }
 
-        ((DefaultFeatureCollection)map.getFeatureCollection()).unselect(toBeUnselected);
+        SelectionManager.getInstance().setSelectedFeatures(staySelected);
     }
 
     /**

@@ -34,7 +34,7 @@ public class IntersectSourceSpatialMethod implements SpatialSelectionMethodInter
             if (distance == 0.0) {
                 return source.intersects(featureGeometry);
             } else {
-                return source.buffer(distance).intersects(featureGeometry);
+                return featureGeometry.isWithinDistance(source, distance);
             }
         }
 
