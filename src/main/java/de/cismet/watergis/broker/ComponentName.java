@@ -21,5 +21,5 @@ public enum ComponentName {
 
     //~ Enum constants ---------------------------------------------------------
 
-    CAPABILITIES, INFO, MAIN, MAP, MENU_BOOKMARK, OVERVIEW, SELECTION, TABLE, TREE, STATUSBAR;
+    CAPABILITIES, INFO, MAIN, MAP, MENU_BOOKMARK, OVERVIEW, SELECTION, TABLE, TREE, STATUSBAR, PHOTO;
 }

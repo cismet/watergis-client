@@ -32,9 +32,14 @@ import java.util.TreeMap;
 
 import javax.swing.JOptionPane;
 
+import de.cismet.cismap.cidslayer.CidsFeatureFactory;
+import de.cismet.cismap.cidslayer.CidsLayer;
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+
 import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
@@ -48,6 +53,8 @@ import de.cismet.cismap.commons.gui.layerwidget.ZoomToLayerWorker;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.tools.FeatureTools;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -202,7 +209,8 @@ public class FeatureServiceHelper {
         for (final String key : serviceAttr.keySet()) {
             final FeatureServiceAttribute attr = (FeatureServiceAttribute)serviceAttr.get(key).clone();
 
-            if (targetServiceAttr.containsKey(key) && !attr.isGeometry()) {
+            if ((targetServiceAttr.containsKey(key.toLowerCase()) || targetServiceAttr.containsKey(key.toUpperCase()))
+                        && !attr.isGeometry()) {
                 newAttrMap.put(key, attr);
             } else if (attr.isGeometry()) {
                 newAttrMap.put(key, attr);
@@ -239,6 +247,58 @@ public class FeatureServiceHelper {
         }
 
         return result;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   attributes  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static Map<String, FeatureServiceAttribute> cloneFeatureServiceAttributes(
+            final Map<String, FeatureServiceAttribute> attributes) {
+        final Map<String, FeatureServiceAttribute> result = new HashMap<String, FeatureServiceAttribute>();
+
+        for (final String key : attributes.keySet()) {
+            final FeatureServiceAttribute attr = attributes.get(key);
+
+            result.put(key, (FeatureServiceAttribute)attr.clone());
+        }
+
+        return result;
+    }
+
+    /**
+     * determines all field name of the given service with the given type.
+     *
+     * @param   service  DOCUMENT ME!
+     * @param   cl       the allowed type or null for all types
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static List<String> getAllFieldNames(final AbstractFeatureService service, final Class<?> cl) {
+        Map<String, FeatureServiceAttribute> attributeMap = service.getFeatureServiceAttributes();
+        final List<String> resultList = new ArrayList<String>();
+
+        if (attributeMap == null) {
+            try {
+                service.initAndWait();
+            } catch (Exception e) {
+                LOG.error("Error while initializing the feature service.", e);
+            }
+            attributeMap = service.getFeatureServiceAttributes();
+        }
+
+        for (final String name : attributeMap.keySet()) {
+            final FeatureServiceAttribute attr = attributeMap.get(name);
+
+            if ((cl == null) || cl.isAssignableFrom(FeatureTools.getClass(attr))) {
+                resultList.add(name);
+            }
+        }
+
+        return resultList;
     }
 
     /**
@@ -301,17 +361,38 @@ public class FeatureServiceHelper {
      */
     public static List<FeatureServiceFeature> getSelectedFeatures(final AbstractFeatureService featureService) {
         final List<FeatureServiceFeature> result = new ArrayList<FeatureServiceFeature>();
-        final SelectionListener sl = (SelectionListener)AppBroker.getInstance().getMappingComponent()
-                    .getInputEventListener()
-                    .get(MappingComponent.SELECT);
-        final Collection<PFeature> selectedPFeatures = sl.getAllSelectedPFeatures();
+        final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures(featureService);
 
-        for (final PFeature feature : selectedPFeatures) {
-            final Object internFeature = feature.getFeature();
-            if (internFeature instanceof FeatureServiceFeature) {
-                if (((FeatureServiceFeature)internFeature).getLayerProperties()
-                            == featureService.getLayerProperties()) {
-                    result.add((FeatureServiceFeature)internFeature);
+        if (selectedFeatures != null) {
+            for (final Feature feature : selectedFeatures) {
+                if (feature instanceof FeatureServiceFeature) {
+                    result.add((FeatureServiceFeature)feature);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Provides all selected features of the given service.
+     *
+     * @param   metaClass  featureService service the service, the selected features should be returned for
+     *
+     * @return  all selected features of the given service
+     */
+    public static List<FeatureServiceFeature> getSelectedCidsLayerFeatures(final String metaClass) {
+        final List<FeatureServiceFeature> result = new ArrayList<FeatureServiceFeature>();
+        final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures();
+
+        if (selectedFeatures != null) {
+            for (final Feature feature : selectedFeatures) {
+                if (feature instanceof CidsLayerFeature) {
+                    final CidsLayerFeature f = (CidsLayerFeature)feature;
+                    final CidsLayer layer = (CidsLayer)f.getLayerProperties().getFeatureService();
+                    if (layer.getMetaClass().getName().equalsIgnoreCase(metaClass)) {
+                        result.add((FeatureServiceFeature)feature);
+                    }
                 }
             }
         }
@@ -354,6 +435,40 @@ public class FeatureServiceHelper {
                         }
                     } catch (Exception e) {
                         LOG.error("Error while initialising service " + ((AbstractFeatureService)service).getName(), e);
+                    }
+                }
+            }
+        }
+
+        return serviceList;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   metaClass  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static List<AbstractFeatureService> getCidsLayerServicesFromTree(final String metaClass) {
+        final List<AbstractFeatureService> serviceList = new ArrayList<AbstractFeatureService>();
+        final ActiveLayerModel mappingModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
+                    .getMappingModel();
+        final TreeMap treeMap = mappingModel.getMapServices();
+        final List<Integer> keyList = new ArrayList<Integer>(treeMap.keySet());
+        Collections.sort(keyList, Collections.reverseOrder());
+        final Iterator it = keyList.iterator();
+
+        while (it.hasNext()) {
+            final Object service = treeMap.get(it.next());
+            if (service instanceof CidsLayer) {
+                final CidsLayer featureService = (CidsLayer)service;
+
+                if (metaClass == null) {
+                    serviceList.add(featureService);
+                } else {
+                    if (featureService.getMetaClass().getName().equalsIgnoreCase(metaClass)) {
+                        serviceList.add(featureService);
                     }
                 }
             }

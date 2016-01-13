@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Fließgewässerstrukturgütekartierung Mecklenburg-Vorpommern" pageWidth="842" pageHeight="595" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="de.cismet.watergis.reports.FotoScriptlet" whenResourceMissingType="Error" uuid="1e1b19d6-8a98-47d5-a56a-5a27c1984c34">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="gewaessertyp_11" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("11".equals($P{gewaessertyp_id}))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessertyp_12" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("12".equals($P{gewaessertyp_id}))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessertyp_14" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("14".equals($P{gewaessertyp_id}))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessertyp_15" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("15".equals($P{gewaessertyp_id}))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessertyp_16" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("16".equals($P{gewaessertyp_id}))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessertyp_17" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("17".equals($P{gewaessertyp_id}))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessertyp_23" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("23".equals($P{gewaessertyp_id}))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessertyp_seeausfluss" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$P{seeausfluss}]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_11_1" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("11".equals($P{gewaessertyp_id}) && $P{gewaessersubtyp}.contains("D"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_12_1" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("12".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("D"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_14_1" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("14".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("M"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_15_1" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("15".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("M"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_16_1" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("16".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("g"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_17_1" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("17".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("g"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_14_2" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("14".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("S"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_15_2" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("15".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("S"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_16_2" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("16".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("f"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_17_2" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("17".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("f"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_14_3" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("14".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("R"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_15_3" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("15".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("R"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_16_3" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("16".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("R"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<style name="gewaessersubtyp_17_3" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[Boolean.valueOf("17".equals($P{gewaessertyp_id}) &&  $P{gewaessersubtyp}.contains("R"))]]></conditionExpression>
+			<style backcolor="#CAC8C8"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="c170706d-baab-4042-903e-808b8f3fb6b6"/>
+	<parameter name="upl_nutzer" class="java.lang.String"/>
+	<parameter name="upl_datum" class="java.lang.String"/>
+	<parameter name="bild_id" class="java.lang.String"/>
+	<parameter name="pos" class="java.lang.String"/>
+	<parameter name="winkel" class="java.lang.Double"/>
+	<parameter name="basis" class="java.lang.String"/>
+	<parameter name="lawa" class="java.lang.String"/>
+	<parameter name="basis_stat" class="java.lang.Double"/>
+	<parameter name="lawa_stat" class="java.lang.Double"/>
+	<parameter name="re_li" class="java.lang.String"/>
+	<parameter name="status" class="java.lang.String"/>
+	<parameter name="aufn_nutzer" class="java.lang.String"/>
+	<parameter name="aufn_datum" class="java.lang.String"/>
+	<parameter name="freigabe" class="java.lang.String"/>
+	<parameter name="titel" class="java.lang.String"/>
+	<parameter name="beschreibung" class="java.lang.String"/>
+	<parameter name="bemerkung" class="java.lang.String"/>
+	<parameter name="foto" class="java.lang.String"/>
+	<parameter name="punkt" class="com.vividsolutions.jts.geom.Geometry"/>
+	<field name="dateipfad" class="java.lang.String"/>
+	<field name="foto" class="java.lang.String"/>
+	<title>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="106" height="14" uuid="13334930-fcb8-4964-a487-32016b29cb5a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="12" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Fotosteckbrief: ]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="106" y="0" width="274" height="14" uuid="ac689263-3215-4831-a3ea-86ba4afdfa6e"/>
+				<textElement>
+					<font fontName="arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{foto}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="515" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="10" width="106" height="14" uuid="4b6eb847-5d05-4763-af08-37da23f21571"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Upload | Bild-ID:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="75" y="24" width="129" height="14" uuid="af5c1bb5-d3a5-4d70-8e6f-027c4202868b"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{upl_nutzer}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="11" y="24" width="64" height="14" uuid="54bd727a-2d7a-4904-9dbe-3045d6d39773"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[durch:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="75" y="38" width="129" height="14" uuid="7dc4b206-20e2-4dc3-a9eb-66990b2f95cc"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{upl_datum}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="11" y="38" width="64" height="14" uuid="010196ed-0e1d-4c12-b82b-4b5415e18ad6"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[am/um:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="52" width="64" height="14" uuid="b2f6df55-3cc9-45b9-80dc-33363e32712a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Bild-ID:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="75" y="52" width="129" height="14" uuid="49384f42-ea6c-4f5e-9af8-11fed86102ad"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{bild_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="76" width="193" height="14" uuid="c3fd2454-982e-444b-bc82-c2e72f1e46d0"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Verortung | Winkel:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="90" width="64" height="14" uuid="aac83823-7f87-45ae-b884-48fa64a4f283"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Position:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="75" y="90" width="129" height="14" uuid="5495d329-b2f4-4238-9ef7-dc32a9ba8c0f"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{pos}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="491" y="10" width="311" height="266" uuid="df99a924-8f17-4b02-ac80-2190c256a74b"/>
+				<imageExpression><![CDATA[$P{REPORT_SCRIPTLET}.loadFoto()]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="491" y="276" width="311" height="236" uuid="b17c0551-197d-48fb-a82c-652922a891bf"/>
+				<imageExpression><![CDATA[$P{REPORT_SCRIPTLET}.generateMap()]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="0" y="117" width="327" height="14" uuid="8a733223-dfd8-4d5f-bcce-6bc188275541"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Gewässerbezug | Lagestatus | Lage re/li | Lage Status:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="131" width="64" height="14" uuid="37a1ce05-95c9-432e-ad42-621ea9901349"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Basis:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="75" y="131" width="129" height="14" uuid="c7a8faa8-6e0f-4600-82ad-30fadddba786"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{basis}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="11" y="145" width="64" height="14" uuid="b2fa1fec-507f-417c-848d-931a3a9e73c8"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[LAWA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="159" width="64" height="14" uuid="2c250808-cc04-4d59-b71f-8f322b9ce57d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[re/li:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="75" y="145" width="129" height="14" uuid="aa1805f8-211b-4463-bf6c-34fc193da93a"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{lawa}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="75" y="159" width="129" height="14" uuid="73ead4e2-6970-4b3e-a342-d2a7f3932a63"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{re_li}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="327" y="90" width="53" height="14" uuid="eee65993-5b0d-4b15-b4c3-d86a583dcfef"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Winkel:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="380" y="90" width="111" height="14" uuid="e97063ee-3a3e-4589-b528-c215f7d7c89c"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{winkel}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="327" y="131" width="53" height="14" uuid="354e5466-a5e6-475d-b95b-2046d76ba2ba"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Station:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="380" y="131" width="111" height="14" uuid="b5078070-3ed2-49a6-957c-3e35cc90eb85"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{basis_stat}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="327" y="145" width="53" height="14" uuid="6a26879f-9f35-4f98-92df-b7e259ca9307"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Station:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="380" y="145" width="111" height="14" uuid="92cbd974-d37b-466e-8895-b516cd3ce8c7"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{lawa_stat}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="327" y="159" width="53" height="14" uuid="2372e709-5742-4766-b769-c9f888ae9856"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Status:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="380" y="159" width="111" height="14" uuid="6e351868-202e-4a5c-8553-75aede6e1a8a"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{status}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="200" width="327" height="14" uuid="c69a61e2-c1e7-4353-9005-af9f02486904"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Aufnahme | Freigabe:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="75" y="214" width="129" height="14" uuid="7931c04d-b8bc-42e1-91a9-1de2545ad700"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{aufn_nutzer}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="11" y="214" width="64" height="14" uuid="3746ee25-49df-40d2-b6c2-bfa55275d16e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[durch:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="228" width="64" height="14" uuid="68b43dbf-bf54-430b-ae70-db87450e4790"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[am/um:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="75" y="228" width="129" height="14" uuid="5e46a23c-b6a3-4bbf-bc20-dd4f95f98810"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{aufn_datum}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="380" y="228" width="111" height="14" uuid="018541f4-2625-4f30-a45d-25e8e0b0cccb"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{freigabe}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="327" y="228" width="53" height="14" uuid="df82fc77-dcd5-4ba1-8ca2-14abdbefb5a2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="false" isUnderline="false" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Freigabe:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="262" width="327" height="14" uuid="8ce913ae-b81a-448c-b3a4-a77a957df971"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Titel:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="11" y="276" width="480" height="62" uuid="afebe173-21ee-48e6-8ae4-e8b9165bcbc2"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{titel}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="352" width="327" height="14" uuid="4ac34421-040f-4cdb-a02b-b609209153b9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Beschreibung:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="11" y="366" width="480" height="62" uuid="327bcc42-acac-40a6-a63d-b0c041ecf52b"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{beschreibung}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="436" width="327" height="14" uuid="527c8e9b-8112-4f68-8a7a-b30468c6a5f7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Bemerkungen:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="11" y="450" width="480" height="62" uuid="21c49118-ea22-4a6b-90ab-c750aea888e4"/>
+				<textElement>
+					<font fontName="arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{bemerkung}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
