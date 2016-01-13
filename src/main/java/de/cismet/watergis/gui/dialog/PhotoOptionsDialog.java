@@ -25,7 +25,7 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.FotoInfoListener;
+import de.cismet.watergis.gui.PhotoInfoListener;
 
 /**
  * DOCUMENT ME!
@@ -677,7 +677,7 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
         if (order == Order.XY) {
             rbXy.setSelected(true);
         } else if (order == Order.RIVER) {
@@ -700,14 +700,14 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
         txtDistance.setText(String.valueOf(distance));
 
         setVisible(false);
-    } //GEN-LAST:event_butCancelActionPerformed
+    }//GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
         automatic = cbAutomatic.isSelected();
         try {
             distance = Double.parseDouble(txtDistance.getText());
@@ -733,25 +733,25 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
             size = Size.EXTRA_LARGE;
         }
 
-        final FotoInfoListener infoListener = (FotoInfoListener)AppBroker.getInstance().getMappingComponent()
+        final PhotoInfoListener infoListener = (PhotoInfoListener)AppBroker.getInstance().getMappingComponent()
                     .getInputEventListener()
-                    .get(FotoInfoListener.MODE);
+                    .get(PhotoInfoListener.MODE);
 
         if (infoListener != null) {
             infoListener.setPhotoSize();
         }
 
         setVisible(false);
-    } //GEN-LAST:event_butOkActionPerformed
+    }//GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void rbExtraLargeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_rbExtraLargeActionPerformed
+    private void rbExtraLargeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbExtraLargeActionPerformed
         // TODO add your handling code here:
-    } //GEN-LAST:event_rbExtraLargeActionPerformed
+    }//GEN-LAST:event_rbExtraLargeActionPerformed
 
     //~ Inner Classes ----------------------------------------------------------
 
