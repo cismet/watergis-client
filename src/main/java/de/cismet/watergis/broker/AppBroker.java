@@ -47,6 +47,7 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
 
 import net.infonode.docking.RootWindow;
+import net.infonode.docking.View;
 import net.infonode.gui.componentpainter.GradientComponentPainter;
 
 import org.deegree.style.persistence.sld.SLDParser;
@@ -95,6 +96,7 @@ import de.cismet.watergis.broker.listener.SelectionModeListener;
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.CleanUpAction;
 import de.cismet.watergis.gui.actions.InfoWindowAction;
+import de.cismet.watergis.gui.components.RefreshMenuItem;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 import de.cismet.watergis.utils.BookmarkManager;
@@ -114,6 +116,7 @@ public class AppBroker implements Configurable {
     private static final Color blue = new Color(124, 160, 221);
     public static final Color DEFAULT_MODE_COLOR = blue;
     public static final String MEASURE_MODE = "MEASURE_MODE";
+    public static final String FOTO_MC_NAME = "foto";
     private static ConfigurationManager configManager;
     public static final String DOMAIN_NAME = "DLM25W";
 
@@ -142,6 +145,7 @@ public class AppBroker implements Configurable {
     private List<CidsBean> ownWwGr = new ArrayList<CidsBean>();
     private String[] validLawaCodes;
     private CidsBean niemandWwGr = null;
+    private View photoView;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -553,19 +557,8 @@ public class AppBroker implements Configurable {
             popupMenu.removePopupMenuListener(l);
         }
 
-        final Collection<Component> toRemoveComponents = new ArrayList<Component>();
-        for (final Component component : popupMenu.getComponents()) {
-            if ((component instanceof JSeparator)
-                        || !((component instanceof JMenuItem)
-                            && ((((JMenuItem)component).getAccelerator() != null)
-                                && ((JMenuItem)component).getAccelerator().equals(
-                                    KeyStroke.getKeyStroke("F5"))))) {
-                toRemoveComponents.add(component);
-            }
-        }
-        for (final Component toRemoveComponent : toRemoveComponents) {
-            popupMenu.remove(toRemoveComponent);
-        }
+        popupMenu.removeAll();
+        popupMenu.add(new RefreshMenuItem());
 
         final DefaultPopupMenuListener cataloguePopupMenuListener = new DefaultPopupMenuListener(popupMenu);
         final Node[] roots = SessionManager.getProxy().getRoots();
@@ -598,6 +591,7 @@ public class AppBroker implements Configurable {
             popupMenu,
             metaCatalogueTree,
             searchResultsTree,
+            null,
             attributeViewer,
             attributeEditor,
             searchDialog,
@@ -848,6 +842,24 @@ public class AppBroker implements Configurable {
         }
 
         return false;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the photoView
+     */
+    public View getPhotoView() {
+        return photoView;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  photoView  the photoView to set
+     */
+    public void setPhotoView(final View photoView) {
+        this.photoView = photoView;
     }
 
     //~ Inner Classes ----------------------------------------------------------
