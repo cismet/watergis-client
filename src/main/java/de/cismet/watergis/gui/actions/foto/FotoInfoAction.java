@@ -21,7 +21,7 @@ import javax.swing.KeyStroke;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.FotoInfoListener;
+import de.cismet.watergis.gui.PhotoInfoListener;
 
 /**
  * DOCUMENT ME!
@@ -62,7 +62,7 @@ public class FotoInfoAction extends AbstractAction {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Switch in foto info Mode");
         }
-        AppBroker.getInstance().getMappingComponent().setInteractionMode(FotoInfoListener.MODE);
+        AppBroker.getInstance().getMappingComponent().setInteractionMode(PhotoInfoListener.MODE);
         putValue(SELECTED_KEY, Boolean.TRUE);
     }
 
