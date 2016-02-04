@@ -221,7 +221,7 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
                                 return 0;
                             } else {
                                 if (laCd1.compareTo(laCd2) == 0) {
-                                    return (int)Math.signum(getStatValue(o1) - getStatValue(o2));
+                                    return (int)Math.signum(getLaStatValue(o1) - getLaStatValue(o2));
                                 } else {
                                     return laCd1.compareTo(laCd2);
                                 }
@@ -677,7 +677,7 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         if (order == Order.XY) {
             rbXy.setSelected(true);
         } else if (order == Order.RIVER) {
@@ -700,14 +700,14 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
         txtDistance.setText(String.valueOf(distance));
 
         setVisible(false);
-    }//GEN-LAST:event_butCancelActionPerformed
+    } //GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         automatic = cbAutomatic.isSelected();
         try {
             distance = Double.parseDouble(txtDistance.getText());
@@ -742,16 +742,16 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
         }
 
         setVisible(false);
-    }//GEN-LAST:event_butOkActionPerformed
+    } //GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void rbExtraLargeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbExtraLargeActionPerformed
+    private void rbExtraLargeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_rbExtraLargeActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_rbExtraLargeActionPerformed
+    } //GEN-LAST:event_rbExtraLargeActionPerformed
 
     //~ Inner Classes ----------------------------------------------------------
 

@@ -132,14 +132,6 @@ public class PhotoInfoListener extends PBasicInputEventHandler {
      */
     @Override
     public void mouseDragged(final PInputEvent event) {
-//        if (!isDragging() && event.isShiftDown()) {
-//            startLineMark();
-//        }
-//        updateCursor(event.getPosition());
-//        cursorPHandle.setMarkPosition(getCurrentPosition());
-//        if (isDragging()) {
-//            updateLineMark();
-//        }
     }
 
     /**
@@ -149,10 +141,6 @@ public class PhotoInfoListener extends PBasicInputEventHandler {
      */
     @Override
     public void mouseReleased(final PInputEvent event) {
-//        log.fatal("mouse released");
-//        if (isDragging()) {
-//            finishLineMark();
-//        }
     }
 
     /**
@@ -214,7 +202,7 @@ public class PhotoInfoListener extends PBasicInputEventHandler {
     @Override
     public void mouseMoved(final PInputEvent event) {
         if (mc.getInteractionMode().equals(MODE)) {
-            updateCursor(event.getPosition(), event);
+            updateCursor(event);
             cursorPHandle.setMarkPosition();
         }
     }
@@ -222,10 +210,9 @@ public class PhotoInfoListener extends PBasicInputEventHandler {
     /**
      * DOCUMENT ME!
      *
-     * @param  trigger  DOCUMENT ME!
-     * @param  event    DOCUMENT ME!
+     * @param  event  DOCUMENT ME!
      */
-    private void updateCursor(final Point2D trigger, final PInputEvent event) {
+    private void updateCursor(final PInputEvent event) {
         final Collection c = PFeatureTools.getValidObjectsUnderPointer(
                 event,
                 new Class[] { PFeature.class },
@@ -260,53 +247,5 @@ public class PhotoInfoListener extends PBasicInputEventHandler {
 
         cursorX = (float)event.getPosition().getX();
         cursorY = (float)event.getPosition().getY();
-    }
-
-    //~ Inner Classes ----------------------------------------------------------
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @version  $Revision$, $Date$
-     */
-    class PointMark {
-
-        //~ Instance fields ----------------------------------------------------
-
-        private double position;
-        private LinearReferencedPointMarkPHandle pHandle;
-
-        //~ Constructors -------------------------------------------------------
-
-        /**
-         * Creates a new PointMark object.
-         *
-         * @param  position  DOCUMENT ME!
-         * @param  handle    DOCUMENT ME!
-         */
-        PointMark(final double position, final LinearReferencedPointMarkPHandle handle) {
-            this.pHandle = handle;
-            this.position = position;
-        }
-
-        //~ Methods ------------------------------------------------------------
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  DOCUMENT ME!
-         */
-        public double getPosition() {
-            return position;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  DOCUMENT ME!
-         */
-        public LinearReferencedPointMarkPHandle getPHandle() {
-            return pHandle;
-        }
     }
 }

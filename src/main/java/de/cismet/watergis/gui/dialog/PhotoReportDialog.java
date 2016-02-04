@@ -131,6 +131,7 @@ public class PhotoReportDialog extends javax.swing.JDialog {
     public void setVisible(final boolean b) {
         if (b) {
             refreshSelectedFeatureCount(true);
+            cancelled = true;
         }
         super.setVisible(b);
     }
