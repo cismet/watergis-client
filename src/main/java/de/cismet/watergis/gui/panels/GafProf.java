@@ -18,9 +18,9 @@ import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.newuser.User;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKBReader;
 
@@ -57,6 +57,8 @@ import java.math.BigDecimal;
 
 import java.net.URLDecoder;
 
+import java.sql.Timestamp;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
@@ -67,13 +69,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import de.cismet.cids.custom.watergis.server.search.GafPosition;
 import de.cismet.cids.custom.watergis.server.search.PhotoGetBaStat;
 import de.cismet.cids.custom.watergis.server.search.PhotoGetLaStat;
 import de.cismet.cids.custom.watergis.server.search.PhotoGetPhotoNumber;
@@ -87,8 +89,8 @@ import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.BoundingBox;
-import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.XBoundingBox;
+import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
@@ -98,25 +100,21 @@ import de.cismet.cismap.commons.util.SelectionChangedEvent;
 import de.cismet.cismap.commons.util.SelectionChangedListener;
 import de.cismet.cismap.commons.util.SelectionManager;
 
-import de.cismet.commons.security.WebDavClient;
-import de.cismet.commons.security.WebDavHelper;
-
-import de.cismet.netutil.Proxy;
-
 import de.cismet.tools.CismetThreadPool;
-import de.cismet.tools.PasswordEncrypter;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.PhotoAngleListener;
+import de.cismet.watergis.gui.dialog.GafImportDialog;
 import de.cismet.watergis.gui.dialog.PhotoOptionsDialog;
 
 import de.cismet.watergis.utils.CidsBeanUtils;
-import de.cismet.watergis.utils.ExifReader;
 import de.cismet.watergis.utils.FeatureServiceHelper;
+import de.cismet.watergis.utils.GafReader;
+
+import static de.cismet.watergis.gui.panels.Photo.selectedFeature;
 
 /**
  * DOCUMENT ME!
@@ -124,36 +122,20 @@ import de.cismet.watergis.utils.FeatureServiceHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class Photo extends javax.swing.JPanel {
+public class GafProf extends javax.swing.JPanel {
 
     //~ Static fields/initializers ---------------------------------------------
 
     private static final CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
                 AppBroker.DOMAIN_NAME,
-                "dlm25w.foto"));
+                "dlm25w.qp"));
+    private static final CidsLayer ppLayer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                AppBroker.DOMAIN_NAME,
+                "dlm25w.qp_gaf_pp"));
     private static int idCounter = -1;
-    public static final String WEB_DAV_USER;
-    public static final String WEB_DAV_PASSWORD;
-    public static final String WEB_DAV_DIRECTORY;
     private static final String FILE_PROTOCOL_PREFIX = "file://";
-    private static final Logger LOG = Logger.getLogger(Photo.class);
-    private static final WebDavClient webDavClient;
+    private static final Logger LOG = Logger.getLogger(GafProf.class);
     public static CidsLayerFeature selectedFeature = null;
-
-    static {
-        final ResourceBundle bundle = ResourceBundle.getBundle("WebDav");
-        String pass = bundle.getString("password");
-
-        if ((pass != null)) {
-            pass = new String(PasswordEncrypter.decrypt(pass.toCharArray(), true));
-        }
-
-        WEB_DAV_PASSWORD = pass;
-        WEB_DAV_USER = bundle.getString("username");
-        WEB_DAV_DIRECTORY = bundle.getString("url");
-
-        webDavClient = new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD);
-    }
 
     //~ Instance fields --------------------------------------------------------
 
@@ -165,17 +147,16 @@ public class Photo extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butBack;
     private javax.swing.JButton butDelete;
-    private javax.swing.JButton butNextPhoto;
-    private javax.swing.JButton butPrevPhoto;
+    private javax.swing.JButton butNextProfile;
+    private javax.swing.JButton butPrevProfile;
     private javax.swing.JButton butPrint;
     private javax.swing.JButton butPrintPreview;
     private javax.swing.JButton butRemoveSelection;
     private javax.swing.JButton butSave;
-    private javax.swing.JButton butZoomToPhoto;
-    private de.cismet.watergis.gui.panels.PhotoEditor editor;
+    private javax.swing.JButton butZoomToProfile;
+    private de.cismet.watergis.gui.panels.GafProfEditor editor;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JToggleButton tbAngle;
     private javax.swing.JToggleButton tbLocate;
     private javax.swing.JToggleButton tbProcessing;
     // End of variables declaration//GEN-END:variables
@@ -185,8 +166,9 @@ public class Photo extends javax.swing.JPanel {
     /**
      * Creates new form Photo.
      */
-    public Photo() {
+    public GafProf() {
         initComponents();
+        editor.setPpLayer(ppLayer);
         tbProcessing.setVisible(false);
 //        butRemoveSelection.setVisible(true);
         SelectionManager.getInstance().addSelectionChangedListener(new SelectionChangedListener() {
@@ -194,7 +176,7 @@ public class Photo extends javax.swing.JPanel {
                 @Override
                 public void selectionChanged(final SelectionChangedEvent event) {
                     final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
-                            "foto");
+                            "qp");
 
                     if (tbLocate.isSelected()) {
                         return;
@@ -204,8 +186,8 @@ public class Photo extends javax.swing.JPanel {
                         Collections.sort(features, PhotoOptionsDialog.getInstance().getSorter());
                         if ((selectedFeature == null) || !features.get(0).equals(selectedFeature)) {
                             setEditorFeature((CidsLayerFeature)features.get(0));
-                            butPrevPhoto.setEnabled(false);
-                            butNextPhoto.setEnabled(features.size() > 1);
+                            butPrevProfile.setEnabled(false);
+                            butNextProfile.setEnabled(features.size() > 1);
                         }
                     } else {
                         setEditorFeature(null);
@@ -271,7 +253,7 @@ public class Photo extends javax.swing.JPanel {
                                 }
                                 br.close();
 
-                                if ((fileList.size() > 0)) {
+                                if (fileList.size() > 0) {
                                     editor.showEditor(true, true);
                                     CismetThreadPool.execute(new ImageUploadWorker(fileList));
                                     e.dropComplete(true);
@@ -328,31 +310,30 @@ public class Photo extends javax.swing.JPanel {
         jToolBar1 = new javax.swing.JToolBar();
         butPrintPreview = new javax.swing.JButton();
         butPrint = new javax.swing.JButton();
-        butPrevPhoto = new javax.swing.JButton();
-        butNextPhoto = new javax.swing.JButton();
+        butPrevProfile = new javax.swing.JButton();
+        butNextProfile = new javax.swing.JButton();
         tbLocate = new javax.swing.JToggleButton();
-        tbAngle = new javax.swing.JToggleButton();
         tbProcessing = new javax.swing.JToggleButton();
-        butZoomToPhoto = new javax.swing.JButton();
+        butZoomToProfile = new javax.swing.JButton();
         butBack = new javax.swing.JButton();
         butDelete = new javax.swing.JButton();
         butSave = new javax.swing.JButton();
         butRemoveSelection = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        editor = new PhotoEditor(webDavClient, WEB_DAV_DIRECTORY);
+        editor = new de.cismet.watergis.gui.panels.GafProfEditor();
 
         setLayout(new java.awt.GridBagLayout());
 
         jToolBar1.setRollover(true);
 
         butPrintPreview.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-preview.png"))); // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-preview.png")));     // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butPrintPreview,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butPrintPreview.text")); // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butPrintPreview.text")); // NOI18N
         butPrintPreview.setToolTipText(org.openide.util.NbBundle.getMessage(
-                Photo.class,
-                "Photo.butPrintPreview.toolTipText"));                                        // NOI18N
+                GafProf.class,
+                "GafProf.butPrintPreview.toolTipText"));                                          // NOI18N
         butPrintPreview.setFocusable(false);
         butPrintPreview.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butPrintPreview.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -366,11 +347,11 @@ public class Photo extends javax.swing.JPanel {
         jToolBar1.add(butPrintPreview);
 
         butPrint.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-print.png")));                       // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-print.png")));                           // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butPrint,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butPrint.text"));                            // NOI18N
-        butPrint.setToolTipText(org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butPrint.toolTipText")); // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butPrint.text"));                            // NOI18N
+        butPrint.setToolTipText(org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butPrint.toolTipText")); // NOI18N
         butPrint.setFocusable(false);
         butPrint.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butPrint.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -383,49 +364,49 @@ public class Photo extends javax.swing.JPanel {
             });
         jToolBar1.add(butPrint);
 
-        butPrevPhoto.setIcon(new javax.swing.ImageIcon(
+        butPrevProfile.setIcon(new javax.swing.ImageIcon(
                 getClass().getResource("/de/cismet/watergis/res/icons16/icon-arrow-left.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
-            butPrevPhoto,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butPrevPhoto.text"));       // NOI18N
-        butPrevPhoto.setToolTipText(org.openide.util.NbBundle.getMessage(
-                Photo.class,
-                "Photo.butPrevPhoto.toolTipText"));                                              // NOI18N
-        butPrevPhoto.setFocusable(false);
-        butPrevPhoto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        butPrevPhoto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        butPrevPhoto.addActionListener(new java.awt.event.ActionListener() {
+            butPrevProfile,
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butPrevProfile.text")); // NOI18N
+        butPrevProfile.setToolTipText(org.openide.util.NbBundle.getMessage(
+                GafProf.class,
+                "GafProf.butPrevProfile.toolTipText"));                                          // NOI18N
+        butPrevProfile.setFocusable(false);
+        butPrevProfile.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        butPrevProfile.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        butPrevProfile.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
                 public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    butPrevPhotoActionPerformed(evt);
+                    butPrevProfileActionPerformed(evt);
                 }
             });
-        jToolBar1.add(butPrevPhoto);
+        jToolBar1.add(butPrevProfile);
 
-        butNextPhoto.setIcon(new javax.swing.ImageIcon(
+        butNextProfile.setIcon(new javax.swing.ImageIcon(
                 getClass().getResource("/de/cismet/watergis/res/icons16/icon-arrow-right.png"))); // NOI18N
-        butNextPhoto.setToolTipText(org.openide.util.NbBundle.getMessage(
-                Photo.class,
-                "Photo.butNextPhoto.toolTipText"));                                               // NOI18N
-        butNextPhoto.setFocusable(false);
-        butNextPhoto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        butNextPhoto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        butNextPhoto.addActionListener(new java.awt.event.ActionListener() {
+        butNextProfile.setToolTipText(org.openide.util.NbBundle.getMessage(
+                GafProf.class,
+                "GafProf.butNextProfile.toolTipText"));                                           // NOI18N
+        butNextProfile.setFocusable(false);
+        butNextProfile.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        butNextProfile.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        butNextProfile.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
                 public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    butNextPhotoActionPerformed(evt);
+                    butNextProfileActionPerformed(evt);
                 }
             });
-        jToolBar1.add(butNextPhoto);
+        jToolBar1.add(butNextProfile);
 
         tbLocate.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-flagtriangle.png")));                // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-flagtriangle.png")));                    // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             tbLocate,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.tbLocate.text"));                            // NOI18N
-        tbLocate.setToolTipText(org.openide.util.NbBundle.getMessage(Photo.class, "Photo.tbLocate.toolTipText")); // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.tbLocate.text"));                            // NOI18N
+        tbLocate.setToolTipText(org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.tbLocate.toolTipText")); // NOI18N
         tbLocate.setFocusable(false);
         tbLocate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         tbLocate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -438,26 +419,11 @@ public class Photo extends javax.swing.JPanel {
             });
         jToolBar1.add(tbLocate);
 
-        tbAngle.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-angle.png")));                     // NOI18N
-        tbAngle.setToolTipText(org.openide.util.NbBundle.getMessage(Photo.class, "Photo.tbAngle.toolTipText")); // NOI18N
-        tbAngle.setFocusable(false);
-        tbAngle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        tbAngle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tbAngle.addActionListener(new java.awt.event.ActionListener() {
-
-                @Override
-                public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    tbAngleActionPerformed(evt);
-                }
-            });
-        jToolBar1.add(tbAngle);
-
         tbProcessing.setIcon(new javax.swing.ImageIcon(
                 getClass().getResource("/de/cismet/cismap/commons/gui/attributetable/res/icon-edit.png"))); // NOI18N
         tbProcessing.setToolTipText(org.openide.util.NbBundle.getMessage(
-                Photo.class,
-                "Photo.tbProcessing.toolTipText"));                                                         // NOI18N
+                GafProf.class,
+                "GafProf.tbProcessing.toolTipText"));                                                       // NOI18N
         tbProcessing.setFocusable(false);
         tbProcessing.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         tbProcessing.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -470,32 +436,32 @@ public class Photo extends javax.swing.JPanel {
             });
         jToolBar1.add(tbProcessing);
 
-        butZoomToPhoto.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-resize.png"))); // NOI18N
+        butZoomToProfile.setIcon(new javax.swing.ImageIcon(
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-resize.png")));       // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
-            butZoomToPhoto,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butZoomToPhoto.text")); // NOI18N
-        butZoomToPhoto.setToolTipText(org.openide.util.NbBundle.getMessage(
-                Photo.class,
-                "Photo.butZoomToPhoto.toolTipText"));                                        // NOI18N
-        butZoomToPhoto.setFocusable(false);
-        butZoomToPhoto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        butZoomToPhoto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        butZoomToPhoto.addActionListener(new java.awt.event.ActionListener() {
+            butZoomToProfile,
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butZoomToProfile.text")); // NOI18N
+        butZoomToProfile.setToolTipText(org.openide.util.NbBundle.getMessage(
+                GafProf.class,
+                "GafProf.butZoomToProfile.toolTipText"));                                          // NOI18N
+        butZoomToProfile.setFocusable(false);
+        butZoomToProfile.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        butZoomToProfile.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        butZoomToProfile.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
                 public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    butZoomToPhotoActionPerformed(evt);
+                    butZoomToProfileActionPerformed(evt);
                 }
             });
-        jToolBar1.add(butZoomToPhoto);
+        jToolBar1.add(butZoomToProfile);
 
         butBack.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/cismap/commons/gui/attributetable/res/icon-thissideup.png"))); // NOI18N
+                getClass().getResource("/de/cismet/cismap/commons/gui/attributetable/res/icon-thissideup.png")));   // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butBack,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butBack.text"));                             // NOI18N
-        butBack.setToolTipText(org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butBack.toolTipText"));   // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butBack.text"));                           // NOI18N
+        butBack.setToolTipText(org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butBack.toolTipText")); // NOI18N
         butBack.setFocusable(false);
         butBack.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butBack.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -509,11 +475,11 @@ public class Photo extends javax.swing.JPanel {
         jToolBar1.add(butBack);
 
         butDelete.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-remove-sign.png")));                   // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-remove-sign.png")));                       // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butDelete,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butDelete.text"));                             // NOI18N
-        butDelete.setToolTipText(org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butDelete.toolTipText")); // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butDelete.text"));                             // NOI18N
+        butDelete.setToolTipText(org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butDelete.toolTipText")); // NOI18N
         butDelete.setFocusable(false);
         butDelete.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butDelete.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -527,11 +493,11 @@ public class Photo extends javax.swing.JPanel {
         jToolBar1.add(butDelete);
 
         butSave.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-save-floppy.png")));               // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-save-floppy.png")));                   // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butSave,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butSave.text"));                           // NOI18N
-        butSave.setToolTipText(org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butSave.toolTipText")); // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butSave.text"));                           // NOI18N
+        butSave.setToolTipText(org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butSave.toolTipText")); // NOI18N
         butSave.setFocusable(false);
         butSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -548,10 +514,10 @@ public class Photo extends javax.swing.JPanel {
                 getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionremove.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butRemoveSelection,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butRemoveSelection.text"));      // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butRemoveSelection.text"));  // NOI18N
         butRemoveSelection.setToolTipText(org.openide.util.NbBundle.getMessage(
-                Photo.class,
-                "Photo.butRemoveSelection.toolTipText"));                                             // NOI18N
+                GafProf.class,
+                "GafProf.butRemoveSelection.toolTipText"));                                           // NOI18N
         butRemoveSelection.setFocusable(false);
         butRemoveSelection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butRemoveSelection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -571,7 +537,6 @@ public class Photo extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1.0;
         add(jToolBar1, gridBagConstraints);
 
-        editor.setMinimumSize(new java.awt.Dimension(800, 500));
         jScrollPane1.setViewportView(editor);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -592,9 +557,8 @@ public class Photo extends javax.swing.JPanel {
         final WaitingDialogThread<JasperPrint> wdt = new WaitingDialogThread<JasperPrint>(StaticSwingTools
                         .getParentFrame(this),
                 true,
-                NbBundle.getMessage(
-                    Photo.class,
-                    "Photo.butPrintPreviewActionPerformed.WaitingDialogThread"),
+                NbBundle.getMessage(GafProf.class,
+                    "GafProf.butPrintPreviewActionPerformed.WaitingDialogThread"),
                 null,
                 500) {
 
@@ -610,8 +574,8 @@ public class Photo extends javax.swing.JPanel {
 
                         final JRViewer aViewer = new JRViewer(jasperPrint);
                         final JFrame aFrame = new JFrame(org.openide.util.NbBundle.getMessage(
-                                    Photo.class,
-                                    "Photo.butPrintPreviewActionPerformed.aFrame.title")); // NOI18N
+                                    GafProf.class,
+                                    "GafProf.butPrintPreviewActionPerformed.aFrame.title")); // NOI18N
                         aFrame.getContentPane().add(aViewer);
                         final java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
                         aFrame.setSize(screenSize.width / 2, screenSize.height / 2);
@@ -621,7 +585,7 @@ public class Photo extends javax.swing.JPanel {
                                     + insets.top
                                     + insets.bottom
                                     + 20);
-                        aFrame.setLocationRelativeTo(Photo.this);
+                        aFrame.setLocationRelativeTo(GafProf.this);
                         aFrame.setVisible(true);
                     } catch (Exception e) {
                         LOG.error("Error while creating report", e);
@@ -641,8 +605,7 @@ public class Photo extends javax.swing.JPanel {
         final WaitingDialogThread<JasperPrint> wdt = new WaitingDialogThread<JasperPrint>(StaticSwingTools
                         .getParentFrame(this),
                 true,
-                NbBundle.getMessage(
-                    Photo.class,
+                NbBundle.getMessage(GafProf.class,
                     "AttributeTable.butPrintActionPerformed.WaitingDialogThread"),
                 null,
                 500) {
@@ -677,12 +640,38 @@ public class Photo extends javax.swing.JPanel {
      *
      * @throws  Exception  DOCUMENT ME!
      */
+    @Deprecated
     public static InputStream loadFileFromWebDav(final CidsLayerFeature feature, final Component parent)
             throws Exception {
-        final String path = (String)feature.getBean().getProperty("dateipfad");
-        final String file = WebDavHelper.encodeURL((String)feature.getProperty("foto"));
+        return null;
+    }
 
-        return webDavClient.getInputStream(WEB_DAV_DIRECTORY + path + file);
+    /**
+     * Deletes the given feature and all dependend objects.
+     *
+     * @param   feature  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static void deleteProfile(final CidsLayerFeature feature) throws Exception {
+        final String nr = String.valueOf(feature.getProperty("qp_nr"));
+        feature.delete();
+        ppLayer.initAndWait();
+        final List<DefaultFeatureServiceFeature> features = ppLayer.getFeatureFactory()
+                    .createFeatures("qp_nr = " + nr,
+                        null,
+                        null,
+                        0,
+                        0,
+                        null);
+
+        if (features != null) {
+            for (final DefaultFeatureServiceFeature f : features) {
+                if (f instanceof CidsLayerFeature) {
+                    ((CidsLayerFeature)f).delete();
+                }
+            }
+        }
     }
 
     /**
@@ -690,13 +679,130 @@ public class Photo extends javax.swing.JPanel {
      *
      * @param   feature  DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public static void deletePhoto(final CidsLayerFeature feature) throws Exception {
-        final String path = (String)feature.getProperty("dateipfad");
-        final String file = (String)feature.getProperty("foto");
-        WebDavHelper.deleteFileFromWebDAV(file, webDavClient, WEB_DAV_DIRECTORY + path);
-        feature.delete();
+    public static String getBasicReportFileName(final CidsLayerFeature feature) throws Exception {
+        final Object baStObject = feature.getProperty("ba_st");
+        String baCd;
+        Double stat;
+
+        if (baStObject instanceof CidsBean) {
+            baCd = (String)((CidsBean)baStObject).getProperty("route.ba_cd");
+            stat = (Double)((CidsBean)baStObject).getProperty("wert");
+        } else {
+            baCd = (String)feature.getProperty("ba_cd");
+            stat = (Double)baStObject;
+        }
+
+        final DecimalFormat format = new DecimalFormat("0.00");
+        final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        format.setDecimalFormatSymbols(symbols);
+        format.setGroupingUsed(false);
+
+        return removeIllegaleFileNameCharacters(baCd) + "__" + format.format(stat) + ".pdf";
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static Double getFeatureStation(final CidsLayerFeature feature) {
+        final Object baStObject = feature.getProperty("ba_st");
+        Double stat;
+
+        if (baStObject instanceof CidsBean) {
+            stat = (Double)((CidsBean)baStObject).getProperty("wert");
+        } else {
+            stat = (Double)baStObject;
+        }
+
+        return stat;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static String getBasicGafFileName(final CidsLayerFeature feature) throws Exception {
+        final Object baStObject = feature.getProperty("ba_st");
+        String baCd;
+
+        if (baStObject instanceof CidsBean) {
+            baCd = (String)((CidsBean)baStObject).getProperty("route.ba_cd");
+        } else {
+            baCd = (String)feature.getProperty("ba_cd");
+        }
+
+        return removeIllegaleFileNameCharacters(baCd) + ".gaf";
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static String getLawaReportFileName(final CidsLayerFeature feature) throws Exception {
+        final String baCd = (String)feature.getProperty("la_cd");
+        final Double stat = (Double)feature.getProperty("la_st");
+
+        final DecimalFormat format = new DecimalFormat("0.00");
+        final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        format.setDecimalFormatSymbols(symbols);
+        format.setGroupingUsed(false);
+
+        return removeIllegaleFileNameCharacters(baCd) + "__" + format.format(stat) + ".pdf";
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static String getLawaGafFileName(final CidsLayerFeature feature) throws Exception {
+        final String baCd = (String)feature.getProperty("la_cd");
+
+        return removeIllegaleFileNameCharacters(baCd) + ".gaf";
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   name  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private static String removeIllegaleFileNameCharacters(String name) {
+        name = name.replace("\\", "-");
+        name = name.replace("/", "_");
+        name = name.replace(":", "+");
+        name = name.replace("*", "#");
+        name = name.replace("?", "!");
+        name = name.replace("\"", "'");
+        name = name.replace("<", "$");
+        name = name.replace(">", "%");
+        name = name.replace("|", "~");
+
+        return name;
     }
 
     /**
@@ -709,7 +815,6 @@ public class Photo extends javax.swing.JPanel {
      * @throws  Exception  DOCUMENT ME!
      */
     public static JasperPrint fillreport(final CidsLayerFeature feature) throws Exception {
-//        final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final JRDataSource ds = new JRDataSource() {
 
                 private boolean first = true;
@@ -740,13 +845,20 @@ public class Photo extends javax.swing.JPanel {
         final CidsBean freigabe = (CidsBean)feature.getBean().getProperty("freigabe");
 
         map.put("punkt", feature.getGeometry());
-        map.put("foto", feature.getProperty("foto"));
         map.put("upl_nutzer", feature.getProperty("upl_name"));
         map.put("upl_datum", obj2Time(feature.getProperty("upl_zeit")));
-        map.put("bild_id", feature.getProperty("foto_nr"));
+        map.put("qp_nr", objectToString(feature.getProperty("qp_nr")));
         map.put("pos", format.format(feature.getProperty("re")) + ", " + format.format(feature.getProperty("ho")));
-        map.put("winkel", feature.getProperty("winkel"));
         map.put("lawa", feature.getProperty("la_cd"));
+        map.put("lawa_stat", feature.getProperty("la_st"));
+        map.put("dhhn", "ja");
+        map.put("status", objectToString(feature.getProperty("l_st")));
+        map.put("aufn_nutzer", feature.getProperty("aufn_name"));
+        map.put("aufn_datum", obj2Time(feature.getProperty("aufn_zeit")));
+        map.put("titel", feature.getProperty("titel"));
+        map.put("beschreibung", feature.getProperty("beschreib"));
+        map.put("bemerkung", feature.getProperty("bemerkung"));
+
         if (basisStat != null) {
             map.put("basis", feature.getProperty("route.ba_cd"));
             map.put("basis_stat", basisStat.getProperty("wert"));
@@ -754,23 +866,14 @@ public class Photo extends javax.swing.JPanel {
             map.put("basis", "");
             map.put("basis_stat", 0.0);
         }
-        map.put("lawa_stat", feature.getProperty("la_st"));
-        map.put("re_li", objectToString(feature.getProperty("l_rl")));
-        map.put("status", objectToString(feature.getProperty("l_st")));
-        map.put("aufn_nutzer", feature.getProperty("aufn_name"));
-        map.put("aufn_datum", obj2Time(feature.getProperty("aufn_zeit")));
         if (freigabe != null) {
             map.put("freigabe", freigabe.toString());
         } else {
             map.put("freigabe", "");
         }
-        map.put("titel", feature.getProperty("titel"));
-        map.put("beschreibung", feature.getProperty("beschreib"));
-        map.put("bemerkung", feature.getProperty("bemerkung"));
-        map.put("foto", feature.getProperty("foto"));
 
-        final JasperReport jasperReport = (JasperReport)JRLoader.loadObject(Photo.class.getResourceAsStream(
-                    "/de/cismet/watergis/reports/foto.jasper"));
+        final JasperReport jasperReport = (JasperReport)JRLoader.loadObject(GafProf.class.getResourceAsStream(
+                    "/de/cismet/watergis/reports/gafProf.jasper"));
 
         return JasperFillManager.fillReport(jasperReport, map, ds);
     }
@@ -799,27 +902,17 @@ public class Photo extends javax.swing.JPanel {
     /**
      * DOCUMENT ME!
      */
-    public static void reloadPhotoServices() {
-        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
-                "foto");
-
-        for (final AbstractFeatureService featureService : services) {
-            featureService.retrieve(true);
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     */
     private void addGafServicesToTree() {
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
-                "foto");
+                "qp");
 
         if ((services == null) || services.isEmpty()) {
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(layer);
         }
 
-        addLayerToTree("foto_pr_pf");
+        addLayerToTree("qp_gaf_p");
+        addLayerToTree("qp_gaf_l");
+        addLayerToTree("qp_gaf_l_pr_pf");
     }
 
     /**
@@ -842,12 +935,24 @@ public class Photo extends javax.swing.JPanel {
 
     /**
      * DOCUMENT ME!
+     */
+    public static void reloadGafProfileServices() {
+        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "qp");
+
+        for (final AbstractFeatureService featureService : services) {
+            featureService.retrieve(true);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrevPhotoActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrevPhotoActionPerformed
+    private void butPrevProfileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrevProfileActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
-        final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("foto");
+        final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("qp");
 
         if ((features != null) && !features.isEmpty()) {
             int index = features.indexOf(feature);
@@ -856,19 +961,19 @@ public class Photo extends javax.swing.JPanel {
             if (index >= 0) {
                 setEditorFeature((CidsLayerFeature)features.get(index));
             }
-            butNextPhoto.setEnabled(index != (features.size() - 1));
-            butPrevPhoto.setEnabled(index != 0);
+            butNextProfile.setEnabled(index != (features.size() - 1));
+            butPrevProfile.setEnabled(index != 0);
         }
-    } //GEN-LAST:event_butPrevPhotoActionPerformed
+    } //GEN-LAST:event_butPrevProfileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butNextPhotoActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butNextPhotoActionPerformed
+    private void butNextProfileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butNextProfileActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
-        final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("foto");
+        final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("qp");
 
         if ((features != null) && !features.isEmpty()) {
             int index = features.indexOf(feature);
@@ -878,10 +983,10 @@ public class Photo extends javax.swing.JPanel {
                 setEditorFeature((CidsLayerFeature)features.get(index));
             }
 
-            butNextPhoto.setEnabled(index != (features.size() - 1));
-            butPrevPhoto.setEnabled(index != 0);
+            butNextProfile.setEnabled(index != (features.size() - 1));
+            butPrevProfile.setEnabled(index != 0);
         }
-    } //GEN-LAST:event_butNextPhotoActionPerformed
+    } //GEN-LAST:event_butNextProfileActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -914,7 +1019,7 @@ public class Photo extends javax.swing.JPanel {
                 ruleSet.beforeSave(feature);
             }
             feature.saveChanges();
-            reloadPhotoServices();
+            reloadGafProfileServices();
         } catch (Exception e) {
             LOG.error("Eror while saving feature", e);
         }
@@ -934,7 +1039,7 @@ public class Photo extends javax.swing.JPanel {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butZoomToPhotoActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butZoomToPhotoActionPerformed
+    private void butZoomToProfileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butZoomToProfileActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final MappingComponent mappingComponent = CismapBroker.getInstance().getMappingComponent();
 
@@ -946,7 +1051,7 @@ public class Photo extends javax.swing.JPanel {
         } else {
             LOG.error("MappingComponent is not set");
         }
-    } //GEN-LAST:event_butZoomToPhotoActionPerformed
+    } //GEN-LAST:event_butZoomToProfileActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -957,11 +1062,10 @@ public class Photo extends javax.swing.JPanel {
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
 
         final int ans = JOptionPane.showConfirmDialog(
-                Photo.this,
-                NbBundle.getMessage(
-                    Photo.class,
-                    "Photo.butDeleteActionPerformed().text"),
-                NbBundle.getMessage(Photo.class, "Photo.butDeleteActionPerformed().title"),
+                GafProf.this,
+                NbBundle.getMessage(GafProf.class,
+                    "GafProf.butDeleteActionPerformed().text"),
+                NbBundle.getMessage(GafProf.class, "GafProf.butDeleteActionPerformed().title"),
                 JOptionPane.YES_NO_OPTION);
 
         if (ans != JOptionPane.YES_OPTION) {
@@ -970,15 +1074,14 @@ public class Photo extends javax.swing.JPanel {
 
         final WaitingDialogThread<Void> wdt = new WaitingDialogThread<Void>(StaticSwingTools.getParentFrame(this),
                 true,
-                NbBundle.getMessage(
-                    Photo.class,
-                    "Photo.butDeleteActionPerformed.WaitingDialogThread"),
+                NbBundle.getMessage(GafProf.class,
+                    "GafProf.butDeleteActionPerformed.WaitingDialogThread"),
                 null,
                 500) {
 
                 @Override
                 protected Void doInBackground() throws Exception {
-                    deletePhoto(feature);
+                    deleteProfile(feature);
                     return null;
                 }
 
@@ -986,7 +1089,7 @@ public class Photo extends javax.swing.JPanel {
                 protected void done() {
                     try {
                         get();
-                        reloadPhotoServices();
+                        reloadGafProfileServices();
                         askForSave = false;
                         butRemoveSelectionActionPerformed(evt);
                     } catch (Exception e) {
@@ -1006,7 +1109,7 @@ public class Photo extends javax.swing.JPanel {
     private void tbLocateActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbLocateActionPerformed
         if (tbLocate.isSelected()) {
             startLocationChange = FeatureServiceHelper.getSelectedCidsLayerFeatures(
-                    "foto");
+                    "qp");
             makeFeatureEditable(editor.getCidsLayerFeature());
         } else {
             final CidsLayerFeature layerFeature = editor.getCidsLayerFeature();
@@ -1022,26 +1125,12 @@ public class Photo extends javax.swing.JPanel {
                 }
                 feature.saveChanges();
                 layerFeature.setEditable(false);
-                reloadPhotoServices();
+                reloadGafProfileServices();
             } catch (Exception e) {
                 LOG.error("Error while setting the new geometry", e);
             }
         }
     } //GEN-LAST:event_tbLocateActionPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
-    private void tbAngleActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbAngleActionPerformed
-        if (tbAngle.isSelected()) {
-            oldMode = AppBroker.getInstance().getMappingComponent().getInteractionMode();
-            AppBroker.getInstance().getMappingComponent().setInteractionMode(PhotoAngleListener.MODE);
-        } else if (oldMode != null) {
-            AppBroker.getInstance().getMappingComponent().setInteractionMode(oldMode);
-        }
-    }                                                                           //GEN-LAST:event_tbAngleActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -1054,11 +1143,10 @@ public class Photo extends javax.swing.JPanel {
                         && (selectedFeature.getBean().getMetaObject().getStatus()
                             != Sirius.server.localserver.object.Object.TO_DELETE)) {
                 final int ans = JOptionPane.showConfirmDialog(
-                        Photo.this,
-                        NbBundle.getMessage(
-                            Photo.class,
-                            "Photo.setEditorFeature().text"),
-                        NbBundle.getMessage(Photo.class, "Photo.setEditorFeature().title"),
+                        GafProf.this,
+                        NbBundle.getMessage(GafProf.class,
+                            "GafProf.setEditorFeature().text"),
+                        NbBundle.getMessage(GafProf.class, "GafProf.setEditorFeature().title"),
                         JOptionPane.YES_NO_CANCEL_OPTION);
 
                 if (ans == JOptionPane.YES_OPTION) {
@@ -1072,14 +1160,12 @@ public class Photo extends javax.swing.JPanel {
         }
 
         askForSave = true;
+
         if (tbLocate.isSelected()) {
             tbLocate.setSelected(false);
             tbLocateActionPerformed(null);
         }
-        if (tbAngle.isSelected()) {
-            tbAngle.setSelected(false);
-            tbAngleActionPerformed(null);
-        }
+
         editor.setCidsLayerFeature(feature);
         enableToolbar(feature != null);
         selectedFeature = feature;
@@ -1093,14 +1179,13 @@ public class Photo extends javax.swing.JPanel {
     private void enableToolbar(final boolean enabled) {
         final boolean writable = enabled && editor.isUploader();
         butBack.setEnabled(enabled);
-        butNextPhoto.setEnabled(enabled);
-        butPrevPhoto.setEnabled(enabled);
+        butNextProfile.setEnabled(enabled);
+        butPrevProfile.setEnabled(enabled);
         butPrint.setEnabled(enabled);
         butPrintPreview.setEnabled(enabled);
         butRemoveSelection.setEnabled(enabled);
-        butZoomToPhoto.setEnabled(enabled);
+        butZoomToProfile.setEnabled(enabled);
 
-        tbAngle.setEnabled(writable);
         tbLocate.setEnabled(writable);
         tbProcessing.setEnabled(writable);
         butSave.setEnabled(writable);
@@ -1113,11 +1198,54 @@ public class Photo extends javax.swing.JPanel {
      * @param  feature  the feature to make editable
      */
     private void makeFeatureEditable(final FeatureServiceFeature feature) {
+//        if (feature instanceof PermissionProvider) {
+//            final PermissionProvider pp = (PermissionProvider)feature;
+//
+//            if (!pp.hasWritePermissions()) {
+//                JOptionPane.showMessageDialog(
+//                    this,
+//                    NbBundle.getMessage(AttributeTable.class, "AttributeTable.makeFeatureEditable.noPermissions.text"),
+//                    NbBundle.getMessage(AttributeTable.class, "AttributeTable.makeFeatureEditable.noPermissions.title"),
+//                    JOptionPane.ERROR_MESSAGE);
+//
+//                return;
+//            }
+//        }
+
         if ((feature != null) && !feature.isEditable()) {
             try {
+//                if (locker != null) {
+//                    lockingObjects.add(locker.lock(feature));
+//                }
                 feature.setEditable(true);
+//                if (!lockedFeatures.contains(feature)) {
+//                    lockedFeatures.add(feature);
+//                    ((DefaultFeatureServiceFeature)feature).addPropertyChangeListener(model);
+//                }
+//            } catch (LockAlreadyExistsException ex) {
+//                JOptionPane.showMessageDialog(
+//                    Photo.this,
+//                    NbBundle.getMessage(
+//                        AttributeTable.class,
+//                        "AttributeTable.ListSelectionListener.valueChanged().lockexists.message",
+//                        feature.getId(),
+//                        ex.getLockMessage()),
+//                    NbBundle.getMessage(
+//                        AttributeTable.class,
+//                        "AttributeTable.ListSelectionListener.valueChanged().lockexists.title"),
+//                    JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
                 LOG.error("Error while locking feature.", ex);
+//                JOptionPane.showMessageDialog(
+//                    Photo.this,
+//                    NbBundle.getMessage(
+//                        AttributeTable.class,
+//                        "AttributeTable.ListSelectionListener.valueChanged().exception.message",
+//                        ex.getMessage()),
+//                    NbBundle.getMessage(
+//                        AttributeTable.class,
+//                        "AttributeTable.ListSelectionListener.valueChanged().exception.title"),
+//                    JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -1154,154 +1282,161 @@ public class Photo extends javax.swing.JPanel {
         @Override
         protected List<CidsLayerFeature> doInBackground() throws Exception {
             final List<CidsLayerFeature> newBeans = new ArrayList<CidsLayerFeature>();
+            boolean dhhn92Check = false;
+            boolean dhhn92 = false;
 
-            for (final File imageFile : fotos) {
-                final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
-                String fileName = format.format(new Date());
-                String filePrefix = "foto/";
-
-                if (AppBroker.getInstance().getOwnWwGr() != null) {
-                    final Integer wwGr = (Integer)AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr");
-                    filePrefix += wwGr + "/";
-                    fileName += "-" + wwGr;
-                }
-
+            for (final File gafFile : fotos) {
                 final String userName = SessionManager.getSession().getUser().getName();
+                final GafReader reader = new GafReader(gafFile);
+                final String[] errors = reader.checkFile();
 
-                filePrefix += userName + "/";
-                fileName += "-" + userName + "-" + imageFile.getName();
+                if (errors.length > 0) {
+                    final StringBuilder allErrors = new StringBuilder();
 
-//                final String webFileName = WebDavHelper.generateWebDAVFileName(filePrefix, fileName);
-                WebDavHelper.createFolder(WEB_DAV_DIRECTORY + filePrefix, webDavClient);
-                WebDavHelper.uploadFileToWebDAV(
-                    fileName,
-                    imageFile,
-                    WEB_DAV_DIRECTORY
-                            + filePrefix,
-                    webDavClient,
-                    Photo.this);
-                final Map<String, Object> props = new HashMap<String, Object>();
-                final CidsBean newFotoBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.foto");
-                final int id = getNewId();
+                    for (final String error : errors) {
+                        allErrors.append(error).append("\n");
+                    }
 
-                for (final String propName : newFotoBean.getPropertyNames()) {
-                    props.put(propName, null);
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        NbBundle.getMessage(
+                            ImageUploadWorker.class,
+                            "GafProf.ImageUploadWorker.doInBackground().message",
+                            allErrors.toString()),
+                        NbBundle.getMessage(
+                            ImageUploadWorker.class,
+                            "GafProf.ImageUploadWorker.doInBackground().title"),
+                        JOptionPane.ERROR_MESSAGE);
+                    return null;
                 }
-                props.put("id", id);
-                layer.initAndWait();
-                final CidsLayerFeature feature = new CidsLayerFeature(
-                        props,
-                        layer.getMetaClass(),
-                        ((CidsFeatureFactory)layer.getFeatureFactory()).getLayerInfo(),
-                        layer.getLayerProperties(),
-                        null);
 
-//                newFotoBean = feature.getBean();
-                final Date currentTime = new Date();
-                newFotoBean.setProperty("id", id);
-                newFotoBean.setProperty("foto", fileName);
-                newFotoBean.setProperty("dateipfad", filePrefix);
-                newFotoBean.setProperty("upl_datum", new java.sql.Date(currentTime.getTime()));
-                newFotoBean.setProperty("upl_zeit", new java.sql.Timestamp(currentTime.getTime()));
-                newFotoBean.setProperty("upl_name", userName);
-                newFotoBean.setProperty("dateipfad", filePrefix);
-                newFotoBean.setProperty("foto_nr", getNextPhotoNumber());
-                newFotoBean.setProperty("ww_gr", AppBroker.getInstance().getOwnWwGr());
-                final ExifReader reader = new ExifReader(imageFile);
+                if (!dhhn92Check) {
+                    StaticSwingTools.showDialog(GafImportDialog.getInstance());
+                    dhhn92Check = true;
 
-                try {
-                    // the coordinates of the image should be used
-                    Point point = reader.getGpsCoords();
-                    if (point != null) {
-                        point = CrsTransformer.transformToDefaultCrs(point);
-                        point.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
+                    dhhn92 = !GafImportDialog.getInstance().isCancelled();
+                }
 
+                if (!dhhn92) {
+                    continue;
+                }
+
+                for (final Double profile : reader.getProfiles()) {
+                    final Map<String, Object> props = new HashMap<String, Object>();
+                    final CidsBean newGafBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.qp");
+                    final int id = getNewId();
+                    for (final String propName : newGafBean.getPropertyNames()) {
+                        props.put(propName, null);
+                    }
+                    props.put("id", id);
+                    layer.initAndWait();
+                    final CidsLayerFeature feature = new CidsLayerFeature(
+                            props,
+                            layer.getMetaClass(),
+                            ((CidsFeatureFactory)layer.getFeatureFactory()).getLayerInfo(),
+                            layer.getLayerProperties(),
+                            null);
+
+                    final Date currentTime = new Date();
+                    newGafBean.setProperty("id", id);
+                    newGafBean.setProperty("upl_datum", new java.sql.Date(currentTime.getTime()));
+                    newGafBean.setProperty("upl_zeit", new java.sql.Timestamp(currentTime.getTime()));
+                    newGafBean.setProperty("upl_name", userName);
+                    newGafBean.setProperty("qp_nr", getNextProfileNumber());
+                    newGafBean.setProperty("ww_gr", AppBroker.getInstance().getOwnWwGr());
+
+                    Geometry intersectionPoint = getIntersectionPoint(reader.getNpLine(profile));
+
+                    if (intersectionPoint == null) {
+                        intersectionPoint = reader.getProfilePoint(profile);
+                    }
+
+                    if (intersectionPoint != null) {
                         final CidsBean geom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
 
-                        geom.setProperty("geo_field", point);
-                        newFotoBean.setProperty("geom", geom);
-                        feature.setGeometry(point);
+                        geom.setProperty("geo_field", intersectionPoint);
+                        newGafBean.setProperty("geom", geom);
+                        feature.setGeometry(intersectionPoint);
 
-                        final CidsBean statusBean = getCatalogueElement("dlm25w.k_l_st", "l_st", "V-GPS3");
+                        final CidsBean statusBean = getCatalogueElement("dlm25w.k_l_st", "l_st", "V-Bau");
 
                         if (statusBean != null) {
-                            newFotoBean.setProperty("l_st", statusBean);
+                            newGafBean.setProperty("l_st", statusBean);
                         }
+
+                        final Station stat = getNextFgBaStat(feature.getGeometry(), 1);
+
+                        if (stat != null) {
+                            final MetaClass routeMc = ClassCacheMultiple.getMetaClass(
+                                    AppBroker.DOMAIN_NAME,
+                                    "dlm25w.fg_ba");
+                            final CidsBean stationBean = CidsBeanUtils.createNewCidsBeanFromTableName(
+                                    "dlm25w.fg_ba_punkt");
+                            final CidsBean stationGeom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+                            final MetaObject route = SessionManager.getProxy()
+                                        .getMetaObject(stat.getId(), routeMc.getID(), AppBroker.DOMAIN_NAME);
+
+                            stationGeom.setProperty("geo_field", stat.getPoint());
+
+                            stationBean.setProperty("wert", stat.getStat());
+                            stationBean.setProperty("route", route.getBean());
+                            stationBean.setProperty("real_point", stationGeom);
+
+                            newGafBean.setProperty("ba_st", stationBean);
+                            feature.setProperty("ba_cd", stat.getBaCd());
+
+                            final Station laStat = getNextFgLaStat(stat.getPoint());
+
+                            if (laStat != null) {
+                                newGafBean.setProperty("la_cd", laStat.getLaCd());
+                                newGafBean.setProperty("la_st", laStat.getStat());
+                            }
+                        }
+                    } else {
                     }
 
-                    newFotoBean.setProperty("winkel", reader.getGpsDirection());
-
-                    if (reader.getTime() != null) {
-                        newFotoBean.setProperty("aufn_datum", new java.sql.Date(reader.getTime().getTime()));
-                        newFotoBean.setProperty("aufn_zeit", new java.sql.Timestamp(reader.getTime().getTime()));
+                    final CidsBean freigabeBean = getCatalogueElement("dlm25w.k_freigabe", "name", "alle Nutzer");
+                    if (freigabeBean != null) {
+                        newGafBean.setProperty("freigabe", freigabeBean);
                     }
-                } catch (Throwable ex) {
-                    LOG.error("Error while reading exif data.", ex);
-                }
 
-                if (feature.getGeometry() == null) {
-                    final MappingComponent mc = CismapBroker.getInstance().getMappingComponent();
-                    final BoundingBox bbox = mc.getCurrentBoundingBoxFromCamera();
-                    final Geometry geom = bbox.getGeometry(CrsTransformer.extractSridFromCrs(
-                                CismapBroker.getInstance().getSrs().getCode()));
-                    final Geometry center = geom.getCentroid();
-                    final CidsBean cidsGeom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+                    feature.setMetaObject(newGafBean.getMetaObject());
 
-                    cidsGeom.setProperty("geo_field", center);
-                    newFotoBean.setProperty("geom", cidsGeom);
-                    feature.setGeometry(center);
+                    final AttributeTableRuleSet ruleSet = feature.getLayerProperties().getAttributeTableRuleSet();
 
-                    final CidsBean statusBean = getCatalogueElement("dlm25w.k_l_st", "l_st", "DOP");
-                    if (statusBean != null) {
-                        newFotoBean.setProperty("l_st", statusBean);
+                    if (ruleSet != null) {
+                        ruleSet.beforeSave(feature);
                     }
-                }
+                    feature.saveChanges();
 
-                if (PhotoOptionsDialog.getInstance().isAutomatic()) {
-                    final Station stat = getNextFgBaStat(feature.getGeometry(),
-                            PhotoOptionsDialog.getInstance().getDistance());
-
-                    if (stat != null) {
-                        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(
-                                AppBroker.DOMAIN_NAME,
-                                "dlm25w.fg_ba");
-                        final CidsBean stationBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.fg_ba_punkt");
+                    for (final String[] line : reader.getProfileContent(profile)) {
+                        final CidsBean ppBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.qp_gaf_pp");
                         final CidsBean geom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
-                        final MetaObject route = SessionManager.getProxy()
-                                    .getMetaObject(stat.getId(), routeMc.getID(), AppBroker.DOMAIN_NAME);
+                        final GeometryFactory gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                                CismapBroker.getInstance().getDefaultCrsAlias());
+                        final Double rw = (Double)reader.getProfileContent(GafReader.GAF_FIELDS.RW, line);
+                        final Double hw = (Double)reader.getProfileContent(GafReader.GAF_FIELDS.HW, line);
 
-                        geom.setProperty("geo_field", stat.getPoint());
+                        geom.setProperty("geo_field", gf.createPoint(new Coordinate(rw, hw)));
 
-                        stationBean.setProperty("wert", stat.getStat());
-                        stationBean.setProperty("route", route.getBean());
-                        stationBean.setProperty("real_point", geom);
-
-                        newFotoBean.setProperty("ba_st", stationBean);
-                        feature.setProperty("ba_cd", stat.getBaCd());
-
-                        final Station laStat = getNextFgLaStat(stat.getPoint());
-
-                        if (laStat != null) {
-                            newFotoBean.setProperty("la_cd", laStat.getLaCd());
-                            newFotoBean.setProperty("la_st", laStat.getStat());
-                        }
+                        ppBean.setProperty("geom", geom);
+                        ppBean.setProperty("id_gaf", reader.getProfileContent(GafReader.GAF_FIELDS.ID, line));
+                        ppBean.setProperty("y", reader.getProfileContent(GafReader.GAF_FIELDS.Y, line));
+                        ppBean.setProperty("z", reader.getProfileContent(GafReader.GAF_FIELDS.Z, line));
+                        ppBean.setProperty("kz", reader.getProfileContent(GafReader.GAF_FIELDS.KZ, line));
+                        ppBean.setProperty("rk", reader.getProfileContent(GafReader.GAF_FIELDS.RK, line));
+                        ppBean.setProperty("bk", reader.getProfileContent(GafReader.GAF_FIELDS.BK, line));
+                        ppBean.setProperty("hyk", reader.getProfileContent(GafReader.GAF_FIELDS.HYK, line));
+                        ppBean.setProperty("hw", hw);
+                        ppBean.setProperty("rw", rw);
+                        ppBean.setProperty("fis_g_date", new Timestamp(System.currentTimeMillis()));
+                        ppBean.setProperty("fis_g_user", SessionManager.getSession().getUser().getName());
+                        ppBean.setProperty("qp_nr", newGafBean.getProperty("qp_nr"));
+                        ppBean.setProperty("p_nr", getNextProfileNumber());
+                        ppBean.persist();
                     }
+
+                    newBeans.add(feature);
                 }
-
-                final CidsBean freigabeBean = getCatalogueElement("dlm25w.k_freigabe", "name", "alle Nutzer");
-                if (freigabeBean != null) {
-                    newFotoBean.setProperty("freigabe", freigabeBean);
-                }
-
-                feature.setMetaObject(newFotoBean.getMetaObject());
-
-                final AttributeTableRuleSet ruleSet = feature.getLayerProperties().getAttributeTableRuleSet();
-
-                if (ruleSet != null) {
-                    ruleSet.beforeSave(feature);
-                }
-                feature.saveChanges();
-                newBeans.add(feature);
             }
             return newBeans;
         }
@@ -1311,10 +1446,11 @@ public class Photo extends javax.swing.JPanel {
             try {
                 final List<CidsLayerFeature> newFeatures = get();
 
-                if (!newFeatures.isEmpty()) {
+                if ((newFeatures != null) && !newFeatures.isEmpty()) {
                     newFeatures.addAll(newFeatures);
+                    // todo: prüfen, ob noch nicht gespeicherte Fotos existieren
                     setEditorFeature(newFeatures.get(0));
-                    reloadPhotoServices();
+                    reloadGafProfileServices();
                     addGafServicesToTree();
                 }
             } catch (InterruptedException ex) {
@@ -1363,7 +1499,7 @@ public class Photo extends javax.swing.JPanel {
          *
          * @return  DOCUMENT ME!
          */
-        private Integer getNextPhotoNumber() {
+        private Integer getNextProfileNumber() {
             try {
                 final User user = SessionManager.getSession().getUser();
                 final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
@@ -1373,7 +1509,7 @@ public class Photo extends javax.swing.JPanel {
                     return ((Long)attributes.get(0).get(0)).intValue();
                 }
             } catch (Exception ex) {
-                LOG.error("Errro while retrieving next photo number.", ex);
+                LOG.error("Errro while retrieving next profile number.", ex);
             }
 
             return null;
@@ -1406,6 +1542,33 @@ public class Photo extends javax.swing.JPanel {
                 }
             } catch (Exception ex) {
                 LOG.error("Errro while retrieving next fg ba station.", ex);
+            }
+
+            return null;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   geom  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private Geometry getIntersectionPoint(final Geometry geom) {
+            try {
+                final User user = SessionManager.getSession().getUser();
+                final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                            .customServerSearch(user, new GafPosition(geom));
+
+                if ((attributes != null) && !attributes.isEmpty()) {
+                    final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                            CismapBroker.getInstance().getDefaultCrsAlias());
+                    final WKBReader wkbReader = new WKBReader(geomFactory);
+
+                    return wkbReader.read((byte[])attributes.get(0).get(0));
+                }
+            } catch (Exception ex) {
+                LOG.error("Errro while retrieving gaf profile position.", ex);
             }
 
             return null;

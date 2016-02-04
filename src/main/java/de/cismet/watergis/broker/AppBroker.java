@@ -96,6 +96,8 @@ import de.cismet.watergis.broker.listener.SelectionModeListener;
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.CleanUpAction;
 import de.cismet.watergis.gui.actions.InfoWindowAction;
+import de.cismet.watergis.gui.actions.foto.ExportAction;
+import de.cismet.watergis.gui.actions.foto.ReportAction;
 import de.cismet.watergis.gui.components.RefreshMenuItem;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
@@ -117,6 +119,7 @@ public class AppBroker implements Configurable {
     public static final Color DEFAULT_MODE_COLOR = blue;
     public static final String MEASURE_MODE = "MEASURE_MODE";
     public static final String FOTO_MC_NAME = "foto";
+    public static final String GAF_PROF_MC_NAME = "qp";
     private static ConfigurationManager configManager;
     public static final String DOMAIN_NAME = "DLM25W";
 
@@ -146,6 +149,11 @@ public class AppBroker implements Configurable {
     private String[] validLawaCodes;
     private CidsBean niemandWwGr = null;
     private View photoView;
+    private View gafView;
+    private ExportAction photoExport;
+    private de.cismet.watergis.gui.actions.gaf.ExportAction gafExport;
+    private ReportAction photoPrint;
+    private de.cismet.watergis.gui.actions.gaf.ReportAction gafPrint;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -856,10 +864,100 @@ public class AppBroker implements Configurable {
     /**
      * DOCUMENT ME!
      *
+     * @return  the photoView
+     */
+    public View getGafView() {
+        return gafView;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param  photoView  the photoView to set
      */
     public void setPhotoView(final View photoView) {
         this.photoView = photoView;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  gafView  the photoView to set
+     */
+    public void setGafView(final View gafView) {
+        this.gafView = gafView;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the photoExport
+     */
+    public ExportAction getPhotoExport() {
+        return photoExport;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  photoExport  the photoExport to set
+     */
+    public void setPhotoExport(final ExportAction photoExport) {
+        this.photoExport = photoExport;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the gafExport
+     */
+    public de.cismet.watergis.gui.actions.gaf.ExportAction getGafExport() {
+        return gafExport;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  gafExport  the gafExport to set
+     */
+    public void setGafExport(final de.cismet.watergis.gui.actions.gaf.ExportAction gafExport) {
+        this.gafExport = gafExport;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the photoPrint
+     */
+    public ReportAction getPhotoPrint() {
+        return photoPrint;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  photoPrint  the photoPrint to set
+     */
+    public void setPhotoPrint(final ReportAction photoPrint) {
+        this.photoPrint = photoPrint;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the gafPrint
+     */
+    public de.cismet.watergis.gui.actions.gaf.ReportAction getGafPrint() {
+        return gafPrint;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  gafPrint  the gafPrint to set
+     */
+    public void setGafPrint(final de.cismet.watergis.gui.actions.gaf.ReportAction gafPrint) {
+        this.gafPrint = gafPrint;
     }
 
     //~ Inner Classes ----------------------------------------------------------
