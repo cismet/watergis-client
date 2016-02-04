@@ -32,8 +32,6 @@ import de.cismet.cismap.commons.HeadlessMapProvider;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.interaction.CismapBroker;
-import de.cismet.cismap.commons.raster.wms.simple.SimpleWMS;
-import de.cismet.cismap.commons.raster.wms.simple.SimpleWmsGetMapUrl;
 import de.cismet.cismap.commons.retrieval.RetrievalEvent;
 import de.cismet.cismap.commons.retrieval.RetrievalListener;
 
@@ -122,7 +120,7 @@ public class FotoScriptlet extends JRDefaultScriptlet {
         if (result == null) {
             try {
                 result = ImageIO.read(getClass().getResource(
-                            "/de/cismet/cids/custom/objecteditors/wrrl_db_mv/file-broken.png"));
+                            "/de/cismet/watergis/res/icon128/file-broken.png"));
             } catch (IOException ex1) {
                 LOG.error("Couldn't load fallback photo", ex1);
             }
@@ -172,7 +170,7 @@ public class FotoScriptlet extends JRDefaultScriptlet {
         //~ Instance fields ----------------------------------------------------
 
         private BufferedImage image = null;
-        private Lock lock;
+        private final Lock lock;
         private Condition condition;
 
         //~ Constructors -------------------------------------------------------

@@ -140,9 +140,9 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
 
         panImage = new javax.swing.JPanel();
         labImage = new javax.swing.JLabel();
-        lblBusy = new org.jdesktop.swingx.JXBusyLabel(new Dimension(75,75));
+        lblBusy = new org.jdesktop.swingx.JXBusyLabel(new Dimension(75, 75));
         panData = new javax.swing.JPanel();
-        labTitle = new javax.swing.JLabel();
+        labTitle = new de.cismet.watergis.utils.MultiLineJLabel();
         labTime = new javax.swing.JLabel();
 
         setLayout(new java.awt.GridBagLayout());
@@ -170,7 +170,12 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
 
         panData.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(labTitle, org.openide.util.NbBundle.getMessage(PhotoInfoPanel.class, "PhotoInfoPanel.labTitle.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labTitle,
+            org.openide.util.NbBundle.getMessage(
+                PhotoInfoPanel.class,
+                "PhotoInfoPanel.labTitle.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -179,7 +184,12 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         panData.add(labTitle, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(labTime, org.openide.util.NbBundle.getMessage(PhotoInfoPanel.class, "PhotoInfoPanel.labTime.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labTime,
+            org.openide.util.NbBundle.getMessage(
+                PhotoInfoPanel.class,
+                "PhotoInfoPanel.labTime.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -193,7 +203,7 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         add(panData, gridBagConstraints);
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
@@ -463,9 +473,7 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
         @Override
         protected ImageIcon doInBackground() throws Exception {
             if (image != null) {
-                final long timestart = System.currentTimeMillis();
                 final ImageIcon result = new ImageIcon(PhotoEditor.adjustScale(image, panImage, 20, 20));
-                System.out.println("time " + (System.currentTimeMillis() - timestart));
                 return result;
             } else {
                 return null;

@@ -26,8 +26,10 @@ import javax.swing.KeyStroke;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
@@ -126,6 +128,7 @@ public class DeleteAction extends AbstractAction {
                         protected void done() {
                             try {
                                 get();
+                                SelectionManager.getInstance().removeSelectedFeatures(features);
                                 final List<AbstractFeatureService> services = FeatureServiceHelper
                                             .getCidsLayerServicesFromTree(
                                                 "foto");
