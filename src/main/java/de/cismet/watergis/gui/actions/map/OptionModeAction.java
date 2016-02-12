@@ -69,7 +69,9 @@ public class OptionModeAction extends AbstractNewGeometryModeAction implements D
         final VisualizingDialog dialog = new VisualizingDialog(StaticSwingTools.getParentFrame(
                     AppBroker.getInstance().getMappingComponent()),
                 true);
-        dialog.setSize(500, 400);
+//        dialog.setSize(490, 420);
+        dialog.pack();
+        dialog.setResizable(false);
         StaticSwingTools.showDialog(dialog);
         if (!dialog.isCanceled()) {
             AppBroker.getInstance().setDrawingStyleLayer(dialog.getStyleLayer());

@@ -19,13 +19,11 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
 
 import de.cismet.cismap.DrawingManager;
 
-import de.cismet.cismap.commons.RestrictedFileSystemView;
+import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -54,6 +52,10 @@ public class LoadDrawingsAction extends AbstractAction {
                 LoadDrawingsAction.class,
                 "LoadDrawingsAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
+        final String text = org.openide.util.NbBundle.getMessage(
+                LoadDrawingsAction.class,
+                "LoadDrawingsAction.text");
+        putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-importfile.png"));
         putValue(SMALL_ICON, icon);
@@ -63,39 +65,17 @@ public class LoadDrawingsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        JFileChooser fc;
+        final File file = StaticSwingTools.chooseFile(WatergisApp.getDIRECTORYPATH_WATERGIS(),
+                false,
+                new String[] { "ze" },
+                org.openide.util.NbBundle.getMessage(
+                    LoadDrawingsAction.class,
+                    "LoadDrawingsAction.actionPerformed.FileFilter.getDescription"),
+                AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
-        try {
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
-        } catch (Exception bug) {
-            // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
-        }
-
-        fc.setAcceptAllFileFilterUsed(false);
-        fc.setFileFilter(new FileFilter() {
-
-                @Override
-                public boolean accept(final File f) {
-                    return f.isDirectory()
-                                || f.getName().toLowerCase().endsWith(".ze"); // NOI18N
-                }
-
-                @Override
-                public String getDescription() {
-                    return org.openide.util.NbBundle.getMessage(
-                            LoadDrawingsAction.class,
-                            "LoadDrawingsAction.actionPerformed.FileFilter.getDescription"); // NOI18N
-                }
-            });
-
-        final int state = fc.showOpenDialog(AppBroker.getInstance().getComponent(ComponentName.MAIN));
-
-        if (state == JFileChooser.APPROVE_OPTION) {
-            final File file = fc.getSelectedFile();
+        if (file != null) {
             if (file.exists()) {
                 try {
-//                    DrawingManager.removeAllFeatures();
                     DrawingManager.addFeatures(file);
                     DrawingManager.loadFeatures();
                 } catch (Exception ex) {

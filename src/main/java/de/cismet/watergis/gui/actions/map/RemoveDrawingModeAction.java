@@ -11,6 +11,7 @@
  */
 package de.cismet.watergis.gui.actions.map;
 
+import de.cismet.cismap.commons.features.DrawingSLDStyledFeature;
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
@@ -19,14 +20,17 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
-import de.cismet.cismap.commons.features.DrawingFeature;
-import de.cismet.cismap.commons.features.DrawingSLDStyledFeature;
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.DeleteFeatureListener;
+import static de.cismet.cismap.commons.gui.piccolo.eventlistener.DeleteFeatureListener.FEATURE_DELETE_REQUEST_NOTIFICATION;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.actions.FeatureCreateAction;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.actions.CleanUpAction;
+import edu.umd.cs.piccolox.event.PNotificationCenter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * DOCUMENT ME!
@@ -34,7 +38,7 @@ import de.cismet.watergis.gui.actions.CleanUpAction;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class RemoveDrawingModeAction extends AbstractAction implements CleanUpAction {
+public class RemoveDrawingModeAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -69,13 +73,37 @@ public class RemoveDrawingModeAction extends AbstractAction implements CleanUpAc
     @Override
     public void actionPerformed(final ActionEvent e) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Switch in remove Mode");
+            LOG.debug("remiove selected features");
         }
         final MappingComponent map = AppBroker.getInstance().getMappingComponent();
-        map.setInteractionMode(MappingComponent.REMOVE_POLYGON);
-        ((DeleteFeatureListener)map.getInputListener(MappingComponent.REMOVE_POLYGON)).setAllowedFeatureClassesToDelete(
-            new Class[] { DrawingSLDStyledFeature.class });
-        putValue(SELECTED_KEY, Boolean.TRUE);
+//        map.setInteractionMode(MappingComponent.REMOVE_POLYGON);
+//        ((DeleteFeatureListener)map.getInputListener(MappingComponent.REMOVE_POLYGON)).setAllowedFeatureClassesToDelete(
+//            new Class[] { DrawingSLDStyledFeature.class });
+//        putValue(SELECTED_KEY, Boolean.TRUE);
+
+        List<Feature> selectedFeatures = getSelectedDrawings();
+
+        for (Feature f : selectedFeatures) {
+            map.getFeatureCollection().removeFeature(f);
+            map.getMemUndo().addAction(new FeatureCreateAction(map, f));
+            map.getMemRedo().clear();
+            final PNotificationCenter pn = PNotificationCenter.defaultCenter();
+            pn.postNotification(FEATURE_DELETE_REQUEST_NOTIFICATION, this);
+        }
+    }
+    
+    public static List<Feature> getSelectedDrawings() {
+        List<Feature> drawings = new ArrayList<Feature>();
+        final MappingComponent map = AppBroker.getInstance().getMappingComponent();
+        Collection<Feature> selectedFeatures = new ArrayList<Feature>(map.getFeatureCollection().getSelectedFeatures());
+
+        for (Feature f : selectedFeatures) {
+            if (f instanceof DrawingSLDStyledFeature) {
+                drawings.add(f);
+            }
+        }
+        
+        return drawings;
     }
 
     @Override
@@ -83,10 +111,10 @@ public class RemoveDrawingModeAction extends AbstractAction implements CleanUpAc
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
     }
 
-    @Override
-    public void cleanUp() {
-        final MappingComponent map = AppBroker.getInstance().getMappingComponent();
-        ((DeleteFeatureListener)map.getInputListener(MappingComponent.REMOVE_POLYGON)).setAllowedFeatureClassesToDelete(
-            null);
-    }
+//    @Override
+//    public void cleanUp() {
+//        final MappingComponent map = AppBroker.getInstance().getMappingComponent();
+//        ((DeleteFeatureListener)map.getInputListener(MappingComponent.REMOVE_POLYGON)).setAllowedFeatureClassesToDelete(
+//            null);
+//    }
 }

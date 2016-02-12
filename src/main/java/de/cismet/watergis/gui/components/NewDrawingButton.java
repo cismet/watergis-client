@@ -79,6 +79,7 @@ public class NewDrawingButton extends JPopupMenuButton implements PropertyChange
             menuItems[i] = new HighlightingRadioButtonMenuItem(javax.swing.UIManager.getDefaults().getColor(
                         "ProgressBar.foreground"),
                     Color.WHITE);
+            menuItems[i].setName(drawingMode.getClass().getName());
             menuItems[i].setAction((AbstractAction)drawingMode);
             menuItemButtonGroup.add(menuItems[i]);
             popup.add(menuItems[i++]);
