@@ -64,6 +64,7 @@ public class NewLinestringModeAction extends AbstractNewGeometryModeAction imple
             final MappingComponent map = AppBroker.getInstance().getMappingComponent();
             ((CreateNewGeometryListener)map.getInputListener(MappingComponent.NEW_POLYGON)).setMode(
                 CreateGeometryListenerInterface.LINESTRING);
+            AppBroker.getInstance().switchMapMode(MappingComponent.NEW_POLYGON);
         }
     }
 

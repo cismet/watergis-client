@@ -22,11 +22,14 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
 
+import org.apache.batik.ext.swing.GridBagConstants;
 import org.apache.log4j.Logger;
 
 import org.deegree.style.persistence.sld.SLDParser;
 
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -93,7 +96,19 @@ public class VisualizingDialog extends javax.swing.JDialog {
         blackboard = new Blackboard();
         persistenceBlackboard = new Blackboard();
         stylePanel = new CidsRenderingStylePanel(blackboard, layer, persistenceBlackboard);
-        jPanel1.add(stylePanel, new java.awt.GridBagConstraints());
+        final GridBagConstraints constraint = new java.awt.GridBagConstraints(
+                0,
+                0,
+                1,
+                1,
+                1.0,
+                1.0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0,
+                0);
+        jPanel1.add(stylePanel, constraint);
     }
 
     //~ Methods ----------------------------------------------------------------

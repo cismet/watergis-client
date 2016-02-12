@@ -23,14 +23,10 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 import de.cismet.cismap.DrawingManager;
 
-import de.cismet.cismap.commons.RestrictedFileSystemView;
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
-import de.cismet.cismap.commons.features.DrawingFeature;
 import de.cismet.cismap.commons.features.DrawingSLDStyledFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.DefaultLayerProperties;
@@ -40,8 +36,9 @@ import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
 import de.cismet.cismap.commons.tools.ExportCsvDownload;
 import de.cismet.cismap.commons.tools.ExportDownload;
 
-import de.cismet.tools.gui.ConfirmationJFileChooser;
+import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
+import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -70,6 +67,10 @@ public class SaveDrawingsAction extends AbstractAction {
                 SaveDrawingsAction.class,
                 "SaveDrawingsAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
+        final String text = org.openide.util.NbBundle.getMessage(
+                SaveDrawingsAction.class,
+                "SaveDrawingsAction.text");
+        putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-savetodrive.png"));
         putValue(SMALL_ICON, icon);
@@ -79,48 +80,15 @@ public class SaveDrawingsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        JFileChooser fc;
+        final File file = StaticSwingTools.chooseFile(WatergisApp.getDIRECTORYPATH_WATERGIS(),
+                true,
+                new String[] { "ze" },
+                org.openide.util.NbBundle.getMessage(
+                    SaveDrawingsAction.class,
+                    "SaveDrawingsAction.actionPerformed.FileFilter.getDescription"),
+                AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
-        try {
-            fc = new ConfirmationJFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
-        } catch (Exception bug) {
-            // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
-        }
-
-        fc.setAcceptAllFileFilterUsed(false);
-        fc.setFileFilter(new FileFilter() {
-
-                @Override
-                public boolean accept(final File f) {
-                    return f.isDirectory()
-                                || f.getName().toLowerCase().endsWith(".ze"); // NOI18N
-                }
-
-                @Override
-                public String getDescription() {
-                    return org.openide.util.NbBundle.getMessage(
-                            SaveDrawingsAction.class,
-                            "SaveDrawingsAction.actionPerformed.FileFilter.getDescription"); // NOI18N
-                }
-            });
-
-        final int state = fc.showSaveDialog(AppBroker.getInstance().getComponent(ComponentName.MAIN));
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("state:" + state); // NOI18N
-        }
-
-        if (state == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-
-            if (file.exists()) {
-                file.delete();
-            }
-
-            if (!file.getName().endsWith(".ze")) { // NOI18N
-                file = new File(file.getAbsolutePath() + ".ze");
-            }
-
+        if (file != null) {
             saveDrawing(file);
         }
     }
@@ -161,7 +129,8 @@ public class SaveDrawingsAction extends AbstractAction {
                 f.setProperties(properties);
                 featureList.add(f);
             }
-
+            boolean openAutomatically = DownloadManagerDialog.getInstance().isOpenAutomaticallyEnabled();
+            DownloadManagerDialog.getInstance().setOpenAutomaticallyEnabled(false);
             final ExportDownload ed = new ExportCsvDownload(
                     file.getName().substring(0, file.getName().lastIndexOf(".")),
                     ".ze",
@@ -172,6 +141,7 @@ public class SaveDrawingsAction extends AbstractAction {
             DownloadManager.instance().add(ed);
             ((H2FeatureServiceFactory)service.getFeatureFactory()).closeConnection();
             service = null;
+            DownloadManagerDialog.getInstance().setOpenAutomaticallyEnabled(openAutomatically);
         } catch (Exception ee) {
             LOG.error("", ee);
         }

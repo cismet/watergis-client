@@ -432,11 +432,11 @@ public class AppBroker implements Configurable {
     public void switchMapMode(final String mode) {
         final Action action = mapModeSelectionActions.get(mode);
         if (action != null) {
-            action.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode));
-
             if (lastActionMode instanceof CleanUpAction) {
                 ((CleanUpAction)lastActionMode).cleanUp();
             }
+
+            action.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode));
 
             lastActionMode = action;
         } else {
