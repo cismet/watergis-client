@@ -13,6 +13,8 @@ package de.cismet.watergis.gui.components.location;
 
 import java.util.List;
 
+import de.cismet.cids.search.QuerySearchMethod;
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;

@@ -11,14 +11,14 @@
  */
 package de.cismet.watergis.gui.components.location;
 
+import Sirius.navigator.search.dynamic.SearchControlPanel;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.TopologyException;
-import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
 import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
-import com.vividsolutions.jump.geom.precision.NumberPrecisionReducer;
 
 import org.apache.log4j.Logger;
 
@@ -28,6 +28,8 @@ import org.openide.util.NbBundle;
 import java.awt.EventQueue;
 import java.awt.Frame;
 
+import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,23 +38,26 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.SwingWorker;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 
 import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.features.Feature;
-import de.cismet.cismap.commons.features.FeatureCollectionEvent;
-import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.LayerCollection;
 import de.cismet.cismap.commons.gui.layerwidget.ReadOnlyThemeLayerWidget;
 import de.cismet.cismap.commons.gui.layerwidget.ZoomToLayerWorker;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.util.SelectionChangedEvent;
+import de.cismet.cismap.commons.util.SelectionChangedListener;
 import de.cismet.cismap.commons.util.SelectionManager;
+
+import de.cismet.commons.concurrency.CismetExecutors;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
@@ -76,28 +81,34 @@ public class LocationDialog extends javax.swing.JDialog {
             LayerCollection.class
         };
 
+    private static final Logger LOG = Logger.getLogger(LocationDialog.class);
+
     //~ Instance fields --------------------------------------------------------
 
-    Logger LOG = Logger.getLogger(LocationDialog.class);
-    int lastSelectedFeatureCount = 0;
+    private int lastSelectedFeatureCount = 0;
+    private boolean inProgress = false;
+    private ImageIcon iconSearch;
+    private ImageIcon iconCancel;
+    private SelectionCalculator selectionCalculator;
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton butApply;
-    private javax.swing.JButton butCancel;
-    private javax.swing.JButton butOk;
+    private javax.swing.JButton btnSearchCancel;
     private javax.swing.JComboBox cboSelectionMethod;
     private javax.swing.JComboBox cboSource;
     private javax.swing.JComboBox cboSpatSelectionMethod;
-    private javax.swing.JCheckBox chUseDistance;
     private javax.swing.JCheckBox chUseSelectedFeatures;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JLabel labIntro;
+    private javax.swing.JLabel labDist;
     private javax.swing.JLabel labMeasureUnit;
     private javax.swing.JLabel labSelectedFeatures;
     private javax.swing.JLabel labSelectionMethod;
     private javax.swing.JLabel labSource;
     private javax.swing.JLabel labSpatSelectionMethod;
     private javax.swing.JLabel labTarget;
+    private org.jdesktop.swingx.JXBusyLabel lblBusyIcon;
+    private javax.swing.Box.Filler strGap;
     private javax.swing.JPanel tltTarget;
     private javax.swing.JTextField txtDistance;
     // End of variables declaration//GEN-END:variables
@@ -139,6 +150,22 @@ public class LocationDialog extends javax.swing.JDialog {
                 }
             });
 
+        final URL iconSearchUrl = getClass().getResource(
+                "/Sirius/navigator/search/dynamic/SearchControlPanel_btnSearchCancel.png");
+        if (iconSearchUrl != null) {
+            this.iconSearch = new ImageIcon(iconSearchUrl);
+        } else {
+            this.iconSearch = new ImageIcon();
+        }
+
+        final URL iconCancelUrl = getClass().getResource(
+                "/Sirius/navigator/search/dynamic/SearchControlPanel_btnSearchCancel_cancel.png");
+        if (iconCancelUrl != null) {
+            this.iconCancel = new ImageIcon(iconCancelUrl);
+        } else {
+            this.iconCancel = new ImageIcon();
+        }
+
         cboSpatSelectionMethod.setModel(new DefaultComboBoxModel(ssmArray));
         cboSelectionMethod.setModel(new DefaultComboBoxModel(smArray));
         final ActiveLayerModel layerModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
@@ -168,46 +195,60 @@ public class LocationDialog extends javax.swing.JDialog {
         txtDistance.setEnabled(false);
         setLayerModel();
 
-        CismapBroker.getInstance()
-                .getMappingComponent()
-                .getFeatureCollection()
-                .addFeatureCollectionListener(new FeatureCollectionListener() {
+        SelectionManager.getInstance().addSelectionChangedListener(new SelectionChangedListener() {
 
-                        @Override
-                        public void featuresAdded(final FeatureCollectionEvent fce) {
-                        }
+                @Override
+                public void selectionChanged(final SelectionChangedEvent event) {
+                    EventQueue.invokeLater(new Runnable() {
 
-                        @Override
-                        public void allFeaturesRemoved(final FeatureCollectionEvent fce) {
-                        }
+                            @Override
+                            public void run() {
+                                refreshSelectedFeatureCount(false);
+                            }
+                        });
+                }
+            });
 
-                        @Override
-                        public void featuresRemoved(final FeatureCollectionEvent fce) {
-                        }
-
-                        @Override
-                        public void featuresChanged(final FeatureCollectionEvent fce) {
-                        }
-
-                        @Override
-                        public void featureSelectionChanged(final FeatureCollectionEvent fce) {
-                            EventQueue.invokeLater(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        refreshSelectedFeatureCount(false);
-                                    }
-                                });
-                        }
-
-                        @Override
-                        public void featureReconsiderationRequested(final FeatureCollectionEvent fce) {
-                        }
-
-                        @Override
-                        public void featureCollectionChanged() {
-                        }
-                    });
+//        CismapBroker.getInstance()
+//                .getMappingComponent()
+//                .getFeatureCollection()
+//                .addFeatureCollectionListener(new FeatureCollectionListener() {
+//
+//                        @Override
+//                        public void featuresAdded(final FeatureCollectionEvent fce) {
+//                        }
+//
+//                        @Override
+//                        public void allFeaturesRemoved(final FeatureCollectionEvent fce) {
+//                        }
+//
+//                        @Override
+//                        public void featuresRemoved(final FeatureCollectionEvent fce) {
+//                        }
+//
+//                        @Override
+//                        public void featuresChanged(final FeatureCollectionEvent fce) {
+//                        }
+//
+//                        @Override
+//                        public void featureSelectionChanged(final FeatureCollectionEvent fce) {
+//                            EventQueue.invokeLater(new Runnable() {
+//
+//                                    @Override
+//                                    public void run() {
+//                                        refreshSelectedFeatureCount(false);
+//                                    }
+//                                });
+//                        }
+//
+//                        @Override
+//                        public void featureReconsiderationRequested(final FeatureCollectionEvent fce) {
+//                        }
+//
+//                        @Override
+//                        public void featureCollectionChanged() {
+//                        }
+//                    });
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -217,6 +258,8 @@ public class LocationDialog extends javax.swing.JDialog {
      */
     private void setLayerModel() {
         final List<AbstractFeatureService> sourceLayer = FeatureServiceHelper.getServices(null);
+        // remove the null layer
+        sourceLayer.remove(0);
 
         cboSource.setModel(new DefaultComboBoxModel(
                 sourceLayer.toArray(new AbstractFeatureService[sourceLayer.size()])));
@@ -232,7 +275,6 @@ public class LocationDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        labIntro = new javax.swing.JLabel();
         labSelectionMethod = new javax.swing.JLabel();
         cboSelectionMethod = new javax.swing.JComboBox();
         labSource = new javax.swing.JLabel();
@@ -248,30 +290,20 @@ public class LocationDialog extends javax.swing.JDialog {
         labSelectedFeatures = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jPanel1 = new javax.swing.JPanel();
-        butOk = new javax.swing.JButton();
-        butApply = new javax.swing.JButton();
-        butCancel = new javax.swing.JButton();
-        chUseDistance = new javax.swing.JCheckBox();
+        jPanel2 = new javax.swing.JPanel();
+        lblBusyIcon = new org.jdesktop.swingx.JXBusyLabel(new java.awt.Dimension(20, 20));
+        strGap = new javax.swing.Box.Filler(new java.awt.Dimension(5, 0),
+                new java.awt.Dimension(5, 25),
+                new java.awt.Dimension(5, 32767));
+        btnSearchCancel = new javax.swing.JButton();
+        jPanel6 = new javax.swing.JPanel();
         txtDistance = new javax.swing.JTextField();
         labMeasureUnit = new javax.swing.JLabel();
+        labDist = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(LocationDialog.class, "LocationDialog.title")); // NOI18N
         getContentPane().setLayout(new java.awt.GridBagLayout());
-
-        labIntro.setText(org.openide.util.NbBundle.getMessage(LocationDialog.class, "LocationDialog.labIntro.text")); // NOI18N
-        labIntro.setMaximumSize(new java.awt.Dimension(630, 40));
-        labIntro.setMinimumSize(new java.awt.Dimension(630, 40));
-        labIntro.setPreferredSize(new java.awt.Dimension(630, 40));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(labIntro, gridBagConstraints);
 
         labSelectionMethod.setText(org.openide.util.NbBundle.getMessage(
                 LocationDialog.class,
@@ -403,37 +435,50 @@ public class LocationDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jSeparator1, gridBagConstraints);
 
-        jPanel1.setLayout(new java.awt.FlowLayout(2, 10, 10));
+        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 10));
 
-        butOk.setText(org.openide.util.NbBundle.getMessage(LocationDialog.class, "LocationDialog.butOk.text")); // NOI18N
-        butOk.addActionListener(new java.awt.event.ActionListener() {
+        jPanel2.setMinimumSize(new java.awt.Dimension(125, 25));
+        jPanel2.setPreferredSize(new java.awt.Dimension(185, 25));
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        lblBusyIcon.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        jPanel2.add(lblBusyIcon, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        jPanel2.add(strGap, gridBagConstraints);
+
+        btnSearchCancel.setText(org.openide.util.NbBundle.getMessage(
+                LocationDialog.class,
+                "LocationDialog.btnSearchCancel.text"));        // NOI18N
+        btnSearchCancel.setToolTipText(org.openide.util.NbBundle.getMessage(
+                LocationDialog.class,
+                "LocationDialog.btnSearchCancel.toolTipText")); // NOI18N
+        btnSearchCancel.setMaximumSize(new java.awt.Dimension(100, 25));
+        btnSearchCancel.setMinimumSize(new java.awt.Dimension(100, 25));
+        btnSearchCancel.setPreferredSize(new java.awt.Dimension(100, 25));
+        btnSearchCancel.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
                 public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    butOkActionPerformed(evt);
+                    btnSearchCancelActionPerformed(evt);
                 }
             });
-        jPanel1.add(butOk);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        jPanel2.add(btnSearchCancel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        jPanel2.add(jPanel6, gridBagConstraints);
 
-        butApply.setText(org.openide.util.NbBundle.getMessage(LocationDialog.class, "LocationDialog.butApply.text")); // NOI18N
-        butApply.addActionListener(new java.awt.event.ActionListener() {
-
-                @Override
-                public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    butApplyActionPerformed(evt);
-                }
-            });
-        jPanel1.add(butApply);
-
-        butCancel.setText(org.openide.util.NbBundle.getMessage(LocationDialog.class, "LocationDialog.butCancel.text")); // NOI18N
-        butCancel.addActionListener(new java.awt.event.ActionListener() {
-
-                @Override
-                public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    butCancelActionPerformed(evt);
-                }
-            });
-        jPanel1.add(butCancel);
+        jPanel1.add(jPanel2);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -443,23 +488,6 @@ public class LocationDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(jPanel1, gridBagConstraints);
-
-        chUseDistance.setText(org.openide.util.NbBundle.getMessage(
-                LocationDialog.class,
-                "LocationDialog.chUseDistance.text")); // NOI18N
-        chUseDistance.addItemListener(new java.awt.event.ItemListener() {
-
-                @Override
-                public void itemStateChanged(final java.awt.event.ItemEvent evt) {
-                    chUseDistanceItemStateChanged(evt);
-                }
-            });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        getContentPane().add(chUseDistance, gridBagConstraints);
 
         txtDistance.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -479,6 +507,17 @@ public class LocationDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(labMeasureUnit, gridBagConstraints);
 
+        labDist.setText(org.openide.util.NbBundle.getMessage(
+                LocationDialog.class,
+                "LocationDialog.labDist.text",
+                new Object[] {})); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 12;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(labDist, gridBagConstraints);
+
         pack();
     } // </editor-fold>//GEN-END:initComponents
 
@@ -496,44 +535,10 @@ public class LocationDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
-        dispose();
-    }                                                                             //GEN-LAST:event_butCancelActionPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
-        EventQueue.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    executeMethod();
-                }
-            });
-        dispose();
-    } //GEN-LAST:event_butOkActionPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
-    private void chUseDistanceItemStateChanged(final java.awt.event.ItemEvent evt) { //GEN-FIRST:event_chUseDistanceItemStateChanged
-        txtDistance.setEnabled(chUseDistance.isSelected());
-    }                                                                                //GEN-LAST:event_chUseDistanceItemStateChanged
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
     private void cboSpatSelectionMethodItemStateChanged(final java.awt.event.ItemEvent evt) { //GEN-FIRST:event_cboSpatSelectionMethodItemStateChanged
         final SpatialSelectionMethodInterface spat = (SpatialSelectionMethodInterface)
             cboSpatSelectionMethod.getSelectedItem();
-        chUseDistance.setSelected(spat.isDistanceRequired());
+        txtDistance.setEnabled(spat.isDistanceRequired());
     }                                                                                         //GEN-LAST:event_cboSpatSelectionMethodItemStateChanged
 
     /**
@@ -541,9 +546,15 @@ public class LocationDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butApplyActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butApplyActionPerformed
-        executeMethod();
-    }                                                                            //GEN-LAST:event_butApplyActionPerformed
+    private void btnSearchCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_btnSearchCancelActionPerformed
+        if (!inProgress) {
+            executeMethod();
+        } else {
+            if ((selectionCalculator != null) && !selectionCalculator.isDone()) {
+                selectionCalculator.cancel(true);
+            }
+        }
+    }                                                                                   //GEN-LAST:event_btnSearchCancelActionPerformed
 
     /**
      * refreshes the labSelectedFeatures label.
@@ -580,7 +591,7 @@ public class LocationDialog extends javax.swing.JDialog {
         double distance = 0.0;
 
         try {
-            if (chUseDistance.isSelected() || spat.isDistanceRequired()) {
+            if (spat.isDistanceRequired()) {
                 String doubleAsString = txtDistance.getText();
                 doubleAsString = doubleAsString.replace('.', 'a');
                 doubleAsString = doubleAsString.replace(',', '.');
@@ -597,18 +608,47 @@ public class LocationDialog extends javax.swing.JDialog {
             }
         }
 
-        final SelectionCalculator selectionCalculator = new SelectionCalculator(StaticSwingTools.getParentFrame(this),
-                true,
-                NbBundle.getMessage(LocationDialog.class, "LocationDialog.executeMethod"),
-                null,
-                500,
+        selectionCalculator = new SelectionCalculator(
                 sourceService,
                 targetServices,
                 spat,
                 meth,
                 distance,
                 chUseSelectedFeatures.isSelected());
-        selectionCalculator.start();
+
+        inProgress = true;
+        setControlsAccordingToState(inProgress);
+
+        CismetExecutors.newSingleThreadExecutor().execute(selectionCalculator);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  inProgress  DOCUMENT ME!
+     */
+    public void setControlsAccordingToState(final boolean inProgress) {
+        if (inProgress) {
+            btnSearchCancel.setText(org.openide.util.NbBundle.getMessage(
+                    SearchControlPanel.class,
+                    "SearchControlPanel.btnSearchCancel_cancel.text"));        // NOI18N
+            btnSearchCancel.setToolTipText(org.openide.util.NbBundle.getMessage(
+                    SearchControlPanel.class,
+                    "SearchControlPanel.btnSearchCancel_cancel.toolTipText")); // NOI18N
+            btnSearchCancel.setIcon(iconCancel);
+            lblBusyIcon.setEnabled(true);
+            lblBusyIcon.setBusy(true);
+        } else {
+            btnSearchCancel.setText(org.openide.util.NbBundle.getMessage(
+                    LocationDialog.class,
+                    "LocationDialog.btnSearchCancel_select.text"));            // NOI18N
+            btnSearchCancel.setToolTipText(org.openide.util.NbBundle.getMessage(
+                    SearchControlPanel.class,
+                    "SearchControlPanel.btnSearchCancel.toolTipText"));        // NOI18N
+            btnSearchCancel.setIcon(iconSearch);
+            lblBusyIcon.setEnabled(false);
+            lblBusyIcon.setBusy(false);
+        }
     }
 
     /**
@@ -698,7 +738,7 @@ public class LocationDialog extends javax.swing.JDialog {
      *
      * @version  $Revision$, $Date$
      */
-    private class SelectionCalculator extends WaitingDialogThread<List<FeatureServiceFeature>> {
+    private class SelectionCalculator extends SwingWorker<List<FeatureServiceFeature>, Void> {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -708,17 +748,13 @@ public class LocationDialog extends javax.swing.JDialog {
         final SelectionMethodInterface meth;
         double distance;
         boolean useSelectedFeatures;
+        boolean abort = false;
 
         //~ Constructors -------------------------------------------------------
 
         /**
          * Creates a new SelectionCalculator object.
          *
-         * @param  parent               DOCUMENT ME!
-         * @param  modal                DOCUMENT ME!
-         * @param  text                 DOCUMENT ME!
-         * @param  icon                 DOCUMENT ME!
-         * @param  delay                DOCUMENT ME!
          * @param  sourceService        DOCUMENT ME!
          * @param  targetServices       DOCUMENT ME!
          * @param  spat                 DOCUMENT ME!
@@ -726,18 +762,13 @@ public class LocationDialog extends javax.swing.JDialog {
          * @param  distance             DOCUMENT ME!
          * @param  useSelectedFeatures  DOCUMENT ME!
          */
-        public SelectionCalculator(final Frame parent,
-                final boolean modal,
-                final String text,
-                final Icon icon,
-                final int delay,
+        public SelectionCalculator(
                 final AbstractFeatureService sourceService,
                 final List<AbstractFeatureService> targetServices,
                 final SpatialSelectionMethodInterface spat,
                 final SelectionMethodInterface meth,
                 final double distance,
                 final boolean useSelectedFeatures) {
-            super(parent, modal, text, icon, delay);
             this.sourceService = sourceService;
             this.targetServices = targetServices;
             this.spat = spat;
@@ -773,6 +804,10 @@ public class LocationDialog extends javax.swing.JDialog {
             }
 
             for (final FeatureServiceFeature fsf : sourceFeatures) {
+                if (Thread.interrupted()) {
+                    abort = true;
+                    return null;
+                }
                 final Geometry newGeom = fsf.getGeometry();
 
                 if ((newGeom != null) && fsf.getGeometry().isValid()) {
@@ -783,6 +818,10 @@ public class LocationDialog extends javax.swing.JDialog {
             if (geomList.size() > 0) {
                 final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
                         geomList.get(0).getSRID());
+                if (Thread.interrupted()) {
+                    abort = true;
+                    return null;
+                }
                 geom = factory.buildGeometry(geomList);
 
                 if (geom instanceof GeometryCollection) {
@@ -817,9 +856,14 @@ public class LocationDialog extends javax.swing.JDialog {
             try {
                 final List<FeatureServiceFeature> correspondingFeatures = get();
 
-                meth.executeMethod(correspondingFeatures, sourceService, targetServices);
+                if (!abort) {
+                    meth.executeMethod(correspondingFeatures, sourceService, targetServices);
+                }
             } catch (Exception e) {
                 LOG.error("Error while calculating new selection", e);
+            } finally {
+                inProgress = false;
+                setControlsAccordingToState(inProgress);
             }
         }
 
@@ -859,6 +903,10 @@ public class LocationDialog extends javax.swing.JDialog {
                     }
 
                     for (final Object featureObject : featureList) {
+                        if (Thread.interrupted()) {
+                            abort = true;
+                            return null;
+                        }
                         final FeatureServiceFeature feature = (FeatureServiceFeature)featureObject;
                         if (spatMethod.featureGeometryFulfilsRequirements(
                                         simplifiedGeometry,

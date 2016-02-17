@@ -11,8 +11,13 @@
  */
 package de.cismet.watergis.gui.dialog;
 
+import org.openide.util.Lookup;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -27,6 +32,11 @@ import de.cismet.cismap.commons.rasterservice.MapService;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.components.location.SelectionMethodInterface;
+
+import de.cismet.watergis.utils.AddToSelectionQuerySearchMethod;
+import de.cismet.watergis.utils.RemoveFromSelectionQuerySearchMethod;
+import de.cismet.watergis.utils.SelectFromSelectionQuerySearchMethod;
 import de.cismet.watergis.utils.SelectQuerySearchMethod;
 
 /**
@@ -38,6 +48,8 @@ import de.cismet.watergis.utils.SelectQuerySearchMethod;
 public class QuerySearchDialog extends javax.swing.JDialog {
 
     //~ Instance fields --------------------------------------------------------
+
+    final SelectionMethodInterface[] smArray;
 
     private ActiveLayerModel model;
     private AbstractFeatureService[] choosenLayer;
@@ -58,12 +70,22 @@ public class QuerySearchDialog extends javax.swing.JDialog {
         super(parent, modal);
         this.model = model;
 
+        final Collection<? extends SelectionMethodInterface> selectionMethod = Lookup.getDefault()
+                    .lookupAll(SelectionMethodInterface.class);
+        smArray = selectionMethod.toArray(new SelectionMethodInterface[selectionMethod.size()]);
         final ActiveLayerModel layerModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
                     .getMappingModel();
         final List<AbstractFeatureService> sourceLayer = new ArrayList<AbstractFeatureService>();
         final TreeMap<Integer, MapService> serviceMap = layerModel.getMapServices();
         final List<Integer> keyList = new ArrayList<Integer>(serviceMap.keySet());
         Collections.sort(keyList, Collections.reverseOrder());
+        Arrays.sort(smArray, new Comparator<SelectionMethodInterface>() {
+
+                @Override
+                public int compare(final SelectionMethodInterface o1, final SelectionMethodInterface o2) {
+                    return o1.getOrderId().compareTo(o2.getOrderId());
+                }
+            });
 
         for (final Integer key : keyList) {
             final MapService service = serviceMap.get(key);
@@ -93,7 +115,12 @@ public class QuerySearchDialog extends javax.swing.JDialog {
                         .getMappingModel(),
                 new String[] {},
                 choosenLayer,
-                new QuerySearchMethod[] { new SelectQuerySearchMethod() });
+                new QuerySearchMethod[] {
+                    new SelectQuerySearchMethod(),
+                    new AddToSelectionQuerySearchMethod(),
+                    new RemoveFromSelectionQuerySearchMethod(),
+                    new SelectFromSelectionQuerySearchMethod()
+                });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(QuerySearchDialog.class, "QuerySearchDialog.title")); // NOI18N

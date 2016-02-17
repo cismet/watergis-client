@@ -16,13 +16,10 @@ import org.openide.util.NbBundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.util.SelectionManager;
 
@@ -41,23 +38,20 @@ public class SelectFromSelectedFeaturesSelectionMethod implements SelectionMetho
     public void executeMethod(final List<FeatureServiceFeature> features,
             final AbstractFeatureService source,
             final List<AbstractFeatureService> target) {
-        final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
-//        final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
-        final List<Feature> toBeSelected = new ArrayList<Feature>();
+        final List<Feature> toBeUnSelected = new ArrayList<Feature>();
 
         for (final Feature feature : SelectionManager.getInstance().getSelectedFeatures()) {
             if (feature instanceof FeatureServiceFeature) {
                 final FeatureServiceFeature f = (FeatureServiceFeature)feature;
                 if (containedInService(target, f)) {
-                    if (features.contains(f)) {
-                        toBeSelected.add(f);
+                    if (!features.contains(f)) {
+                        toBeUnSelected.add(f);
                     }
                 }
             }
         }
 
-        SelectionManager.getInstance().setSelectedFeatures(toBeSelected);
-//        ((DefaultFeatureCollection)map.getFeatureCollection()).unselect(toBeUnselected);
+        SelectionManager.getInstance().removeSelectedFeatures(toBeUnSelected);
     }
 
     /**

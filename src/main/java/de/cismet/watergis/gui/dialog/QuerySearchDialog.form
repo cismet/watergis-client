@@ -31,7 +31,7 @@
   <SubComponents>
     <Component class="de.cismet.cids.search.QuerySearch" name="querySearch1">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new QuerySearch((ActiveLayerModel)AppBroker.getInstance().getMappingComponent().getMappingModel(), new String[] {}, choosenLayer, new QuerySearchMethod[] {new SelectQuerySearchMethod()})"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new QuerySearch((ActiveLayerModel)AppBroker.getInstance().getMappingComponent().getMappingModel(), new String[] {}, choosenLayer, new QuerySearchMethod[] {new SelectQuerySearchMethod(), new AddToSelectionQuerySearchMethod(), new RemoveFromSelectionQuerySearchMethod(), new SelectFromSelectionQuerySearchMethod()})"/>
       </AuxValues>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
