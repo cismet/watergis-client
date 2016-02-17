@@ -16,6 +16,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import edu.umd.cs.piccolo.PNode;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
@@ -29,6 +30,7 @@ import java.awt.Font;
 
 import java.io.File;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -58,6 +60,8 @@ import de.cismet.commons.concurrency.CismetExecutors;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.dialog.VisualizingDialog;
+
 /**
  * DOCUMENT ME!
  *
@@ -71,19 +75,20 @@ public class DrawingManager implements FeatureCollectionListener {
     private static final Logger LOG = Logger.getLogger(DrawingManager.class);
 //    private static final String INIT_DB_SEQUENCE = "CREATE SEQUENCE IF NOT EXISTS \"cids_system.drawing_seq\" START WITH 1";
     public static final String DRAWING_TABLE_NAME = "Zeichnungen";
+    public static final String CHECK_TABLE = "select sld from \"" + DRAWING_TABLE_NAME + "\"";
     private static final String INIT_DB_TABLE = "CREATE TABLE IF NOT EXISTS \"" + DRAWING_TABLE_NAME
-                + "\" (id identity primary key not null, geom Geometry, type varchar, text varchar, autoscale boolean, background boolean, fontsize integer)";
+                + "\" (id identity primary key not null, geom Geometry, type varchar, text varchar, autoscale boolean, background boolean, fontsize integer, sld text)";
     private static final String ADD_FEATURE = "INSERT INTO \"" + DRAWING_TABLE_NAME
-                + "\" (geom, type, text, autoscale, background, fontsize) VALUES ('%1$s', '%2$s', %3$s, %4$s, %5$s, %6$s)";
+                + "\" (geom, type, text, autoscale, background, fontsize, sld) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String DELETE_FEATURE = "DELETE FROM \"" + DRAWING_TABLE_NAME + "\" WHERE ID = %1$s";
     private static final String DELETE_ALL_FEATURE = "DELETE FROM \"" + DRAWING_TABLE_NAME + "\"";
     private static final String SELECT_ALL_FEATURES =
-        "SELECT id, geom, type, text, autoscale, background, fontsize FROM \""
+        "SELECT id, geom, type, text, autoscale, background, fontsize, sld FROM \""
                 + DRAWING_TABLE_NAME
                 + "\"";
     private static final String CHANGE_FEATURE = "UPDATE \""
                 + DRAWING_TABLE_NAME
-                + "\" SET geom = '%1$s', type = '%2$s', text = '%3$s'  WHERE ID = %4$s";
+                + "\" SET geom = ?, type = ?, text = ?, sld = ?  WHERE ID = ?";
     private static final String CREATE_TABLE_FROM_CSV = "CREATE TABLE \"%s\" as select * from CSVREAD('%s');";
     private static final String TEMP_TABLE = "temp_drawing";
 
@@ -142,6 +147,18 @@ public class DrawingManager implements FeatureCollectionListener {
             conn = H2FeatureServiceFactory.getDBConnection(null);
             H2FeatureServiceFactory.initDatabase(conn);
             st = H2FeatureServiceFactory.createStatement(conn);
+
+            try {
+                st.execute(CHECK_TABLE);
+            } catch (Exception e) {
+                // the sld field does no exists, so delete the table to create a new on ewith the sld field
+                try {
+                    st.execute("drop table \"" + DRAWING_TABLE_NAME + "\"");
+                } catch (Exception ex) {
+                    // nothing to do
+                }
+            }
+
             st.execute(INIT_DB_TABLE);
         } catch (SQLException e) {
             LOG.error("Error while initialising the internal database", e);
@@ -237,7 +254,7 @@ public class DrawingManager implements FeatureCollectionListener {
 
                     for (final Feature feature : features) {
                         if (feature instanceof DrawingSLDStyledFeature) {
-                            if (((DrawingSLDStyledFeature)feature).getId() == -1) {
+                            if (((DrawingSLDStyledFeature)feature).getId() != -1) {
                                 changeFeature((DrawingSLDStyledFeature)feature);
                             }
                         }
@@ -374,25 +391,34 @@ public class DrawingManager implements FeatureCollectionListener {
      */
     private static synchronized void addFeatureToDb(final DrawingFeature feature) {
         ConnectionWrapper cw = null;
-        StatementWrapper st = null;
+        PreparedStatement ps = null;
 
         try {
             cw = H2FeatureServiceFactory.getDBConnection(null);
-            st = H2FeatureServiceFactory.createStatement(cw);
             feature.setGeometry(CrsTransformer.transformToDefaultCrs(feature.getGeometry()));
-            final String insert = String.format(
-                    ADD_FEATURE,
-                    feature.getGeometry().toText(),
-                    feature.getGeometryType().name(),
-                    ((feature.getGeometryType().equals(AbstractNewFeature.geomTypes.TEXT))
-                        ? ("'" + feature.getName() + "'") : "null"),
-                    String.valueOf(feature.isAutoscale()),
-                    String.valueOf(feature.getPrimaryAnnotationHalo() != null),
-                    ((feature.getPrimaryAnnotationFont() != null) ? feature.getPrimaryAnnotationFont().getSize()
-                                                                  : "null"));
-            LOG.error(insert);
-            st.executeUpdate(insert, new int[] { 1 });
-            final ResultSet rs = st.getGeneratedKeys();
+            String sld = feature.getSld();
+
+            if (sld == null) {
+                sld = VisualizingDialog.exportSLD(VisualizingDialog.getInstance().getStyleLayer(),
+                        feature.getGeometry().getGeometryType());
+            }
+
+            ps = cw.prepareStatement(ADD_FEATURE);
+            ps.setString(1, feature.getGeometry().toText());
+            ps.setString(2, feature.getGeometryType().name());
+            ps.setString(
+                3,
+                ((feature.getGeometryType().equals(AbstractNewFeature.geomTypes.TEXT)) ? (feature.getName()) : null));
+            ps.setString(4, String.valueOf(feature.isAutoscale()));
+            ps.setBoolean(5, feature.getPrimaryAnnotationHalo() != null);
+            ps.setObject(
+                6,
+                ((feature.getPrimaryAnnotationFont() != null) ? feature.getPrimaryAnnotationFont().getSize() : null));
+            ps.setString(7, sld);
+
+            ps.execute();
+            LOG.error(ADD_FEATURE);
+            final ResultSet rs = ps.getGeneratedKeys();
 
             if (rs.next()) {
                 feature.setId(rs.getInt(1));
@@ -402,9 +428,9 @@ public class DrawingManager implements FeatureCollectionListener {
         } catch (Exception e) {
             LOG.error("Error while inserting new feature into the internal db.", e);
         } finally {
-            if (st != null) {
+            if (ps != null) {
                 try {
-                    st.close();
+                    ps.close();
                 } catch (SQLException ex) {
                     LOG.error("Error while closing statement", ex);
                 }
@@ -435,14 +461,39 @@ public class DrawingManager implements FeatureCollectionListener {
      * @param  feature  the feature to save. It should be already conteined in the database
      */
     private void changeFeature(final DrawingSLDStyledFeature feature) {
-        final String update = String.format(
-                CHANGE_FEATURE,
-                feature.getGeometry().toString(),
-                feature.getGeometryType().name(),
-                ((feature.getGeometryType().equals(AbstractNewFeature.geomTypes.TEXT)) ? ("'" + feature.getText() + "'")
-                                                                                       : "null"),
-                feature.getId());
-        executeUpdate(update);
+        ConnectionWrapper cw = null;
+        PreparedStatement ps = null;
+
+        try {
+            cw = H2FeatureServiceFactory.getDBConnection(null);
+            ps = cw.prepareStatement(CHANGE_FEATURE);
+            ps.setString(1, feature.getGeometry().toString());
+            ps.setString(2, feature.getGeometryType().name());
+            ps.setString(
+                3,
+                ((feature.getGeometryType().equals(AbstractNewFeature.geomTypes.TEXT)) ? (feature.getText()) : null));
+            ps.setString(4, (String)feature.getProperty("sld"));
+            ps.setInt(5, feature.getId());
+
+            ps.execute();
+        } catch (Exception e) {
+            LOG.error("Error while executing the following statement: " + CHANGE_FEATURE, e);
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException ex) {
+                    LOG.error("Error while closing statement", ex);
+                }
+            }
+            if (cw != null) {
+                try {
+                    cw.close();
+                } catch (SQLException ex) {
+                    LOG.error("Error while closing connection", ex);
+                }
+            }
+        }
     }
 
     /**
@@ -469,8 +520,9 @@ public class DrawingManager implements FeatureCollectionListener {
             st.executeUpdate(String.format("DROP TABLE  IF EXISTS \"%1$s\"", TEMP_TABLE));
             st.executeUpdate(readCvsQuery);
             final ResultSet rs = st.executeQuery(String.format(
-                        "SELECT id, geom, type, text, autoscale, background, fontsize FROM \"%1$s\"",
+                        "SELECT id, geom, type, text, autoscale, background, fontsize, sld FROM \"%1$s\"",
                         TEMP_TABLE));
+            final Base64 base64 = new Base64();
 
             while (rs.next()) {
                 final int id = rs.getInt(1);
@@ -479,6 +531,7 @@ public class DrawingManager implements FeatureCollectionListener {
                 final String text = rs.getString(4);
                 final boolean autoscale = Boolean.parseBoolean(rs.getString(5));
                 final boolean halo = Boolean.parseBoolean(rs.getString(6));
+                final String sld = new String(base64.decode(rs.getString(8)));
                 final Geometry geom = converter.convertForward(geomAsTExt, CismapBroker.getInstance().getDefaultCrs());
                 geom.setSRID(CrsTransformer.extractSridFromCrs(CismapBroker.getInstance().getDefaultCrs()));
                 final DrawingFeature feature = new DrawingFeature(geom);
@@ -489,6 +542,7 @@ public class DrawingManager implements FeatureCollectionListener {
                 }
                 feature.setGeometryType(AbstractNewFeature.geomTypes.valueOf(type));
                 feature.setEditable(true);
+                feature.setSld(sld);
 
                 if (AbstractNewFeature.geomTypes.valueOf(type).equals(AbstractNewFeature.geomTypes.TEXT)) {
                     final int fontsize = Integer.parseInt(rs.getString(7));
@@ -502,8 +556,6 @@ public class DrawingManager implements FeatureCollectionListener {
 
                 addFeatureToDb(feature);
             }
-
-            executeUpdate("drop table \"" + TEMP_TABLE + "\"");
         } catch (Exception e) {
             LOG.error("Error while retreiving all features from the database: ", e);
         } finally {
@@ -521,6 +573,7 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing connection", ex);
                 }
             }
+            executeUpdate("drop table \"" + TEMP_TABLE + "\"");
         }
     }
 
@@ -582,6 +635,7 @@ public class DrawingManager implements FeatureCollectionListener {
                 final boolean autoscale = rs.getBoolean(5);
                 final boolean halo = rs.getBoolean(6);
                 final int fontsize = rs.getInt(7);
+                final String sld = rs.getString(8);
                 geom.setSRID(CrsTransformer.extractSridFromCrs(CismapBroker.getInstance().getDefaultCrs()));
                 final DrawingSLDStyledFeature feature = new DrawingSLDStyledFeature();
                 feature.setGeometry(geom);
@@ -600,11 +654,9 @@ public class DrawingManager implements FeatureCollectionListener {
                     }
                     feature.setPrimaryAnnotationFont(new Font("sansserif", Font.PLAIN, fontsize));
                 }
-                if (AppBroker.getInstance().getDrawingStyleLayer() != null) {
-                    feature.setSLDStyles(
-                        AppBroker.getInstance().getDrawingStyles(
-                            feature.getGeometry().getGeometryType()).get("default"));
-                }
+                feature.setSLDStyles(
+                    AppBroker.getInstance().getDrawingStylesBySld(sld).get("default"));
+                feature.setProperty("sld", sld);
 
                 features.add(feature);
             }
