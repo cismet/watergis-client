@@ -16,14 +16,8 @@ import org.openide.util.NbBundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cismet.cismap.commons.features.DefaultFeatureCollection;
-import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
-import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
-import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.util.SelectionManager;
 
 /**
@@ -44,7 +38,12 @@ public class SelectFeaturesFromSelectionMethod implements SelectionMethodInterfa
         final ArrayList list = new ArrayList();
         list.addAll(features);
 
-        SelectionManager.getInstance().setSelectedFeatures(list);
+        for (final AbstractFeatureService targetService : target) {
+            SelectionManager.getInstance()
+                    .removeSelectedFeatures(SelectionManager.getInstance().getSelectedFeatures(targetService));
+        }
+
+        SelectionManager.getInstance().addSelectedFeatures(list);
     }
 
     @Override

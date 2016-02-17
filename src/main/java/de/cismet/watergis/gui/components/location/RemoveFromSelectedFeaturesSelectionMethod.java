@@ -24,14 +24,9 @@ import org.openide.util.NbBundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
-import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
-import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.util.SelectionManager;
 
 /**
@@ -50,19 +45,6 @@ public class RemoveFromSelectedFeaturesSelectionMethod implements SelectionMetho
             final AbstractFeatureService source,
             final List<AbstractFeatureService> target) {
         final List<Feature> staySelected = new ArrayList<Feature>();
-//        final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
-//        final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
-//        final List<Feature> toBeUnselected = new ArrayList<Feature>();
-//
-//        for (final PFeature feature : features) {
-//            if (feature.isSelected()) {
-//                feature.setSelected(false);
-//                sl.removeSelectedFeature(feature);
-//                toBeUnselected.add(feature.getFeature());
-//            }
-//        }
-//
-//        ((DefaultFeatureCollection)map.getFeatureCollection()).unselect(toBeUnselected);
 
         for (final Feature feature : SelectionManager.getInstance().getSelectedFeatures()) {
             if (feature instanceof FeatureServiceFeature) {
@@ -78,7 +60,12 @@ public class RemoveFromSelectedFeaturesSelectionMethod implements SelectionMetho
             }
         }
 
-        SelectionManager.getInstance().setSelectedFeatures(staySelected);
+        for (final AbstractFeatureService targetService : target) {
+            SelectionManager.getInstance()
+                    .removeSelectedFeatures(SelectionManager.getInstance().getSelectedFeatures(targetService));
+        }
+
+        SelectionManager.getInstance().addSelectedFeatures(staySelected);
     }
 
     /**

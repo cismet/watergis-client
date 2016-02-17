@@ -75,12 +75,9 @@ public class VisualizingDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form VisualizingDialog.
-     *
-     * @param  parent  DOCUMENT ME!
-     * @param  modal   DOCUMENT ME!
      */
-    public VisualizingDialog(final java.awt.Frame parent, final boolean modal) {
-        super(parent, modal);
+    private VisualizingDialog() {
+        super(AppBroker.getInstance().getWatergisApp(), true);
         initComponents();
 
         final LayerManager layerManager = new LayerManager();
@@ -112,6 +109,15 @@ public class VisualizingDialog extends javax.swing.JDialog {
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static VisualizingDialog getInstance() {
+        return LazyInitializer.INSTANCE;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The
@@ -302,5 +308,27 @@ public class VisualizingDialog extends javax.swing.JDialog {
      */
     public boolean isCanceled() {
         return canceled;
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private static final class LazyInitializer {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final transient VisualizingDialog INSTANCE = new VisualizingDialog();
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new LazyInitializer object.
+         */
+        private LazyInitializer() {
+        }
     }
 }
