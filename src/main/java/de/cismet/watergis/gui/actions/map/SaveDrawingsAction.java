@@ -11,6 +11,7 @@
  */
 package de.cismet.watergis.gui.actions.map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
@@ -56,6 +57,18 @@ public class SaveDrawingsAction extends AbstractAction {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(SaveDrawingsAction.class);
+    private static final List<String[]> ATTRIBUTE_LIST = new ArrayList<String[]>();
+
+    static {
+        ATTRIBUTE_LIST.add(new String[] { "id", "id" });
+        ATTRIBUTE_LIST.add(new String[] { "geom", "geom" });
+        ATTRIBUTE_LIST.add(new String[] { "type", "type" });
+        ATTRIBUTE_LIST.add(new String[] { "text", "text" });
+        ATTRIBUTE_LIST.add(new String[] { "autoscale", "autoscale" });
+        ATTRIBUTE_LIST.add(new String[] { "background", "background" });
+        ATTRIBUTE_LIST.add(new String[] { "fontsize", "fontsize" });
+        ATTRIBUTE_LIST.add(new String[] { "sld", "sld" });
+    }
 
     //~ Constructors -----------------------------------------------------------
 
@@ -110,6 +123,7 @@ public class SaveDrawingsAction extends AbstractAction {
                     null);
             service.initAndWait();
             layerProps.setFeatureService(service);
+            final Base64 base64 = new Base64();
 
             for (final DrawingSLDStyledFeature dFeature : features) {
                 final DefaultFeatureServiceFeature f = new DefaultFeatureServiceFeature(dFeature.getId(),
@@ -126,17 +140,19 @@ public class SaveDrawingsAction extends AbstractAction {
                     "fontsize",
                     ((dFeature.getPrimaryAnnotationFont() != null) ? dFeature.getPrimaryAnnotationFont().getSize()
                                                                    : null));
+                properties.put("sld", base64.encodeAsString(((String)dFeature.getProperty("sld")).getBytes()));
                 f.setProperties(properties);
                 featureList.add(f);
             }
-            boolean openAutomatically = DownloadManagerDialog.getInstance().isOpenAutomaticallyEnabled();
+            final boolean openAutomatically = DownloadManagerDialog.getInstance().isOpenAutomaticallyEnabled();
             DownloadManagerDialog.getInstance().setOpenAutomaticallyEnabled(false);
+
             final ExportDownload ed = new ExportCsvDownload(
                     file.getName().substring(0, file.getName().lastIndexOf(".")),
                     ".ze",
                     featureList.toArray(new FeatureServiceFeature[featureList.size()]),
                     service,
-                    null);
+                    ATTRIBUTE_LIST);
             DownloadManager.instance().setDestinationDirectory(file.getParentFile());
             DownloadManager.instance().add(ed);
             ((H2FeatureServiceFactory)service.getFeatureFactory()).closeConnection();
