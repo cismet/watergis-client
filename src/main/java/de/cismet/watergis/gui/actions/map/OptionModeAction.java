@@ -13,11 +13,14 @@ package de.cismet.watergis.gui.actions.map;
 
 import java.awt.event.ActionEvent;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
 
+import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.DrawingSLDStyledFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureCollection;
@@ -30,6 +33,7 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.components.DrawingMode;
 import de.cismet.watergis.gui.dialog.VisualizingDialog;
+import java.util.Collections;
 
 /**
  * DOCUMENT ME!
@@ -66,9 +70,7 @@ public class OptionModeAction extends AbstractNewGeometryModeAction implements D
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        final VisualizingDialog dialog = new VisualizingDialog(StaticSwingTools.getParentFrame(
-                    AppBroker.getInstance().getMappingComponent()),
-                true);
+        final VisualizingDialog dialog = VisualizingDialog.getInstance();
 //        dialog.setSize(490, 420);
         dialog.pack();
         dialog.setResizable(false);
@@ -78,12 +80,24 @@ public class OptionModeAction extends AbstractNewGeometryModeAction implements D
 
             final MappingComponent mc = AppBroker.getInstance().getMappingComponent();
             final FeatureCollection fc = mc.getFeatureCollection();
+            final List<Feature> changedFeatures = new ArrayList<Feature>();
 
-            for (final Feature feature : fc.getAllFeatures()) {
-                if (feature instanceof DrawingSLDStyledFeature) {
+            for (final Object f : fc.getSelectedFeatures()) {
+                if (f instanceof DrawingSLDStyledFeature) {
+                    final DrawingSLDStyledFeature feature = (DrawingSLDStyledFeature)f;
                     setStyle((DrawingSLDStyledFeature)feature,
                         AppBroker.getInstance().getDrawingStyles(feature.getGeometry().getGeometryType()));
+                    feature.setProperty(
+                        "sld",
+                        VisualizingDialog.exportSLD(
+                            VisualizingDialog.getInstance().getStyleLayer(),
+                            feature.getGeometry().getGeometryType()));
+                    changedFeatures.add(feature);
                 }
+            }
+
+            if (!changedFeatures.isEmpty() && (fc instanceof DefaultFeatureCollection)) {
+                ((DefaultFeatureCollection)fc).fireFeaturesChanged(changedFeatures);
             }
         }
     }
