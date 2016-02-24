@@ -297,8 +297,10 @@ public class UnionDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labTableName,
-            org.openide.util.NbBundle.getMessage(UnionDialog.class, "UnionDialog.labTableName.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                UnionDialog.class,
+                "UnionDialog.labTableName.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -469,9 +471,9 @@ public class UnionDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }//GEN-LAST:event_butCancelActionPerformed
+    }                                                                             //GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -504,7 +506,7 @@ public class UnionDialog extends javax.swing.JDialog {
                         } else {
                             cbTheme.setSelectedItem(null);
                         }
-                        
+
                         if (cbTargetTheme.getModel().getSize() > 0) {
                             cbTargetTheme.setSelectedIndex(0);
                         } else {
@@ -521,7 +523,7 @@ public class UnionDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         final AbstractFeatureService targetService = (AbstractFeatureService)cbTargetTheme.getSelectedItem();
         final String tableName = txtTable.getText();
@@ -598,23 +600,24 @@ public class UnionDialog extends javax.swing.JDialog {
 //                                Geometry newGeom = f.getGeometry().union(targetFeature.getGeometry());
                                 Geometry sourceGeom = f.getGeometry();
                                 Geometry targetGeom = targetFeature.getGeometry();
-                                
+
                                 if (!sourceGeom.isValid()) {
                                     sourceGeom = sourceGeom.buffer(0);
                                 }
-                                
+
                                 if (!targetGeom.isValid()) {
                                     targetGeom = targetGeom.buffer(0);
                                 }
-                                
+
                                 final Geometry newGeom = sourceGeom.intersection(targetGeom);
 
                                 if ((newGeom != null) && !newGeom.isEmpty()) {
                                     for (int geomIndex = 0; geomIndex < newGeom.getNumGeometries(); ++geomIndex) {
-                                        if (newGeom.getGeometryN(geomIndex).getGeometryType().equalsIgnoreCase("POLYGON")) {
+                                        if (newGeom.getGeometryN(geomIndex).getGeometryType().equalsIgnoreCase(
+                                                        "POLYGON")) {
                                             final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
                                             newFeature.setGeometry(newGeom.getGeometryN(geomIndex));
-    //                                        resultedFeatures.add(newFeature);
+                                            // resultedFeatures.add(newFeature);
                                             resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
                                                     newFeature,
                                                     targetFeature,
@@ -688,14 +691,14 @@ public class UnionDialog extends javax.swing.JDialog {
             this.setVisible(false);
             wdt.start();
         }
-    }//GEN-LAST:event_butOkActionPerformed
+    } //GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         selectedThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -704,14 +707,14 @@ public class UnionDialog extends javax.swing.JDialog {
                 selectedThemeFeatureCount,
                 labSelected);
         enabledOrNot();
-    }//GEN-LAST:event_cbThemeActionPerformed
+    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbTargetThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTargetThemeActionPerformed
+    private void cbTargetThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbTargetThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTargetTheme.getSelectedItem();
         selectedTargetThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -720,7 +723,7 @@ public class UnionDialog extends javax.swing.JDialog {
                 selectedTargetThemeFeatureCount,
                 labSelectedTarget);
         enabledOrNot();
-    }//GEN-LAST:event_cbTargetThemeActionPerformed
+    }                                                                                 //GEN-LAST:event_cbTargetThemeActionPerformed
 
     /**
      * refreshes the labSelectedFeatures label.

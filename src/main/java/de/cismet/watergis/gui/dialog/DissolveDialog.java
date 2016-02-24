@@ -389,16 +389,16 @@ public class DissolveDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }//GEN-LAST:event_butCancelActionPerformed
+    }                                                                             //GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         final List selectedFields = fieldList.getSelectedValuesList();
         final String[] propertyNames = (String[])selectedFields.toArray(new String[selectedFields.size()]);
@@ -507,7 +507,7 @@ public class DissolveDialog extends javax.swing.JDialog {
                             }
                         }
                         ++n;
-                        
+
                         if (Thread.interrupted()) {
                             return null;
                         }
@@ -524,18 +524,18 @@ public class DissolveDialog extends javax.swing.JDialog {
                             "DissolveDialog.butOkActionPerformed.doInBackground.creatingDatasource"));
 
                     final List<String> orderedAttributeNames = new ArrayList();
-                    
-                    //choose attributes
-                    Map<String, FeatureServiceAttribute> attributes = service.getFeatureServiceAttributes();
-                    
-                    for (String key : (List<String>)service.getOrderedFeatureServiceAttributes()) {
-                        FeatureServiceAttribute attr = attributes.get(key);
-                        
+
+                    // choose attributes
+                    final Map<String, FeatureServiceAttribute> attributes = service.getFeatureServiceAttributes();
+
+                    for (final String key : (List<String>)service.getOrderedFeatureServiceAttributes()) {
+                        final FeatureServiceAttribute attr = attributes.get(key);
+
                         if (attr.isGeometry() || selectedFields.contains(key)) {
                             orderedAttributeNames.add(key);
                         }
                     }
-                    
+
                     return FeatureServiceHelper.createNewService(AppBroker.getInstance().getWatergisApp(),
                             dissolvedFeatures,
                             tableName,
@@ -570,14 +570,14 @@ public class DissolveDialog extends javax.swing.JDialog {
             this.setVisible(false);
             wdt.start();
         }
-    }//GEN-LAST:event_butOkActionPerformed
+    } //GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         refreshSelectedFeatureCount(
             false,
@@ -586,7 +586,7 @@ public class DissolveDialog extends javax.swing.JDialog {
             selectedThemeFeatureCount,
             labSelected);
         refreshFieldModel();
-    }//GEN-LAST:event_cbThemeActionPerformed
+    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!

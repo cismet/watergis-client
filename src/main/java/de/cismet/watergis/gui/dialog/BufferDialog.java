@@ -491,16 +491,16 @@ public class BufferDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }//GEN-LAST:event_butCancelActionPerformed
+    }                                                                             //GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         final String tableName = txtTable.getText();
         final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
@@ -734,7 +734,7 @@ public class BufferDialog extends javax.swing.JDialog {
             this.setVisible(false);
             wdt.start();
         }
-    }//GEN-LAST:event_butOkActionPerformed
+    } //GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -763,7 +763,7 @@ public class BufferDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         selectedThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -773,27 +773,27 @@ public class BufferDialog extends javax.swing.JDialog {
                 labSelected);
         refreshFieldModel();
         enabledOrNot();
-    }//GEN-LAST:event_cbThemeActionPerformed
+    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void rbFieldBufferActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFieldBufferActionPerformed
+    private void rbFieldBufferActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_rbFieldBufferActionPerformed
         cbField.setEnabled(rbFieldBuffer.isSelected());
         txtBuffer.setEnabled(rbFixBuffer.isSelected());
-    }//GEN-LAST:event_rbFieldBufferActionPerformed
+    }                                                                                 //GEN-LAST:event_rbFieldBufferActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void rbFixBufferActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFixBufferActionPerformed
+    private void rbFixBufferActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_rbFixBufferActionPerformed
         cbField.setEnabled(rbFieldBuffer.isSelected());
         txtBuffer.setEnabled(rbFixBuffer.isSelected());
-    }//GEN-LAST:event_rbFixBufferActionPerformed
+    }                                                                               //GEN-LAST:event_rbFixBufferActionPerformed
 
     /**
      * DOCUMENT ME!

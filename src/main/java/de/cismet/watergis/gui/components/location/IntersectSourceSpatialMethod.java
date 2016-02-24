@@ -57,7 +57,7 @@ public class IntersectSourceSpatialMethod implements SpatialSelectionMethodInter
     public Integer getOrderId() {
         return 1;
     }
-    
+
     @Override
     public boolean isUsedForGeoprocessing() {
         return true;

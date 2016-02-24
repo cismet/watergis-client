@@ -22,6 +22,7 @@ import java.awt.EventQueue;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,6 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.gui.components.location.SpatialSelectionMethodInterface;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
-import java.util.Collections;
 
 /**
  * DOCUMENT ME!
@@ -162,22 +162,23 @@ public class PointInLineDialog extends javax.swing.JDialog {
         final Collection<? extends SpatialSelectionMethodInterface> spatialSelectionMethod = Lookup.getDefault()
                     .lookupAll(SpatialSelectionMethodInterface.class);
         final List<SpatialSelectionMethodInterface> ssmList = new ArrayList<SpatialSelectionMethodInterface>();
-        
-        for (SpatialSelectionMethodInterface method : spatialSelectionMethod) {
+
+        for (final SpatialSelectionMethodInterface method : spatialSelectionMethod) {
             if (method.isUsedForGeoprocessing()) {
                 ssmList.add(method);
             }
         }
-        
+
         Collections.sort(ssmList, new Comparator<SpatialSelectionMethodInterface>() {
 
-            @Override
-            public int compare(final SpatialSelectionMethodInterface o1, final SpatialSelectionMethodInterface o2) {
-                return o1.getOrderId().compareTo(o2.getOrderId());
-            }
-        });
+                @Override
+                public int compare(final SpatialSelectionMethodInterface o1, final SpatialSelectionMethodInterface o2) {
+                    return o1.getOrderId().compareTo(o2.getOrderId());
+                }
+            });
 
-        cbGeoMethod.setModel(new DefaultComboBoxModel(ssmList.toArray(new SpatialSelectionMethodInterface[ssmList.size()])));
+        cbGeoMethod.setModel(new DefaultComboBoxModel(
+                ssmList.toArray(new SpatialSelectionMethodInterface[ssmList.size()])));
 
         txtTable.setText("PunktAufLinie");
         CismapBroker.getInstance()
@@ -303,10 +304,18 @@ public class PointInLineDialog extends javax.swing.JDialog {
         txtDistanceField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle(org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.title", new Object[] {})); // NOI18N
+        setTitle(org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.title",
+                new Object[] {})); // NOI18N
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(labTheme, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.labTheme.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labTheme,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.labTheme.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -318,10 +327,12 @@ public class PointInLineDialog extends javax.swing.JDialog {
         cbTheme.setMinimumSize(new java.awt.Dimension(200, 27));
         cbTheme.setPreferredSize(new java.awt.Dimension(200, 27));
         cbTheme.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbThemeActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    cbThemeActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -331,7 +342,12 @@ public class PointInLineDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(15, 10, 5, 10);
         getContentPane().add(cbTheme, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(labTableName, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.labTableName.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labTableName,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.labTableName.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -362,19 +378,24 @@ public class PointInLineDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(txtBuffer, gridBagConstraints);
 
-        cbGeoMethod.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbGeoMethod.setModel(new javax.swing.DefaultComboBoxModel(
+                new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cbGeoMethod.setMinimumSize(new java.awt.Dimension(200, 27));
         cbGeoMethod.setPreferredSize(new java.awt.Dimension(200, 27));
         cbGeoMethod.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbGeoMethodItemStateChanged(evt);
-            }
-        });
+
+                @Override
+                public void itemStateChanged(final java.awt.event.ItemEvent evt) {
+                    cbGeoMethodItemStateChanged(evt);
+                }
+            });
         cbGeoMethod.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                cbGeoMethodPropertyChange(evt);
-            }
-        });
+
+                @Override
+                public void propertyChange(final java.beans.PropertyChangeEvent evt) {
+                    cbGeoMethodPropertyChange(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -386,14 +407,21 @@ public class PointInLineDialog extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(butOk, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.butOk.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butOk,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.butOk.text",
+                new Object[] {})); // NOI18N
         butOk.setMinimumSize(new java.awt.Dimension(80, 29));
         butOk.setPreferredSize(new java.awt.Dimension(89, 29));
         butOk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                butOkActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butOkActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -403,12 +431,19 @@ public class PointInLineDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(15, 10, 15, 10);
         jPanel1.add(butOk, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(butCancel, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.butCancel.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butCancel,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.butCancel.text",
+                new Object[] {})); // NOI18N
         butCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                butCancelActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butCancelActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
@@ -432,7 +467,12 @@ public class PointInLineDialog extends javax.swing.JDialog {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(jPanel1, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(labTargetTheme, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.labTargetTheme.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labTargetTheme,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.labTargetTheme.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -444,10 +484,12 @@ public class PointInLineDialog extends javax.swing.JDialog {
         cbTargetTheme.setMinimumSize(new java.awt.Dimension(200, 27));
         cbTargetTheme.setPreferredSize(new java.awt.Dimension(200, 27));
         cbTargetTheme.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbTargetThemeActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    cbTargetThemeActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -457,7 +499,12 @@ public class PointInLineDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(cbTargetTheme, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(labGeoMethod, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.labGeoMethod.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labGeoMethod,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.labGeoMethod.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
@@ -466,7 +513,12 @@ public class PointInLineDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(labGeoMethod, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(labDistance, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.labDistance.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labDistance,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.labDistance.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
@@ -477,7 +529,12 @@ public class PointInLineDialog extends javax.swing.JDialog {
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(ckbSelectedTarget, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.ckbSelectedTarget.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbSelectedTarget,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.ckbSelectedTarget.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -501,7 +558,12 @@ public class PointInLineDialog extends javax.swing.JDialog {
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(ckbSelected, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.ckbSelected.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbSelected,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.ckbSelected.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -523,7 +585,12 @@ public class PointInLineDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(jPanel4, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(labDistanceField, org.openide.util.NbBundle.getMessage(PointInLineDialog.class, "PointInLineDialog.labDistanceField.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labDistanceField,
+            org.openide.util.NbBundle.getMessage(
+                PointInLineDialog.class,
+                "PointInLineDialog.labDistanceField.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
@@ -544,16 +611,16 @@ public class PointInLineDialog extends javax.swing.JDialog {
         getContentPane().add(txtDistanceField, gridBagConstraints);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }//GEN-LAST:event_butCancelActionPerformed
+    }                                                                             //GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -580,7 +647,7 @@ public class PointInLineDialog extends javax.swing.JDialog {
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(new String[] { "LineString", "MultiLineString" })
                                             .toArray(new AbstractFeatureService[0])));
-                        
+
                         if (cbTheme.getModel().getSize() > 0) {
                             cbTheme.setSelectedIndex(0);
                         } else {
@@ -603,7 +670,7 @@ public class PointInLineDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         final AbstractFeatureService targetService = (AbstractFeatureService)cbTargetTheme.getSelectedItem();
         final String tableName = txtTable.getText();
@@ -694,7 +761,7 @@ public class PointInLineDialog extends javax.swing.JDialog {
                     wd.setText(NbBundle.getMessage(
                             PointInLineDialog.class,
                             "PointInLineDialog.butOkActionPerformed.doInBackground.createFeatures"));
-                    
+
                     for (final FeatureServiceFeature f : featureList) {
                         Geometry searchGeom = f.getGeometry();
                         ++count;
@@ -714,14 +781,15 @@ public class PointInLineDialog extends javax.swing.JDialog {
                                                 f.getGeometry(),
                                                 targetFeature.getGeometry(),
                                                 buffer)) {
-                                    double distanceToOrigin = f.getGeometry().distance(targetFeature.getGeometry());
+                                    final double distanceToOrigin = f.getGeometry()
+                                                .distance(targetFeature.getGeometry());
                                     if (distanceToOrigin < maxDistanceToOrigin) {
                                         match = targetFeature;
                                         maxDistanceToOrigin = distanceToOrigin;
                                     }
                                 }
                             }
-                            
+
                             if (match != null) {
                                 resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
                                         f,
@@ -732,15 +800,15 @@ public class PointInLineDialog extends javax.swing.JDialog {
                             }
                         }
 
-                        //Issue 401: 15. do not add points without intersection
-//                        if (!suitableFeatureFound) {
-//                            resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
-//                                    f,
-//                                    null,
-//                                    newLayerProperties,
-//                                    secondaryFeatureProperties,
-//                                    distanceField));
-//                        }
+                        // Issue 401: 15. do not add points without intersection
+// if (!suitableFeatureFound) {
+// resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
+// f,
+// null,
+// newLayerProperties,
+// secondaryFeatureProperties,
+// distanceField));
+// }
 
                         if (Thread.interrupted()) {
                             return null;
@@ -798,14 +866,14 @@ public class PointInLineDialog extends javax.swing.JDialog {
             this.setVisible(false);
             wdt.start();
         }
-    }//GEN-LAST:event_butOkActionPerformed
+    } //GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         selectedThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -814,14 +882,14 @@ public class PointInLineDialog extends javax.swing.JDialog {
                 selectedThemeFeatureCount,
                 labSelected);
         enabledOrNot();
-    }//GEN-LAST:event_cbThemeActionPerformed
+    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbTargetThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTargetThemeActionPerformed
+    private void cbTargetThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbTargetThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTargetTheme.getSelectedItem();
         selectedTargetThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -830,19 +898,29 @@ public class PointInLineDialog extends javax.swing.JDialog {
                 selectedTargetThemeFeatureCount,
                 labSelectedTarget);
         enabledOrNot();
-    }//GEN-LAST:event_cbTargetThemeActionPerformed
+    }                                                                                 //GEN-LAST:event_cbTargetThemeActionPerformed
 
-    private void cbGeoMethodPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cbGeoMethodPropertyChange
-    }//GEN-LAST:event_cbGeoMethodPropertyChange
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void cbGeoMethodPropertyChange(final java.beans.PropertyChangeEvent evt) { //GEN-FIRST:event_cbGeoMethodPropertyChange
+    }                                                                                  //GEN-LAST:event_cbGeoMethodPropertyChange
 
-    private void cbGeoMethodItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbGeoMethodItemStateChanged
-        Object method = cbGeoMethod.getSelectedItem();
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void cbGeoMethodItemStateChanged(final java.awt.event.ItemEvent evt) { //GEN-FIRST:event_cbGeoMethodItemStateChanged
+        final Object method = cbGeoMethod.getSelectedItem();
         if (method instanceof SpatialSelectionMethodInterface) {
-            boolean distanceRequired = ((SpatialSelectionMethodInterface)method).isDistanceRequired();
+            final boolean distanceRequired = ((SpatialSelectionMethodInterface)method).isDistanceRequired();
             txtBuffer.setEnabled(distanceRequired);
             txtDistanceField.setEnabled(distanceRequired);
         }
-    }//GEN-LAST:event_cbGeoMethodItemStateChanged
+    }                                                                              //GEN-LAST:event_cbGeoMethodItemStateChanged
 
     /**
      * refreshes the labSelectedFeatures label.
