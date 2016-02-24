@@ -57,4 +57,9 @@ public class CompletelyWithinSourceSpatialMethod implements SpatialSelectionMeth
     public Integer getOrderId() {
         return 6;
     }
+
+    @Override
+    public boolean isUsedForGeoprocessing() {
+        return false;
+    }
 }

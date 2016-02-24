@@ -26,6 +26,8 @@ import java.util.List;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
+import de.cismet.math.geometry.StaticGeometryFunctions;
+
 /**
  * Contains some useful geometry processing operations.
  *
@@ -35,27 +37,6 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 public class GeometryUtils {
 
     //~ Methods ----------------------------------------------------------------
-
-    /**
-     * Converts a single part geometry to a multi part geometry.
-     *
-     * @param   g  a single part geometry
-     *
-     * @return  a multi part geometry
-     */
-    public static Geometry toMultiGeometry(final Geometry g) {
-        final GeometryFactory factory = g.getFactory();
-
-        if (g.getGeometryType().equalsIgnoreCase("point")) {
-            return factory.createMultiPoint(new Point[] { (Point)g });
-        } else if (g.getGeometryType().equalsIgnoreCase("linestring")) {
-            return factory.createMultiLineString(new LineString[] { (LineString)g });
-        } else if (g.getGeometryType().equalsIgnoreCase("polygon")) {
-            return factory.createMultiPolygon(new Polygon[] { (Polygon)g });
-        }
-
-        return g;
-    }
 
     /**
      * Splits the given geometry at the given line.
@@ -79,7 +60,7 @@ public class GeometryUtils {
         } else if (geom.getGeometryType().equalsIgnoreCase("POLYGON")
                     || geom.getGeometryType().equalsIgnoreCase("MULTIPOLYGON")) {
             if (geom.getGeometryType().equalsIgnoreCase("MULTIPOLYGON")) {
-                return splitPolygon((Polygon)toSimpleGeometry(geom), splitLine);
+                return splitPolygon((Polygon)StaticGeometryFunctions.toSimpleGeometry(geom), splitLine);
             } else {
                 return splitPolygon((Polygon)geom, splitLine);
             }
@@ -166,24 +147,5 @@ public class GeometryUtils {
 
             return g1.union(g2);
         }
-    }
-
-    /**
-     * Converts a multi-point/polygon/linestring to a point/polygon/linestring.
-     *
-     * @param   g  the geometry to convert
-     *
-     * @return  the point/polygon/linestring
-     */
-    public static Geometry toSimpleGeometry(final Geometry g) {
-        if (g.getGeometryType().equalsIgnoreCase("multipoint")) {
-            return g.getGeometryN(0);
-        } else if (g.getGeometryType().equalsIgnoreCase("multilinestring")) {
-            return g.getGeometryN(0);
-        } else if (g.getGeometryType().equalsIgnoreCase("multipolygon")) {
-            return g.getGeometryN(0);
-        }
-
-        return g;
     }
 }

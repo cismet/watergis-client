@@ -494,12 +494,22 @@ public class MergeDialog extends javax.swing.JDialog {
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(null).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTheme.setSelectedItem(null);
                         cbTargetTheme.setModel(
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(null).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTargetTheme.setSelectedItem(null);
+
+                        if (cbTheme.getModel().getSize() > 0) {
+                            cbTheme.setSelectedIndex(0);
+                        } else {
+                            cbTheme.setSelectedItem(null);
+                        }
+
+                        if (cbTargetTheme.getModel().getSize() > 0) {
+                            cbTargetTheme.setSelectedIndex(0);
+                        } else {
+                            cbTargetTheme.setSelectedItem(null);
+                        }
                     }
                 });
 
@@ -520,7 +530,8 @@ public class MergeDialog extends javax.swing.JDialog {
                 true,
                 "Verschmelzen",
                 null,
-                100) {
+                100,
+                true) {
 
                 @Override
                 protected H2FeatureService doInBackground() throws Exception {
@@ -531,10 +542,16 @@ public class MergeDialog extends javax.swing.JDialog {
                             "MergeDialog.butOkActionPerformed.doInBackground.retrieving"));
                     wd.setMax(100);
                     wd.setProgress(5);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
                             service,
                             ckbSelected.isSelected());
                     wd.setProgress(10);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> targetFeatureList = FeatureServiceHelper.getFeatures(
                             targetService,
                             ckbSelectedTarget.isSelected());
@@ -569,8 +586,13 @@ public class MergeDialog extends javax.swing.JDialog {
                         ++count;
                         final FeatureServiceFeature feature = (FeatureServiceFeature)f.clone();
                         feature.setLayerProperties(newLayerProperties);
+                        feature.setGeometry(f.getGeometry());
 
                         resultedFeatures.add(feature);
+
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
 
                         // refresh the progress bar
                         if (progress < (10 + (count * 80 / totalCount))) {
@@ -586,6 +608,9 @@ public class MergeDialog extends javax.swing.JDialog {
 
                         resultedFeatures.add(feature);
 
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
                         // refresh the progress bar
                         if (progress < (10 + (count * 80 / totalCount))) {
                             progress = 10 + (count * 80 / totalCount);
@@ -612,7 +637,9 @@ public class MergeDialog extends javax.swing.JDialog {
                     try {
                         final H2FeatureService service = get();
 
-                        FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        if (service != null) {
+                            FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        }
                     } catch (Exception ex) {
                         LOG.error("Error while execute the merge operation.", ex);
                     }
@@ -647,8 +674,28 @@ public class MergeDialog extends javax.swing.JDialog {
                 service,
                 selectedThemeFeatureCount,
                 labSelected);
+
+        if (service != null) {
+            cbTargetTheme.setModel(new DefaultComboBoxModel(
+                    new String[] {
+                        NbBundle.getMessage(MergeDialog.class, "PointInLineDialog.setlayerModel.searchLineServices")
+                    }));
+
+            final Thread t = new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            cbTargetTheme.setModel(
+                                new DefaultComboBoxModel(
+                                    FeatureServiceHelper.getServices(new String[] { service.getGeometryType() })
+                                                .toArray(new AbstractFeatureService[0])));
+                            cbTargetTheme.setSelectedItem(null);
+                        }
+                    });
+            t.start();
+        }
         enabledOrNot();
-    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
+    } //GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -700,9 +747,14 @@ public class MergeDialog extends javax.swing.JDialog {
      * DOCUMENT ME!
      */
     private void enabledOrNot() {
-        final boolean isServiceSelected = (cbTheme.getSelectedItem() instanceof AbstractFeatureService)
+        boolean isServiceSelected = (cbTheme.getSelectedItem() instanceof AbstractFeatureService)
                     && (cbTargetTheme.getSelectedItem() instanceof AbstractFeatureService);
 
+        if (isServiceSelected) {
+            final AbstractFeatureService sourceService = (AbstractFeatureService)cbTheme.getSelectedItem();
+            final AbstractFeatureService targetService = (AbstractFeatureService)cbTargetTheme.getSelectedItem();
+            isServiceSelected = sourceService.getGeometryType().equalsIgnoreCase(targetService.getGeometryType());
+        }
         butOk.setEnabled(isServiceSelected);
     }
 }

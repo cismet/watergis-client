@@ -502,12 +502,22 @@ public class ClipDialog extends javax.swing.JDialog {
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(null).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTheme.setSelectedItem(null);
                         cbTargetTheme.setModel(
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(new String[] { "Polygon", "MultiPolygon" }).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTargetTheme.setSelectedItem(null);
+
+                        if (cbTheme.getModel().getSize() > 0) {
+                            cbTheme.setSelectedIndex(0);
+                        } else {
+                            cbTheme.setSelectedItem(null);
+                        }
+
+                        if (cbTargetTheme.getModel().getSize() > 0) {
+                            cbTargetTheme.setSelectedIndex(0);
+                        } else {
+                            cbTargetTheme.setSelectedItem(null);
+                        }
                     }
                 });
 
@@ -526,9 +536,10 @@ public class ClipDialog extends javax.swing.JDialog {
         final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
                         .getInstance().getWatergisApp(),
                 true,
-                "Ausschneiden",
+                "Ausschneiden                                            ",
                 null,
-                100) {
+                100,
+                true) {
 
                 @Override
                 protected H2FeatureService doInBackground() throws Exception {
@@ -539,10 +550,16 @@ public class ClipDialog extends javax.swing.JDialog {
                             "ClipDialog.butOkActionPerformed.doInBackground.retrieving"));
                     wd.setMax(100);
                     wd.setProgress(5);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
                             service,
                             ckbSelected.isSelected());
                     wd.setProgress(10);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> targetFeatureList = FeatureServiceHelper.getFeatures(
                             targetService,
                             ckbSelectedTarget.isSelected());
@@ -590,6 +607,9 @@ public class ClipDialog extends javax.swing.JDialog {
                             }
                         }
 
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
                         if (progress < (10 + (count * 80 / featureList.size()))) {
                             progress = 10 + (count * 80 / featureList.size());
                             wd.setProgress(progress);
@@ -615,7 +635,9 @@ public class ClipDialog extends javax.swing.JDialog {
                     try {
                         final H2FeatureService service = get();
 
-                        FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        if (service != null) {
+                            FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        }
                     } catch (Exception ex) {
                         LOG.error("Error while execute the Clip operation.", ex);
                     }

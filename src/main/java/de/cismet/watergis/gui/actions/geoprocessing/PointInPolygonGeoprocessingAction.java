@@ -84,6 +84,6 @@ public class PointInPolygonGeoprocessingAction extends AbstractGeoprocessingActi
 
     @Override
     public int getSortOrder() {
-        return 40;
+        return 70;
     }
 }

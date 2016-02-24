@@ -496,12 +496,22 @@ public class UnionDialog extends javax.swing.JDialog {
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(new String[] { "Polygon", "MultiPolygon" }).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTheme.setSelectedItem(null);
                         cbTargetTheme.setModel(
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(new String[] { "Polygon", "MultiPolygon" }).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTargetTheme.setSelectedItem(null);
+
+                        if (cbTheme.getModel().getSize() > 0) {
+                            cbTheme.setSelectedIndex(0);
+                        } else {
+                            cbTheme.setSelectedItem(null);
+                        }
+
+                        if (cbTargetTheme.getModel().getSize() > 0) {
+                            cbTargetTheme.setSelectedIndex(0);
+                        } else {
+                            cbTargetTheme.setSelectedItem(null);
+                        }
                     }
                 });
 
@@ -520,9 +530,10 @@ public class UnionDialog extends javax.swing.JDialog {
         final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
                         .getInstance().getWatergisApp(),
                 true,
-                "Verschneiden",
+                "Verschneiden                                            ",
                 null,
-                100) {
+                100,
+                true) {
 
                 @Override
                 protected H2FeatureService doInBackground() throws Exception {
@@ -533,10 +544,16 @@ public class UnionDialog extends javax.swing.JDialog {
                             "UnionDialog.butOkActionPerformed.doInBackground.retrieving"));
                     wd.setMax(100);
                     wd.setProgress(5);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
                             service,
                             ckbSelected.isSelected());
                     wd.setProgress(10);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> targetFeatureList = FeatureServiceHelper.getFeatures(
                             targetService,
                             ckbSelectedTarget.isSelected());
@@ -581,19 +598,33 @@ public class UnionDialog extends javax.swing.JDialog {
                             for (final FeatureServiceFeature targetFeature : intersectingFeatures) {
                                 suitableFeatureFound = true;
 //                                Geometry newGeom = f.getGeometry().union(targetFeature.getGeometry());
-                                final Geometry newGeom = f.getGeometry().intersection(targetFeature.getGeometry());
+                                Geometry sourceGeom = f.getGeometry();
+                                Geometry targetGeom = targetFeature.getGeometry();
+
+                                if (!sourceGeom.isValid()) {
+                                    sourceGeom = sourceGeom.buffer(0);
+                                }
+
+                                if (!targetGeom.isValid()) {
+                                    targetGeom = targetGeom.buffer(0);
+                                }
+
+                                final Geometry newGeom = sourceGeom.intersection(targetGeom);
 
                                 if ((newGeom != null) && !newGeom.isEmpty()) {
                                     for (int geomIndex = 0; geomIndex < newGeom.getNumGeometries(); ++geomIndex) {
-                                        final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
-                                        newFeature.setGeometry(newGeom.getGeometryN(geomIndex));
-//                                        resultedFeatures.add(newFeature);
-                                        resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
-                                                newFeature,
-                                                targetFeature,
-                                                newLayerProperties,
-                                                secondaryFeatureProperties,
-                                                ""));
+                                        if (newGeom.getGeometryN(geomIndex).getGeometryType().equalsIgnoreCase(
+                                                        "POLYGON")) {
+                                            final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
+                                            newFeature.setGeometry(newGeom.getGeometryN(geomIndex));
+                                            // resultedFeatures.add(newFeature);
+                                            resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
+                                                    newFeature,
+                                                    targetFeature,
+                                                    newLayerProperties,
+                                                    secondaryFeatureProperties,
+                                                    ""));
+                                        }
                                     }
                                 }
                             }
@@ -608,6 +639,9 @@ public class UnionDialog extends javax.swing.JDialog {
                                     ""));
                         }
 
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
                         // refresh the progress bar
                         if (progress < (10 + (count * 80 / featureList.size()))) {
                             progress = 10 + (count * 80 / featureList.size());
@@ -634,7 +668,9 @@ public class UnionDialog extends javax.swing.JDialog {
                     try {
                         final H2FeatureService service = get();
 
-                        FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        if (service != null) {
+                            FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        }
                     } catch (Exception ex) {
                         LOG.error("Error while execute the Union operation.", ex);
                     }

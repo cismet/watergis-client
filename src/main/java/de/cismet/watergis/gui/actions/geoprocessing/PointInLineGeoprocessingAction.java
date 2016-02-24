@@ -85,6 +85,6 @@ public class PointInLineGeoprocessingAction extends AbstractGeoprocessingAction 
 
     @Override
     public int getSortOrder() {
-        return 30;
+        return 60;
     }
 }

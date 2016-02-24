@@ -21,8 +21,8 @@ import java.awt.Component;
 import java.awt.EventQueue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +44,6 @@ import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
-import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
@@ -162,10 +161,15 @@ public class PointInLineDialog extends javax.swing.JDialog {
 
         final Collection<? extends SpatialSelectionMethodInterface> spatialSelectionMethod = Lookup.getDefault()
                     .lookupAll(SpatialSelectionMethodInterface.class);
+        final List<SpatialSelectionMethodInterface> ssmList = new ArrayList<SpatialSelectionMethodInterface>();
 
-        final SpatialSelectionMethodInterface[] ssmArray = spatialSelectionMethod.toArray(
-                new SpatialSelectionMethodInterface[spatialSelectionMethod.size()]);
-        Arrays.sort(ssmArray, new Comparator<SpatialSelectionMethodInterface>() {
+        for (final SpatialSelectionMethodInterface method : spatialSelectionMethod) {
+            if (method.isUsedForGeoprocessing()) {
+                ssmList.add(method);
+            }
+        }
+
+        Collections.sort(ssmList, new Comparator<SpatialSelectionMethodInterface>() {
 
                 @Override
                 public int compare(final SpatialSelectionMethodInterface o1, final SpatialSelectionMethodInterface o2) {
@@ -173,7 +177,8 @@ public class PointInLineDialog extends javax.swing.JDialog {
                 }
             });
 
-        cbGeoMethod.setModel(new DefaultComboBoxModel(ssmArray));
+        cbGeoMethod.setModel(new DefaultComboBoxModel(
+                ssmList.toArray(new SpatialSelectionMethodInterface[ssmList.size()])));
 
         txtTable.setText("PunktAufLinie");
         CismapBroker.getInstance()
@@ -258,6 +263,7 @@ public class PointInLineDialog extends javax.swing.JDialog {
             });
 
         setLayerModel();
+        cbGeoMethodItemStateChanged(null);
         enabledOrNot();
     }
 
@@ -376,6 +382,20 @@ public class PointInLineDialog extends javax.swing.JDialog {
                 new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cbGeoMethod.setMinimumSize(new java.awt.Dimension(200, 27));
         cbGeoMethod.setPreferredSize(new java.awt.Dimension(200, 27));
+        cbGeoMethod.addItemListener(new java.awt.event.ItemListener() {
+
+                @Override
+                public void itemStateChanged(final java.awt.event.ItemEvent evt) {
+                    cbGeoMethodItemStateChanged(evt);
+                }
+            });
+        cbGeoMethod.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+
+                @Override
+                public void propertyChange(final java.beans.PropertyChangeEvent evt) {
+                    cbGeoMethodPropertyChange(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -623,12 +643,22 @@ public class PointInLineDialog extends javax.swing.JDialog {
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(new String[] { "Point" }).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTheme.setSelectedItem(null);
                         cbTargetTheme.setModel(
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(new String[] { "LineString", "MultiLineString" })
                                             .toArray(new AbstractFeatureService[0])));
-                        cbTargetTheme.setSelectedItem(null);
+
+                        if (cbTheme.getModel().getSize() > 0) {
+                            cbTheme.setSelectedIndex(0);
+                        } else {
+                            cbTheme.setSelectedItem(null);
+                        }
+
+                        if (cbTargetTheme.getModel().getSize() > 0) {
+                            cbTargetTheme.setSelectedIndex(0);
+                        } else {
+                            cbTargetTheme.setSelectedItem(null);
+                        }
                     }
                 });
 
@@ -647,9 +677,10 @@ public class PointInLineDialog extends javax.swing.JDialog {
         final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
                         .getInstance().getWatergisApp(),
                 true,
-                "PointInLine",
+                "PointInLine                                            ",
                 null,
-                100) {
+                100,
+                true) {
 
                 @Override
                 protected H2FeatureService doInBackground() throws Exception {
@@ -660,17 +691,23 @@ public class PointInLineDialog extends javax.swing.JDialog {
                             "PointInLineDialog.butOkActionPerformed.doInBackground.retrieving"));
                     wd.setMax(100);
                     wd.setProgress(5);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
                             service,
                             ckbSelected.isSelected());
                     wd.setProgress(10);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> targetFeatureList = FeatureServiceHelper.getFeatures(
                             targetService,
                             ckbSelectedTarget.isSelected());
 
                     // initialise variables for the geoperation
                     final STRtree featureTree = FeatureServiceHelper.getFeatureTree(targetFeatureList);
-                    double buffer = 0;
+                    double buffer = 0.001;
                     final List<FeatureServiceFeature> resultedFeatures = new ArrayList<FeatureServiceFeature>();
                     final SpatialSelectionMethodInterface spatialOperation = (SpatialSelectionMethodInterface)
                         cbGeoMethod.getSelectedItem();
@@ -701,12 +738,19 @@ public class PointInLineDialog extends javax.swing.JDialog {
                         try {
                             buffer = Double.parseDouble(txtBuffer.getText());
                         } catch (NumberFormatException e) {
-                            // todo Ausgabe für den Nutzer
+                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                NbBundle.getMessage(
+                                    PointInLineDialog.class,
+                                    "PointInLineDialog.butOkActionPerformed.doInBackground.noBuffer.message"),
+                                NbBundle.getMessage(
+                                    PointInLineDialog.class,
+                                    "PointInLineDialog.butOkActionPerformed.doInBackground.noBuffer.title"),
+                                JOptionPane.ERROR_MESSAGE);
                             LOG.error("Invalid buffer entered. No buffer is used", e);
                         }
                     }
 
-                    if (!txtDistanceField.getText().equals("") && (buffer != 0)) {
+                    if (!txtDistanceField.getText().equals("") && (buffer != 0.001)) {
                         final FeatureServiceAttribute fsa = new FeatureServiceAttribute(txtDistanceField.getText(),
                                 String.valueOf(Types.DOUBLE),
                                 false);
@@ -717,8 +761,8 @@ public class PointInLineDialog extends javax.swing.JDialog {
                     wd.setText(NbBundle.getMessage(
                             PointInLineDialog.class,
                             "PointInLineDialog.butOkActionPerformed.doInBackground.createFeatures"));
+
                     for (final FeatureServiceFeature f : featureList) {
-                        boolean suitableFeatureFound = false;
                         Geometry searchGeom = f.getGeometry();
                         ++count;
 
@@ -729,32 +773,46 @@ public class PointInLineDialog extends javax.swing.JDialog {
                         if (searchGeom != null) {
                             final List<FeatureServiceFeature> intersectingFeatures = featureTree.query(
                                     searchGeom.getEnvelopeInternal());
+                            double maxDistanceToOrigin = Double.MAX_VALUE;
+                            FeatureServiceFeature match = null;
 
                             for (final FeatureServiceFeature targetFeature : intersectingFeatures) {
                                 if (spatialOperation.featureGeometryFulfilsRequirements(
                                                 f.getGeometry(),
                                                 targetFeature.getGeometry(),
                                                 buffer)) {
-                                    suitableFeatureFound = true;
-                                    resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
-                                            f,
-                                            targetFeature,
-                                            newLayerProperties,
-                                            secondaryFeatureProperties,
-                                            distanceField));
+                                    final double distanceToOrigin = f.getGeometry()
+                                                .distance(targetFeature.getGeometry());
+                                    if (distanceToOrigin < maxDistanceToOrigin) {
+                                        match = targetFeature;
+                                        maxDistanceToOrigin = distanceToOrigin;
+                                    }
                                 }
+                            }
+
+                            if (match != null) {
+                                resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
+                                        f,
+                                        match,
+                                        newLayerProperties,
+                                        secondaryFeatureProperties,
+                                        distanceField));
                             }
                         }
 
-                        if (!suitableFeatureFound) {
-                            resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
-                                    f,
-                                    null,
-                                    newLayerProperties,
-                                    secondaryFeatureProperties,
-                                    distanceField));
-                        }
+                        // Issue 401: 15. do not add points without intersection
+// if (!suitableFeatureFound) {
+// resultedFeatures.add(FeatureServiceHelper.mergeFeatures(
+// f,
+// null,
+// newLayerProperties,
+// secondaryFeatureProperties,
+// distanceField));
+// }
 
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
                         // refresh the progress bar
                         if (progress < (10 + (count * 80 / featureList.size()))) {
                             progress = 10 + (count * 80 / featureList.size());
@@ -785,7 +843,9 @@ public class PointInLineDialog extends javax.swing.JDialog {
                     try {
                         final H2FeatureService service = get();
 
-                        FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        if (service != null) {
+                            FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        }
                     } catch (Exception ex) {
                         LOG.error("Error while execute the point in line operation.", ex);
                     }
@@ -839,6 +899,28 @@ public class PointInLineDialog extends javax.swing.JDialog {
                 labSelectedTarget);
         enabledOrNot();
     }                                                                                 //GEN-LAST:event_cbTargetThemeActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void cbGeoMethodPropertyChange(final java.beans.PropertyChangeEvent evt) { //GEN-FIRST:event_cbGeoMethodPropertyChange
+    }                                                                                  //GEN-LAST:event_cbGeoMethodPropertyChange
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void cbGeoMethodItemStateChanged(final java.awt.event.ItemEvent evt) { //GEN-FIRST:event_cbGeoMethodItemStateChanged
+        final Object method = cbGeoMethod.getSelectedItem();
+        if (method instanceof SpatialSelectionMethodInterface) {
+            final boolean distanceRequired = ((SpatialSelectionMethodInterface)method).isDistanceRequired();
+            txtBuffer.setEnabled(distanceRequired);
+            txtDistanceField.setEnabled(distanceRequired);
+        }
+    }                                                                              //GEN-LAST:event_cbGeoMethodItemStateChanged
 
     /**
      * refreshes the labSelectedFeatures label.

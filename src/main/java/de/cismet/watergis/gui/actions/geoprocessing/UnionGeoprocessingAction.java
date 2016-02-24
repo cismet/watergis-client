@@ -86,6 +86,6 @@ public class UnionGeoprocessingAction extends AbstractGeoprocessingAction {
 
     @Override
     public int getSortOrder() {
-        return 60;
+        return 30;
     }
 }

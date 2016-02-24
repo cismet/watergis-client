@@ -61,4 +61,9 @@ public class ContainSourceSpatialMethod implements SpatialSelectionMethodInterfa
     public Integer getOrderId() {
         return 3;
     }
+
+    @Override
+    public boolean isUsedForGeoprocessing() {
+        return false;
+    }
 }

@@ -85,6 +85,6 @@ public class ClipGeoprocessingAction extends AbstractGeoprocessingAction {
 
     @Override
     public int getSortOrder() {
-        return 50;
+        return 20;
     }
 }
