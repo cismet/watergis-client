@@ -84,6 +84,6 @@ public class BufferGeoprocessingAction extends AbstractGeoprocessingAction {
 
     @Override
     public int getSortOrder() {
-        return 20;
+        return 10;
     }
 }

@@ -46,4 +46,6 @@ public interface SpatialSelectionMethodInterface {
      * @return  DOCUMENT ME!
      */
     Integer getOrderId();
+    
+    boolean isUsedForGeoprocessing();
 }

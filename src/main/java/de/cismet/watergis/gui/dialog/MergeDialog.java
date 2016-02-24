@@ -297,10 +297,8 @@ public class MergeDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labTableName,
-            org.openide.util.NbBundle.getMessage(
-                MergeDialog.class,
-                "MergeDialog.labTableName.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(MergeDialog.class, "MergeDialog.labTableName.text", new Object[] {
+                })); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -471,9 +469,9 @@ public class MergeDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }                                                                             //GEN-LAST:event_butCancelActionPerformed
+    }//GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -494,12 +492,22 @@ public class MergeDialog extends javax.swing.JDialog {
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(null).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTheme.setSelectedItem(null);
                         cbTargetTheme.setModel(
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(null).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTargetTheme.setSelectedItem(null);
+                        
+                        if (cbTheme.getModel().getSize() > 0) {
+                            cbTheme.setSelectedIndex(0);
+                        } else {
+                            cbTheme.setSelectedItem(null);
+                        }
+
+                        if (cbTargetTheme.getModel().getSize() > 0) {
+                            cbTargetTheme.setSelectedIndex(0);
+                        } else {
+                            cbTargetTheme.setSelectedItem(null);
+                        }
                     }
                 });
 
@@ -511,7 +519,7 @@ public class MergeDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         final AbstractFeatureService targetService = (AbstractFeatureService)cbTargetTheme.getSelectedItem();
         final String tableName = txtTable.getText();
@@ -520,7 +528,8 @@ public class MergeDialog extends javax.swing.JDialog {
                 true,
                 "Verschmelzen",
                 null,
-                100) {
+                100,
+                true) {
 
                 @Override
                 protected H2FeatureService doInBackground() throws Exception {
@@ -531,10 +540,16 @@ public class MergeDialog extends javax.swing.JDialog {
                             "MergeDialog.butOkActionPerformed.doInBackground.retrieving"));
                     wd.setMax(100);
                     wd.setProgress(5);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
                             service,
                             ckbSelected.isSelected());
                     wd.setProgress(10);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> targetFeatureList = FeatureServiceHelper.getFeatures(
                             targetService,
                             ckbSelectedTarget.isSelected());
@@ -569,8 +584,13 @@ public class MergeDialog extends javax.swing.JDialog {
                         ++count;
                         final FeatureServiceFeature feature = (FeatureServiceFeature)f.clone();
                         feature.setLayerProperties(newLayerProperties);
+                        feature.setGeometry(f.getGeometry());
 
                         resultedFeatures.add(feature);
+                        
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
 
                         // refresh the progress bar
                         if (progress < (10 + (count * 80 / totalCount))) {
@@ -586,6 +606,9 @@ public class MergeDialog extends javax.swing.JDialog {
 
                         resultedFeatures.add(feature);
 
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
                         // refresh the progress bar
                         if (progress < (10 + (count * 80 / totalCount))) {
                             progress = 10 + (count * 80 / totalCount);
@@ -612,7 +635,9 @@ public class MergeDialog extends javax.swing.JDialog {
                     try {
                         final H2FeatureService service = get();
 
-                        FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        if (service != null) {
+                            FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        }
                     } catch (Exception ex) {
                         LOG.error("Error while execute the merge operation.", ex);
                     }
@@ -632,14 +657,14 @@ public class MergeDialog extends javax.swing.JDialog {
             this.setVisible(false);
             wdt.start();
         }
-    } //GEN-LAST:event_butOkActionPerformed
+    }//GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         selectedThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -647,15 +672,35 @@ public class MergeDialog extends javax.swing.JDialog {
                 service,
                 selectedThemeFeatureCount,
                 labSelected);
+
+        if (service != null) {
+            cbTargetTheme.setModel(new DefaultComboBoxModel(
+                    new String[] {
+                        NbBundle.getMessage(MergeDialog.class, "PointInLineDialog.setlayerModel.searchLineServices")
+                    }));
+
+            final Thread t = new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            cbTargetTheme.setModel(
+                                new DefaultComboBoxModel(
+                                    FeatureServiceHelper.getServices(new String[] { service.getGeometryType() })
+                                                .toArray(new AbstractFeatureService[0])));
+                            cbTargetTheme.setSelectedItem(null);
+                        }
+                    });
+            t.start();
+        }
         enabledOrNot();
-    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
+    }//GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbTargetThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbTargetThemeActionPerformed
+    private void cbTargetThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTargetThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTargetTheme.getSelectedItem();
         selectedTargetThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -664,7 +709,7 @@ public class MergeDialog extends javax.swing.JDialog {
                 selectedTargetThemeFeatureCount,
                 labSelectedTarget);
         enabledOrNot();
-    }                                                                                 //GEN-LAST:event_cbTargetThemeActionPerformed
+    }//GEN-LAST:event_cbTargetThemeActionPerformed
 
     /**
      * refreshes the labSelectedFeatures label.
@@ -700,9 +745,14 @@ public class MergeDialog extends javax.swing.JDialog {
      * DOCUMENT ME!
      */
     private void enabledOrNot() {
-        final boolean isServiceSelected = (cbTheme.getSelectedItem() instanceof AbstractFeatureService)
+        boolean isServiceSelected = (cbTheme.getSelectedItem() instanceof AbstractFeatureService)
                     && (cbTargetTheme.getSelectedItem() instanceof AbstractFeatureService);
 
+        if (isServiceSelected) {
+            final AbstractFeatureService sourceService = (AbstractFeatureService)cbTheme.getSelectedItem();
+            final AbstractFeatureService targetService = (AbstractFeatureService)cbTargetTheme.getSelectedItem();
+            isServiceSelected = sourceService.getGeometryType().equalsIgnoreCase(targetService.getGeometryType());
+        }
         butOk.setEnabled(isServiceSelected);
     }
 }

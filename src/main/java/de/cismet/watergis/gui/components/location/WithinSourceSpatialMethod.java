@@ -57,4 +57,9 @@ public class WithinSourceSpatialMethod implements SpatialSelectionMethodInterfac
     public Integer getOrderId() {
         return 5;
     }
+
+    @Override
+    public boolean isUsedForGeoprocessing() {
+        return false;
+    }
 }

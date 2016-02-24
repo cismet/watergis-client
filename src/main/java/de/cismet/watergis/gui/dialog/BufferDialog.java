@@ -54,6 +54,8 @@ import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.actions.SplitAction;
+
 import de.cismet.watergis.utils.FeatureServiceHelper;
 
 /**
@@ -489,24 +491,25 @@ public class BufferDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }                                                                             //GEN-LAST:event_butCancelActionPerformed
+    }//GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         final String tableName = txtTable.getText();
         final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
                         .getInstance().getWatergisApp(),
                 true,
-                "Puffer",
+                "Puffer                                            ",
                 null,
-                100) {
+                100,
+                true) {
 
                 @Override
                 protected H2FeatureService doInBackground() throws Exception {
@@ -517,14 +520,25 @@ public class BufferDialog extends javax.swing.JDialog {
                             "BufferDialog.butOkActionPerformed.doInBackground.retrieving"));
                     wd.setMax(100);
                     wd.setProgress(5);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
                             service,
                             ckbSelected.isSelected());
                     wd.setProgress(10);
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
 
                     // initialise variables for the geoperation
                     double buffer = 0;
                     final List<FeatureServiceFeature> resultedFeatures = new ArrayList<FeatureServiceFeature>();
+                    if ((featureList == null) || (featureList.size() == 0)) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Es wurden keine Objekte ausgewählt");
+                        return null;
+                    }
                     final LayerProperties serviceLayerProperties = featureList.get(0).getLayerProperties();
                     final LayerProperties newLayerProperties = serviceLayerProperties.clone();
                     int count = 0;
@@ -533,19 +547,36 @@ public class BufferDialog extends javax.swing.JDialog {
 
                     newLayerProperties.setFeatureService((AbstractFeatureService)
                         serviceLayerProperties.getFeatureService().clone());
-                    newLayerProperties.getFeatureService()
-                            .setFeatureServiceAttributes(FeatureServiceHelper
-                                .createGeometryOnlyFeatureServiceAttributes(
-                                    serviceLayerProperties.getFeatureService().getFeatureServiceAttributes()));
+
+                    if (ckbMergeBuffer.isSelected()) {
+                        newLayerProperties.getFeatureService()
+                                .setFeatureServiceAttributes(FeatureServiceHelper.cloneFeatureServiceAttributes(
+                                        serviceLayerProperties.getFeatureService().getFeatureServiceAttributes()));
+                    } else {
+                        newLayerProperties.getFeatureService()
+                                .setFeatureServiceAttributes(FeatureServiceHelper
+                                    .createGeometryOnlyFeatureServiceAttributes(
+                                        serviceLayerProperties.getFeatureService().getFeatureServiceAttributes()));
+                    }
 
                     if (rbFixBuffer.isSelected()) {
                         if (txtBuffer.isEnabled() && !txtBuffer.getText().equals("")) {
                             try {
                                 buffer = Double.parseDouble(txtBuffer.getText());
                             } catch (NumberFormatException e) {
-                                // todo Ausgabe für den Nutzer
-                                LOG.error("Invalid buffer entered. No buffer is used", e);
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        BufferDialog.class,
+                                        "BufferDialog.butOkActionPerformed.doInBackground.noBuffer.message"),
+                                    NbBundle.getMessage(
+                                        BufferDialog.class,
+                                        "BufferDialog.butOkActionPerformed.doInBackground.noBuffer.title"),
+                                    JOptionPane.ERROR_MESSAGE);
+                                LOG.error("Invalid buffer entered. Buffer 1 is used", e);
+                                buffer = 1;
                             }
+                        } else {
+                            buffer = 1;
                         }
                     } else {
                         distanceAttribute = cbField.getSelectedItem().toString();
@@ -584,6 +615,9 @@ public class BufferDialog extends javax.swing.JDialog {
                             }
                         }
 
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
                         // refresh the progress bar
                         if (progress < (10 + (count * percentageToBuffer / featureList.size()))) {
                             progress = 10 + (count * percentageToBuffer / featureList.size());
@@ -604,6 +638,9 @@ public class BufferDialog extends javax.swing.JDialog {
                         for (final FeatureServiceFeature f : bufferedFeatures) {
                             ++count;
 
+                            if (Thread.interrupted()) {
+                                return null;
+                            }
                             // refresh the progress bar
                             if (progress
                                         < (10 + percentageToBuffer
@@ -656,6 +693,9 @@ public class BufferDialog extends javax.swing.JDialog {
                     final List<String> orderedAttributeNames = new ArrayList();
                     orderedAttributeNames.addAll(service.getOrderedFeatureServiceAttributes());
 
+                    if (Thread.interrupted()) {
+                        return null;
+                    }
                     // create the service
                     wd.setText(NbBundle.getMessage(
                             BufferDialog.class,
@@ -671,7 +711,9 @@ public class BufferDialog extends javax.swing.JDialog {
                     try {
                         final H2FeatureService service = get();
 
-                        FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        if (service != null) {
+                            FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        }
                     } catch (Exception ex) {
                         LOG.error("Error while execute the buffer operation.", ex);
                     }
@@ -692,7 +734,7 @@ public class BufferDialog extends javax.swing.JDialog {
             this.setVisible(false);
             wdt.start();
         }
-    } //GEN-LAST:event_butOkActionPerformed
+    }//GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -721,7 +763,7 @@ public class BufferDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         selectedThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -731,27 +773,27 @@ public class BufferDialog extends javax.swing.JDialog {
                 labSelected);
         refreshFieldModel();
         enabledOrNot();
-    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
+    }//GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void rbFieldBufferActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_rbFieldBufferActionPerformed
+    private void rbFieldBufferActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFieldBufferActionPerformed
         cbField.setEnabled(rbFieldBuffer.isSelected());
         txtBuffer.setEnabled(rbFixBuffer.isSelected());
-    }                                                                                 //GEN-LAST:event_rbFieldBufferActionPerformed
+    }//GEN-LAST:event_rbFieldBufferActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void rbFixBufferActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_rbFixBufferActionPerformed
+    private void rbFixBufferActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFixBufferActionPerformed
         cbField.setEnabled(rbFieldBuffer.isSelected());
         txtBuffer.setEnabled(rbFixBuffer.isSelected());
-    }                                                                               //GEN-LAST:event_rbFixBufferActionPerformed
+    }//GEN-LAST:event_rbFixBufferActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -760,43 +802,11 @@ public class BufferDialog extends javax.swing.JDialog {
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
 
         if (service != null) {
-            final List<String> fields = getAllFieldNames(service, Number.class);
+            final List<String> fields = FeatureServiceHelper.getAllFieldNames(service, Number.class);
             cbField.setModel(new DefaultComboBoxModel(fields.toArray(new String[fields.size()])));
         } else {
             cbField.setModel(new DefaultComboBoxModel());
         }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   service  DOCUMENT ME!
-     * @param   cl       DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private List<String> getAllFieldNames(final AbstractFeatureService service, final Class<?> cl) {
-        Map<String, FeatureServiceAttribute> attributeMap = service.getFeatureServiceAttributes();
-        final List<String> resultList = new ArrayList<String>();
-
-        if (attributeMap == null) {
-            try {
-                service.initAndWait();
-            } catch (Exception e) {
-                LOG.error("Error while initializing the feature service.", e);
-            }
-            attributeMap = service.getFeatureServiceAttributes();
-        }
-
-        for (final String name : attributeMap.keySet()) {
-            final FeatureServiceAttribute attr = attributeMap.get(name);
-
-            if (cl.isAssignableFrom(FeatureTools.getClass(attr))) {
-                resultList.add(name);
-            }
-        }
-
-        return resultList;
     }
 
     /**
@@ -846,7 +856,12 @@ public class BufferDialog extends javax.swing.JDialog {
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(null).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTheme.setSelectedItem(null);
+
+                        if (cbTheme.getModel().getSize() > 0) {
+                            cbTheme.setSelectedIndex(0);
+                        } else {
+                            cbTheme.setSelectedItem(null);
+                        }
                     }
                 });
 

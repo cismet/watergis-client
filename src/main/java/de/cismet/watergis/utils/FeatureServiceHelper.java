@@ -209,7 +209,7 @@ public class FeatureServiceHelper {
         for (final String key : serviceAttr.keySet()) {
             final FeatureServiceAttribute attr = (FeatureServiceAttribute)serviceAttr.get(key).clone();
 
-            if ((targetServiceAttr.containsKey(key.toLowerCase()) || targetServiceAttr.containsKey(key.toUpperCase()))
+            if ((targetServiceAttr.containsKey(key) || targetServiceAttr.containsKey(key))
                         && !attr.isGeometry()) {
                 newAttrMap.put(key, attr);
             } else if (attr.isGeometry()) {
@@ -290,10 +290,10 @@ public class FeatureServiceHelper {
             attributeMap = service.getFeatureServiceAttributes();
         }
 
-        for (final String name : attributeMap.keySet()) {
+        for (final String name : (List<String>)service.getOrderedFeatureServiceAttributes()) {
             final FeatureServiceAttribute attr = attributeMap.get(name);
 
-            if ((cl == null) || cl.isAssignableFrom(FeatureTools.getClass(attr))) {
+            if ((attr != null) && ((cl == null) || cl.isAssignableFrom(FeatureTools.getClass(attr)))) {
                 resultList.add(name);
             }
         }
@@ -409,7 +409,6 @@ public class FeatureServiceHelper {
      */
     public static List<AbstractFeatureService> getServices(final String[] geometryType) {
         final List<AbstractFeatureService> serviceList = new ArrayList<AbstractFeatureService>();
-        serviceList.add(null);
         final ActiveLayerModel mappingModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
                     .getMappingModel();
         final TreeMap treeMap = mappingModel.getMapServices();

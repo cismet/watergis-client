@@ -79,6 +79,7 @@ public class SnappingButton extends JPopupMenuButton implements PropertyChangeLi
             menuItems[i] = new HighlightingRadioButtonMenuItem(javax.swing.UIManager.getDefaults().getColor(
                         "ProgressBar.foreground"),
                     Color.WHITE);
+            menuItems[i].setName(snappingMode.getClass().getName());
             menuItems[i].setAction((AbstractAction)snappingMode);
             menuItemButtonGroup.add(menuItems[i]);
             popup.add(menuItems[i++]);

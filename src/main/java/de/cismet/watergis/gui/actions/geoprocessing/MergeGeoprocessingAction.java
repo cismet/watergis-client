@@ -85,6 +85,6 @@ public class MergeGeoprocessingAction extends AbstractGeoprocessingAction {
 
     @Override
     public int getSortOrder() {
-        return 60;
+        return 40;
     }
 }

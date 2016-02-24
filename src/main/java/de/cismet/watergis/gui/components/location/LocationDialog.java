@@ -258,8 +258,6 @@ public class LocationDialog extends javax.swing.JDialog {
      */
     private void setLayerModel() {
         final List<AbstractFeatureService> sourceLayer = FeatureServiceHelper.getServices(null);
-        // remove the null layer
-        sourceLayer.remove(0);
 
         cboSource.setModel(new DefaultComboBoxModel(
                 sourceLayer.toArray(new AbstractFeatureService[sourceLayer.size()])));
@@ -539,7 +537,11 @@ public class LocationDialog extends javax.swing.JDialog {
         final SpatialSelectionMethodInterface spat = (SpatialSelectionMethodInterface)
             cboSpatSelectionMethod.getSelectedItem();
         txtDistance.setEnabled(spat.isDistanceRequired());
-    }                                                                                         //GEN-LAST:event_cboSpatSelectionMethodItemStateChanged
+
+        if (txtDistance.isEnabled() && txtDistance.getText().equals("")) {
+            txtDistance.setText("0");
+        }
+    } //GEN-LAST:event_cboSpatSelectionMethodItemStateChanged
 
     /**
      * DOCUMENT ME!

@@ -389,16 +389,16 @@ public class DissolveDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }                                                                             //GEN-LAST:event_butCancelActionPerformed
+    }//GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         final List selectedFields = fieldList.getSelectedValuesList();
         final String[] propertyNames = (String[])selectedFields.toArray(new String[selectedFields.size()]);
@@ -406,14 +406,13 @@ public class DissolveDialog extends javax.swing.JDialog {
         final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
                         .getInstance().getWatergisApp(),
                 true,
-                "Dissolve",
+                "Dissolve                                            ",
                 null,
-                100) {
+                100,
+                true) {
 
                 @Override
                 protected H2FeatureService doInBackground() throws Exception {
-                    final Geometry g = ZoomToLayerWorker.getServiceBounds(service);
-                    XBoundingBox bb = null;
                     int progress = 0;
                     wd.setText(NbBundle.getMessage(
                             DissolveDialog.class,
@@ -421,18 +420,6 @@ public class DissolveDialog extends javax.swing.JDialog {
                     wd.setMax(100);
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("retrieve all features from the service");
-                    }
-
-                    if (g != null) {
-                        bb = new XBoundingBox(g);
-
-                        try {
-                            final CrsTransformer transformer = new CrsTransformer(CismapBroker.getInstance().getSrs()
-                                            .getCode());
-                            bb = transformer.transformBoundingBox(bb);
-                        } catch (Exception e) {
-                            LOG.error("Cannot transform CRS.", e);
-                        }
                     }
 
                     final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
@@ -464,6 +451,9 @@ public class DissolveDialog extends javax.swing.JDialog {
                         }
 
                         ++n;
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
 
                         if ((progress) < (n * 20 / featureCount)) {
                             progress = (n * 20 / featureCount);
@@ -486,8 +476,16 @@ public class DissolveDialog extends javax.swing.JDialog {
                         final FeatureServiceFeature f = features.get(0);
                         final List<Geometry> geomList = new ArrayList<Geometry>();
 
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
+
                         for (final FeatureServiceFeature feature : features) {
-                            geomList.add(feature.getGeometry());
+                            if (!feature.getGeometry().isValid()) {
+                                geomList.add(feature.getGeometry().buffer(0));
+                            } else {
+                                geomList.add(feature.getGeometry());
+                            }
                         }
 
                         final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
@@ -509,6 +507,10 @@ public class DissolveDialog extends javax.swing.JDialog {
                             }
                         }
                         ++n;
+                        
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
 
                         if ((progress) < (20 + (n * 55 / featureCount))) {
                             progress = 20 + (n * 55 / featureCount);
@@ -522,8 +524,18 @@ public class DissolveDialog extends javax.swing.JDialog {
                             "DissolveDialog.butOkActionPerformed.doInBackground.creatingDatasource"));
 
                     final List<String> orderedAttributeNames = new ArrayList();
-                    orderedAttributeNames.addAll(service.getOrderedFeatureServiceAttributes());
-
+                    
+                    //choose attributes
+                    Map<String, FeatureServiceAttribute> attributes = service.getFeatureServiceAttributes();
+                    
+                    for (String key : (List<String>)service.getOrderedFeatureServiceAttributes()) {
+                        FeatureServiceAttribute attr = attributes.get(key);
+                        
+                        if (attr.isGeometry() || selectedFields.contains(key)) {
+                            orderedAttributeNames.add(key);
+                        }
+                    }
+                    
                     return FeatureServiceHelper.createNewService(AppBroker.getInstance().getWatergisApp(),
                             dissolvedFeatures,
                             tableName,
@@ -535,7 +547,9 @@ public class DissolveDialog extends javax.swing.JDialog {
                     try {
                         final H2FeatureService service = get();
 
-                        FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        if (service != null) {
+                            FeatureServiceHelper.addServiceLayerToTheTree(service);
+                        }
                     } catch (Exception ex) {
                         LOG.error("Error while dissolving features.", ex);
                     }
@@ -556,16 +570,23 @@ public class DissolveDialog extends javax.swing.JDialog {
             this.setVisible(false);
             wdt.start();
         }
-    } //GEN-LAST:event_butOkActionPerformed
+    }//GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
+        final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
+        refreshSelectedFeatureCount(
+            false,
+            ckbSelected,
+            service,
+            selectedThemeFeatureCount,
+            labSelected);
         refreshFieldModel();
-    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
+    }//GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -602,7 +623,11 @@ public class DissolveDialog extends javax.swing.JDialog {
                             new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(null).toArray(
                                     new AbstractFeatureService[0])));
-                        cbTheme.setSelectedItem(null);
+                        if (cbTheme.getModel().getSize() > 0) {
+                            cbTheme.setSelectedIndex(0);
+                        } else {
+                            cbTheme.setSelectedItem(null);
+                        }
                     }
                 });
 
@@ -646,7 +671,7 @@ public class DissolveDialog extends javax.swing.JDialog {
         final Object service = cbTheme.getSelectedItem();
 
         if ((service != null) && (service instanceof AbstractFeatureService)) {
-            final List<String> fields = getAllFieldNames((AbstractFeatureService)service);
+            final List<String> fields = FeatureServiceHelper.getAllFieldNames((AbstractFeatureService)service, null);
             final DefaultListModel model = new DefaultListModel();
             for (final String fieldName : fields) {
                 model.add(model.size(), fieldName);
@@ -656,32 +681,5 @@ public class DissolveDialog extends javax.swing.JDialog {
             final DefaultListModel model = new DefaultListModel();
             fieldList.setModel(model);
         }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   service  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private List<String> getAllFieldNames(final AbstractFeatureService service) {
-        Map<String, FeatureServiceAttribute> attributeMap = service.getFeatureServiceAttributes();
-        final List<String> resultList = new ArrayList<String>();
-
-        if (attributeMap == null) {
-            try {
-                service.initAndWait();
-            } catch (Exception e) {
-                LOG.error("Error while initializing the feature service.", e);
-            }
-            attributeMap = service.getFeatureServiceAttributes();
-        }
-
-        for (final String name : attributeMap.keySet()) {
-            resultList.add(name);
-        }
-
-        return resultList;
     }
 }

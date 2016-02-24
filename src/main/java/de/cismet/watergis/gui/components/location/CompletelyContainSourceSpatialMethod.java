@@ -68,4 +68,9 @@ public class CompletelyContainSourceSpatialMethod implements SpatialSelectionMet
     public Integer getOrderId() {
         return 4;
     }
+
+    @Override
+    public boolean isUsedForGeoprocessing() {
+        return false;
+    }
 }

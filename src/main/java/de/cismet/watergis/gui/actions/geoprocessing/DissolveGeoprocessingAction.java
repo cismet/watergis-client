@@ -86,6 +86,6 @@ public class DissolveGeoprocessingAction extends AbstractGeoprocessingAction {
 
     @Override
     public int getSortOrder() {
-        return 10;
+        return 50;
     }
 }
