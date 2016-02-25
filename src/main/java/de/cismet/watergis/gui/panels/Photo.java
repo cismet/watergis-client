@@ -1043,6 +1043,7 @@ public class Photo extends javax.swing.JPanel {
                             layerFeature.getStationEditor("ba_st").getCidsBean().setProperty("wert", stat.getStat());
                         } else {
                             layerFeature.getStationEditor("ba_st").setCidsBean(stationBean);
+                            editor.setStatBean(stationBean);
                         }
 
                         layerFeature.getBean().setProperty("ba_st", stationBean);
@@ -1056,7 +1057,7 @@ public class Photo extends javax.swing.JPanel {
                             layerFeature.setProperty("la_st", laStat.getStat());
                         }
                     }
-                }                
+                }
                 
                 // save
                 final AttributeTableRuleSet ruleSet = layerFeature.getLayerProperties().getAttributeTableRuleSet();
