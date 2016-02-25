@@ -921,6 +921,7 @@ public class Photo extends javax.swing.JPanel {
                 ruleSet.beforeSave(feature);
             }
             feature.saveChanges();
+            editor.setCidsLayerFeature(feature);
             reloadPhotoServices();
         } catch (Exception e) {
             LOG.error("Eror while saving feature", e);
@@ -1066,6 +1067,7 @@ public class Photo extends javax.swing.JPanel {
                     ruleSet.beforeSave(layerFeature);
                 }
                 layerFeature.saveChanges();
+                editor.setCidsLayerFeature(layerFeature);
                 layerFeature.setEditable(false);
                 reloadPhotoServices();
             } catch (Exception e) {
@@ -1408,8 +1410,9 @@ public class Photo extends javax.swing.JPanel {
                 if (ruleSet != null) {
                     ruleSet.beforeSave(feature);
                 }
-                feature.saveChanges();
-                newBeans.add(feature);
+                
+                CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
+                newBeans.add(newFeature);
             }
             return newBeans;
         }

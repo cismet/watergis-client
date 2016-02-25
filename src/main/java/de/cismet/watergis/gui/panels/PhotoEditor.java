@@ -55,6 +55,7 @@ import de.cismet.cids.dynamics.CidsBean;
 import de.cismet.cids.dynamics.DisposableCidsBeanStore;
 
 import de.cismet.cids.editors.DefaultCustomObjectEditor;
+import de.cismet.cids.tools.CidsBeanFilter;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
@@ -183,6 +184,28 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         this.webDavDirectory = webDavDirectory;
         this.webDavClient = webDavClient;
         initComponents();
+        cbLRl.setBeanFilter(new CidsBeanFilter() {
+
+            @Override
+            public boolean accept(CidsBean bean) {
+                if (bean.getProperty("foto") != null && ((Boolean)bean.getProperty("foto"))) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        cbLst.setBeanFilter(new CidsBeanFilter() {
+
+            @Override
+            public boolean accept(CidsBean bean) {
+                if (bean.getProperty("nicht_qp") != null && ((Boolean)bean.getProperty("nicht_qp"))) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
         lblBusy.setBusy(false);
 
         timer = new javax.swing.Timer(300, new ActionListener() {
@@ -953,6 +976,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
             RendererTools.makeReadOnly(cbFreigabe);
             RendererTools.makeReadOnly(cbLRl);
             RendererTools.makeReadOnly(cbLst);
+            ((TableStationEditor)panStatEdit).setEnabled(false);
         } else {
             RendererTools.makeWritable(txtAufn);
             RendererTools.makeWritable(txtHo);
@@ -965,6 +989,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
             RendererTools.makeWritable(cbFreigabe);
             RendererTools.makeWritable(cbLRl);
             RendererTools.makeWritable(cbLst);
+            ((TableStationEditor)panStatEdit).setEnabled(true);
         }
     }
 
