@@ -89,7 +89,7 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("ba_cd")
+                    && !columnName.equals("geom") && !columnName.equals("ba_cd") && !columnName.equals("id")
                     && !columnName.equals("ho") && !columnName.equals("re") && !columnName.equals("qp_nr")
                     && !columnName.equals("la_st") && !columnName.equals("la_cd") && !columnName.equals("ww_gr");
     }
