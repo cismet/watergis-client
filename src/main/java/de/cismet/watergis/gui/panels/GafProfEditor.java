@@ -1315,7 +1315,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
      *
      * @version  $Revision$, $Date$
      */
-    class CoordinateConverter extends Converter<CidsBean, String> {
+    class CoordinateConverter extends Converter<Geometry, String> {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -1342,8 +1342,9 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
          * @return  DOCUMENT ME!
          */
         @Override
-        public String convertForward(final CidsBean value) {
-            final Object geo = value.getProperty("geo_field");
+        public String convertForward(final Geometry value) {
+//            final Object geo = value.getProperty("geo_field");
+            final Object geo = value;
 
             if (geo instanceof Point) {
                 final Point point = (Point)geo;
@@ -1365,9 +1366,9 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         }
 
         @Override
-        public CidsBean convertReverse(final String value) {
+        public Geometry convertReverse(final String value) {
             try {
-                final double coord = Double.parseDouble(value);
+                final double coord = Double.parseDouble(value.replace(',', '.'));
                 final CidsBean bean = (CidsBean)cidsBean.getProperty("geom");
                 final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
                         CismapBroker.getInstance().getDefaultCrsAlias());
@@ -1377,42 +1378,46 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
                     if (rw) {
                         final double y = geom.getCoordinate().y;
+                        Geometry point = factory.createPoint(new Coordinate(coord, y));
 
                         try {
-                            bean.setProperty("geo_field", factory.createPoint(new Coordinate(coord, y)));
+                            bean.setProperty("geo_field", point);
                         } catch (Exception ex) {
                             LOG.warn("Cannot create coordinate");
                         }
 
-                        return bean;
+                        return point;
                     } else {
                         final double x = geom.getCoordinate().x;
+                        Geometry point = factory.createPoint(new Coordinate(x, coord));
 
                         try {
-                            bean.setProperty("geo_field", factory.createPoint(new Coordinate(x, coord)));
+                            bean.setProperty("geo_field", point);
                         } catch (Exception ex) {
                             LOG.warn("Cannot create coordinate");
                         }
 
-                        return bean;
+                        return point;
                     }
                 } else {
                     if (rw) {
                         final Double other = getDouble(txtHo.getText());
 
                         final CidsBean geomBean = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+                        Geometry point = factory.createPoint(new Coordinate(coord, other));
 
-                        geomBean.setProperty("geo_field", factory.createPoint(new Coordinate(coord, other)));
+                        geomBean.setProperty("geo_field", point);
 
-                        return geomBean;
+                        return point;
                     } else {
                         final Double other = getDouble(txtRe.getText());
 
                         final CidsBean geomBean = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+                        Geometry point = factory.createPoint(new Coordinate(other, coord));
 
-                        geomBean.setProperty("geo_field", factory.createPoint(new Coordinate(other, coord)));
+                        geomBean.setProperty("geo_field", point);
 
-                        return geomBean;
+                        return point;
                     }
                 }
             } catch (NumberFormatException e) {

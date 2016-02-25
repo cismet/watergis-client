@@ -141,7 +141,6 @@ public class GafProf extends javax.swing.JPanel {
 
     private List<CidsLayerFeature> newFeatures = new ArrayList<CidsLayerFeature>();
     private String oldMode;
-    private List<FeatureServiceFeature> startLocationChange;
     private boolean askForSave = true;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -219,7 +218,7 @@ public class GafProf extends javax.swing.JPanel {
                                 final List<File> files = (List<File>)tr.getTransferData(flavors[i]);
                                 if ((files != null) && (files.size() > 0)) {
                                     editor.showEditor(true, true);
-                                    CismetThreadPool.execute(new ImageUploadWorker(files));
+                                    CismetThreadPool.execute(new GafUploadWorker(files));
                                 }
                                 e.dropComplete(true);
                                 return;
@@ -255,7 +254,7 @@ public class GafProf extends javax.swing.JPanel {
 
                                 if (fileList.size() > 0) {
                                     editor.showEditor(true, true);
-                                    CismetThreadPool.execute(new ImageUploadWorker(fileList));
+                                    CismetThreadPool.execute(new GafUploadWorker(fileList));
                                     e.dropComplete(true);
                                     return;
                                 }
@@ -606,7 +605,7 @@ public class GafProf extends javax.swing.JPanel {
                         .getParentFrame(this),
                 true,
                 NbBundle.getMessage(GafProf.class,
-                    "AttributeTable.butPrintActionPerformed.WaitingDialogThread"),
+                    "GafProf.butPrintActionPerformed.WaitingDialogThread"),
                 null,
                 500) {
 
@@ -849,7 +848,7 @@ public class GafProf extends javax.swing.JPanel {
         map.put("upl_datum", obj2Time(feature.getProperty("upl_zeit")));
         map.put("qp_nr", objectToString(feature.getProperty("qp_nr")));
         map.put("pos", format.format(feature.getProperty("re")) + ", " + format.format(feature.getProperty("ho")));
-        map.put("lawa", feature.getProperty("la_cd"));
+        map.put("lawa", objectToString(feature.getProperty("la_cd")));
         map.put("lawa_stat", feature.getProperty("la_st"));
         map.put("dhhn", "ja");
         map.put("status", objectToString(feature.getProperty("l_st")));
@@ -955,6 +954,7 @@ public class GafProf extends javax.swing.JPanel {
         final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("qp");
 
         if ((features != null) && !features.isEmpty()) {
+            Collections.sort(features, PhotoOptionsDialog.getInstance().getSorter());
             int index = features.indexOf(feature);
             --index;
 
@@ -963,6 +963,9 @@ public class GafProf extends javax.swing.JPanel {
             }
             butNextProfile.setEnabled(index != (features.size() - 1));
             butPrevProfile.setEnabled(index != 0);
+        } else {
+            butNextProfile.setEnabled(false);
+            butPrevProfile.setEnabled(false);
         }
     } //GEN-LAST:event_butPrevProfileActionPerformed
 
@@ -976,6 +979,7 @@ public class GafProf extends javax.swing.JPanel {
         final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("qp");
 
         if ((features != null) && !features.isEmpty()) {
+            Collections.sort(features, PhotoOptionsDialog.getInstance().getSorter());
             int index = features.indexOf(feature);
             ++index;
 
@@ -983,8 +987,11 @@ public class GafProf extends javax.swing.JPanel {
                 setEditorFeature((CidsLayerFeature)features.get(index));
             }
 
-            butNextProfile.setEnabled(index != (features.size() - 1));
+            butNextProfile.setEnabled(index < (features.size() - 1));
             butPrevProfile.setEnabled(index != 0);
+        } else {
+            butNextProfile.setEnabled(false);
+            butPrevProfile.setEnabled(false);
         }
     } //GEN-LAST:event_butNextProfileActionPerformed
 
@@ -1108,8 +1115,6 @@ public class GafProf extends javax.swing.JPanel {
      */
     private void tbLocateActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbLocateActionPerformed
         if (tbLocate.isSelected()) {
-            startLocationChange = FeatureServiceHelper.getSelectedCidsLayerFeatures(
-                    "qp");
             makeFeatureEditable(editor.getCidsLayerFeature());
         } else {
             final CidsLayerFeature layerFeature = editor.getCidsLayerFeature();
@@ -1257,24 +1262,21 @@ public class GafProf extends javax.swing.JPanel {
      *
      * @version  $Revision$, $Date$
      */
-    final class ImageUploadWorker extends SwingWorker<List<CidsLayerFeature>, Void> {
+    final class GafUploadWorker extends SwingWorker<List<CidsLayerFeature>, Void> {
 
         //~ Instance fields ----------------------------------------------------
 
-        private final Collection<File> fotos;
+        private final Collection<File> profs;
 
         //~ Constructors -------------------------------------------------------
 
         /**
          * Creates a new ImageUploadWorker object.
          *
-         * @param  fotos  DOCUMENT ME!
+         * @param  profs  fotos DOCUMENT ME!
          */
-        public ImageUploadWorker(final Collection<File> fotos) {
-            this.fotos = fotos;
-//            lblPicture.setText("");
-//            lblPicture.setToolTipText(null);
-//            showWait(true);
+        public GafUploadWorker(final Collection<File> profs) {
+            this.profs = profs;
         }
 
         //~ Methods ------------------------------------------------------------
@@ -1285,7 +1287,7 @@ public class GafProf extends javax.swing.JPanel {
             boolean dhhn92Check = false;
             boolean dhhn92 = false;
 
-            for (final File gafFile : fotos) {
+            for (final File gafFile : profs) {
                 final String userName = SessionManager.getSession().getUser().getName();
                 final GafReader reader = new GafReader(gafFile);
                 final String[] errors = reader.checkFile();
@@ -1299,11 +1301,10 @@ public class GafProf extends javax.swing.JPanel {
 
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                         NbBundle.getMessage(
-                            ImageUploadWorker.class,
+                            GafUploadWorker.class,
                             "GafProf.ImageUploadWorker.doInBackground().message",
                             allErrors.toString()),
-                        NbBundle.getMessage(
-                            ImageUploadWorker.class,
+                        NbBundle.getMessage(GafUploadWorker.class,
                             "GafProf.ImageUploadWorker.doInBackground().title"),
                         JOptionPane.ERROR_MESSAGE);
                     return null;
@@ -1447,6 +1448,9 @@ public class GafProf extends javax.swing.JPanel {
                 final List<CidsLayerFeature> newFeatures = get();
 
                 if ((newFeatures != null) && !newFeatures.isEmpty()) {
+                    final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
+                            "qp");
+                    SelectionManager.getInstance().removeSelectedFeatures(features);
                     newFeatures.addAll(newFeatures);
                     // todo: prüfen, ob noch nicht gespeicherte Fotos existieren
                     setEditorFeature(newFeatures.get(0));
