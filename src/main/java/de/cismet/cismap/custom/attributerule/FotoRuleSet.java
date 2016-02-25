@@ -88,8 +88,6 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
             final URL arrowUrl = FotoRuleSet.class.getResource(
                     "/de/cismet/watergis/res/icons16/angle.png");
             ARROW = ImageIO.read(arrowUrl);
-//            ARROW_NULL = new FeatureAnnotationSymbol(new ImageIcon(
-//                        "/de/cismet/cids/custom/objecteditors/wrrl_db_mv/angle_null.png").getImage());
         } catch (Exception ex) {
             LOG.fatal(ex, ex);
             throw new RuntimeException(ex);
@@ -101,7 +99,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("ba_cd")
+                    && !columnName.equals("geom") && !columnName.equals("ba_cd") && !columnName.equals("id")
                     && !columnName.equals("ho") && !columnName.equals("re") && !columnName.equals("foto")
                     && !columnName.equals("foto_nr") && !columnName.equals("la_st") && !columnName.equals("la_cd")
                     && !columnName.equals("ww_gr") && !columnName.startsWith("upl");
