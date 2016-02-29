@@ -20,22 +20,18 @@ import java.io.File;
 
 import java.util.List;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
-import de.cismet.tools.gui.RestrictedFileSystemView;
 import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.gui.WatergisApp;
-import de.cismet.watergis.gui.actions.map.SaveDrawingsAction;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
 
