@@ -86,14 +86,14 @@ public class ExifReader {
      *
      * @throws  MetadataException  If an error occurs during the reading of the image metadata
      */
-    public double getGpsDirection() throws MetadataException {
+    public Double getGpsDirection() throws MetadataException {
         final GpsDirectory gpsDirectory = metadata.getDirectory(GpsDirectory.class);
 
         if (gpsDirectory != null) {
             return gpsDirectory.getDouble(GpsDirectory.TAG_GPS_IMG_DIRECTION);
         }
 
-        return 0.0;
+        return null;
     }
 
     /**
