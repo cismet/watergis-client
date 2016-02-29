@@ -29,10 +29,13 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.gui.RestrictedFileSystemView;
+import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
+import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.gui.WatergisApp;
+import de.cismet.watergis.gui.actions.map.SaveDrawingsAction;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
 
@@ -47,6 +50,7 @@ public class GafExportDialog extends javax.swing.JDialog {
     //~ Instance fields --------------------------------------------------------
 
     private boolean cancelled = false;
+    private String lastPath = WatergisApp.getDIRECTORYPATH_WATERGIS();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;
@@ -436,108 +440,89 @@ public class GafExportDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
         cancelled = true;
         setVisible(false);
-    }                                                                             //GEN-LAST:event_butCancelActionPerformed
+    }//GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
         if (!txtFile.getText().equals("")) {
             cancelled = false;
             setVisible(false);
         } else {
             butFileActionPerformed(null);
         }
-    }                                                                         //GEN-LAST:event_butOkActionPerformed
+    }//GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butFileActionPerformed
-        JFileChooser fc;
+    private void butFileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butFileActionPerformed
+        final File file = StaticSwingTools.chooseFile(lastPath,
+                true,
+                new String[] { "zip" },
+                org.openide.util.NbBundle.getMessage(
+                    GafExportDialog.class,
+                    "PhotoExportReportDialog.butFileActionPerformed().getDescription()"),
+                AppBroker.getInstance().getComponent(ComponentName.MAIN));      
 
-        try {
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
-        } catch (Exception bug) {
-            // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
+        if (file != null) {
+            lastPath = file.getParent();
+            txtFile.setText(file.getAbsolutePath());
         }
-
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fc.setAcceptAllFileFilterUsed(false);
-        fc.setFileFilter(new FileFilter() {
-
-                @Override
-                public boolean accept(final File f) {
-                    return f.isDirectory() || f.getName().endsWith(".zip");
-                }
-
-                @Override
-                public String getDescription() {
-                    return NbBundle.getMessage(
-                            GafExportDialog.class,
-                            "PhotoExportReportDialog.butFileActionPerformed().getDescription()");
-                }
-            });
-
-        final int ans = fc.showSaveDialog(this);
-
-        if (ans == JFileChooser.APPROVE_OPTION) {
-            txtFile.setText(fc.getSelectedFile().getAbsolutePath());
-        }
-    } //GEN-LAST:event_butFileActionPerformed
+    }//GEN-LAST:event_butFileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void ckBasisActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckBasisActionPerformed
+    private void ckBasisActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckBasisActionPerformed
         checkContentSelection();
-    }                                                                           //GEN-LAST:event_ckBasisActionPerformed
+    }//GEN-LAST:event_ckBasisActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void ckLawaActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckLawaActionPerformed
+    private void ckLawaActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckLawaActionPerformed
         checkContentSelection();
-    }                                                                          //GEN-LAST:event_ckLawaActionPerformed
+    }//GEN-LAST:event_ckLawaActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void ckWithoutActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckWithoutActionPerformed
+    private void ckWithoutActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckWithoutActionPerformed
         checkContentSelection();
-    }                                                                             //GEN-LAST:event_ckWithoutActionPerformed
+    }//GEN-LAST:event_ckWithoutActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void ckReportActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckReportActionPerformed
+    private void ckReportActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckReportActionPerformed
         checkContentSelection();
-    }                                                                            //GEN-LAST:event_ckReportActionPerformed
+    }//GEN-LAST:event_ckReportActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void ckShapeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckShapeActionPerformed
+    private void ckShapeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckShapeActionPerformed
         checkContentSelection();
-    }                                                                           //GEN-LAST:event_ckShapeActionPerformed
+    }//GEN-LAST:event_ckShapeActionPerformed
 
     /**
      * DOCUMENT ME!

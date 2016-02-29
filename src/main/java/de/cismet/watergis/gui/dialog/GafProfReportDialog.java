@@ -47,6 +47,7 @@ public class GafProfReportDialog extends javax.swing.JDialog {
     //~ Instance fields --------------------------------------------------------
 
     private boolean cancelled = false;
+    private String lastPath = WatergisApp.getDIRECTORYPATH_WATERGIS();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;
@@ -380,38 +381,38 @@ public class GafProfReportDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
         cancelled = true;
         setVisible(false);
-    }                                                                             //GEN-LAST:event_butCancelActionPerformed
+    }//GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
         if (!txtFile.getText().equals("")) {
             cancelled = false;
             setVisible(false);
         } else {
             butFileActionPerformed(null);
         }
-    }                                                                         //GEN-LAST:event_butOkActionPerformed
+    }//GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butFileActionPerformed
+    private void butFileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butFileActionPerformed
         JFileChooser fc;
 
         try {
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
+            fc = new JFileChooser(lastPath);
         } catch (Exception bug) {
             // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
+            fc = new JFileChooser(lastPath, new RestrictedFileSystemView());
         }
 
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -434,36 +435,37 @@ public class GafProfReportDialog extends javax.swing.JDialog {
         final int ans = fc.showSaveDialog(this);
 
         if (ans == JFileChooser.APPROVE_OPTION) {
+            lastPath = fc.getSelectedFile().getParent();
             txtFile.setText(fc.getSelectedFile().getAbsolutePath());
         }
-    } //GEN-LAST:event_butFileActionPerformed
+    }//GEN-LAST:event_butFileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void ckbLawaActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbLawaActionPerformed
+    private void ckbLawaActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckbLawaActionPerformed
         refreshOkButton();
-    }                                                                           //GEN-LAST:event_ckbLawaActionPerformed
+    }//GEN-LAST:event_ckbLawaActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void ckbOhneActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbOhneActionPerformed
+    private void ckbOhneActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckbOhneActionPerformed
         refreshOkButton();
-    }                                                                           //GEN-LAST:event_ckbOhneActionPerformed
+    }//GEN-LAST:event_ckbOhneActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void ckbBasisActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbBasisActionPerformed
+    private void ckbBasisActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ckbBasisActionPerformed
         refreshOkButton();
-    }                                                                            //GEN-LAST:event_ckbBasisActionPerformed
+    }//GEN-LAST:event_ckbBasisActionPerformed
 
     /**
      * DOCUMENT ME!
