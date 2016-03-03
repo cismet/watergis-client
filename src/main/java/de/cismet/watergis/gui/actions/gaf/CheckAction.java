@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -73,6 +74,7 @@ public class CheckAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
+        GafCheckDialog.getInstance().setSize(195, 190);
         StaticSwingTools.showDialog(GafCheckDialog.getInstance());
 
         if (!GafCheckDialog.getInstance().isCancelled()) {
@@ -89,17 +91,17 @@ public class CheckAction extends AbstractAction {
                         final File f = new File(GafCheckDialog.getInstance().getGafFile());
 
                         final GafReader reader = new GafReader(f);
-                        String rkFile = GafCheckDialog.getInstance().getRkFile();
-                        String bkFile = GafCheckDialog.getInstance().getBkFile();
-                        
+                        final String rkFile = GafCheckDialog.getInstance().getRkFile();
+                        final String bkFile = GafCheckDialog.getInstance().getBkFile();
+
                         if (rkFile != null) {
                             reader.addCustomCatalogue(new File(rkFile));
                         }
-                        
+
                         if (bkFile != null) {
                             reader.addCustomCatalogue(new File(bkFile));
                         }
-                        
+
                         return reader.checkFile();
                     }
 
@@ -109,58 +111,7 @@ public class CheckAction extends AbstractAction {
                             final String[] errors = get();
 
                             if (errors.length > 0) {
-                                File errorPath = new File(GafCheckDialog.getInstance().getGafFile());
-                                String fileName = errorPath.getName();
-                                if (fileName.contains(".")) {
-                                    fileName = fileName.substring(0, fileName.indexOf("."));
-                                }
-
-                                errorPath = errorPath.getParentFile();
-                                final File errorFile = new File(errorPath, fileName + "-fehler.txt");
-                                boolean writeFile = false;
-
-                                if (errorFile.exists()) {
-                                    final int ans = JOptionPane.showConfirmDialog(
-                                            AppBroker.getInstance().getWatergisApp(),
-                                            NbBundle.getMessage(
-                                                CheckAction.class,
-                                                "CheckAction.actionPerformed().text",
-                                                errorFile.getAbsolutePath()),
-                                            NbBundle.getMessage(
-                                                DeleteAction.class,
-                                                "CheckAction.actionPerformed().title"),
-                                            JOptionPane.YES_NO_OPTION);
-
-                                    if (ans == JOptionPane.YES_OPTION) {
-                                        writeFile = true;
-                                    }
-                                } else {
-                                    writeFile = true;
-                                }
-
-                                if (writeFile) {
-                                    BufferedWriter bw = null;
-
-                                    try {
-                                        bw = new BufferedWriter(new FileWriter(errorFile));
-                                        for (final String error : errors) {
-                                            bw.write(error + "\n");
-                                        }
-                                    } finally {
-                                        if (bw != null) {
-                                            bw.close();
-                                        }
-                                    }
-                                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                                        NbBundle.getMessage(
-                                            CheckAction.class,
-                                            "CheckAction.actionPerformed().error.message"),
-                                        NbBundle.getMessage(
-                                            CheckAction.class,
-                                            "CheckAction.actionPerformed().error.title"),
-                                        JOptionPane.INFORMATION_MESSAGE);
-                                    DownloadManager.instance().add(new FakeFileDownload(errorFile));
-                                }
+                                handleErrors(errors);
                             } else {
                                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                                     NbBundle.getMessage(CheckAction.class, "CheckAction.actionPerformed().message"),
@@ -174,6 +125,68 @@ public class CheckAction extends AbstractAction {
                 };
 
             wdt.start();
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   errors  DOCUMENT ME!
+     *
+     * @throws  IOException  DOCUMENT ME!
+     */
+    public static void handleErrors(final String[] errors) throws IOException {
+        File errorPath = new File(GafCheckDialog.getInstance().getGafFile());
+        String fileName = errorPath.getName();
+        if (fileName.contains(".")) {
+            fileName = fileName.substring(0, fileName.indexOf("."));
+        }
+
+        errorPath = errorPath.getParentFile();
+        final File errorFile = new File(errorPath, fileName + "-fehler.txt");
+        boolean writeFile = false;
+
+        if (errorFile.exists()) {
+            final int ans = JOptionPane.showConfirmDialog(
+                    AppBroker.getInstance().getWatergisApp(),
+                    NbBundle.getMessage(
+                        CheckAction.class,
+                        "CheckAction.actionPerformed().text",
+                        errorFile.getAbsolutePath()),
+                    NbBundle.getMessage(
+                        DeleteAction.class,
+                        "CheckAction.actionPerformed().title"),
+                    JOptionPane.YES_NO_OPTION);
+
+            if (ans == JOptionPane.YES_OPTION) {
+                writeFile = true;
+            }
+        } else {
+            writeFile = true;
+        }
+
+        if (writeFile) {
+            BufferedWriter bw = null;
+
+            try {
+                bw = new BufferedWriter(new FileWriter(errorFile));
+                for (final String error : errors) {
+                    bw.write(error + System.lineSeparator());
+                }
+            } finally {
+                if (bw != null) {
+                    bw.close();
+                }
+            }
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                NbBundle.getMessage(
+                    CheckAction.class,
+                    "CheckAction.actionPerformed().error.message"),
+                NbBundle.getMessage(
+                    CheckAction.class,
+                    "CheckAction.actionPerformed().error.title"),
+                JOptionPane.INFORMATION_MESSAGE);
+            DownloadManager.instance().add(new FakeFileDownload(errorFile));
         }
     }
 

@@ -185,7 +185,10 @@ public class ReportAction extends AbstractAction {
                                             final String nr = String.valueOf(feature.getProperty("qp_nr"));
                                             String fileName = "gaf_ohne___" + nr + ".pdf";
                                             File withoutFile = new File(withoutPath, fileName);
-                                            fileName = toValidFileName(fileNames, withoutFile.getAbsolutePath(), feature);
+                                            fileName = toValidFileName(
+                                                    fileNames,
+                                                    withoutFile.getAbsolutePath(),
+                                                    feature);
                                             withoutFile = new File(fileName);
                                             withoutPath.mkdirs();
 
@@ -205,7 +208,7 @@ public class ReportAction extends AbstractAction {
                             }
                             return true;
                         }
-                        
+
                         @Override
                         protected void done() {
                             try {
