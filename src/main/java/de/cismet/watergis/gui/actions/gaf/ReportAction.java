@@ -152,15 +152,19 @@ public class ReportAction extends AbstractAction {
                             // create reports
                             for (final FeatureServiceFeature feature : features) {
                                 try {
-                                    if (Thread.interrupted()) {
+                                    if (Thread.interrupted() || canceled) {
+                                        // interrupted does sometimes return false, altough the thread was cancelled.
+                                        // Perhaps, the jasper report methods reset the interrupted state
                                         return false;
                                     }
 
                                     if (GafProfReportDialog.getInstance().isBasisSelected()) {
                                         if (feature.getProperty("ba_cd") != null) {
                                             String fileName = GafProf.getBasicReportFileName((CidsLayerFeature)feature);
-                                            fileName = toValidFileName(fileNames, fileName, feature);
-                                            final File basisFile = new File(basisPath, fileName);
+                                            File basisFile = new File(basisPath, fileName);
+                                            fileName = toValidFileName(fileNames, basisFile.getAbsolutePath(), feature);
+                                            basisFile = new File(fileName);
+                                            basisPath.mkdirs();
 
                                             createReport((CidsLayerFeature)feature, basisFile);
                                         }
@@ -168,8 +172,10 @@ public class ReportAction extends AbstractAction {
                                     if (GafProfReportDialog.getInstance().isLawaSelected()) {
                                         if (feature.getProperty("la_cd") != null) {
                                             String fileName = GafProf.getLawaReportFileName((CidsLayerFeature)feature);
-                                            fileName = toValidFileName(fileNames, fileName, feature);
-                                            final File lawaFile = new File(lawaPath, fileName);
+                                            File lawaFile = new File(lawaPath, fileName);
+                                            fileName = toValidFileName(fileNames, lawaFile.getAbsolutePath(), feature);
+                                            lawaFile = new File(fileName);
+                                            lawaPath.mkdirs();
 
                                             createReport((CidsLayerFeature)feature, lawaFile);
                                         }
@@ -178,8 +184,10 @@ public class ReportAction extends AbstractAction {
                                         if (feature.getProperty("ba_cd") == null) {
                                             final String nr = String.valueOf(feature.getProperty("qp_nr"));
                                             String fileName = "gaf_ohne___" + nr + ".pdf";
-                                            fileName = toValidFileName(fileNames, fileName, feature);
-                                            final File withoutFile = new File(withoutPath, fileName);
+                                            File withoutFile = new File(withoutPath, fileName);
+                                            fileName = toValidFileName(fileNames, withoutFile.getAbsolutePath(), feature);
+                                            withoutFile = new File(fileName);
+                                            withoutPath.mkdirs();
 
                                             createReport((CidsLayerFeature)feature, withoutFile);
                                         }
@@ -197,7 +205,7 @@ public class ReportAction extends AbstractAction {
                             }
                             return true;
                         }
-
+                        
                         @Override
                         protected void done() {
                             try {

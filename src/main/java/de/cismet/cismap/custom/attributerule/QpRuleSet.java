@@ -233,15 +233,15 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public String[] getAdditionalFieldNames() {
-        return new String[] { "ho", "re" };
+        return new String[] { "re", "ho" };
     }
 
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("re")) {
-            return 7;
-        } else if (name.equals("ho")) {
             return 8;
+        } else if (name.equals("ho")) {
+            return 9;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }

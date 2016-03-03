@@ -111,10 +111,11 @@ import de.cismet.watergis.gui.dialog.GafImportDialog;
 import de.cismet.watergis.gui.dialog.PhotoOptionsDialog;
 
 import de.cismet.watergis.utils.CidsBeanUtils;
+import de.cismet.watergis.utils.CustomGafCatalogueReader;
 import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.GafReader;
 
-import static de.cismet.watergis.gui.panels.Photo.selectedFeature;
+import java.util.Iterator;
 
 /**
  * DOCUMENT ME!
@@ -552,7 +553,7 @@ public class GafProf extends javax.swing.JPanel {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrintPreviewActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrintPreviewActionPerformed
+    private void butPrintPreviewActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butPrintPreviewActionPerformed
         final WaitingDialogThread<JasperPrint> wdt = new WaitingDialogThread<JasperPrint>(StaticSwingTools
                         .getParentFrame(this),
                 true,
@@ -593,14 +594,14 @@ public class GafProf extends javax.swing.JPanel {
             };
 
         wdt.start();
-    } //GEN-LAST:event_butPrintPreviewActionPerformed
+    }//GEN-LAST:event_butPrintPreviewActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrintActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrintActionPerformed
+    private void butPrintActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butPrintActionPerformed
         final WaitingDialogThread<JasperPrint> wdt = new WaitingDialogThread<JasperPrint>(StaticSwingTools
                         .getParentFrame(this),
                 true,
@@ -627,7 +628,7 @@ public class GafProf extends javax.swing.JPanel {
             };
 
         wdt.start();
-    } //GEN-LAST:event_butPrintActionPerformed
+    }//GEN-LAST:event_butPrintActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -756,7 +757,7 @@ public class GafProf extends javax.swing.JPanel {
      * @throws  Exception  DOCUMENT ME!
      */
     public static String getLawaReportFileName(final CidsLayerFeature feature) throws Exception {
-        final String baCd = (String)feature.getProperty("la_cd");
+        final String baCd = String.valueOf(feature.getProperty("la_cd"));
         final Double stat = (Double)feature.getProperty("la_st");
 
         final DecimalFormat format = new DecimalFormat("0.00");
@@ -778,7 +779,7 @@ public class GafProf extends javax.swing.JPanel {
      * @throws  Exception  DOCUMENT ME!
      */
     public static String getLawaGafFileName(final CidsLayerFeature feature) throws Exception {
-        final String baCd = (String)feature.getProperty("la_cd");
+        final String baCd = String.valueOf(feature.getProperty("la_cd"));
 
         return removeIllegaleFileNameCharacters(baCd) + ".gaf";
     }
@@ -949,7 +950,7 @@ public class GafProf extends javax.swing.JPanel {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrevProfileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrevProfileActionPerformed
+    private void butPrevProfileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butPrevProfileActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("qp");
 
@@ -967,14 +968,14 @@ public class GafProf extends javax.swing.JPanel {
             butNextProfile.setEnabled(false);
             butPrevProfile.setEnabled(false);
         }
-    } //GEN-LAST:event_butPrevProfileActionPerformed
+    }//GEN-LAST:event_butPrevProfileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butNextProfileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butNextProfileActionPerformed
+    private void butNextProfileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butNextProfileActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("qp");
 
@@ -993,31 +994,31 @@ public class GafProf extends javax.swing.JPanel {
             butNextProfile.setEnabled(false);
             butPrevProfile.setEnabled(false);
         }
-    } //GEN-LAST:event_butNextProfileActionPerformed
+    }//GEN-LAST:event_butNextProfileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void tbProcessingActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbProcessingActionPerformed
-    }                                                                                //GEN-LAST:event_tbProcessingActionPerformed
+    private void tbProcessingActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbProcessingActionPerformed
+    }//GEN-LAST:event_tbProcessingActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butBackActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butBackActionPerformed
+    private void butBackActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butBackActionPerformed
         AppBroker.getInstance().getMappingComponent().back(true);
-    }                                                                           //GEN-LAST:event_butBackActionPerformed
+    }//GEN-LAST:event_butBackActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butSaveActionPerformed
+    private void butSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butSaveActionPerformed
         try {
             final CidsLayerFeature feature = editor.getCidsLayerFeature();
             final AttributeTableRuleSet ruleSet = feature.getLayerProperties().getAttributeTableRuleSet();
@@ -1030,23 +1031,23 @@ public class GafProf extends javax.swing.JPanel {
         } catch (Exception e) {
             LOG.error("Eror while saving feature", e);
         }
-    } //GEN-LAST:event_butSaveActionPerformed
+    }//GEN-LAST:event_butSaveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butRemoveSelectionActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butRemoveSelectionActionPerformed
+    private void butRemoveSelectionActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butRemoveSelectionActionPerformed
         SelectionManager.getInstance().removeSelectedFeatures(editor.getCidsLayerFeature());
-    }                                                                                      //GEN-LAST:event_butRemoveSelectionActionPerformed
+    }//GEN-LAST:event_butRemoveSelectionActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butZoomToProfileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butZoomToProfileActionPerformed
+    private void butZoomToProfileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butZoomToProfileActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final MappingComponent mappingComponent = CismapBroker.getInstance().getMappingComponent();
 
@@ -1058,14 +1059,14 @@ public class GafProf extends javax.swing.JPanel {
         } else {
             LOG.error("MappingComponent is not set");
         }
-    } //GEN-LAST:event_butZoomToProfileActionPerformed
+    }//GEN-LAST:event_butZoomToProfileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butDeleteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butDeleteActionPerformed
+    private void butDeleteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butDeleteActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
 
         final int ans = JOptionPane.showConfirmDialog(
@@ -1106,14 +1107,14 @@ public class GafProf extends javax.swing.JPanel {
             };
 
         wdt.start();
-    } //GEN-LAST:event_butDeleteActionPerformed
+    }//GEN-LAST:event_butDeleteActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void tbLocateActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbLocateActionPerformed
+    private void tbLocateActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbLocateActionPerformed
         if (tbLocate.isSelected()) {
             makeFeatureEditable(editor.getCidsLayerFeature());
         } else {
@@ -1135,7 +1136,7 @@ public class GafProf extends javax.swing.JPanel {
                 LOG.error("Error while setting the new geometry", e);
             }
         }
-    } //GEN-LAST:event_tbLocateActionPerformed
+    }//GEN-LAST:event_tbLocateActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -1143,7 +1144,7 @@ public class GafProf extends javax.swing.JPanel {
      * @param  feature  DOCUMENT ME!
      */
     private void setEditorFeature(final CidsLayerFeature feature) {
-        if ((selectedFeature != null) && askForSave) {
+        if ((selectedFeature != null) && askForSave && editor.isUploader()) {
             if (selectedFeature.getBean().getMetaObject().isChanged()
                         && (selectedFeature.getBean().getMetaObject().getStatus()
                             != Sirius.server.localserver.object.Object.TO_DELETE)) {
@@ -1286,10 +1287,72 @@ public class GafProf extends javax.swing.JPanel {
             final List<CidsLayerFeature> newBeans = new ArrayList<CidsLayerFeature>();
             boolean dhhn92Check = false;
             boolean dhhn92 = false;
+            Iterator<File> it = profs.iterator();
+            List<File> possibleCatalogueFiles = new ArrayList<File>();
+            
+            while (it.hasNext()) {
+                File f = it.next();
+                
+                if (!f.getName().toLowerCase().endsWith(".gaf")) {
+                    possibleCatalogueFiles.add(f);
+                    it.remove();
+                }
+            }
 
             for (final File gafFile : profs) {
                 final String userName = SessionManager.getSession().getUser().getName();
                 final GafReader reader = new GafReader(gafFile);
+                boolean hasBkcat = false;
+                boolean hasRkcat = false;
+                
+                // add custom catalogues
+                for (File catalogue : possibleCatalogueFiles) {
+                    try {
+                        CustomGafCatalogueReader.FILE_TYPE catType = reader.addCustomCatalogue(catalogue);
+
+                        if (catType.equals(CustomGafCatalogueReader.FILE_TYPE.BK)) {
+                            if (hasBkcat) {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        GafUploadWorker.class,
+                                        "GafProf.ImageUploadWorker.doInBackground().multiBkCat.message"),
+                                    NbBundle.getMessage(GafUploadWorker.class,
+                                        "GafProf.ImageUploadWorker.doInBackground().multiBkCat.title"),
+                                    JOptionPane.ERROR_MESSAGE);
+
+                                return null;
+                            } else {
+                                hasBkcat = true;
+                            }
+                        } else if (catType.equals(CustomGafCatalogueReader.FILE_TYPE.RK)) {
+                            if (hasRkcat) {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        GafUploadWorker.class,
+                                        "GafProf.ImageUploadWorker.doInBackground().multiRkCat.message"),
+                                    NbBundle.getMessage(GafUploadWorker.class,
+                                        "GafProf.ImageUploadWorker.doInBackground().multiRkCat.title"),
+                                    JOptionPane.ERROR_MESSAGE);
+
+                                return null;
+                            } else {
+                                hasRkcat = true;
+                            }
+                        }
+                    } catch (IllegalArgumentException e) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            NbBundle.getMessage(
+                                GafUploadWorker.class,
+                                "GafProf.ImageUploadWorker.doInBackground().unknownCat.message", e.getMessage()),
+                            NbBundle.getMessage(GafUploadWorker.class,
+                                "GafProf.ImageUploadWorker.doInBackground().unknownCat.title"),
+                            JOptionPane.ERROR_MESSAGE);
+                        
+                        return null;
+                    }
+                }
+                
+                //check the gaf file
                 final String[] errors = reader.checkFile();
 
                 if (errors.length > 0) {
@@ -1424,8 +1487,6 @@ public class GafProf extends javax.swing.JPanel {
                         ppBean.setProperty("y", reader.getProfileContent(GafReader.GAF_FIELDS.Y, line));
                         ppBean.setProperty("z", reader.getProfileContent(GafReader.GAF_FIELDS.Z, line));
                         ppBean.setProperty("kz", reader.getProfileContent(GafReader.GAF_FIELDS.KZ, line));
-                        ppBean.setProperty("rk", reader.getProfileContent(GafReader.GAF_FIELDS.RK, line));
-                        ppBean.setProperty("bk", reader.getProfileContent(GafReader.GAF_FIELDS.BK, line));
                         ppBean.setProperty("hyk", reader.getProfileContent(GafReader.GAF_FIELDS.HYK, line));
                         ppBean.setProperty("hw", hw);
                         ppBean.setProperty("rw", rw);
@@ -1433,6 +1494,32 @@ public class GafProf extends javax.swing.JPanel {
                         ppBean.setProperty("fis_g_user", SessionManager.getSession().getUser().getName());
                         ppBean.setProperty("qp_nr", newGafBean.getProperty("qp_nr"));
                         ppBean.setProperty("p_nr", getNextProfileNumber());
+
+                        Object obj = reader.getProfileContent(GafReader.GAF_FIELDS.RK, line);
+
+                        if (obj instanceof CustomGafCatalogueReader.RkObject) {
+                            final CustomGafCatalogueReader.RkObject rkObj = (CustomGafCatalogueReader.RkObject)obj;
+                            ppBean.setProperty("rk", null);
+                            ppBean.setProperty("rk_name", rkObj.getName());
+                            ppBean.setProperty("rk_k", rkObj.getK());
+                            ppBean.setProperty("rk_kst", rkObj.getKst());
+                        } else {
+                            ppBean.setProperty("rk", obj);
+                        }
+
+                        obj = reader.getProfileContent(GafReader.GAF_FIELDS.BK, line);
+
+                        if (obj instanceof CustomGafCatalogueReader.BkObject) {
+                            final CustomGafCatalogueReader.BkObject bkObj = (CustomGafCatalogueReader.BkObject)obj;
+                            ppBean.setProperty("bk", null);
+                            ppBean.setProperty("bk_name", bkObj.getName());
+                            ppBean.setProperty("bk_ax", bkObj.getAx());
+                            ppBean.setProperty("bk_ay", bkObj.getAy());
+                            ppBean.setProperty("bk_dp", bkObj.getDp());
+                        } else {
+                            ppBean.setProperty("bk", obj);
+                        }
+
                         ppBean.persist();
                     }
 
@@ -1462,7 +1549,11 @@ public class GafProf extends javax.swing.JPanel {
             } catch (ExecutionException ex) {
                 LOG.error(ex, ex);
             } finally {
-                editor.showEditor(true, false);
+                if (editor.getCidsLayerFeature()== null) {
+                    editor.showEditor(false, false);
+                } else {
+                    editor.showEditor(true, false);
+                }
             }
         }
 

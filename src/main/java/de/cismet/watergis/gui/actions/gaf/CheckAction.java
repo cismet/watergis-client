@@ -89,7 +89,17 @@ public class CheckAction extends AbstractAction {
                         final File f = new File(GafCheckDialog.getInstance().getGafFile());
 
                         final GafReader reader = new GafReader(f);
-
+                        String rkFile = GafCheckDialog.getInstance().getRkFile();
+                        String bkFile = GafCheckDialog.getInstance().getBkFile();
+                        
+                        if (rkFile != null) {
+                            reader.addCustomCatalogue(new File(rkFile));
+                        }
+                        
+                        if (bkFile != null) {
+                            reader.addCustomCatalogue(new File(bkFile));
+                        }
+                        
                         return reader.checkFile();
                     }
 
