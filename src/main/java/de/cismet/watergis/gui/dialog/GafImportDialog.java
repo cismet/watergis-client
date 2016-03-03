@@ -83,6 +83,7 @@ public class GafImportDialog extends javax.swing.JDialog {
     @Override
     public void setVisible(final boolean b) {
         if (b) {
+            ckbDhhn92.setSelected(false);
             checkContentSelection();
             cancelled = true;
         }

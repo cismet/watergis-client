@@ -43,6 +43,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -401,9 +402,12 @@ public class GafReader {
      *
      * @param   catalogueFile  DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  IllegalArgumentException  DOCUMENT ME!
      */
-    public CustomGafCatalogueReader.FILE_TYPE addCustomCatalogue(final File catalogueFile) throws IllegalArgumentException {
+    public CustomGafCatalogueReader.FILE_TYPE addCustomCatalogue(final File catalogueFile)
+            throws IllegalArgumentException {
         final CustomGafCatalogueReader catFile = new CustomGafCatalogueReader(catalogueFile);
 
         if (catFile.getType().equals(CustomGafCatalogueReader.FILE_TYPE.BK)) {
@@ -1268,6 +1272,8 @@ public class GafReader {
         errorList.addAll(Arrays.asList(checkRk()));
         errorList.addAll(Arrays.asList(checkBk()));
 
+        Collections.sort(errorList);
+
         errorStrings = new String[errorList.size()];
 
         for (int i = 0; i < errorList.size(); ++i) {
@@ -2116,7 +2122,7 @@ public class GafReader {
                     newY = 0.0;
                 }
 
-                if ((y != Double.MIN_VALUE) && (newY <= y)) {
+                if ((y != Double.MIN_VALUE) && (newY < y)) {
                     errors.add(new GafErrorContainer(getStationNumber(line), lineNumber, "Y"));
                 } else {
                     y = newY;
@@ -2421,7 +2427,7 @@ public class GafReader {
      *
      * @version  $Revision$, $Date$
      */
-    private class GafErrorContainer {
+    private class GafErrorContainer implements Comparable<GafErrorContainer> {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -2498,6 +2504,19 @@ public class GafReader {
          */
         public Double getStation() {
             return station;
+        }
+
+        @Override
+        public int compareTo(final GafErrorContainer o) {
+            if ((getLine() == null) && (o.getLine() == null)) {
+                return 0;
+            } else if (getLine() == null) {
+                return -1;
+            } else if (o.getLine() == null) {
+                return 1;
+            } else {
+                return getLine().compareTo(o.getLine());
+            }
         }
     }
 }

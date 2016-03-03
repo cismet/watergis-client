@@ -20,6 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -27,7 +28,6 @@ import java.util.TreeSet;
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
-import java.util.Collections;
 
 /**
  * DOCUMENT ME!
@@ -379,28 +379,27 @@ public class CustomGafCatalogueReader {
             for (final RK_FIELDS col : RK_FIELDS.values()) {
                 gafContent.append(col.name());
 
-                if (col.ordinal() != ( RK_FIELDS.values().length - 1)) {
+                if (col.ordinal() != (RK_FIELDS.values().length - 1)) {
                     gafContent.append("\t");
                 }
             }
         } else {
             for (final BK_FIELDS col : BK_FIELDS.values()) {
                 gafContent.append(col.name());
-                
-                if (col.ordinal() != ( RK_FIELDS.values().length - 1)) {
+
+                if (col.ordinal() != (RK_FIELDS.values().length - 1)) {
                     gafContent.append("\t");
                 }
             }
         }
         gafContent.append("\r\n");
-        
-        
+
         if (type.equals(FILE_TYPE.RK)) {
             for (final String[] line : content) {
-                for (final  RK_FIELDS col :  RK_FIELDS.values()) {
+                for (final RK_FIELDS col : RK_FIELDS.values()) {
                     gafContent.append(line[columnIndex[col.ordinal()]]);
 
-                    if (col.ordinal() != ( RK_FIELDS.values().length - 1)) {
+                    if (col.ordinal() != (RK_FIELDS.values().length - 1)) {
                         gafContent.append("\t");
                     }
                 }
@@ -408,10 +407,10 @@ public class CustomGafCatalogueReader {
             }
         } else {
             for (final String[] line : content) {
-                for (final  BK_FIELDS col :  BK_FIELDS.values()) {
+                for (final BK_FIELDS col : BK_FIELDS.values()) {
                     gafContent.append(line[columnIndex[col.ordinal()]]);
 
-                    if (col.ordinal() != ( BK_FIELDS.values().length - 1)) {
+                    if (col.ordinal() != (BK_FIELDS.values().length - 1)) {
                         gafContent.append("\t");
                     }
                 }
@@ -420,8 +419,8 @@ public class CustomGafCatalogueReader {
         }
 
         return gafContent.toString();
-    }    
-    
+    }
+
     /**
      * DOCUMENT ME!
      *

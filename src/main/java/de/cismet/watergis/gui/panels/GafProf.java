@@ -67,6 +67,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -107,6 +108,7 @@ import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.actions.gaf.CheckAction;
 import de.cismet.watergis.gui.dialog.GafImportDialog;
 import de.cismet.watergis.gui.dialog.PhotoOptionsDialog;
 
@@ -114,8 +116,6 @@ import de.cismet.watergis.utils.CidsBeanUtils;
 import de.cismet.watergis.utils.CustomGafCatalogueReader;
 import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.GafReader;
-
-import java.util.Iterator;
 
 /**
  * DOCUMENT ME!
@@ -1069,6 +1069,10 @@ public class GafProf extends javax.swing.JPanel {
     private void butDeleteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butDeleteActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
 
+        if (!feature.hasWritePermissions()) {
+            return;
+        }
+
         final int ans = JOptionPane.showConfirmDialog(
                 GafProf.this,
                 NbBundle.getMessage(GafProf.class,
@@ -1144,7 +1148,7 @@ public class GafProf extends javax.swing.JPanel {
      * @param  feature  DOCUMENT ME!
      */
     private void setEditorFeature(final CidsLayerFeature feature) {
-        if ((selectedFeature != null) && askForSave && editor.isUploader()) {
+        if ((selectedFeature != null) && askForSave && editor.hasWriteAccess()) {
             if (selectedFeature.getBean().getMetaObject().isChanged()
                         && (selectedFeature.getBean().getMetaObject().getStatus()
                             != Sirius.server.localserver.object.Object.TO_DELETE)) {
@@ -1175,6 +1179,10 @@ public class GafProf extends javax.swing.JPanel {
         editor.setCidsLayerFeature(feature);
         enableToolbar(feature != null);
         selectedFeature = feature;
+
+        if (feature != null) {
+            butDelete.setEnabled(editor.hasWriteAccess());
+        }
     }
 
     /**
@@ -1183,7 +1191,7 @@ public class GafProf extends javax.swing.JPanel {
      * @param  enabled  DOCUMENT ME!
      */
     private void enableToolbar(final boolean enabled) {
-        final boolean writable = enabled && editor.isUploader();
+        final boolean writable = enabled && editor.hasWriteAccess();
         butBack.setEnabled(enabled);
         butNextProfile.setEnabled(enabled);
         butPrevProfile.setEnabled(enabled);
@@ -1287,12 +1295,12 @@ public class GafProf extends javax.swing.JPanel {
             final List<CidsLayerFeature> newBeans = new ArrayList<CidsLayerFeature>();
             boolean dhhn92Check = false;
             boolean dhhn92 = false;
-            Iterator<File> it = profs.iterator();
-            List<File> possibleCatalogueFiles = new ArrayList<File>();
-            
+            final Iterator<File> it = profs.iterator();
+            final List<File> possibleCatalogueFiles = new ArrayList<File>();
+
             while (it.hasNext()) {
-                File f = it.next();
-                
+                final File f = it.next();
+
                 if (!f.getName().toLowerCase().endsWith(".gaf")) {
                     possibleCatalogueFiles.add(f);
                     it.remove();
@@ -1304,11 +1312,11 @@ public class GafProf extends javax.swing.JPanel {
                 final GafReader reader = new GafReader(gafFile);
                 boolean hasBkcat = false;
                 boolean hasRkcat = false;
-                
+
                 // add custom catalogues
-                for (File catalogue : possibleCatalogueFiles) {
+                for (final File catalogue : possibleCatalogueFiles) {
                     try {
-                        CustomGafCatalogueReader.FILE_TYPE catType = reader.addCustomCatalogue(catalogue);
+                        final CustomGafCatalogueReader.FILE_TYPE catType = reader.addCustomCatalogue(catalogue);
 
                         if (catType.equals(CustomGafCatalogueReader.FILE_TYPE.BK)) {
                             if (hasBkcat) {
@@ -1316,7 +1324,8 @@ public class GafProf extends javax.swing.JPanel {
                                     NbBundle.getMessage(
                                         GafUploadWorker.class,
                                         "GafProf.ImageUploadWorker.doInBackground().multiBkCat.message"),
-                                    NbBundle.getMessage(GafUploadWorker.class,
+                                    NbBundle.getMessage(
+                                        GafUploadWorker.class,
                                         "GafProf.ImageUploadWorker.doInBackground().multiBkCat.title"),
                                     JOptionPane.ERROR_MESSAGE);
 
@@ -1330,7 +1339,8 @@ public class GafProf extends javax.swing.JPanel {
                                     NbBundle.getMessage(
                                         GafUploadWorker.class,
                                         "GafProf.ImageUploadWorker.doInBackground().multiRkCat.message"),
-                                    NbBundle.getMessage(GafUploadWorker.class,
+                                    NbBundle.getMessage(
+                                        GafUploadWorker.class,
                                         "GafProf.ImageUploadWorker.doInBackground().multiRkCat.title"),
                                     JOptionPane.ERROR_MESSAGE);
 
@@ -1343,33 +1353,22 @@ public class GafProf extends javax.swing.JPanel {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                             NbBundle.getMessage(
                                 GafUploadWorker.class,
-                                "GafProf.ImageUploadWorker.doInBackground().unknownCat.message", e.getMessage()),
-                            NbBundle.getMessage(GafUploadWorker.class,
+                                "GafProf.ImageUploadWorker.doInBackground().unknownCat.message",
+                                e.getMessage()),
+                            NbBundle.getMessage(
+                                GafUploadWorker.class,
                                 "GafProf.ImageUploadWorker.doInBackground().unknownCat.title"),
                             JOptionPane.ERROR_MESSAGE);
-                        
+
                         return null;
                     }
                 }
-                
-                //check the gaf file
+
+                // check the gaf file
                 final String[] errors = reader.checkFile();
 
                 if (errors.length > 0) {
-                    final StringBuilder allErrors = new StringBuilder();
-
-                    for (final String error : errors) {
-                        allErrors.append(error).append("\n");
-                    }
-
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        NbBundle.getMessage(
-                            GafUploadWorker.class,
-                            "GafProf.ImageUploadWorker.doInBackground().message",
-                            allErrors.toString()),
-                        NbBundle.getMessage(GafUploadWorker.class,
-                            "GafProf.ImageUploadWorker.doInBackground().title"),
-                        JOptionPane.ERROR_MESSAGE);
+                    CheckAction.handleErrors(errors);
                     return null;
                 }
 
@@ -1470,7 +1469,9 @@ public class GafProf extends javax.swing.JPanel {
                     if (ruleSet != null) {
                         ruleSet.beforeSave(feature);
                     }
-                    feature.saveChanges();
+                    
+                    final CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
+                    newBeans.add(newFeature);
 
                     for (final String[] line : reader.getProfileContent(profile)) {
                         final CidsBean ppBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.qp_gaf_pp");
@@ -1522,8 +1523,6 @@ public class GafProf extends javax.swing.JPanel {
 
                         ppBean.persist();
                     }
-
-                    newBeans.add(feature);
                 }
             }
             return newBeans;
@@ -1538,9 +1537,10 @@ public class GafProf extends javax.swing.JPanel {
                     final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
                             "qp");
                     SelectionManager.getInstance().removeSelectedFeatures(features);
+                    SelectionManager.getInstance().addSelectedFeatures(newFeatures);
                     newFeatures.addAll(newFeatures);
                     // todo: prüfen, ob noch nicht gespeicherte Fotos existieren
-                    setEditorFeature(newFeatures.get(0));
+//                    setEditorFeature(newFeatures.get(0));
                     reloadGafProfileServices();
                     addGafServicesToTree();
                 }
@@ -1549,7 +1549,7 @@ public class GafProf extends javax.swing.JPanel {
             } catch (ExecutionException ex) {
                 LOG.error(ex, ex);
             } finally {
-                if (editor.getCidsLayerFeature()== null) {
+                if (editor.getCidsLayerFeature() == null) {
                     editor.showEditor(false, false);
                 } else {
                     editor.showEditor(true, false);

@@ -15,15 +15,23 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
+import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
+
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.download.QpDownload;
+
+import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -55,7 +63,11 @@ public class QpGafLRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        if (columnName.equals("qp_nr")) {
+            return new LinkTableCellRenderer();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -117,6 +129,29 @@ public class QpGafLRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         return null;
+    }
+
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("qp_nr")) {
+            if ((value instanceof Integer) && (clickCount == 1) && (feature instanceof CidsLayerFeature)) {
+                if (DownloadManagerDialog.showAskingForUserTitle(AppBroker.getInstance().getRootWindow())) {
+                    final String jobname = DownloadManagerDialog.getJobname();
+                    final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
+                    final String filename = value.toString();
+                    final String extension = ".pdf";
+
+                    DownloadManager.instance().add(new QpDownload(
+                            filename,
+                            extension,
+                            jobname,
+                            cidsFeature));
+                }
+            }
+        }
     }
 
     @Override

@@ -703,15 +703,19 @@ public class MergeDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void cbTargetThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbTargetThemeActionPerformed
-        final AbstractFeatureService service = (AbstractFeatureService)cbTargetTheme.getSelectedItem();
-        selectedTargetThemeFeatureCount = refreshSelectedFeatureCount(
-                false,
-                ckbSelectedTarget,
-                service,
-                selectedTargetThemeFeatureCount,
-                labSelectedTarget);
-        enabledOrNot();
-    }                                                                                 //GEN-LAST:event_cbTargetThemeActionPerformed
+        final Object selectedObject = cbTargetTheme.getSelectedItem();
+
+        if (selectedObject instanceof AbstractFeatureService) {
+            final AbstractFeatureService service = (AbstractFeatureService)selectedObject;
+            selectedTargetThemeFeatureCount = refreshSelectedFeatureCount(
+                    false,
+                    ckbSelectedTarget,
+                    service,
+                    selectedTargetThemeFeatureCount,
+                    labSelectedTarget);
+            enabledOrNot();
+        }
+    } //GEN-LAST:event_cbTargetThemeActionPerformed
 
     /**
      * refreshes the labSelectedFeatures label.

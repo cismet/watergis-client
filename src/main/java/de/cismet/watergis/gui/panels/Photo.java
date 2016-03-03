@@ -810,7 +810,7 @@ public class Photo extends javax.swing.JPanel {
     /**
      * DOCUMENT ME!
      */
-    private void addGafServicesToTree() {
+    private void addPhotoServicesToTree() {
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                 "foto");
 
@@ -1019,8 +1019,8 @@ public class Photo extends javax.swing.JPanel {
 
             try {
                 layerFeature.getBean().setProperty("geom.geo_field", layerFeature.getGeometry());
-                
-                //determine river
+
+                // determine river
                 if (PhotoOptionsDialog.getInstance().isAutomatic()) {
                     final Station stat = getNextFgBaStat(layerFeature.getGeometry(),
                             PhotoOptionsDialog.getInstance().getDistance());
@@ -1059,7 +1059,7 @@ public class Photo extends javax.swing.JPanel {
                         }
                     }
                 }
-                
+
                 // save
                 final AttributeTableRuleSet ruleSet = layerFeature.getLayerProperties().getAttributeTableRuleSet();
 
@@ -1138,7 +1138,7 @@ public class Photo extends javax.swing.JPanel {
      * @param  enabled  DOCUMENT ME!
      */
     private void enableToolbar(final boolean enabled) {
-        final boolean writable = enabled && editor.isUploader();
+        final boolean writable = enabled && editor.hasWriteAccess();
         butBack.setEnabled(enabled);
         butNextPhoto.setEnabled(enabled);
         butPrevPhoto.setEnabled(enabled);
@@ -1200,37 +1200,37 @@ public class Photo extends javax.swing.JPanel {
 
         return null;
     }
-        
-        /**
-         * DOCUMENT ME!
-         *
-         * @param   geom  DOCUMENT ME!
-         *
-         * @return  DOCUMENT ME!
-         */
-        private Station getNextFgLaStat(final Geometry geom) {
-            try {
-                final User user = SessionManager.getSession().getUser();
-                final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
-                            .customServerSearch(user, new PhotoGetLaStat(geom));
 
-                if ((attributes != null) && !attributes.isEmpty()) {
-                    final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
-                            CismapBroker.getInstance().getDefaultCrsAlias());
-                    final WKBReader wkbReader = new WKBReader(geomFactory);
-                    final Station stat = new Station();
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geom  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Station getNextFgLaStat(final Geometry geom) {
+        try {
+            final User user = SessionManager.getSession().getUser();
+            final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                        .customServerSearch(user, new PhotoGetLaStat(geom));
+
+            if ((attributes != null) && !attributes.isEmpty()) {
+                final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                        CismapBroker.getInstance().getDefaultCrsAlias());
+                final WKBReader wkbReader = new WKBReader(geomFactory);
+                final Station stat = new Station();
 //                    stat.setId((Integer)attributes.get(0).get(0));
-                    stat.setLaCd((BigDecimal)attributes.get(0).get(1));
-                    stat.setStat((Double)attributes.get(0).get(2));
+                stat.setLaCd((BigDecimal)attributes.get(0).get(1));
+                stat.setStat((Double)attributes.get(0).get(2));
 //                    stat.setPoint(wkbReader.read((byte[])attributes.get(0).get(3)));
-                    return stat;
-                }
-            } catch (Exception ex) {
-                LOG.error("Errro while retrieving next fg ba station.", ex);
+                return stat;
             }
-
-            return null;
+        } catch (Exception ex) {
+            LOG.error("Errro while retrieving next fg ba station.", ex);
         }
+
+        return null;
+    }
 
     //~ Inner Classes ----------------------------------------------------------
 
@@ -1410,8 +1410,8 @@ public class Photo extends javax.swing.JPanel {
                 if (ruleSet != null) {
                     ruleSet.beforeSave(feature);
                 }
-                
-                CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
+
+                final CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
                 newBeans.add(newFeature);
             }
             return newBeans;
@@ -1429,7 +1429,7 @@ public class Photo extends javax.swing.JPanel {
                     SelectionManager.getInstance().addSelectedFeatures(newFeatures);
 //                    setEditorFeature(newFeatures.get(0));
                     reloadPhotoServices();
-                    addGafServicesToTree();
+                    addPhotoServicesToTree();
                 }
             } catch (InterruptedException ex) {
                 LOG.warn(ex, ex);
@@ -1493,7 +1493,7 @@ public class Photo extends javax.swing.JPanel {
             return null;
         }
     }
-    
+
     /**
      * DOCUMENT ME!
      *
@@ -1600,5 +1600,5 @@ public class Photo extends javax.swing.JPanel {
         public void setLaCd(final BigDecimal laCd) {
             this.laCd = laCd;
         }
-    }    
+    }
 }

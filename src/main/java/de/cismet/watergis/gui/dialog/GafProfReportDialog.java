@@ -61,6 +61,8 @@ public class GafProfReportDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JLabel labBez;
     private javax.swing.JTextField txtFile;
     // End of variables declaration//GEN-END:variables
 
@@ -162,6 +164,8 @@ public class GafProfReportDialog extends javax.swing.JDialog {
                 new java.awt.Dimension(200, 32767));
         ckbProfileSelection = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        labBez = new javax.swing.JLabel();
         ckbBasis = new javax.swing.JCheckBox();
         ckbLawa = new javax.swing.JCheckBox();
         ckbOhne = new javax.swing.JCheckBox();
@@ -298,6 +302,22 @@ public class GafProfReportDialog extends javax.swing.JDialog {
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labBez,
+            org.openide.util.NbBundle.getMessage(
+                GafProfReportDialog.class,
+                "GafProfReportDialog.labBez.text",
+                new Object[] {})); // NOI18N
+        labBez.setPreferredSize(new java.awt.Dimension(55, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 0);
+        jPanel4.add(labBez, gridBagConstraints);
+
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbBasis,
             org.openide.util.NbBundle.getMessage(
@@ -312,13 +332,11 @@ public class GafProfReportDialog extends javax.swing.JDialog {
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
-        jPanel2.add(ckbBasis, gridBagConstraints);
+        jPanel4.add(ckbBasis, gridBagConstraints);
 
         ckbLawa.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -335,13 +353,11 @@ public class GafProfReportDialog extends javax.swing.JDialog {
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
-        jPanel2.add(ckbLawa, gridBagConstraints);
+        jPanel4.add(ckbLawa, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbOhne,
@@ -357,13 +373,20 @@ public class GafProfReportDialog extends javax.swing.JDialog {
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
-        jPanel2.add(ckbOhne, gridBagConstraints);
+        jPanel4.add(ckbOhne, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        jPanel2.add(jPanel4, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -490,7 +513,7 @@ public class GafProfReportDialog extends javax.swing.JDialog {
                 "GafProfReportDialog.ckbProfileSelection.text")
                     + NbBundle.getMessage(
                         BufferDialog.class,
-                        "FotoReportDialog.refreshSelectedFeatureCount.text",
+                        "GafProfReportDialog.refreshSelectedFeatureCount.text",
                         count));
     }
 
