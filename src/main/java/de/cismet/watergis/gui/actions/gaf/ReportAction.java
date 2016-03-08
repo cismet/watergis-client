@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.actions.gaf;
 
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+import de.cismet.cismap.cidslayer.CidsLayer;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 
@@ -37,6 +39,7 @@ import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
@@ -299,6 +302,30 @@ public class ReportAction extends AbstractAction {
      * @throws  Exception  DOCUMENT ME!
      */
     public static void createReport(final CidsLayerFeature feature, final File file) throws Exception {
+        createReport(feature, null, file);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature  DOCUMENT ME!
+     * @param   file     DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static void createReport(final Integer qpId, final File file) throws Exception {
+        createReport(null, qpId, file);
+    }
+    
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature  DOCUMENT ME!
+     * @param   file     DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private static void createReport(final CidsLayerFeature feature, final Integer qpId, final File file) throws Exception {
         if (file.exists()) {
             final int ans = JOptionPane.showConfirmDialog(
                     AppBroker.getInstance().getWatergisApp(),
@@ -313,14 +340,43 @@ public class ReportAction extends AbstractAction {
                 return;
             }
         }
+        
+        CidsLayerFeature qpFeature = feature;
+        
+        if (feature == null) {
+            //load the feature from the layer
+            final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                    "qp");
+            CidsLayer layer;
 
-        final JasperPrint print = GafProf.fillreport(feature);
+            if ((services == null) || services.isEmpty()) {
+                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.qp"));
+            } else {
+                layer = (CidsLayer)services.get(0);
+            }
+            
+            layer.initAndWait();
+            final List<DefaultFeatureServiceFeature> features = layer.getFeatureFactory()
+            .createFeatures("qp_nr = " + qpId.toString(),
+                null,
+                null,
+                0,
+                0,
+                null);
+            
+            if (features != null && !features.isEmpty() && features.get(0) instanceof CidsLayerFeature) {
+                qpFeature = (CidsLayerFeature)features.get(0);
+            }
+        }
+
+        final JasperPrint print = GafProf.fillreport(qpFeature);
         print.setOrientation(print.getOrientationValue());
         final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         JasperExportManager.exportReportToPdfStream(print, out);
         out.close();
     }
+    
 
     @Override
     public boolean isEnabled() {

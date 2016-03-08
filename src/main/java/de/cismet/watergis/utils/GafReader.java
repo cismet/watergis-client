@@ -20,10 +20,12 @@ import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.newuser.User;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 
 import org.apache.log4j.Logger;
@@ -58,6 +60,7 @@ import javax.swing.JPanel;
 import javax.vecmath.Point3d;
 
 import de.cismet.cids.custom.watergis.server.search.GafCatalogueValues;
+import de.cismet.cids.custom.watergis.server.search.GafPosition;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -871,6 +874,17 @@ public class GafReader {
      * @return  the geometry of the normal profil
      */
     public LineString getNpLine(final Double profile) {
+        return getLineBetween(profile, "PA", "PE");
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   profile  DOCUMENT ME!
+     *
+     * @return  the geometry of the normal profil
+     */
+    private LineString getLineBetween(final Double profile, final String kzStart, final String kzEnd) {
         final ArrayList<String[]> profContent = profiles.get(profile);
         final List<Coordinate> coordinateList = new ArrayList<Coordinate>();
         boolean started = false;
@@ -879,7 +893,7 @@ public class GafReader {
 
         for (final String[] line : profContent) {
             try {
-                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PA")) {
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(kzStart)) {
                     started = true;
                 }
                 if (started) {
@@ -888,7 +902,7 @@ public class GafReader {
                     final Coordinate coord = new Coordinate(re, ho);
                     coordinateList.add(coord);
                 }
-                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PE")) {
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(kzEnd)) {
                     started = false;
                 }
             } catch (NumberFormatException e) {
@@ -896,9 +910,11 @@ public class GafReader {
             }
         }
 
-        final LineString line = factory.createLineString(coordinateList.toArray(new Coordinate[coordinateList.size()]));
-
-        return line;
+        if (!coordinateList.isEmpty()) {
+            return factory.createLineString(coordinateList.toArray(new Coordinate[coordinateList.size()]));
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -1246,9 +1262,14 @@ public class GafReader {
      */
     public String[] checkFile() {
         final List<GafErrorContainer> errorList = new ArrayList<GafErrorContainer>();
-        final String[] errorStrings;
 
         initialiseCatalogueValues();
+        
+        errorList.addAll(checkGafSyntax());
+        
+        if (!errorList.isEmpty()) {
+            return errorListToStrings(errorList);
+        }
 
         errorList.addAll(Arrays.asList(checkNP()));
         errorList.addAll(Arrays.asList(checkNPPAPE()));
@@ -1274,6 +1295,12 @@ public class GafReader {
 
         Collections.sort(errorList);
 
+
+        return errorListToStrings(errorList);
+    }
+    
+    private String[] errorListToStrings(final List<GafErrorContainer> errorList) {
+        final String[] errorStrings;
         errorStrings = new String[errorList.size()];
 
         for (int i = 0; i < errorList.size(); ++i) {
@@ -1283,6 +1310,133 @@ public class GafReader {
 
         return errorStrings;
     }
+    
+    private List<GafErrorContainer> checkGafSyntax() {
+        final List<GafErrorContainer> errorList = new ArrayList<GafErrorContainer>();
+        int indexZero = 0;
+        
+        for (int ind : gafIndex) {
+            if (ind == 0) {
+                ++indexZero;
+            }
+        }
+        
+        if (indexZero > 1) {
+            errorList.add(new GafErrorContainer(0.0, 0, "Ungültige GAF-Datei"));
+            
+            return errorList;
+        }
+        
+        int lineNumber = 1;
+        
+        for (final String[] line : content) {
+            ++lineNumber;
+            
+            if (line.length < 10) {
+                errorList.add(new GafErrorContainer(0.0, lineNumber, "Ungültige GAF-Datei"));
+            }
+        }
+        
+        return errorList;
+    }
+    
+    public String[] checkFileForHints() {
+        List<String> hints = new ArrayList<String>();
+        
+        String hint = checkOGHint();
+        
+        if (hint != null) {
+            hints.add(hint);
+        }
+        
+        hint = checkMGHint();
+        
+        if (hint != null) {
+            hints.add(hint);
+        }
+
+        if (!hints.isEmpty()) {
+            return hints.toArray(new String[hints.size()]);
+        } else {
+            return new String[0];
+        }
+    }
+    
+    /**
+     * check hint: Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK 
+     * und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE
+     * @return 
+     */
+    private String checkOGHint() {
+        for (Double profileId : profiles.keySet()) {
+            LineString line = getLineBetween(profileId, "LU", "Ru");
+            
+            if (line == null) {
+                line = getLineBetween(profileId, "LBOK", "RBOK");
+            }
+            if (line == null) {
+                line = getLineBetween(profileId, "PA", "PE");
+            }
+            
+            if (line != null) {
+                if (getIntersectionPointCount(line) == 0) {
+                    return "Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * check hint: Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, 
+     * zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE
+     * @return 
+     */
+    private String checkMGHint() {
+        for (Double profileId : profiles.keySet()) {
+            LineString line = getLineBetween(profileId, "LU", "Ru");
+            
+            if (line == null) {
+                line = getLineBetween(profileId, "LBOK", "RBOK");
+            }
+            if (line == null) {
+                line = getLineBetween(profileId, "PA", "PE");
+            }
+            
+            if (line != null) {
+                if (getIntersectionPointCount(line) > 1) {
+                    return "Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geom  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private int getIntersectionPointCount(final Geometry geom) {
+        try {
+            final User user = SessionManager.getSession().getUser();
+            final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                        .customServerSearch(user, new GafPosition(geom, 1000));
+
+            if ((attributes != null) && !attributes.isEmpty()) {
+                return attributes.size();
+            }
+        } catch (Exception ex) {
+            LOG.error("Errro while retrieving gaf profile position.", ex);
+        }
+
+        return 0;
+    }
+    
 
     /**
      * Check: Profil enthält kein Normalprofil
@@ -1297,18 +1451,24 @@ public class GafReader {
 
         for (final String[] line : content) {
             ++lineNumber;
+            if ((station != -1) && (station != getStationNumber(line))) {
+                if (!found) {
+                    errors.add(new GafErrorContainer(station, lineNumber, "NP"));
+                }
+                found = false;
+            }
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PA")
                         || line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PE")) {
-                if ((station != -1) && (station != getStationNumber(line))) {
-                    if (!found) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "NP"));
-                    }
-                }
-                station = getStationNumber(line);
                 found = true;
             }
+            station = getStationNumber(line);
         }
 
+        if (!found) {
+            //the last profile has no NP
+            errors.add(new GafErrorContainer(station, lineNumber, "NP"));
+        }
+        
         return errors.toArray(new GafErrorContainer[errors.size()]);
     }
 
@@ -1326,26 +1486,25 @@ public class GafReader {
 
         for (final String[] line : content) {
             ++lineNumber;
-            if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PA")) {
-                if ((station != -1) && (station != getStationNumber(line))) {
-                    if (!pa || !pe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "NP-PA-PE"));
-                    }
-                    pe = false;
+            if ((station != -1) && (station != getStationNumber(line))) {
+                if (!pa || !pe) {
+                    errors.add(new GafErrorContainer(station, lineNumber, "NP-PA-PE"));
                 }
-                station = getStationNumber(line);
+                pe = false;
+                pa = false;
+            }
+            if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PA")) {
                 pa = true;
             }
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PE")) {
-                if ((station != -1) && (station != getStationNumber(line))) {
-                    if (!pa || !pe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "NP-PA-PE"));
-                    }
-                    pa = false;
-                }
-                station = getStationNumber(line);
                 pe = true;
             }
+            station = getStationNumber(line);
+        }
+        
+        if (!pa || !pe) {
+            //the last profile has no end
+            errors.add(new GafErrorContainer(station, lineNumber, "NP-PA-PE"));
         }
 
         return errors.toArray(new GafErrorContainer[errors.size()]);
@@ -1371,7 +1530,6 @@ public class GafReader {
             if ((station != -1) && (station != getStationNumber(line))) {
                 index = 0;
             }
-            station = getStationNumber(line);
 
             if (i != -1) {
                 if (i < index) {
@@ -1380,6 +1538,7 @@ public class GafReader {
                     index = i;
                 }
             }
+            station = getStationNumber(line);
         }
 
         return errors.toArray(new GafErrorContainer[errors.size()]);
@@ -1514,7 +1673,7 @@ public class GafReader {
 
     /**
      * Check: Verletzung der logischen Reihenfolge UKBA - UKBP - UKBW oder UKBA - UKBP - UKBE
-     *
+     * Jetzt:  Verletzung der logischen Reihenfolge UKBA - UKBP - UKWP oder UKBA - UKBP - UKBE 
      * @return  true, iff the check was completed successfully
      */
     private GafErrorContainer[] checkUKLogik() {
@@ -1529,9 +1688,6 @@ public class GafReader {
             ++lineNumber;
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("UKBA")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (ua && !ue) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "UK-LOGIK"));
-                    }
                     ua = false;
                     b = false;
                 }
@@ -1545,9 +1701,6 @@ public class GafReader {
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("UKBW")
                         || line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("UKBE")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (ua && !ue) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "UK-LOGIK"));
-                    }
                     ua = false;
                     b = false;
                 }
@@ -1560,15 +1713,12 @@ public class GafReader {
             }
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("UKBP")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (ua && !ue) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "UK-LOGIK"));
-                    }
                     ua = false;
                     ue = false;
                     b = false;
                 }
                 station = getStationNumber(line);
-                if (!ua) {
+                if (!ua || ue) {
                     errors.add(new GafErrorContainer(station, lineNumber, "UK-LOGIK"));
                 }
             }
@@ -1668,9 +1818,6 @@ public class GafReader {
             ++lineNumber;
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("OKBA")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (oa && !oe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "OK-LOGIK"));
-                    }
                     oa = false;
                     b = false;
                 }
@@ -1684,9 +1831,6 @@ public class GafReader {
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("OKBW")
                         || line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("OKBE")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (oa && !oe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "OK-LOGIK"));
-                    }
                     oa = false;
                     b = false;
                 }
@@ -1699,15 +1843,12 @@ public class GafReader {
             }
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("OKBP")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (oa && !oe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "OK-LOGIK"));
-                    }
                     oa = false;
                     oe = false;
                     b = false;
                 }
                 station = getStationNumber(line);
-                if (!oa) {
+                if (!oa || oe) {
                     errors.add(new GafErrorContainer(station, lineNumber, "OK-LOGIK"));
                 }
             }

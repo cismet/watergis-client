@@ -127,9 +127,6 @@ public class GafProf extends javax.swing.JPanel {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                AppBroker.DOMAIN_NAME,
-                "dlm25w.qp"));
     private static final CidsLayer ppLayer = new CidsLayer(ClassCacheMultiple.getMetaClass(
                 AppBroker.DOMAIN_NAME,
                 "dlm25w.qp_gaf_pp"));
@@ -219,6 +216,7 @@ public class GafProf extends javax.swing.JPanel {
                                 final List<File> files = (List<File>)tr.getTransferData(flavors[i]);
                                 if ((files != null) && (files.size() > 0)) {
                                     editor.showEditor(true, true);
+                                    addGafServicesToTree();
                                     CismetThreadPool.execute(new GafUploadWorker(files));
                                 }
                                 e.dropComplete(true);
@@ -255,6 +253,7 @@ public class GafProf extends javax.swing.JPanel {
 
                                 if (fileList.size() > 0) {
                                     editor.showEditor(true, true);
+                                    addGafServicesToTree();
                                     CismetThreadPool.execute(new GafUploadWorker(fileList));
                                     e.dropComplete(true);
                                     return;
@@ -907,6 +906,9 @@ public class GafProf extends javax.swing.JPanel {
                 "qp");
 
         if ((services == null) || services.isEmpty()) {
+            CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                AppBroker.DOMAIN_NAME,
+                "dlm25w.qp"));
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(layer);
         }
 
@@ -925,10 +927,7 @@ public class GafProf extends javax.swing.JPanel {
                 layerName);
 
         if ((services == null) || services.isEmpty()) {
-            final CidsLayer l = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                        AppBroker.DOMAIN_NAME,
-                        "dlm25w."
-                                + layerName));
+            final CidsLayer l = new CidsLayer(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME,"dlm25w." + layerName));
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(l);
         }
     }
@@ -1297,6 +1296,17 @@ public class GafProf extends javax.swing.JPanel {
             boolean dhhn92 = false;
             final Iterator<File> it = profs.iterator();
             final List<File> possibleCatalogueFiles = new ArrayList<File>();
+            final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "qp");
+            CidsLayer layer = null;
+            
+            if (services != null && !services.isEmpty()) {
+                layer = (CidsLayer)services.get(0);
+            } else {
+                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                AppBroker.DOMAIN_NAME,
+                "dlm25w.qp"));
+            }
 
             while (it.hasNext()) {
                 final File f = it.next();
@@ -1370,6 +1380,12 @@ public class GafProf extends javax.swing.JPanel {
                 if (errors.length > 0) {
                     CheckAction.handleErrors(errors);
                     return null;
+                }
+                
+                final String[] hints = reader.checkFileForHints();
+                
+                if (hints.length > 0) {
+                    CheckAction.handleHints(hints);
                 }
 
                 if (!dhhn92Check) {
@@ -1470,9 +1486,6 @@ public class GafProf extends javax.swing.JPanel {
                         ruleSet.beforeSave(feature);
                     }
                     
-                    final CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
-                    newBeans.add(newFeature);
-
                     for (final String[] line : reader.getProfileContent(profile)) {
                         final CidsBean ppBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.qp_gaf_pp");
                         final CidsBean geom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
@@ -1523,6 +1536,9 @@ public class GafProf extends javax.swing.JPanel {
 
                         ppBean.persist();
                     }
+                    
+                    final CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
+                    newBeans.add(newFeature);
                 }
             }
             return newBeans;
@@ -1542,7 +1558,6 @@ public class GafProf extends javax.swing.JPanel {
                     // todo: prüfen, ob noch nicht gespeicherte Fotos existieren
 //                    setEditorFeature(newFeatures.get(0));
                     reloadGafProfileServices();
-                    addGafServicesToTree();
                 }
             } catch (InterruptedException ex) {
                 LOG.warn(ex, ex);
@@ -1653,7 +1668,7 @@ public class GafProf extends javax.swing.JPanel {
             try {
                 final User user = SessionManager.getSession().getUser();
                 final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
-                            .customServerSearch(user, new GafPosition(geom));
+                            .customServerSearch(user, new GafPosition(geom, 1));
 
                 if ((attributes != null) && !attributes.isEmpty()) {
                     final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),

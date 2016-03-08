@@ -140,7 +140,6 @@ public class QpGafLRuleSet extends WatergisDefaultRuleSet {
             if ((value instanceof Integer) && (clickCount == 1) && (feature instanceof CidsLayerFeature)) {
                 if (DownloadManagerDialog.showAskingForUserTitle(AppBroker.getInstance().getRootWindow())) {
                     final String jobname = DownloadManagerDialog.getJobname();
-                    final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
                     final String filename = value.toString();
                     final String extension = ".pdf";
 
@@ -148,7 +147,8 @@ public class QpGafLRuleSet extends WatergisDefaultRuleSet {
                             filename,
                             extension,
                             jobname,
-                            cidsFeature));
+                            (Integer)value,
+                            null));
                 }
             }
         }

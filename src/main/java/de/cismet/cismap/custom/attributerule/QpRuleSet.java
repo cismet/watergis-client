@@ -315,6 +315,7 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
                             filename,
                             extension,
                             jobname,
+                            null,
                             cidsFeature));
                 }
             }

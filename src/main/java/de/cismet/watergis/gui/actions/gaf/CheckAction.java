@@ -32,11 +32,14 @@ import de.cismet.tools.gui.WaitingDialogThread;
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
+import de.cismet.watergis.gui.WatergisApp;
 
 import de.cismet.watergis.gui.dialog.GafCheckDialog;
 
 import de.cismet.watergis.utils.FakeFileDownload;
 import de.cismet.watergis.utils.GafReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DOCUMENT ME!
@@ -78,7 +81,7 @@ public class CheckAction extends AbstractAction {
         StaticSwingTools.showDialog(GafCheckDialog.getInstance());
 
         if (!GafCheckDialog.getInstance().isCancelled()) {
-            final WaitingDialogThread<String[]> wdt = new WaitingDialogThread<String[]>(
+            final WaitingDialogThread<String[][]> wdt = new WaitingDialogThread<String[][]>(
                     StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                     true,
                     NbBundle.getMessage(CheckAction.class, "CheckAction.actionPerformed.waitingDialog"),
@@ -87,7 +90,8 @@ public class CheckAction extends AbstractAction {
                     true) {
 
                     @Override
-                    protected String[] doInBackground() throws Exception {
+                    protected String[][] doInBackground() throws Exception {
+                        List<String[]> checkResult = new ArrayList<String[]>();
                         final File f = new File(GafCheckDialog.getInstance().getGafFile());
 
                         final GafReader reader = new GafReader(f);
@@ -102,16 +106,30 @@ public class CheckAction extends AbstractAction {
                             reader.addCustomCatalogue(new File(bkFile));
                         }
 
-                        return reader.checkFile();
+                        checkResult.add(reader.checkFile());
+                        
+                        if (checkResult.get(0).length == 0) {
+                            checkResult.add(reader.checkFileForHints());
+                        }
+                        
+                        return checkResult.toArray(new String[checkResult.size()][]);
                     }
 
                     @Override
                     protected void done() {
                         try {
-                            final String[] errors = get();
-
+                            final String[][] checkResult = get();
+                            String[] errors = checkResult[0];
+                            String[] hints = null;
+                            
+                            if (checkResult.length > 1) {
+                                hints = checkResult[1];
+                            }
+                            
                             if (errors.length > 0) {
                                 handleErrors(errors);
+                            } else if (hints != null && hints.length > 0) {
+                                handleHints(hints);
                             } else {
                                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                                     NbBundle.getMessage(CheckAction.class, "CheckAction.actionPerformed().message"),
@@ -136,14 +154,40 @@ public class CheckAction extends AbstractAction {
      * @throws  IOException  DOCUMENT ME!
      */
     public static void handleErrors(final String[] errors) throws IOException {
+        handleCheckResults(errors, true);
+    }
+    
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   hints  DOCUMENT ME!
+     *
+     * @throws  IOException  DOCUMENT ME!
+     */
+    public static void handleHints(final String[] hints) throws IOException {
+        handleCheckResults(hints, false);
+    }
+    
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   hints  DOCUMENT ME!
+     *
+     * @throws  IOException  DOCUMENT ME!
+     */
+    public static void handleCheckResults(final String[] hints, boolean errors) throws IOException {
         File errorPath = new File(GafCheckDialog.getInstance().getGafFile());
         String fileName = errorPath.getName();
         if (fileName.contains(".")) {
             fileName = fileName.substring(0, fileName.indexOf("."));
         }
+        
+        if (fileName.equals("")) {
+            fileName = WatergisApp.getDIRECTORYPATH_WATERGIS() + "/gaf";
+        }
 
         errorPath = errorPath.getParentFile();
-        final File errorFile = new File(errorPath, fileName + "-fehler.txt");
+        final File errorFile = new File(errorPath, fileName + (errors ? "-fehler.txt": "-hinweise.txt"));
         boolean writeFile = false;
 
         if (errorFile.exists()) {
@@ -170,7 +214,7 @@ public class CheckAction extends AbstractAction {
 
             try {
                 bw = new BufferedWriter(new FileWriter(errorFile));
-                for (final String error : errors) {
+                for (final String error : hints) {
                     bw.write(error + System.lineSeparator());
                 }
             } finally {
@@ -178,14 +222,26 @@ public class CheckAction extends AbstractAction {
                     bw.close();
                 }
             }
+            
+            if (errors) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    NbBundle.getMessage(
+                        CheckAction.class,
+                        "CheckAction.actionPerformed().error.message"),
+                    NbBundle.getMessage(
+                        CheckAction.class,
+                        "CheckAction.actionPerformed().error.title"),
+                    JOptionPane.INFORMATION_MESSAGE);
+            } else {
             JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                 NbBundle.getMessage(
                     CheckAction.class,
-                    "CheckAction.actionPerformed().error.message"),
+                    "CheckAction.actionPerformed().hints.message"),
                 NbBundle.getMessage(
                     CheckAction.class,
-                    "CheckAction.actionPerformed().error.title"),
+                    "CheckAction.actionPerformed().hints.title"),
                 JOptionPane.INFORMATION_MESSAGE);
+            }
             DownloadManager.instance().add(new FakeFileDownload(errorFile));
         }
     }

@@ -117,6 +117,7 @@ import de.cismet.watergis.gui.dialog.PhotoOptionsDialog;
 import de.cismet.watergis.utils.CidsBeanUtils;
 import de.cismet.watergis.utils.ExifReader;
 import de.cismet.watergis.utils.FeatureServiceHelper;
+import java.awt.EventQueue;
 
 /**
  * DOCUMENT ME!
@@ -128,9 +129,6 @@ public class Photo extends javax.swing.JPanel {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                AppBroker.DOMAIN_NAME,
-                "dlm25w.foto"));
     private static int idCounter = -1;
     public static final String WEB_DAV_USER;
     public static final String WEB_DAV_PASSWORD;
@@ -236,6 +234,7 @@ public class Photo extends javax.swing.JPanel {
                                 final List<File> files = (List<File>)tr.getTransferData(flavors[i]);
                                 if ((files != null) && (files.size() > 0)) {
                                     editor.showEditor(true, true);
+                                    addPhotoServicesToTree();
                                     CismetThreadPool.execute(new ImageUploadWorker(files));
                                 }
                                 e.dropComplete(true);
@@ -272,6 +271,7 @@ public class Photo extends javax.swing.JPanel {
 
                                 if ((fileList.size() > 0)) {
                                     editor.showEditor(true, true);
+                                    addPhotoServicesToTree();
                                     CismetThreadPool.execute(new ImageUploadWorker(fileList));
                                     e.dropComplete(true);
                                     return;
@@ -815,6 +815,9 @@ public class Photo extends javax.swing.JPanel {
                 "foto");
 
         if ((services == null) || services.isEmpty()) {
+            CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                AppBroker.DOMAIN_NAME,
+                "dlm25w.foto"));
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(layer);
         }
 
@@ -1013,6 +1016,10 @@ public class Photo extends javax.swing.JPanel {
      */
     private void tbLocateActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbLocateActionPerformed
         if (tbLocate.isSelected()) {
+            if (tbAngle.isSelected()) {
+                tbAngle.setSelected(false);
+                tbAngleActionPerformed(null);
+            }
             makeFeatureEditable(editor.getCidsLayerFeature());
         } else {
             final CidsLayerFeature layerFeature = editor.getCidsLayerFeature();
@@ -1069,7 +1076,14 @@ public class Photo extends javax.swing.JPanel {
                 layerFeature.saveChanges();
                 editor.setCidsLayerFeature(layerFeature);
                 layerFeature.setEditable(false);
-                reloadPhotoServices();
+                EventQueue.invokeLater(new Thread() {
+
+                    @Override
+                    public void run() {
+                        reloadPhotoServices();
+                    }
+                    
+                });
             } catch (Exception e) {
                 LOG.error("Error while setting the new geometry", e);
             }
@@ -1083,6 +1097,10 @@ public class Photo extends javax.swing.JPanel {
      */
     private void tbAngleActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbAngleActionPerformed
         if (tbAngle.isSelected()) {
+            if (tbLocate.isSelected()) {
+                tbLocate.setSelected(false);
+                tbLocateActionPerformed(null);
+            }
             oldMode = AppBroker.getInstance().getMappingComponent().getInteractionMode();
             AppBroker.getInstance().getMappingComponent().setInteractionMode(PhotoAngleListener.MODE);
         } else if (oldMode != null) {
@@ -1264,6 +1282,17 @@ public class Photo extends javax.swing.JPanel {
         @Override
         protected List<CidsLayerFeature> doInBackground() throws Exception {
             final List<CidsLayerFeature> newBeans = new ArrayList<CidsLayerFeature>();
+            final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "foto");
+            CidsLayer layer = null;
+            
+            if (services != null && !services.isEmpty()) {
+                layer = (CidsLayer)services.get(0);
+            } else {
+                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                AppBroker.DOMAIN_NAME,
+                "dlm25w.foto"));
+            }
 
             for (final File imageFile : fotos) {
                 final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
@@ -1429,7 +1458,6 @@ public class Photo extends javax.swing.JPanel {
                     SelectionManager.getInstance().addSelectedFeatures(newFeatures);
 //                    setEditorFeature(newFeatures.get(0));
                     reloadPhotoServices();
-                    addPhotoServicesToTree();
                 }
             } catch (InterruptedException ex) {
                 LOG.warn(ex, ex);
