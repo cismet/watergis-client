@@ -13,9 +13,7 @@ package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
 
-
 import org.apache.log4j.Logger;
-
 
 import java.sql.Timestamp;
 
@@ -24,7 +22,6 @@ import java.util.List;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
@@ -65,7 +62,6 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-
         return newValue;
     }
 
@@ -98,12 +94,10 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
     public void afterSave(final TableModel model) {
     }
 
-
     @Override
     public FeatureCreator getFeatureCreator() {
         return null;
     }
-
 
     @Override
     public boolean isCatThree() {

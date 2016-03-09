@@ -552,7 +552,7 @@ public class GafProf extends javax.swing.JPanel {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrintPreviewActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butPrintPreviewActionPerformed
+    private void butPrintPreviewActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrintPreviewActionPerformed
         final WaitingDialogThread<JasperPrint> wdt = new WaitingDialogThread<JasperPrint>(StaticSwingTools
                         .getParentFrame(this),
                 true,
@@ -593,14 +593,14 @@ public class GafProf extends javax.swing.JPanel {
             };
 
         wdt.start();
-    }//GEN-LAST:event_butPrintPreviewActionPerformed
+    } //GEN-LAST:event_butPrintPreviewActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrintActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butPrintActionPerformed
+    private void butPrintActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrintActionPerformed
         final WaitingDialogThread<JasperPrint> wdt = new WaitingDialogThread<JasperPrint>(StaticSwingTools
                         .getParentFrame(this),
                 true,
@@ -627,7 +627,7 @@ public class GafProf extends javax.swing.JPanel {
             };
 
         wdt.start();
-    }//GEN-LAST:event_butPrintActionPerformed
+    } //GEN-LAST:event_butPrintActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -906,9 +906,9 @@ public class GafProf extends javax.swing.JPanel {
                 "qp");
 
         if ((services == null) || services.isEmpty()) {
-            CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                AppBroker.DOMAIN_NAME,
-                "dlm25w.qp"));
+            final CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                        AppBroker.DOMAIN_NAME,
+                        "dlm25w.qp"));
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(layer);
         }
 
@@ -927,7 +927,10 @@ public class GafProf extends javax.swing.JPanel {
                 layerName);
 
         if ((services == null) || services.isEmpty()) {
-            final CidsLayer l = new CidsLayer(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME,"dlm25w." + layerName));
+            final CidsLayer l = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                        AppBroker.DOMAIN_NAME,
+                        "dlm25w."
+                                + layerName));
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(l);
         }
     }
@@ -949,7 +952,7 @@ public class GafProf extends javax.swing.JPanel {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrevProfileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butPrevProfileActionPerformed
+    private void butPrevProfileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrevProfileActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("qp");
 
@@ -967,14 +970,14 @@ public class GafProf extends javax.swing.JPanel {
             butNextProfile.setEnabled(false);
             butPrevProfile.setEnabled(false);
         }
-    }//GEN-LAST:event_butPrevProfileActionPerformed
+    } //GEN-LAST:event_butPrevProfileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butNextProfileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butNextProfileActionPerformed
+    private void butNextProfileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butNextProfileActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("qp");
 
@@ -993,31 +996,31 @@ public class GafProf extends javax.swing.JPanel {
             butNextProfile.setEnabled(false);
             butPrevProfile.setEnabled(false);
         }
-    }//GEN-LAST:event_butNextProfileActionPerformed
+    } //GEN-LAST:event_butNextProfileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void tbProcessingActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbProcessingActionPerformed
-    }//GEN-LAST:event_tbProcessingActionPerformed
+    private void tbProcessingActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbProcessingActionPerformed
+    }                                                                                //GEN-LAST:event_tbProcessingActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butBackActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butBackActionPerformed
+    private void butBackActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butBackActionPerformed
         AppBroker.getInstance().getMappingComponent().back(true);
-    }//GEN-LAST:event_butBackActionPerformed
+    }                                                                           //GEN-LAST:event_butBackActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butSaveActionPerformed
+    private void butSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butSaveActionPerformed
         try {
             final CidsLayerFeature feature = editor.getCidsLayerFeature();
             final AttributeTableRuleSet ruleSet = feature.getLayerProperties().getAttributeTableRuleSet();
@@ -1030,23 +1033,23 @@ public class GafProf extends javax.swing.JPanel {
         } catch (Exception e) {
             LOG.error("Eror while saving feature", e);
         }
-    }//GEN-LAST:event_butSaveActionPerformed
+    } //GEN-LAST:event_butSaveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butRemoveSelectionActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butRemoveSelectionActionPerformed
+    private void butRemoveSelectionActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butRemoveSelectionActionPerformed
         SelectionManager.getInstance().removeSelectedFeatures(editor.getCidsLayerFeature());
-    }//GEN-LAST:event_butRemoveSelectionActionPerformed
+    }                                                                                      //GEN-LAST:event_butRemoveSelectionActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butZoomToProfileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butZoomToProfileActionPerformed
+    private void butZoomToProfileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butZoomToProfileActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final MappingComponent mappingComponent = CismapBroker.getInstance().getMappingComponent();
 
@@ -1058,14 +1061,14 @@ public class GafProf extends javax.swing.JPanel {
         } else {
             LOG.error("MappingComponent is not set");
         }
-    }//GEN-LAST:event_butZoomToProfileActionPerformed
+    } //GEN-LAST:event_butZoomToProfileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butDeleteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butDeleteActionPerformed
+    private void butDeleteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butDeleteActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
 
         if (!feature.hasWritePermissions()) {
@@ -1110,14 +1113,14 @@ public class GafProf extends javax.swing.JPanel {
             };
 
         wdt.start();
-    }//GEN-LAST:event_butDeleteActionPerformed
+    } //GEN-LAST:event_butDeleteActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void tbLocateActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbLocateActionPerformed
+    private void tbLocateActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbLocateActionPerformed
         if (tbLocate.isSelected()) {
             makeFeatureEditable(editor.getCidsLayerFeature());
         } else {
@@ -1139,7 +1142,7 @@ public class GafProf extends javax.swing.JPanel {
                 LOG.error("Error while setting the new geometry", e);
             }
         }
-    }//GEN-LAST:event_tbLocateActionPerformed
+    } //GEN-LAST:event_tbLocateActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -1297,15 +1300,15 @@ public class GafProf extends javax.swing.JPanel {
             final Iterator<File> it = profs.iterator();
             final List<File> possibleCatalogueFiles = new ArrayList<File>();
             final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
-                "qp");
+                    "qp");
             CidsLayer layer = null;
-            
-            if (services != null && !services.isEmpty()) {
+
+            if ((services != null) && !services.isEmpty()) {
                 layer = (CidsLayer)services.get(0);
             } else {
                 layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                AppBroker.DOMAIN_NAME,
-                "dlm25w.qp"));
+                            AppBroker.DOMAIN_NAME,
+                            "dlm25w.qp"));
             }
 
             while (it.hasNext()) {
@@ -1381,9 +1384,9 @@ public class GafProf extends javax.swing.JPanel {
                     CheckAction.handleErrors(errors);
                     return null;
                 }
-                
+
                 final String[] hints = reader.checkFileForHints();
-                
+
                 if (hints.length > 0) {
                     CheckAction.handleHints(hints);
                 }
@@ -1485,7 +1488,7 @@ public class GafProf extends javax.swing.JPanel {
                     if (ruleSet != null) {
                         ruleSet.beforeSave(feature);
                     }
-                    
+
                     for (final String[] line : reader.getProfileContent(profile)) {
                         final CidsBean ppBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.qp_gaf_pp");
                         final CidsBean geom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
@@ -1536,7 +1539,7 @@ public class GafProf extends javax.swing.JPanel {
 
                         ppBean.persist();
                     }
-                    
+
                     final CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
                     newBeans.add(newFeature);
                 }
@@ -1556,7 +1559,7 @@ public class GafProf extends javax.swing.JPanel {
                     SelectionManager.getInstance().addSelectedFeatures(newFeatures);
                     newFeatures.addAll(newFeatures);
                     // todo: prüfen, ob noch nicht gespeicherte Fotos existieren
-//                    setEditorFeature(newFeatures.get(0));
+// setEditorFeature(newFeatures.get(0));
                     reloadGafProfileServices();
                 }
             } catch (InterruptedException ex) {

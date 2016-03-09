@@ -98,7 +98,9 @@ public class GafCheckDialog extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         txtGafFile = new javax.swing.JTextField();
         butGafFile = new javax.swing.JButton();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(200, 0), new java.awt.Dimension(200, 0), new java.awt.Dimension(200, 32767));
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(200, 0),
+                new java.awt.Dimension(200, 0),
+                new java.awt.Dimension(200, 32767));
         jPanel4 = new javax.swing.JPanel();
         txtRkFile = new javax.swing.JTextField();
         butRkFile = new javax.swing.JButton();
@@ -113,14 +115,19 @@ public class GafCheckDialog extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(butOk, org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.butOk.text_1", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butOk,
+            org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.butOk.text_1", new Object[] {
+                })); // NOI18N
         butOk.setMinimumSize(new java.awt.Dimension(170, 29));
         butOk.setPreferredSize(new java.awt.Dimension(170, 29));
         butOk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                butOkActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butOkActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -129,14 +136,21 @@ public class GafCheckDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(15, 10, 15, 10);
         jPanel1.add(butOk, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(butCancel, org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.butCancel.text_1", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butCancel,
+            org.openide.util.NbBundle.getMessage(
+                GafCheckDialog.class,
+                "GafCheckDialog.butCancel.text_1",
+                new Object[] {})); // NOI18N
         butCancel.setMinimumSize(new java.awt.Dimension(170, 29));
         butCancel.setPreferredSize(new java.awt.Dimension(170, 29));
         butCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                butCancelActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butCancelActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -157,7 +171,10 @@ public class GafCheckDialog extends javax.swing.JDialog {
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
-        txtGafFile.setText(org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.txtGafFile.text_1", new Object[] {})); // NOI18N
+        txtGafFile.setText(org.openide.util.NbBundle.getMessage(
+                GafCheckDialog.class,
+                "GafCheckDialog.txtGafFile.text_1",
+                new Object[] {})); // NOI18N
         txtGafFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -168,13 +185,20 @@ public class GafCheckDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         jPanel3.add(txtGafFile, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(butGafFile, org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.butGafFile.text_1", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butGafFile,
+            org.openide.util.NbBundle.getMessage(
+                GafCheckDialog.class,
+                "GafCheckDialog.butGafFile.text_1",
+                new Object[] {})); // NOI18N
         butGafFile.setPreferredSize(new java.awt.Dimension(146, 29));
         butGafFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                butGafFileActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butGafFileActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
@@ -196,7 +220,10 @@ public class GafCheckDialog extends javax.swing.JDialog {
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        txtRkFile.setText(org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.txtRkFile.text", new Object[] {})); // NOI18N
+        txtRkFile.setText(org.openide.util.NbBundle.getMessage(
+                GafCheckDialog.class,
+                "GafCheckDialog.txtRkFile.text",
+                new Object[] {})); // NOI18N
         txtRkFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -207,13 +234,20 @@ public class GafCheckDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         jPanel4.add(txtRkFile, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(butRkFile, org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.butRkFile.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butRkFile,
+            org.openide.util.NbBundle.getMessage(
+                GafCheckDialog.class,
+                "GafCheckDialog.butRkFile.text",
+                new Object[] {})); // NOI18N
         butRkFile.setPreferredSize(new java.awt.Dimension(146, 29));
         butRkFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                butRkFileActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butRkFileActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
@@ -230,7 +264,10 @@ public class GafCheckDialog extends javax.swing.JDialog {
 
         jPanel5.setLayout(new java.awt.GridBagLayout());
 
-        txtBkFile.setText(org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.txtBkFile.text", new Object[] {})); // NOI18N
+        txtBkFile.setText(org.openide.util.NbBundle.getMessage(
+                GafCheckDialog.class,
+                "GafCheckDialog.txtBkFile.text",
+                new Object[] {})); // NOI18N
         txtBkFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -241,13 +278,20 @@ public class GafCheckDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         jPanel5.add(txtBkFile, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(butBkFile, org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.butBkFile.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butBkFile,
+            org.openide.util.NbBundle.getMessage(
+                GafCheckDialog.class,
+                "GafCheckDialog.butBkFile.text",
+                new Object[] {})); // NOI18N
         butBkFile.setPreferredSize(new java.awt.Dimension(146, 29));
         butBkFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                butBkFileActionPerformed(evt);
-            }
-        });
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butBkFileActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
@@ -263,38 +307,38 @@ public class GafCheckDialog extends javax.swing.JDialog {
         getContentPane().add(jPanel5, gridBagConstraints);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         cancelled = true;
         setVisible(false);
-    }//GEN-LAST:event_butCancelActionPerformed
+    }                                                                             //GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         if (!txtGafFile.getText().equals("")) {
             cancelled = false;
             setVisible(false);
         } else {
             butGafFileActionPerformed(null);
         }
-    }//GEN-LAST:event_butOkActionPerformed
+    }                                                                         //GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butGafFileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butGafFileActionPerformed
+    private void butGafFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butGafFileActionPerformed
         final File file = StaticSwingTools.chooseFile(
                 lastPath,
                 false,
@@ -308,14 +352,14 @@ public class GafCheckDialog extends javax.swing.JDialog {
             lastPath = file.getParent();
             txtGafFile.setText(file.getAbsolutePath());
         }
-    }//GEN-LAST:event_butGafFileActionPerformed
+    } //GEN-LAST:event_butGafFileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butRkFileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butRkFileActionPerformed
+    private void butRkFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butRkFileActionPerformed
         final File file = StaticSwingTools.chooseFile(
                 lastPath,
                 false,
@@ -331,14 +375,14 @@ public class GafCheckDialog extends javax.swing.JDialog {
         } else {
             txtRkFile.setText("");
         }
-    }//GEN-LAST:event_butRkFileActionPerformed
+    } //GEN-LAST:event_butRkFileActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butBkFileActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butBkFileActionPerformed
+    private void butBkFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butBkFileActionPerformed
         final File file = StaticSwingTools.chooseFile(
                 lastPath,
                 false,
@@ -354,7 +398,7 @@ public class GafCheckDialog extends javax.swing.JDialog {
         } else {
             txtRkFile.setText("");
         }
-    }//GEN-LAST:event_butBkFileActionPerformed
+    } //GEN-LAST:event_butBkFileActionPerformed
 
     /**
      * DOCUMENT ME!

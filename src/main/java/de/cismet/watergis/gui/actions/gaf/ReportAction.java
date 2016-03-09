@@ -11,8 +11,6 @@
  */
 package de.cismet.watergis.gui.actions.gaf;
 
-import de.cismet.cids.navigator.utils.ClassCacheMultiple;
-import de.cismet.cismap.cidslayer.CidsLayer;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 
@@ -35,6 +33,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
@@ -308,24 +309,26 @@ public class ReportAction extends AbstractAction {
     /**
      * DOCUMENT ME!
      *
-     * @param   feature  DOCUMENT ME!
-     * @param   file     DOCUMENT ME!
+     * @param   qpId  feature DOCUMENT ME!
+     * @param   file  DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
     public static void createReport(final Integer qpId, final File file) throws Exception {
         createReport(null, qpId, file);
     }
-    
+
     /**
      * DOCUMENT ME!
      *
      * @param   feature  DOCUMENT ME!
+     * @param   qpId     DOCUMENT ME!
      * @param   file     DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private static void createReport(final CidsLayerFeature feature, final Integer qpId, final File file) throws Exception {
+    private static void createReport(final CidsLayerFeature feature, final Integer qpId, final File file)
+            throws Exception {
         if (file.exists()) {
             final int ans = JOptionPane.showConfirmDialog(
                     AppBroker.getInstance().getWatergisApp(),
@@ -340,11 +343,11 @@ public class ReportAction extends AbstractAction {
                 return;
             }
         }
-        
+
         CidsLayerFeature qpFeature = feature;
-        
+
         if (feature == null) {
-            //load the feature from the layer
+            // load the feature from the layer
             final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                     "qp");
             CidsLayer layer;
@@ -354,17 +357,17 @@ public class ReportAction extends AbstractAction {
             } else {
                 layer = (CidsLayer)services.get(0);
             }
-            
+
             layer.initAndWait();
             final List<DefaultFeatureServiceFeature> features = layer.getFeatureFactory()
-            .createFeatures("qp_nr = " + qpId.toString(),
-                null,
-                null,
-                0,
-                0,
-                null);
-            
-            if (features != null && !features.isEmpty() && features.get(0) instanceof CidsLayerFeature) {
+                        .createFeatures("qp_nr = " + qpId.toString(),
+                            null,
+                            null,
+                            0,
+                            0,
+                            null);
+
+            if ((features != null) && !features.isEmpty() && (features.get(0) instanceof CidsLayerFeature)) {
                 qpFeature = (CidsLayerFeature)features.get(0);
             }
         }
@@ -376,7 +379,6 @@ public class ReportAction extends AbstractAction {
         JasperExportManager.exportReportToPdfStream(print, out);
         out.close();
     }
-    
 
     @Override
     public boolean isEnabled() {
