@@ -317,7 +317,7 @@ public class ExportAction extends AbstractAction {
 
         for (final File f : inputDir.listFiles()) {
             if (f.isDirectory()) {
-                String parent = (dirName.equals("") ? "" : dirName + "/");
+                final String parent = (dirName.equals("") ? "" : (dirName + "/"));
                 zipDirectory(f, out, parent + f.getName() + "/");
             } else {
                 final ZipEntry entry = new ZipEntry(dirName + f.getName());

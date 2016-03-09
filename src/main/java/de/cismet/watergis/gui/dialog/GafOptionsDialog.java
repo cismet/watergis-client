@@ -480,7 +480,6 @@ public class GafOptionsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         getContentPane().add(jPanel2, gridBagConstraints);
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
@@ -496,7 +495,7 @@ public class GafOptionsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
         jPanel4.add(labSize, gridBagConstraints);
 
         bgSize.add(rbSmall);
@@ -510,7 +509,7 @@ public class GafOptionsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
         jPanel4.add(rbSmall, gridBagConstraints);
 
         bgSize.add(rbMedium);
@@ -525,7 +524,7 @@ public class GafOptionsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 0);
         jPanel4.add(rbMedium, gridBagConstraints);
 
         bgSize.add(rbLarge);
@@ -539,7 +538,7 @@ public class GafOptionsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 0);
         jPanel4.add(rbLarge, gridBagConstraints);
 
         bgSize.add(rbExtraLarge);
@@ -561,7 +560,7 @@ public class GafOptionsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 0);
         jPanel4.add(rbExtraLarge, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -569,7 +568,7 @@ public class GafOptionsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
         getContentPane().add(jPanel4, gridBagConstraints);
 
         pack();

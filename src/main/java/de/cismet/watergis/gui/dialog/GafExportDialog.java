@@ -29,10 +29,13 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.gui.RestrictedFileSystemView;
+import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
+import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.gui.WatergisApp;
+import de.cismet.watergis.gui.actions.map.SaveDrawingsAction;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
 
@@ -47,12 +50,14 @@ public class GafExportDialog extends javax.swing.JDialog {
     //~ Instance fields --------------------------------------------------------
 
     private boolean cancelled = false;
+    private String lastPath = WatergisApp.getDIRECTORYPATH_WATERGIS();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;
     private javax.swing.JButton butFile;
     private javax.swing.JButton butOk;
     private javax.swing.JCheckBox ckBasis;
+    private javax.swing.JCheckBox ckGaf;
     private javax.swing.JCheckBox ckLawa;
     private javax.swing.JCheckBox ckReport;
     private javax.swing.JCheckBox ckShape;
@@ -62,6 +67,10 @@ public class GafExportDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JLabel labAusgabe;
+    private javax.swing.JLabel labBezug;
     private javax.swing.JLabel labContent;
     private javax.swing.JTextField txtFile;
     // End of variables declaration//GEN-END:variables
@@ -164,9 +173,14 @@ public class GafExportDialog extends javax.swing.JDialog {
         ckbGafSelection = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         labContent = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        labBezug = new javax.swing.JLabel();
         ckBasis = new javax.swing.JCheckBox();
         ckLawa = new javax.swing.JCheckBox();
         ckWithout = new javax.swing.JCheckBox();
+        jPanel5 = new javax.swing.JPanel();
+        labAusgabe = new javax.swing.JLabel();
+        ckGaf = new javax.swing.JCheckBox();
         ckReport = new javax.swing.JCheckBox();
         ckShape = new javax.swing.JCheckBox();
 
@@ -319,6 +333,22 @@ public class GafExportDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
         jPanel2.add(labContent, gridBagConstraints);
 
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labBezug,
+            org.openide.util.NbBundle.getMessage(
+                GafExportDialog.class,
+                "GafExportDialog.labBezug.text",
+                new Object[] {})); // NOI18N
+        labBezug.setPreferredSize(new java.awt.Dimension(75, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 20, 5, 0);
+        jPanel4.add(labBezug, gridBagConstraints);
+
         org.openide.awt.Mnemonics.setLocalizedText(
             ckBasis,
             org.openide.util.NbBundle.getMessage(
@@ -333,11 +363,11 @@ public class GafExportDialog extends javax.swing.JDialog {
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 20, 5, 0);
-        jPanel2.add(ckBasis, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 0);
+        jPanel4.add(ckBasis, gridBagConstraints);
 
         ckLawa.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -354,11 +384,11 @@ public class GafExportDialog extends javax.swing.JDialog {
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 20, 5, 0);
-        jPanel2.add(ckLawa, gridBagConstraints);
+        jPanel4.add(ckLawa, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckWithout,
@@ -374,11 +404,53 @@ public class GafExportDialog extends javax.swing.JDialog {
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 20, 5, 0);
-        jPanel2.add(ckWithout, gridBagConstraints);
+        jPanel4.add(ckWithout, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        jPanel2.add(jPanel4, gridBagConstraints);
+
+        jPanel5.setLayout(new java.awt.GridBagLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labAusgabe,
+            org.openide.util.NbBundle.getMessage(
+                GafExportDialog.class,
+                "GafExportDialog.labAusgabe.text",
+                new Object[] {})); // NOI18N
+        labAusgabe.setPreferredSize(new java.awt.Dimension(75, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 20, 5, 0);
+        jPanel5.add(labAusgabe, gridBagConstraints);
+
+        ckGaf.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckGaf,
+            org.openide.util.NbBundle.getMessage(GafExportDialog.class, "GafExportDialog.ckGaf.text", new Object[] {
+                })); // NOI18N
+        ckGaf.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckGafActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 0);
+        jPanel5.add(ckGaf, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckReport,
@@ -394,11 +466,11 @@ public class GafExportDialog extends javax.swing.JDialog {
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 20, 5, 0);
-        jPanel2.add(ckReport, gridBagConstraints);
+        jPanel5.add(ckReport, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckShape,
@@ -414,11 +486,18 @@ public class GafExportDialog extends javax.swing.JDialog {
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 20, 5, 0);
-        jPanel2.add(ckShape, gridBagConstraints);
+        jPanel5.add(ckShape, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        jPanel2.add(jPanel5, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -461,36 +540,18 @@ public class GafExportDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void butFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butFileActionPerformed
-        JFileChooser fc;
+        final File file = StaticSwingTools.chooseFile(
+                lastPath,
+                true,
+                new String[] { "zip" },
+                org.openide.util.NbBundle.getMessage(
+                    GafExportDialog.class,
+                    "PhotoExportReportDialog.butFileActionPerformed().getDescription()"),
+                AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
-        try {
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
-        } catch (Exception bug) {
-            // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
-        }
-
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fc.setAcceptAllFileFilterUsed(false);
-        fc.setFileFilter(new FileFilter() {
-
-                @Override
-                public boolean accept(final File f) {
-                    return f.isDirectory() || f.getName().endsWith(".zip");
-                }
-
-                @Override
-                public String getDescription() {
-                    return NbBundle.getMessage(
-                            GafExportDialog.class,
-                            "PhotoExportReportDialog.butFileActionPerformed().getDescription()");
-                }
-            });
-
-        final int ans = fc.showSaveDialog(this);
-
-        if (ans == JFileChooser.APPROVE_OPTION) {
-            txtFile.setText(fc.getSelectedFile().getAbsolutePath());
+        if (file != null) {
+            lastPath = file.getParent();
+            txtFile.setText(file.getAbsolutePath());
         }
     } //GEN-LAST:event_butFileActionPerformed
 
@@ -541,10 +602,20 @@ public class GafExportDialog extends javax.swing.JDialog {
 
     /**
      * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckGafActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckGafActionPerformed
+        checkContentSelection();
+    }                                                                         //GEN-LAST:event_ckGafActionPerformed
+
+    /**
+     * DOCUMENT ME!
      */
     private void checkContentSelection() {
-        butOk.setEnabled(ckBasis.isSelected() || ckLawa.isSelected() || ckWithout.isSelected() || ckReport.isSelected()
-                    || ckShape.isSelected());
+        butOk.setEnabled((ckBasis.isSelected() || ckLawa.isSelected() || ckWithout.isSelected())
+                    && (ckReport.isSelected()
+                        || ckShape.isSelected() || ckGaf.isSelected()));
     }
 
     /**
@@ -562,7 +633,7 @@ public class GafExportDialog extends javax.swing.JDialog {
                 "GafExportDialog.ckbGafSelection.text")
                     + NbBundle.getMessage(
                         BufferDialog.class,
-                        "FotoReportDialog.refreshSelectedFeatureCount.text",
+                        "GafProfReportDialog.refreshSelectedFeatureCount.text",
                         count));
     }
 
@@ -582,6 +653,15 @@ public class GafExportDialog extends javax.swing.JDialog {
      */
     public boolean isCancelled() {
         return cancelled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the cancelled
+     */
+    public boolean isGafSelected() {
+        return ckGaf.isSelected();
     }
 
     /**

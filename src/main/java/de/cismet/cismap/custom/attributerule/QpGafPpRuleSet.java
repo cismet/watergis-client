@@ -11,10 +11,11 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
+import Sirius.navigator.connection.SessionManager;
 
 import org.apache.log4j.Logger;
+
+import java.sql.Timestamp;
 
 import java.util.List;
 
@@ -42,11 +43,11 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class QpGafPRuleSet extends WatergisDefaultRuleSet {
+public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final org.apache.log4j.Logger LOG = Logger.getLogger(QpGafPRuleSet.class);
+    private static final org.apache.log4j.Logger LOG = Logger.getLogger(QpGafPpRuleSet.class);
 
     //~ Methods ----------------------------------------------------------------
 
@@ -85,48 +86,12 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
+        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
+        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
     }
 
     @Override
     public void afterSave(final TableModel model) {
-    }
-
-    @Override
-    public String[] getAdditionalFieldNames() {
-        return new String[] { "re", "ho" };
-    }
-
-    @Override
-    public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("re")) {
-            return 8;
-        } else if (name.equals("ho")) {
-            return 9;
-        } else {
-            return super.getIndexOfAdditionalFieldName(name);
-        }
-    }
-
-    @Override
-    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
-
-        final Geometry geom = feature.getGeometry();
-
-        if (geom instanceof Point) {
-            if (propertyName.equals("re")) {
-                value = ((Point)geom).getX();
-            } else if (propertyName.equals("ho")) {
-                value = ((Point)geom).getY();
-            }
-        }
-
-        return value;
-    }
-
-    @Override
-    public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
     }
 
     @Override
@@ -135,8 +100,8 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean hasCustomExportFeaturesMethod() {
-        return true;
+    public boolean isCatThree() {
+        return false;
     }
 
     @Override
@@ -163,6 +128,11 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public boolean hasCustomExportFeaturesMethod() {
+        return true;
+    }
+
+    @Override
     public void exportFeatures() {
         AppBroker.getInstance().getGafExport().actionPerformed(null);
     }
@@ -175,6 +145,5 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
     @Override
     public void printFeatures() {
         AppBroker.getInstance().getGafPrint().actionPerformed(null);
-        ;
     }
 }

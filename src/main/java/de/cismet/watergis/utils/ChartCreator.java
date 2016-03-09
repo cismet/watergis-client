@@ -106,6 +106,12 @@ public class ChartCreator {
         final Graphics2D g = im.createGraphics();
         final FontMetrics fmetrics = g.getFontMetrics();
         dims = getDimension();
+
+        if ((dims.getWidth() < 1) || (dims.getHeight() < 1)) {
+            // to prevent an infinite loop in drawCoordinateSystem(g, width, height)
+            return im;
+        }
+
         final Rectangle2D yTextSize = fmetrics.getStringBounds(String.valueOf(
                     ((int)((dims.getMinY() + dims.getHeight())))
                             + 0.8),

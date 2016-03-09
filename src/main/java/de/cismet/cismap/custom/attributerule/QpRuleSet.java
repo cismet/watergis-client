@@ -20,8 +20,6 @@ import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
 
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import java.net.URL;
@@ -34,7 +32,6 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -43,6 +40,7 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.tools.CidsBeanFilter;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -53,7 +51,12 @@ import de.cismet.cismap.commons.gui.piccolo.FeatureAnnotationSymbol;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
+import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
+
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.download.QpDownload;
 
 import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
@@ -89,7 +92,7 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("ba_cd")
+                    && !columnName.equals("geom") && !columnName.equals("ba_cd") && !columnName.equals("id")
                     && !columnName.equals("ho") && !columnName.equals("re") && !columnName.equals("qp_nr")
                     && !columnName.equals("la_st") && !columnName.equals("la_cd") && !columnName.equals("ww_gr");
     }
@@ -124,7 +127,11 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        if (columnName.equals("qp_nr")) {
+            return new LinkTableCellRenderer();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -233,15 +240,15 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public String[] getAdditionalFieldNames() {
-        return new String[] { "ho", "re" };
+        return new String[] { "re", "ho" };
     }
 
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("re")) {
-            return 7;
-        } else if (name.equals("ho")) {
             return 8;
+        } else if (name.equals("ho")) {
+            return 9;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }
@@ -289,6 +296,30 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isCatThree() {
         return true;
+    }
+
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("qp_nr")) {
+            if ((value instanceof Integer) && (clickCount == 1) && (feature instanceof CidsLayerFeature)) {
+                if (DownloadManagerDialog.showAskingForUserTitle(AppBroker.getInstance().getRootWindow())) {
+                    final String jobname = DownloadManagerDialog.getJobname();
+                    final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
+                    final String filename = value.toString();
+                    final String extension = ".pdf";
+
+                    DownloadManager.instance().add(new QpDownload(
+                            filename,
+                            extension,
+                            jobname,
+                            null,
+                            cidsFeature));
+                }
+            }
+        }
     }
 
     @Override

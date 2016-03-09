@@ -32,8 +32,8 @@
         <capabilitiesList titlestring="Ortho MV - 40cm"  type="OGC-WMS"><![CDATA[http://www.geodaten-mv.de/dienste/adv_dop?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilitiesList>
         <capabilitiesList titlestring="WRRL Katalog v34"  type="OGC-WMS"><![CDATA[http://wms.fis-wasser-mv.de/services?REQUEST=GetCapabilities&version=1.1.1&service=WMS]]></capabilitiesList>
         <capabilitiesList titlestring="Umweltkarten"  type="OGC-WMS"><![CDATA[http://www.umweltkarten.mv-regierung.de/script/mv_a2_biotope_wms.php?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.1.1]]></capabilitiesList>
-        <capabilitiesList titlestring="Interne DB"  type="INTERNAL-DB"><![CDATA[file://~/cismap/internal?SERVICE=internal_db]]></capabilitiesList>
-        <capabilitiesList titlestring="Cids Layer"  type="cidsLayer"><![CDATA[domain=DLM25W&service=cids]]></capabilitiesList>
+        <capabilitiesList titlestring="Interne DB"  type="INTERNAL-DB"><![CDATA[file://~/cismap/internalH2?SERVICE=internal_db]]></capabilitiesList>
+        <capabilitiesList titlestring="FIS Gewässer"  type="cidsLayer"><![CDATA[domain=DLM25W&service=cids&title=FIS Gewässer]]></capabilitiesList>
         <capabilitiesList titlestring="" type="SEPARATOR"/>
     </cismapCapabilitiesPreferences>    
     <cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
@@ -69,7 +69,7 @@
             <resolution selected="false" dpi="150">150 dpi</resolution>
             <resolution selected="false" dpi="200">200 dpi</resolution>
             <resolution selected="true" dpi="300">300 dpi</resolution>
-            <template selected="true" title="Standard DIN-A4 hochkant" file="/A4H.jasper" className="de.cismet.cismap.printing.templateinscriber.A4H" mapPlaceholder="map" mapWidth="508" mapHeight="699" scaleDenominatorPlaceholder="scale" />
+            <template selected="true" title="Standard DIN-A4 hochkant" file="/de/cismet/watergis/printing/A4H.jasper" className="de.cismet.watergis.printing.WatergisA4H" mapPlaceholder="map" mapWidth="508" mapHeight="699" scaleDenominatorPlaceholder="scale" />
             <action selected="false" id="print">Drucken</action>
             <action selected="false" id="printpreview">Druckvorschau</action>
             <action selected="true" id="pdf">PDF anzeigen</action>
@@ -99,7 +99,1094 @@
             </WMSServiceLayer>
         </Layers>
     </cismapActiveLayerConfiguration>
-    
+    <ExportAction>
+        <CheckList>
+            <Check JavaClass="de.cismet.watergis.gui.actions.checks.BasicRoutesCheckAction"></Check>
+            <Check JavaClass="de.cismet.watergis.gui.actions.checks.VerwaltungCheckAction"></Check>
+            <Check JavaClass="de.cismet.watergis.gui.actions.checks.AusbauCheckAction"></Check>
+            <Check JavaClass="de.cismet.watergis.gui.actions.checks.BauwerkeCheckAction"></Check>
+            <Check JavaClass="de.cismet.watergis.gui.actions.checks.SonstigesCheckAction"></Check>
+        </CheckList>
+        <FeatureServices>
+      <cidsFeatureService name="Fließgewässer" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="1" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_gn" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="wdm" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="gu_zust" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="gu_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-8377066" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-11789555" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Stationen" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="2" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_stat.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_km" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_st_c" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-12795151" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-14388080" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_stat</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Gemeinde" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="3" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_gmd.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="nr_re" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name_re" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="nr_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="st_rl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-10141351" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-12835019" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_gmd</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Genehmigungsbehörde" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="4" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_gb.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="nr_re" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="nr_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="st_rl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-15965988" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16303740" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_gb</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Schaubezirk" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="5" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_sb.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="sb" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-8164424" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-11648914" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_sb</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Profile" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="6" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_prof.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="profil" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_e" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_a" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="gefaelle" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="bv_re" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="bh_re" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="bl_re" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="bv_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="bh_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="bl_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="mw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-16575359" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16708531" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_prof</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Ausbau Uferbefestigungen" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="7" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_ubef.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_rl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ubef" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="material" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_o" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-6138293" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-10407123" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_ubef</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Böschungsbefestigungen" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="8" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_bbef.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_rl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bbef" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="material" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_o" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_u" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-16217877" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16494195" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_bbef</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Sohlbefestigungen" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="9" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_sbef.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="sbef" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="material" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_e" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_a" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="gefaelle" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_e" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_a" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-16200734" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16483961" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_sbef</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Rohrleitungen" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="10" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_rl.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="profil" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="material" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="br_dm_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br_tr_o_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_e" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_a" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="gefaelle" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_e" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_a" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_m" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-6925157" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-10866083" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_rl</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Durchlässe" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="11" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_d.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="profil" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="material" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="br_dm_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ho_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="br_tr_o_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_e" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_a" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="gefaelle" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_e" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_a" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_m" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-6323890" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-10531538" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_d</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Düker" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="12" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_due.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="profil" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="material" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="br_dm_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ho_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="br_tr_o_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_e" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_a" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="gefaelle" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_e" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_a" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_iab" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_iauf" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_m" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-11799319" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-13790581" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_due</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Schächte" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="13" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_scha.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="scha" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="material" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_so" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_so_ok" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-5810463" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-10210425" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_scha</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Wehre" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="14" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_wehr.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wehr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wehr_v" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="material_v" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wehr_av" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br_li" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_so" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="sz" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="az" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-15690847" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16164768" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_wehr</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Schöpfwerke" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="15" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_schw.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="schw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="sz" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="az" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ezg_fl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="v_fl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="pu" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="pu_foel" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-8030021" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-11581328" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_schw</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Anlagen (P)" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="16" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_anll.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="anll" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-8489240" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-11843957" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_anll</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Anlagen (P)" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="17" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_anlp.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_rl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="anlp" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-16580411" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16711562" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_anlp</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Kreuzungen" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="18" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_kr.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_oiu" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="kr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-4967028" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-9691308" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_kr</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Ein-/Ausleitungen" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="19" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_ea.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_rl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_og" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ea" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="wbbl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_ea" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_ea" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-2410639" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-8183485" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_ea</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Ufergehölze" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="20" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_ughz.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_rl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ughz" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ausbaujahr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="br" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_o" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ho_d_u" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-8426850" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-11780258" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_ughz</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Leistungen" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="21" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_leis.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_rl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="leis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="16" name="esw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-15169581" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-15838850" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_leis</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="Technologien" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="22" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_tech.pdf">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_von" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="ba_st_bis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="tech" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="obj_nr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="bemerkung" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="8" name="laenge" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-8506221" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-11853992" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.fg_ba_tech</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_anll" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="1" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="anll" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="fis_g_user" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-6808752" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-10809296" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_anll</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_anlp" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="2" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="anlp" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-6524256" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-10664864" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_anlp</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_bbef" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="3" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="bbef" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-13880331" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-15065453" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_bbef</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_ea" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="4" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="ea" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-8963325" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-12115199" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_ea</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_kr" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="5" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="kr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-16691917" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16765410" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_kr</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_l_og" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="6" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="l_og" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-13013839" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-14532502" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_l_og</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_l_oiu" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="7" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="l_oiu" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-16459626" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16613030" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_l_oiu</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_l_rl" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="8" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="l_rl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-10152901" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-12841949" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_l_rl</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_l_st" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="9" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-13306364" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-14707966" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_l_st</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_material" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="10" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="material" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-5513973" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-10058746" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_material</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_profil" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="11" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="profil" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-13775595" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-14976244" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_profil</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_sb" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="12" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="sb" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-8915577" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-12086447" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_sb</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_sbef" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="13" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="sbef" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-15949166" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16293545" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_sbef</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_scha" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="14" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="scha" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-16161683" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16434111" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_scha</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_schw" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="15" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="schw" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-12748239" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-14399203" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_schw</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_traeger" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="16" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="traeger" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-11330043" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-13561341" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_traeger</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_ubef" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="17" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="ubef" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-439569" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-7000945" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_ubef</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_ughz" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="18" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="ughz" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-4050336" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-9167303" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_ughz</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_wehr" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="19" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="wehr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-12299890" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-14143403" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_wehr</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_wehr_av" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="20" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="wehr_av" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-15811618" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-16224123" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_wehr_av</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_wehr_v" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="21" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="12" name="wehr_v" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-877366" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-7250567" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_wehr_v</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_zust_kl" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="22" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="zust_kl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-6412241" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-10610660" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_zust_kl</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_leis" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="25" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="id" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="leis" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpression="id" idExpressionType="1" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-6681658" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-10746250" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_leis</className>
+      </cidsFeatureService>
+      <cidsFeatureService name="k_tech" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="26" isSelectable="true">
+        <Attributes>
+          <FeatureServiceAttribute type="4" name="id" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="tech" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="name" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="art" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="url" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ubl" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="us" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="ubr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="12" name="urr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="93" name="fis_g_date" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
+        </Attributes>
+        <LayerProperties type="de.cismet.cismap.commons.featureservice.DefaultLayerProperties" idExpression="id" idExpressionType="1" idExpressionEnabled="true" queryType="-1">
+          <StyleHistoryElement type="de.cismet.cismap.commons.featureservice.style.BasicStyle">
+            <Fill paint="true" color="-3098219" alpha="1.0" highlight="true" />
+            <Line paint="true" color="-8622247" width="1" />
+            <Pointsymbol name="Keins" size="5" />
+            <Label paint="false" family="SansSerif" style="0" size="12" color="-16777216" attribute="" alignment="0.0" minscale="0" maxscale="2500" multiplier="1.0" autoscale="true" />
+          </StyleHistoryElement>
+        </LayerProperties>
+        <className>dlm25w.k_tech</className>
+      </cidsFeatureService>
+      </FeatureServices>
+    </ExportAction>
     <serverProfiles>
         <profile id="dgk"
                  sorter="100"

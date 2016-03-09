@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.openide.util.NbBundle;
 
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -128,9 +129,6 @@ public class Photo extends javax.swing.JPanel {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                AppBroker.DOMAIN_NAME,
-                "dlm25w.foto"));
     private static int idCounter = -1;
     public static final String WEB_DAV_USER;
     public static final String WEB_DAV_PASSWORD;
@@ -236,6 +234,7 @@ public class Photo extends javax.swing.JPanel {
                                 final List<File> files = (List<File>)tr.getTransferData(flavors[i]);
                                 if ((files != null) && (files.size() > 0)) {
                                     editor.showEditor(true, true);
+                                    addPhotoServicesToTree();
                                     CismetThreadPool.execute(new ImageUploadWorker(files));
                                 }
                                 e.dropComplete(true);
@@ -272,6 +271,7 @@ public class Photo extends javax.swing.JPanel {
 
                                 if ((fileList.size() > 0)) {
                                     editor.showEditor(true, true);
+                                    addPhotoServicesToTree();
                                     CismetThreadPool.execute(new ImageUploadWorker(fileList));
                                     e.dropComplete(true);
                                     return;
@@ -587,7 +587,7 @@ public class Photo extends javax.swing.JPanel {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrintPreviewActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butPrintPreviewActionPerformed
+    private void butPrintPreviewActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrintPreviewActionPerformed
         final WaitingDialogThread<JasperPrint> wdt = new WaitingDialogThread<JasperPrint>(StaticSwingTools
                         .getParentFrame(this),
                 true,
@@ -629,14 +629,14 @@ public class Photo extends javax.swing.JPanel {
             };
 
         wdt.start();
-    }//GEN-LAST:event_butPrintPreviewActionPerformed
+    } //GEN-LAST:event_butPrintPreviewActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrintActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butPrintActionPerformed
+    private void butPrintActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrintActionPerformed
         final WaitingDialogThread<JasperPrint> wdt = new WaitingDialogThread<JasperPrint>(StaticSwingTools
                         .getParentFrame(this),
                 true,
@@ -664,7 +664,7 @@ public class Photo extends javax.swing.JPanel {
             };
 
         wdt.start();
-    }//GEN-LAST:event_butPrintActionPerformed
+    } //GEN-LAST:event_butPrintActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -810,11 +810,14 @@ public class Photo extends javax.swing.JPanel {
     /**
      * DOCUMENT ME!
      */
-    private void addGafServicesToTree() {
+    private void addPhotoServicesToTree() {
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                 "foto");
 
         if ((services == null) || services.isEmpty()) {
+            final CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                        AppBroker.DOMAIN_NAME,
+                        "dlm25w.foto"));
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(layer);
         }
 
@@ -844,7 +847,7 @@ public class Photo extends javax.swing.JPanel {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butPrevPhotoActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butPrevPhotoActionPerformed
+    private void butPrevPhotoActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butPrevPhotoActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("foto");
 
@@ -862,14 +865,14 @@ public class Photo extends javax.swing.JPanel {
             butNextPhoto.setEnabled(false);
             butPrevPhoto.setEnabled(false);
         }
-    }//GEN-LAST:event_butPrevPhotoActionPerformed
+    } //GEN-LAST:event_butPrevPhotoActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butNextPhotoActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butNextPhotoActionPerformed
+    private void butNextPhotoActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butNextPhotoActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures("foto");
 
@@ -888,31 +891,31 @@ public class Photo extends javax.swing.JPanel {
             butNextPhoto.setEnabled(false);
             butPrevPhoto.setEnabled(false);
         }
-    }//GEN-LAST:event_butNextPhotoActionPerformed
+    } //GEN-LAST:event_butNextPhotoActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void tbProcessingActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbProcessingActionPerformed
-    }//GEN-LAST:event_tbProcessingActionPerformed
+    private void tbProcessingActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbProcessingActionPerformed
+    }                                                                                //GEN-LAST:event_tbProcessingActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butBackActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butBackActionPerformed
+    private void butBackActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butBackActionPerformed
         AppBroker.getInstance().getMappingComponent().back(true);
-    }//GEN-LAST:event_butBackActionPerformed
+    }                                                                           //GEN-LAST:event_butBackActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butSaveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butSaveActionPerformed
+    private void butSaveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butSaveActionPerformed
         try {
             final CidsLayerFeature feature = editor.getCidsLayerFeature();
             final AttributeTableRuleSet ruleSet = feature.getLayerProperties().getAttributeTableRuleSet();
@@ -926,23 +929,23 @@ public class Photo extends javax.swing.JPanel {
         } catch (Exception e) {
             LOG.error("Eror while saving feature", e);
         }
-    }//GEN-LAST:event_butSaveActionPerformed
+    } //GEN-LAST:event_butSaveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butRemoveSelectionActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butRemoveSelectionActionPerformed
+    private void butRemoveSelectionActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butRemoveSelectionActionPerformed
         SelectionManager.getInstance().removeSelectedFeatures(editor.getCidsLayerFeature());
-    }//GEN-LAST:event_butRemoveSelectionActionPerformed
+    }                                                                                      //GEN-LAST:event_butRemoveSelectionActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butZoomToPhotoActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butZoomToPhotoActionPerformed
+    private void butZoomToPhotoActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butZoomToPhotoActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
         final MappingComponent mappingComponent = CismapBroker.getInstance().getMappingComponent();
 
@@ -954,14 +957,14 @@ public class Photo extends javax.swing.JPanel {
         } else {
             LOG.error("MappingComponent is not set");
         }
-    }//GEN-LAST:event_butZoomToPhotoActionPerformed
+    } //GEN-LAST:event_butZoomToPhotoActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butDeleteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butDeleteActionPerformed
+    private void butDeleteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butDeleteActionPerformed
         final CidsLayerFeature feature = editor.getCidsLayerFeature();
 
         final int ans = JOptionPane.showConfirmDialog(
@@ -1004,23 +1007,27 @@ public class Photo extends javax.swing.JPanel {
             };
 
         wdt.start();
-    }//GEN-LAST:event_butDeleteActionPerformed
+    } //GEN-LAST:event_butDeleteActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void tbLocateActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbLocateActionPerformed
+    private void tbLocateActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbLocateActionPerformed
         if (tbLocate.isSelected()) {
+            if (tbAngle.isSelected()) {
+                tbAngle.setSelected(false);
+                tbAngleActionPerformed(null);
+            }
             makeFeatureEditable(editor.getCidsLayerFeature());
         } else {
             final CidsLayerFeature layerFeature = editor.getCidsLayerFeature();
 
             try {
                 layerFeature.getBean().setProperty("geom.geo_field", layerFeature.getGeometry());
-                
-                //determine river
+
+                // determine river
                 if (PhotoOptionsDialog.getInstance().isAutomatic()) {
                     final Station stat = getNextFgBaStat(layerFeature.getGeometry(),
                             PhotoOptionsDialog.getInstance().getDistance());
@@ -1059,7 +1066,7 @@ public class Photo extends javax.swing.JPanel {
                         }
                     }
                 }
-                
+
                 // save
                 final AttributeTableRuleSet ruleSet = layerFeature.getLayerProperties().getAttributeTableRuleSet();
 
@@ -1069,26 +1076,36 @@ public class Photo extends javax.swing.JPanel {
                 layerFeature.saveChanges();
                 editor.setCidsLayerFeature(layerFeature);
                 layerFeature.setEditable(false);
-                reloadPhotoServices();
+                EventQueue.invokeLater(new Thread() {
+
+                        @Override
+                        public void run() {
+                            reloadPhotoServices();
+                        }
+                    });
             } catch (Exception e) {
                 LOG.error("Error while setting the new geometry", e);
             }
         }
-    }//GEN-LAST:event_tbLocateActionPerformed
+    } //GEN-LAST:event_tbLocateActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void tbAngleActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbAngleActionPerformed
+    private void tbAngleActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_tbAngleActionPerformed
         if (tbAngle.isSelected()) {
+            if (tbLocate.isSelected()) {
+                tbLocate.setSelected(false);
+                tbLocateActionPerformed(null);
+            }
             oldMode = AppBroker.getInstance().getMappingComponent().getInteractionMode();
             AppBroker.getInstance().getMappingComponent().setInteractionMode(PhotoAngleListener.MODE);
         } else if (oldMode != null) {
             AppBroker.getInstance().getMappingComponent().setInteractionMode(oldMode);
         }
-    }//GEN-LAST:event_tbAngleActionPerformed
+    }                                                                           //GEN-LAST:event_tbAngleActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -1138,7 +1155,7 @@ public class Photo extends javax.swing.JPanel {
      * @param  enabled  DOCUMENT ME!
      */
     private void enableToolbar(final boolean enabled) {
-        final boolean writable = enabled && editor.isUploader();
+        final boolean writable = enabled && editor.hasWriteAccess();
         butBack.setEnabled(enabled);
         butNextPhoto.setEnabled(enabled);
         butPrevPhoto.setEnabled(enabled);
@@ -1200,37 +1217,37 @@ public class Photo extends javax.swing.JPanel {
 
         return null;
     }
-        
-        /**
-         * DOCUMENT ME!
-         *
-         * @param   geom  DOCUMENT ME!
-         *
-         * @return  DOCUMENT ME!
-         */
-        private Station getNextFgLaStat(final Geometry geom) {
-            try {
-                final User user = SessionManager.getSession().getUser();
-                final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
-                            .customServerSearch(user, new PhotoGetLaStat(geom));
 
-                if ((attributes != null) && !attributes.isEmpty()) {
-                    final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
-                            CismapBroker.getInstance().getDefaultCrsAlias());
-                    final WKBReader wkbReader = new WKBReader(geomFactory);
-                    final Station stat = new Station();
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geom  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Station getNextFgLaStat(final Geometry geom) {
+        try {
+            final User user = SessionManager.getSession().getUser();
+            final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                        .customServerSearch(user, new PhotoGetLaStat(geom));
+
+            if ((attributes != null) && !attributes.isEmpty()) {
+                final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                        CismapBroker.getInstance().getDefaultCrsAlias());
+                final WKBReader wkbReader = new WKBReader(geomFactory);
+                final Station stat = new Station();
 //                    stat.setId((Integer)attributes.get(0).get(0));
-                    stat.setLaCd((BigDecimal)attributes.get(0).get(1));
-                    stat.setStat((Double)attributes.get(0).get(2));
+                stat.setLaCd((BigDecimal)attributes.get(0).get(1));
+                stat.setStat((Double)attributes.get(0).get(2));
 //                    stat.setPoint(wkbReader.read((byte[])attributes.get(0).get(3)));
-                    return stat;
-                }
-            } catch (Exception ex) {
-                LOG.error("Errro while retrieving next fg ba station.", ex);
+                return stat;
             }
-
-            return null;
+        } catch (Exception ex) {
+            LOG.error("Errro while retrieving next fg ba station.", ex);
         }
+
+        return null;
+    }
 
     //~ Inner Classes ----------------------------------------------------------
 
@@ -1264,6 +1281,17 @@ public class Photo extends javax.swing.JPanel {
         @Override
         protected List<CidsLayerFeature> doInBackground() throws Exception {
             final List<CidsLayerFeature> newBeans = new ArrayList<CidsLayerFeature>();
+            final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                    "foto");
+            CidsLayer layer = null;
+
+            if ((services != null) && !services.isEmpty()) {
+                layer = (CidsLayer)services.get(0);
+            } else {
+                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                            AppBroker.DOMAIN_NAME,
+                            "dlm25w.foto"));
+            }
 
             for (final File imageFile : fotos) {
                 final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
@@ -1410,8 +1438,8 @@ public class Photo extends javax.swing.JPanel {
                 if (ruleSet != null) {
                     ruleSet.beforeSave(feature);
                 }
-                
-                CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
+
+                final CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
                 newBeans.add(newFeature);
             }
             return newBeans;
@@ -1429,7 +1457,6 @@ public class Photo extends javax.swing.JPanel {
                     SelectionManager.getInstance().addSelectedFeatures(newFeatures);
 //                    setEditorFeature(newFeatures.get(0));
                     reloadPhotoServices();
-                    addGafServicesToTree();
                 }
             } catch (InterruptedException ex) {
                 LOG.warn(ex, ex);
@@ -1493,7 +1520,7 @@ public class Photo extends javax.swing.JPanel {
             return null;
         }
     }
-    
+
     /**
      * DOCUMENT ME!
      *
@@ -1600,5 +1627,5 @@ public class Photo extends javax.swing.JPanel {
         public void setLaCd(final BigDecimal laCd) {
             this.laCd = laCd;
         }
-    }    
+    }
 }

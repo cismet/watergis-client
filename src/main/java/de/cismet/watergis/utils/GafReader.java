@@ -13,16 +13,19 @@
 package de.cismet.watergis.utils;
 
 import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.tools.MetaObjectCache;
 
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.newuser.User;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 
 import org.apache.log4j.Logger;
@@ -42,6 +45,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +60,7 @@ import javax.swing.JPanel;
 import javax.vecmath.Point3d;
 
 import de.cismet.cids.custom.watergis.server.search.GafCatalogueValues;
+import de.cismet.cids.custom.watergis.server.search.GafPosition;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -121,10 +126,12 @@ public class GafReader {
     private final ArrayList<String[]> content = new ArrayList<String[]>();
     private final Map<Double, ArrayList<String[]>> profiles = new HashMap<Double, ArrayList<String[]>>();
     private final int[] gafIndex = new int[10];
-    private final List<CidsBean> rk = new ArrayList<CidsBean>();
-    private final List<CidsBean> bk = new ArrayList<CidsBean>();
+    private final List<CidsBean> rkList = new ArrayList<CidsBean>();
+    private final List<CidsBean> bkList = new ArrayList<CidsBean>();
     private final List<CidsBean> kz = new ArrayList<CidsBean>();
     private boolean catalogueInitialised = false;
+    private CustomGafCatalogueReader customRkCatalogue;
+    private CustomGafCatalogueReader customBkCatalogue;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -176,19 +183,19 @@ public class GafReader {
                 final String queryBk = "select " + bkMc.getID() + ", " + bkMc.getPrimaryKey() + " from "
                             + bkMc.getTableName(); // NOI18N
 
-                final MetaObject[] moRk = SessionManager.getProxy().getMetaObjectByQuery(queryRk, 0);
-                final MetaObject[] moBk = SessionManager.getProxy().getMetaObjectByQuery(queryBk, 0);
-                final MetaObject[] moKz = SessionManager.getProxy().getMetaObjectByQuery(queryKz, 0);
+                final MetaObject[] moRk = MetaObjectCache.getInstance().getMetaObjectsByQuery(queryRk);
+                final MetaObject[] moBk = MetaObjectCache.getInstance().getMetaObjectsByQuery(queryBk);
+                final MetaObject[] moKz = MetaObjectCache.getInstance().getMetaObjectsByQuery(queryKz);
 
                 if (moRk != null) {
                     for (final MetaObject mo : moRk) {
-                        rk.add(mo.getBean());
+                        rkList.add(mo.getBean());
                     }
                 }
 
                 if (moBk != null) {
                     for (final MetaObject mo : moBk) {
-                        bk.add(mo.getBean());
+                        bkList.add(mo.getBean());
                     }
                 }
 
@@ -336,24 +343,43 @@ public class GafReader {
      */
     private void initFromFeatures(final Double profileId, final List<DefaultFeatureServiceFeature> features) {
         try {
+            initCatalogues();
+            customRkCatalogue = CustomGafCatalogueReader.createRkCatalogue(features, rkList);
+            customBkCatalogue = CustomGafCatalogueReader.createBkCatalogue(features, bkList);
             for (final DefaultFeatureServiceFeature feature : features) {
                 final String[] contentFields = new String[10];
                 contentFields[GAF_FIELDS.Y.ordinal()] = objectToString(feature.getProperty("y"), "-1");
                 contentFields[GAF_FIELDS.Z.ordinal()] = objectToString(feature.getProperty("z"), "-1");
                 contentFields[GAF_FIELDS.ID.ordinal()] = objectToString(feature.getProperty("id_gaf"), "-1");
                 contentFields[GAF_FIELDS.KZ.ordinal()] = objectToString(feature.getProperty("kz"), "x");
-                contentFields[GAF_FIELDS.RK.ordinal()] = objectToString(feature.getProperty("rk"), "x");
-                contentFields[GAF_FIELDS.BK.ordinal()] = objectToString(feature.getProperty("bk"), "x");
                 contentFields[GAF_FIELDS.HW.ordinal()] = objectToString(feature.getProperty("hw"), "-1");
                 contentFields[GAF_FIELDS.RW.ordinal()] = objectToString(feature.getProperty("rw"), "-1");
                 contentFields[GAF_FIELDS.HYK.ordinal()] = objectToString(feature.getProperty("hyk"), "x");
                 contentFields[GAF_FIELDS.STATION.ordinal()] = stationObjectToString(profileId, "1.0");
 
-                content.add(contentFields);
+                if (feature.getProperty("rk_name") == null) {
+                    contentFields[GAF_FIELDS.RK.ordinal()] = objectToString(feature.getProperty("rk"), "x");
+                } else {
+                    final String name = (String)feature.getProperty("rk_name");
+                    final Double k = (Double)feature.getProperty("rk_k");
+                    final Double kst = (Double)feature.getProperty("rk_kst");
+                    final String rk = customRkCatalogue.getRkId(name, k, kst);
 
-                for (int i = 0; i < 10; ++i) {
-                    gafIndex[i] = i;
+                    contentFields[GAF_FIELDS.RK.ordinal()] = rk;
                 }
+
+                if (feature.getProperty("bk_name") == null) {
+                    contentFields[GAF_FIELDS.BK.ordinal()] = objectToString(feature.getProperty("bk"), "x");
+                } else {
+                    final String name = (String)feature.getProperty("bk_name");
+                    final Double ax = (Double)feature.getProperty("bk_ax");
+                    final Double ay = (Double)feature.getProperty("bk_ay");
+                    final Double dp = (Double)feature.getProperty("bk_dp");
+                    final String bk = customBkCatalogue.getBkId(name, ax, ay, dp);
+
+                    contentFields[GAF_FIELDS.BK.ordinal()] = bk;
+                }
+                content.add(contentFields);
 
                 final Double station = getStationNumber(contentFields);
 
@@ -366,8 +392,35 @@ public class GafReader {
 
                 profile.add(contentFields);
             }
+            for (int i = 0; i < 10; ++i) {
+                gafIndex[i] = i;
+            }
         } catch (Exception e) {
             LOG.error("Error while reading GAF data from features", e);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   catalogueFile  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  IllegalArgumentException  DOCUMENT ME!
+     */
+    public CustomGafCatalogueReader.FILE_TYPE addCustomCatalogue(final File catalogueFile)
+            throws IllegalArgumentException {
+        final CustomGafCatalogueReader catFile = new CustomGafCatalogueReader(catalogueFile);
+
+        if (catFile.getType().equals(CustomGafCatalogueReader.FILE_TYPE.BK)) {
+            customBkCatalogue = catFile;
+            return CustomGafCatalogueReader.FILE_TYPE.BK;
+        } else if (catFile.getType().equals(CustomGafCatalogueReader.FILE_TYPE.RK)) {
+            customRkCatalogue = catFile;
+            return CustomGafCatalogueReader.FILE_TYPE.RK;
+        } else {
+            return CustomGafCatalogueReader.FILE_TYPE.UNKNOWN;
         }
     }
 
@@ -770,6 +823,32 @@ public class GafReader {
     /**
      * DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     */
+    public String createCustomRkCatalogueFile() {
+        if (customRkCatalogue != null) {
+            return customRkCatalogue.createCatalogueFile();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public String createCustomBkCatalogueFile() {
+        if (customBkCatalogue != null) {
+            return customBkCatalogue.createCatalogueFile();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param   s       DOCUMENT ME!
      * @param   size    DOCUMENT ME!
      * @param   filler  DOCUMENT ME!
@@ -795,6 +874,19 @@ public class GafReader {
      * @return  the geometry of the normal profil
      */
     public LineString getNpLine(final Double profile) {
+        return getLineBetween(profile, "PA", "PE");
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   profile  DOCUMENT ME!
+     * @param   kzStart  DOCUMENT ME!
+     * @param   kzEnd    DOCUMENT ME!
+     *
+     * @return  the geometry of the normal profil
+     */
+    private LineString getLineBetween(final Double profile, final String kzStart, final String kzEnd) {
         final ArrayList<String[]> profContent = profiles.get(profile);
         final List<Coordinate> coordinateList = new ArrayList<Coordinate>();
         boolean started = false;
@@ -803,7 +895,7 @@ public class GafReader {
 
         for (final String[] line : profContent) {
             try {
-                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PA")) {
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(kzStart)) {
                     started = true;
                 }
                 if (started) {
@@ -812,7 +904,7 @@ public class GafReader {
                     final Coordinate coord = new Coordinate(re, ho);
                     coordinateList.add(coord);
                 }
-                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PE")) {
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(kzEnd)) {
                     started = false;
                 }
             } catch (NumberFormatException e) {
@@ -820,9 +912,11 @@ public class GafReader {
             }
         }
 
-        final LineString line = factory.createLineString(coordinateList.toArray(new Coordinate[coordinateList.size()]));
-
-        return line;
+        if (!coordinateList.isEmpty()) {
+            return factory.createLineString(coordinateList.toArray(new Coordinate[coordinateList.size()]));
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -975,16 +1069,89 @@ public class GafReader {
             return toDouble(gafLine[gafIndex[field.ordinal()]]);
         } else if (field == GAF_FIELDS.RK) {
             initCatalogues();
-            return toCatalogueElement(rk, gafLine[gafIndex[field.ordinal()]], "rk");
+
+            if (customRkCatalogue != null) {
+                final CustomGafCatalogueReader.RkObject obj = customRkCatalogue.getRkById(
+                        gafLine[gafIndex[field.ordinal()]]);
+
+                if (obj != null) {
+                    final CidsBean bean = getCentralRkBean(obj);
+
+                    if (bean != null) {
+                        return bean;
+                    } else {
+                        return obj;
+                    }
+                }
+            }
+            return toCatalogueElement(rkList, gafLine[gafIndex[field.ordinal()]], "rk");
         } else if (field == GAF_FIELDS.BK) {
             initCatalogues();
-            return toCatalogueElement(bk, gafLine[gafIndex[field.ordinal()]], "bk");
+            if (customBkCatalogue != null) {
+                final CustomGafCatalogueReader.BkObject obj = customBkCatalogue.getBkById(
+                        gafLine[gafIndex[field.ordinal()]]);
+
+                if (obj != null) {
+                    final CidsBean bean = getCentralBkBean(obj);
+
+                    if (bean != null) {
+                        return bean;
+                    } else {
+                        return obj;
+                    }
+                }
+            }
+            return toCatalogueElement(bkList, gafLine[gafIndex[field.ordinal()]], "bk");
         } else if (field == GAF_FIELDS.KZ) {
             initCatalogues();
             return toCatalogueElement(kz, gafLine[gafIndex[field.ordinal()]], "kz");
         } else {
             return gafLine[gafIndex[field.ordinal()]];
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   rk  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private CidsBean getCentralRkBean(final CustomGafCatalogueReader.RkObject rk) {
+        for (final CidsBean rkBean : rkList) {
+            final String name = (String)rkBean.getProperty("name");
+            final Double k = (Double)rkBean.getProperty("k");
+            final Double kst = (Double)rkBean.getProperty("kst");
+
+            if (((name != null) && name.equalsIgnoreCase(rk.getName())) && (k == rk.getK()) && (kst == rk.getKst())) {
+                return rkBean;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   bk  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private CidsBean getCentralBkBean(final CustomGafCatalogueReader.BkObject bk) {
+        for (final CidsBean bkBean : bkList) {
+            final String name = (String)bkBean.getProperty("name");
+            final Double ax = (Double)bkBean.getProperty("ax");
+            final Double ay = (Double)bkBean.getProperty("ay");
+            final Double dp = (Double)bkBean.getProperty("dp");
+
+            if (((name != null) && name.equalsIgnoreCase(bk.getName())) && (ax == bk.getAx()) && (ay == bk.getAy())
+                        && (dp == bk.getDp())) {
+                return bkBean;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -1097,9 +1264,14 @@ public class GafReader {
      */
     public String[] checkFile() {
         final List<GafErrorContainer> errorList = new ArrayList<GafErrorContainer>();
-        final String[] errorStrings;
 
         initialiseCatalogueValues();
+
+        errorList.addAll(checkGafSyntax());
+
+        if (!errorList.isEmpty()) {
+            return errorListToStrings(errorList);
+        }
 
         errorList.addAll(Arrays.asList(checkNP()));
         errorList.addAll(Arrays.asList(checkNPPAPE()));
@@ -1123,6 +1295,20 @@ public class GafReader {
         errorList.addAll(Arrays.asList(checkRk()));
         errorList.addAll(Arrays.asList(checkBk()));
 
+        Collections.sort(errorList);
+
+        return errorListToStrings(errorList);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   errorList  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String[] errorListToStrings(final List<GafErrorContainer> errorList) {
+        final String[] errorStrings;
         errorStrings = new String[errorList.size()];
 
         for (int i = 0; i < errorList.size(); ++i) {
@@ -1131,6 +1317,146 @@ public class GafReader {
         }
 
         return errorStrings;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private List<GafErrorContainer> checkGafSyntax() {
+        final List<GafErrorContainer> errorList = new ArrayList<GafErrorContainer>();
+        int indexZero = 0;
+
+        for (final int ind : gafIndex) {
+            if (ind == 0) {
+                ++indexZero;
+            }
+        }
+
+        if (indexZero > 1) {
+            errorList.add(new GafErrorContainer(0.0, 0, "Ungültige GAF-Datei"));
+
+            return errorList;
+        }
+
+        int lineNumber = 1;
+
+        for (final String[] line : content) {
+            ++lineNumber;
+
+            if (line.length < 10) {
+                errorList.add(new GafErrorContainer(0.0, lineNumber, "Ungültige GAF-Datei"));
+            }
+        }
+
+        return errorList;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public String[] checkFileForHints() {
+        final List<String> hints = new ArrayList<String>();
+
+        String hint = checkOGHint();
+
+        if (hint != null) {
+            hints.add(hint);
+        }
+
+        hint = checkMGHint();
+
+        if (hint != null) {
+            hints.add(hint);
+        }
+
+        if (!hints.isEmpty()) {
+            return hints.toArray(new String[hints.size()]);
+        } else {
+            return new String[0];
+        }
+    }
+
+    /**
+     * check hint: Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK
+     * und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String checkOGHint() {
+        for (final Double profileId : profiles.keySet()) {
+            LineString line = getLineBetween(profileId, "LU", "Ru");
+
+            if (line == null) {
+                line = getLineBetween(profileId, "LBOK", "RBOK");
+            }
+            if (line == null) {
+                line = getLineBetween(profileId, "PA", "PE");
+            }
+
+            if (line != null) {
+                if (getIntersectionPointCount(line) == 0) {
+                    return
+                        "Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * check hint: Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen
+     * LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String checkMGHint() {
+        for (final Double profileId : profiles.keySet()) {
+            LineString line = getLineBetween(profileId, "LU", "Ru");
+
+            if (line == null) {
+                line = getLineBetween(profileId, "LBOK", "RBOK");
+            }
+            if (line == null) {
+                line = getLineBetween(profileId, "PA", "PE");
+            }
+
+            if (line != null) {
+                if (getIntersectionPointCount(line) > 1) {
+                    return
+                        "Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geom  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private int getIntersectionPointCount(final Geometry geom) {
+        try {
+            final User user = SessionManager.getSession().getUser();
+            final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                        .customServerSearch(user, new GafPosition(geom, 1000));
+
+            if ((attributes != null) && !attributes.isEmpty()) {
+                return attributes.size();
+            }
+        } catch (Exception ex) {
+            LOG.error("Errro while retrieving gaf profile position.", ex);
+        }
+
+        return 0;
     }
 
     /**
@@ -1146,16 +1472,22 @@ public class GafReader {
 
         for (final String[] line : content) {
             ++lineNumber;
+            if ((station != -1) && (station != getStationNumber(line))) {
+                if (!found) {
+                    errors.add(new GafErrorContainer(station, lineNumber, "NP"));
+                }
+                found = false;
+            }
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PA")
                         || line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PE")) {
-                if ((station != -1) && (station != getStationNumber(line))) {
-                    if (!found) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "NP"));
-                    }
-                }
-                station = getStationNumber(line);
                 found = true;
             }
+            station = getStationNumber(line);
+        }
+
+        if (!found) {
+            // the last profile has no NP
+            errors.add(new GafErrorContainer(station, lineNumber, "NP"));
         }
 
         return errors.toArray(new GafErrorContainer[errors.size()]);
@@ -1175,26 +1507,25 @@ public class GafReader {
 
         for (final String[] line : content) {
             ++lineNumber;
-            if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PA")) {
-                if ((station != -1) && (station != getStationNumber(line))) {
-                    if (!pa || !pe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "NP-PA-PE"));
-                    }
-                    pe = false;
+            if ((station != -1) && (station != getStationNumber(line))) {
+                if (!pa || !pe) {
+                    errors.add(new GafErrorContainer(station, lineNumber, "NP-PA-PE"));
                 }
-                station = getStationNumber(line);
+                pe = false;
+                pa = false;
+            }
+            if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PA")) {
                 pa = true;
             }
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PE")) {
-                if ((station != -1) && (station != getStationNumber(line))) {
-                    if (!pa || !pe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "NP-PA-PE"));
-                    }
-                    pa = false;
-                }
-                station = getStationNumber(line);
                 pe = true;
             }
+            station = getStationNumber(line);
+        }
+
+        if (!pa || !pe) {
+            // the last profile has no end
+            errors.add(new GafErrorContainer(station, lineNumber, "NP-PA-PE"));
         }
 
         return errors.toArray(new GafErrorContainer[errors.size()]);
@@ -1220,7 +1551,6 @@ public class GafReader {
             if ((station != -1) && (station != getStationNumber(line))) {
                 index = 0;
             }
-            station = getStationNumber(line);
 
             if (i != -1) {
                 if (i < index) {
@@ -1229,6 +1559,7 @@ public class GafReader {
                     index = i;
                 }
             }
+            station = getStationNumber(line);
         }
 
         return errors.toArray(new GafErrorContainer[errors.size()]);
@@ -1362,7 +1693,8 @@ public class GafReader {
     }
 
     /**
-     * Check: Verletzung der logischen Reihenfolge UKBA - UKBP - UKBW oder UKBA - UKBP - UKBE
+     * Check: Verletzung der logischen Reihenfolge UKBA - UKBP - UKBW oder UKBA - UKBP - UKBE Jetzt: Verletzung der
+     * logischen Reihenfolge UKBA - UKBP - UKWP oder UKBA - UKBP - UKBE
      *
      * @return  true, iff the check was completed successfully
      */
@@ -1378,9 +1710,6 @@ public class GafReader {
             ++lineNumber;
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("UKBA")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (ua && !ue) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "UK-LOGIK"));
-                    }
                     ua = false;
                     b = false;
                 }
@@ -1394,9 +1723,6 @@ public class GafReader {
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("UKBW")
                         || line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("UKBE")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (ua && !ue) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "UK-LOGIK"));
-                    }
                     ua = false;
                     b = false;
                 }
@@ -1409,15 +1735,12 @@ public class GafReader {
             }
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("UKBP")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (ua && !ue) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "UK-LOGIK"));
-                    }
                     ua = false;
                     ue = false;
                     b = false;
                 }
                 station = getStationNumber(line);
-                if (!ua) {
+                if (!ua || ue) {
                     errors.add(new GafErrorContainer(station, lineNumber, "UK-LOGIK"));
                 }
             }
@@ -1517,9 +1840,6 @@ public class GafReader {
             ++lineNumber;
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("OKBA")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (oa && !oe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "OK-LOGIK"));
-                    }
                     oa = false;
                     b = false;
                 }
@@ -1533,9 +1853,6 @@ public class GafReader {
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("OKBW")
                         || line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("OKBE")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (oa && !oe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "OK-LOGIK"));
-                    }
                     oa = false;
                     b = false;
                 }
@@ -1548,15 +1865,12 @@ public class GafReader {
             }
             if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("OKBP")) {
                 if ((station != -1) && (station != getStationNumber(line))) {
-                    if (oa && !oe) {
-                        errors.add(new GafErrorContainer(station, lineNumber, "OK-LOGIK"));
-                    }
                     oa = false;
                     oe = false;
                     b = false;
                 }
                 station = getStationNumber(line);
-                if (!oa) {
+                if (!oa || oe) {
                     errors.add(new GafErrorContainer(station, lineNumber, "OK-LOGIK"));
                 }
             }
@@ -1963,11 +2277,15 @@ public class GafReader {
 
                 try {
                     newY = Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]);
+
+                    if ((y < -999.99) || (newY > 999.99)) {
+                        errors.add(new GafErrorContainer(getStationNumber(line), lineNumber, "Y"));
+                    }
                 } catch (NumberFormatException e) {
                     newY = 0.0;
                 }
 
-                if ((y != Double.MIN_VALUE) && (newY <= y)) {
+                if ((y != Double.MIN_VALUE) && (newY < y)) {
                     errors.add(new GafErrorContainer(getStationNumber(line), lineNumber, "Y"));
                 } else {
                     y = newY;
@@ -1993,6 +2311,10 @@ public class GafReader {
 
             try {
                 z = Double.parseDouble(line[gafIndex[GAF_FIELDS.Z.ordinal()]]);
+
+                if ((z < -19.99) || (z > 199.99)) {
+                    errors.add(new GafErrorContainer(getStationNumber(line), lineNumber, "Z"));
+                }
             } catch (NumberFormatException e) {
                 errors.add(new GafErrorContainer(getStationNumber(line), lineNumber, "Z"));
             }
@@ -2016,6 +2338,10 @@ public class GafReader {
 
             try {
                 hw = Double.parseDouble(line[gafIndex[GAF_FIELDS.HW.ordinal()]]);
+
+                if ((hw < 5600000) || (hw > 6399999.99)) {
+                    errors.add(new GafErrorContainer(getStationNumber(line), lineNumber, "HW"));
+                }
             } catch (NumberFormatException e) {
                 errors.add(new GafErrorContainer(getStationNumber(line), lineNumber, "HW"));
             }
@@ -2039,6 +2365,10 @@ public class GafReader {
 
             try {
                 rw = Double.parseDouble(line[gafIndex[GAF_FIELDS.RW.ordinal()]]);
+
+                if ((rw < 33000000) || (rw > 33999999.99)) {
+                    errors.add(new GafErrorContainer(getStationNumber(line), lineNumber, "RW"));
+                }
             } catch (NumberFormatException e) {
                 errors.add(new GafErrorContainer(getStationNumber(line), lineNumber, "RW"));
             }
@@ -2130,6 +2460,17 @@ public class GafReader {
     private GafErrorContainer[] checkRk() {
         final List<GafErrorContainer> errors = new ArrayList<GafErrorContainer>();
         int lineNumber = 1;
+        final List<Integer> allRkWithCustom = new ArrayList<Integer>();
+
+        if (customRkCatalogue != null) {
+            for (final int rkKey : customRkCatalogue.getAllRk()) {
+                allRkWithCustom.add(rkKey);
+            }
+        } else {
+            for (final int rkKey : allRK) {
+                allRkWithCustom.add(rkKey);
+            }
+        }
 
         for (final String[] line : content) {
             final int rk;
@@ -2143,7 +2484,7 @@ public class GafReader {
                     found = true;
                 }
 
-                for (final int krk : allRK) {
+                for (final int krk : allRkWithCustom) {
                     if (krk == rk) {
                         found = true;
                     }
@@ -2168,6 +2509,17 @@ public class GafReader {
     private GafErrorContainer[] checkBk() {
         final List<GafErrorContainer> errors = new ArrayList<GafErrorContainer>();
         int lineNumber = 1;
+        final List<Integer> allBkWithCustom = new ArrayList<Integer>();
+
+        if (customBkCatalogue != null) {
+            for (final int rbKey : customBkCatalogue.getAllBk()) {
+                allBkWithCustom.add(rbKey);
+            }
+        } else {
+            for (final int rbKey : allBK) {
+                allBkWithCustom.add(rbKey);
+            }
+        }
 
         for (final String[] line : content) {
             ++lineNumber;
@@ -2181,7 +2533,7 @@ public class GafReader {
                     found = true;
                 }
 
-                for (final int kbk : allBK) {
+                for (final int kbk : allBkWithCustom) {
                     if (kbk == bk) {
                         found = true;
                     }
@@ -2238,7 +2590,7 @@ public class GafReader {
      *
      * @version  $Revision$, $Date$
      */
-    private class GafErrorContainer {
+    private class GafErrorContainer implements Comparable<GafErrorContainer> {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -2315,6 +2667,19 @@ public class GafReader {
          */
         public Double getStation() {
             return station;
+        }
+
+        @Override
+        public int compareTo(final GafErrorContainer o) {
+            if ((getLine() == null) && (o.getLine() == null)) {
+                return 0;
+            } else if (getLine() == null) {
+                return -1;
+            } else if (o.getLine() == null) {
+                return 1;
+            } else {
+                return getLine().compareTo(o.getLine());
+            }
         }
     }
 }

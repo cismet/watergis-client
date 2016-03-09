@@ -171,61 +171,78 @@ public class ExportAction extends AbstractAction {
                                     return false;
                                 }
 
-                                // collect gaf profiles
-                                if (GafExportDialog.getInstance().isBasisSelected()) {
-                                    if (feature.getProperty("ba_cd") != null) {
-                                        final String fileName = GafProf.getBasicGafFileName(cidsFeature);
-                                        final File basisFile = new File(tmpBasisDir, fileName);
-                                        final Integer qpNr = (Integer)feature.getProperty("qp_nr");
-                                        final List<DefaultFeatureServiceFeature> features = getAllPPFeature(qpNr);
-                                        Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
-                                                basisFile.getAbsolutePath());
-                                        final Double station = GafProf.getFeatureStation(cidsFeature);
+                                // prepare gaf file export
+                                if (GafExportDialog.getInstance().isGafSelected()) {
+                                    final Integer qpNr = (Integer)feature.getProperty("qp_nr");
+                                    List<DefaultFeatureServiceFeature> ppFeatures = null;
 
-                                        if (profilesMap == null) {
-                                            profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
-                                            gafMap.put(basisFile.getAbsolutePath(), profilesMap);
+                                    // collect gaf profiles
+                                    if (GafExportDialog.getInstance().isBasisSelected()) {
+                                        if (feature.getProperty("ba_cd") != null) {
+                                            final String fileName = GafProf.getBasicGafFileName(cidsFeature);
+                                            final File basisFile = new File(tmpBasisDir, fileName);
+                                            if (ppFeatures == null) {
+                                                ppFeatures = getAllPPFeature(qpNr);
+                                            }
+                                            Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
+                                                    basisFile.getAbsolutePath());
+                                            final Double station = GafProf.getFeatureStation(cidsFeature);
+
+                                            if (profilesMap == null) {
+                                                profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
+                                                gafMap.put(basisFile.getAbsolutePath(), profilesMap);
+                                            }
+
+                                            profilesMap.put(station, ppFeatures);
                                         }
-
-                                        profilesMap.put(station, features);
                                     }
-                                }
 
-                                if (GafExportDialog.getInstance().isLawaSelected()) {
-                                    if (feature.getProperty("la_cd") != null) {
-                                        final String fileName = GafProf.getLawaGafFileName(cidsFeature);
-                                        final File lawaFile = new File(tmpLawaDir, fileName);
-                                        final Integer qpNr = (Integer)feature.getProperty("qp_nr");
-                                        final List<DefaultFeatureServiceFeature> features = getAllPPFeature(qpNr);
-                                        Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
-                                                lawaFile.getAbsolutePath());
-                                        final Double station = GafProf.getFeatureStation(cidsFeature);
-
-                                        if (profilesMap == null) {
-                                            profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
-                                            gafMap.put(lawaFile.getAbsolutePath(), profilesMap);
-                                        }
-
-                                        profilesMap.put(station, features);
+                                    if (Thread.interrupted()) {
+                                        return false;
                                     }
-                                }
 
-                                if (GafExportDialog.getInstance().isWithoutSelected()) {
-                                    if (feature.getProperty("ba_cd") == null) {
-                                        final String fileName = "gaf_ohne.gaf";
-                                        final File withoutFile = new File(tmpWithoutDir, fileName);
-                                        final Integer qpNr = (Integer)feature.getProperty("qp_nr");
-                                        final List<DefaultFeatureServiceFeature> features = getAllPPFeature(qpNr);
-                                        Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
-                                                withoutFile.getAbsolutePath());
-                                        final Double station = GafProf.getFeatureStation(cidsFeature);
+                                    if (GafExportDialog.getInstance().isLawaSelected()) {
+                                        if (feature.getProperty("la_cd") != null) {
+                                            final String fileName = GafProf.getLawaGafFileName(cidsFeature);
+                                            final File lawaFile = new File(tmpLawaDir, fileName);
+                                            if (ppFeatures == null) {
+                                                ppFeatures = getAllPPFeature(qpNr);
+                                            }
+                                            Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
+                                                    lawaFile.getAbsolutePath());
+                                            final Double station = GafProf.getFeatureStation(cidsFeature);
 
-                                        if (profilesMap == null) {
-                                            profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
-                                            gafMap.put(withoutFile.getAbsolutePath(), profilesMap);
+                                            if (profilesMap == null) {
+                                                profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
+                                                gafMap.put(lawaFile.getAbsolutePath(), profilesMap);
+                                            }
+
+                                            profilesMap.put(station, ppFeatures);
                                         }
+                                    }
 
-                                        profilesMap.put(station, features);
+                                    if (Thread.interrupted()) {
+                                        return false;
+                                    }
+
+                                    if (GafExportDialog.getInstance().isWithoutSelected()) {
+                                        if (feature.getProperty("ba_cd") == null) {
+                                            final String fileName = "gaf_ohne.gaf";
+                                            final File withoutFile = new File(tmpWithoutDir, fileName);
+                                            if (ppFeatures == null) {
+                                                ppFeatures = getAllPPFeature(qpNr);
+                                            }
+                                            Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
+                                                    withoutFile.getAbsolutePath());
+                                            final Double station = GafProf.getFeatureStation(cidsFeature);
+
+                                            if (profilesMap == null) {
+                                                profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
+                                                gafMap.put(withoutFile.getAbsolutePath(), profilesMap);
+                                            }
+
+                                            profilesMap.put(station, ppFeatures);
+                                        }
                                     }
                                 }
 
@@ -238,8 +255,12 @@ public class ExportAction extends AbstractAction {
                                     if (GafExportDialog.getInstance().isBasisSelected()) {
                                         if (feature.getProperty("ba_cd") != null) {
                                             String fileName = GafProf.getBasicReportFileName(cidsFeature);
-                                            fileName = ReportAction.toValidFileName(fileNames, fileName, feature);
-                                            final File basisFile = new File(tmpReportBasisDir, fileName);
+                                            File basisFile = new File(tmpReportBasisDir, fileName);
+                                            fileName = ReportAction.toValidFileName(
+                                                    fileNames,
+                                                    basisFile.getAbsolutePath(),
+                                                    feature);
+                                            basisFile = new File(fileName);
                                             tmpReportBasisDir.mkdirs();
 
                                             ReportAction.createReport(cidsFeature, basisFile);
@@ -248,8 +269,12 @@ public class ExportAction extends AbstractAction {
                                     if (GafExportDialog.getInstance().isLawaSelected()) {
                                         if (feature.getProperty("la_cd") != null) {
                                             String fileName = GafProf.getLawaReportFileName(cidsFeature);
-                                            fileName = ReportAction.toValidFileName(fileNames, fileName, feature);
-                                            final File lawaFile = new File(tmpReportLawaDir, fileName);
+                                            File lawaFile = new File(tmpReportLawaDir, fileName);
+                                            fileName = ReportAction.toValidFileName(
+                                                    fileNames,
+                                                    lawaFile.getAbsolutePath(),
+                                                    feature);
+                                            lawaFile = new File(fileName);
                                             tmpReportLawaDir.mkdirs();
 
                                             ReportAction.createReport(cidsFeature, lawaFile);
@@ -259,8 +284,12 @@ public class ExportAction extends AbstractAction {
                                         if (feature.getProperty("ba_cd") == null) {
                                             final String nr = String.valueOf(feature.getProperty("qp_nr"));
                                             String fileName = "gaf_ohne___" + nr + ".pdf";
-                                            fileName = ReportAction.toValidFileName(fileNames, fileName, feature);
-                                            final File withoutFile = new File(tmpReportWithoutDir, fileName);
+                                            File withoutFile = new File(tmpReportWithoutDir, fileName);
+                                            fileName = ReportAction.toValidFileName(
+                                                    fileNames,
+                                                    withoutFile.getAbsolutePath(),
+                                                    feature);
+                                            withoutFile = new File(fileName);
                                             tmpReportWithoutDir.mkdirs();
 
                                             ReportAction.createReport(cidsFeature, withoutFile);
@@ -275,19 +304,43 @@ public class ExportAction extends AbstractAction {
                                 wd.setProgress(wd.getProgress() + 1);
                             }
 
-                            // create gaf profiles
+                            if (GafExportDialog.getInstance().isGafSelected()) {
+                                // create gaf files
+                                for (final String gafFileName : gafMap.keySet()) {
+                                    final Map<Double, List<DefaultFeatureServiceFeature>> gafProfiles = gafMap.get(
+                                            gafFileName);
 
-                            for (final String gafFileName : gafMap.keySet()) {
-                                final Map<Double, List<DefaultFeatureServiceFeature>> gafProfiles = gafMap.get(
-                                        gafFileName);
+                                    final GafReader reader = new GafReader(gafProfiles);
+                                    // write gaf file
+                                    File destFile = new File(gafFileName);
+                                    destFile.getParentFile().mkdirs();
+                                    BufferedWriter br = new BufferedWriter(new FileWriter(destFile));
+                                    br.write(reader.createGafFile());
+                                    br.close();
 
-                                final GafReader reader = new GafReader(gafProfiles);
+                                    // write bk catalogue files, if required
+                                    final String bkCatalogueContent = reader.createCustomBkCatalogueFile();
 
-                                final File destFile = new File(gafFileName);
-                                destFile.getParentFile().mkdirs();
-                                final BufferedWriter br = new BufferedWriter(new FileWriter(destFile));
-                                br.write(reader.createGafFile());
-                                br.close();
+                                    if (bkCatalogueContent != null) {
+                                        destFile = new File(gafFileName.substring(0, gafFileName.length() - 4)
+                                                        + "_bk.txt");
+                                        destFile.getParentFile().mkdirs();
+                                        br = new BufferedWriter(new FileWriter(destFile));
+                                        br.write(bkCatalogueContent);
+                                        br.close();
+                                    }
+
+                                    // write rk catalogue file, if required
+                                    final String rkCatalogueContent = reader.createCustomRkCatalogueFile();
+                                    if (rkCatalogueContent != null) {
+                                        destFile = new File(gafFileName.substring(0, gafFileName.length() - 4)
+                                                        + "_rk.txt");
+                                        destFile.getParentFile().mkdirs();
+                                        br = new BufferedWriter(new FileWriter(destFile));
+                                        br.write(rkCatalogueContent);
+                                        br.close();
+                                    }
+                                }
                             }
 
                             if (Thread.interrupted()) {
@@ -316,18 +369,24 @@ public class ExportAction extends AbstractAction {
                                             AppBroker.DOMAIN_NAME,
                                             "dlm25w.qp_gaf_p"));
                                 layer.initAndWait();
-                                List<FeatureServiceFeature> serviceFeatures = new ArrayList<FeatureServiceFeature>();
+                                String qpNrQuery = null;
 
                                 for (final Object qpNr : qpNrSet) {
-                                    serviceFeatures.addAll(layer.getFeatureFactory().createFeatures(
-                                            "qp_nr = "
-                                                    + qpNr.toString(),
-                                            null,
-                                            null,
-                                            0,
-                                            0,
-                                            null));
+                                    if (qpNrQuery != null) {
+                                        qpNrQuery += " or qp_nr = " + qpNr.toString();
+                                    } else {
+                                        qpNrQuery = "qp_nr = " + qpNr.toString();
+                                    }
                                 }
+
+                                List<FeatureServiceFeature> serviceFeatures = layer.getFeatureFactory()
+                                            .createFeatures(
+                                                qpNrQuery,
+                                                null,
+                                                null,
+                                                0,
+                                                0,
+                                                null);
                                 shapeFile = new File(tmpShapeDir, "qp_gaf_p");
                                 createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath());
 
@@ -336,18 +395,15 @@ public class ExportAction extends AbstractAction {
                                             AppBroker.DOMAIN_NAME,
                                             "dlm25w.qp_gaf_l"));
                                 layer.initAndWait();
-                                serviceFeatures = new ArrayList<FeatureServiceFeature>();
 
-                                for (final Object qpNr : qpNrSet) {
-                                    serviceFeatures.addAll(layer.getFeatureFactory().createFeatures(
-                                            "qp_nr = "
-                                                    + qpNr.toString(),
-                                            null,
-                                            null,
-                                            0,
-                                            0,
-                                            null));
-                                }
+                                serviceFeatures = layer.getFeatureFactory()
+                                            .createFeatures(
+                                                    qpNrQuery,
+                                                    null,
+                                                    null,
+                                                    0,
+                                                    0,
+                                                    null);
 
                                 shapeFile = new File(tmpShapeDir, "qp_gaf_l");
                                 createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath());
@@ -646,7 +702,8 @@ public class ExportAction extends AbstractAction {
 
         for (final File f : inputDir.listFiles()) {
             if (f.isDirectory()) {
-                zipDirectory(f, out, dirName + "/" + f.getName() + "/");
+                final String parent = (dirName.equals("") ? "" : (dirName + "/"));
+                zipDirectory(f, out, parent + f.getName() + "/");
             } else {
                 final ZipEntry entry = new ZipEntry(dirName + f.getName());
                 out.putNextEntry(entry);

@@ -68,7 +68,7 @@ import de.cismet.watergis.utils.GafReader;
 import de.cismet.watergis.utils.RendererTools;
 
 /**
- * DOCUMENT ME!
+ * A editor class that can be used to edit/render qp cids layer.
  *
  * @author   therter
  * @version  $Revision$, $Date$
@@ -164,12 +164,15 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     //~ Constructors -----------------------------------------------------------
 
     /**
-     * Creates new form Photo.
+     * Creates new form gaf editor.
      */
     public GafProfEditor() {
         initComponents();
+        panStatEdit.setEnabled(false);
+        RendererTools.makeReadOnly(txtHo);
+        RendererTools.makeReadOnly(txtRe);
         lblBusy.setBusy(false);
-        final CidsBeanFilter filter = new CidsBeanFilter() {
+        CidsBeanFilter filter = new CidsBeanFilter() {
 
                 @Override
                 public boolean accept(final CidsBean bean) {
@@ -181,6 +184,19 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
                 }
             };
         cbLst.setBeanFilter(filter);
+
+        filter = new CidsBeanFilter() {
+
+                @Override
+                public boolean accept(final CidsBean bean) {
+                    if (bean == null) {
+                        return true;
+                    }
+
+                    return (bean.getProperty("qp") != null) && (Boolean)bean.getProperty("qp");
+                }
+            };
+        cbFreigabe.setBeanFilter(filter);
 
         timer = new javax.swing.Timer(300, new ActionListener() {
 
@@ -218,16 +234,16 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * DOCUMENT ME!
+     * Determine the pp layer that is used by the editor.
      *
-     * @return  the ppLayer
+     * @return  the ppLayer that is used by the editor
      */
     public static CidsLayer getPpLayer() {
         return ppLayer;
     }
 
     /**
-     * DOCUMENT ME!
+     * Set the pp layer that could be used by the editor.
      *
      * @param  aPpLayer  the ppLayer to set
      */
@@ -306,10 +322,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labEmpty,
-            org.openide.util.NbBundle.getMessage(
-                GafProfEditor.class,
-                "GafProfEditor.labEmpty.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labEmpty.text", new Object[] {
+                })); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -454,7 +468,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
                 org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
                 this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.geom}"),
+                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.geom.geo_field}"),
                 txtRe,
                 org.jdesktop.beansbinding.BeanProperty.create("text"));
         binding.setConverter(new CoordinateConverter(true));
@@ -473,7 +487,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
                 org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
                 this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.geom}"),
+                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.geom.geo_field}"),
                 txtHo,
                 org.jdesktop.beansbinding.BeanProperty.create("text"));
         binding.setConverter(new CoordinateConverter(false));
@@ -538,6 +552,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
                 org.jdesktop.beansbinding.ELProperty.create("${cidsBean.ba_st.route.ba_cd}"),
                 labBaCdVal,
                 org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding.setSourceNullValue(null);
+        binding.setSourceUnreadableValue(null);
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -568,10 +584,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labHoehe.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labHoehe,
-            org.openide.util.NbBundle.getMessage(
-                GafProfEditor.class,
-                "GafProfEditor.labHoehe.text",
-                new Object[] {}));                            // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labHoehe.text", new Object[] {
+                }));                                          // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -600,10 +614,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labStatLa.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labStatLa,
-            org.openide.util.NbBundle.getMessage(
-                GafProfEditor.class,
-                "GafProfEditor.labStatLa.text",
-                new Object[] {}));                             // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labStatLa.text", new Object[] {
+                }));                                           // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -615,10 +627,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labStatBa.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labStatBa,
-            org.openide.util.NbBundle.getMessage(
-                GafProfEditor.class,
-                "GafProfEditor.labStatBa.text",
-                new Object[] {}));                             // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labStatBa.text", new Object[] {
+                }));                                           // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -631,7 +641,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labStatLaVal, gridBagConstraints);
@@ -640,6 +650,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         panGewaesserBezug.add(panStatEdit, gridBagConstraints);
 
         jLabel3.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                           // NOI18N
@@ -753,7 +764,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panAufn.add(cbFreigabe, gridBagConstraints);
 
@@ -801,10 +812,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labTitle.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labTitle,
-            org.openide.util.NbBundle.getMessage(
-                GafProfEditor.class,
-                "GafProfEditor.labTitle.text",
-                new Object[] {}));                            // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labTitle.text", new Object[] {
+                }));                                          // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -964,9 +973,9 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     } // </editor-fold>//GEN-END:initComponents
 
     /**
-     * DOCUMENT ME!
+     * Set the cids layer feature. This method should be used instead of the setCidsBean method
      *
-     * @param  feature  DOCUMENT ME!
+     * @param  feature  The feature that should be shown in the editor
      */
     public void setCidsLayerFeature(final CidsLayerFeature feature) {
         this.feature = feature;
@@ -979,29 +988,27 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     }
 
     /**
-     * DOCUMENT ME!
+     * True, if the current user has write permissions on the selected feature.
      *
-     * @return  DOCUMENT ME!
+     * @return  true, if the user has write permissions
      */
-    public boolean isUploader() {
+    public boolean hasWriteAccess() {
         if (feature != null) {
-            final String currentUser = SessionManager.getSession().getUser().getName();
-
-            if ((feature.getProperty("upl_name") != null) && feature.getProperty("upl_name").equals(currentUser)) {
-                return true;
-            }
+            return feature.hasWritePermissions();
         }
 
         return false;
     }
 
     /**
-     * DOCUMENT ME!
+     * Determine the currently shown feature.
      *
-     * @return  DOCUMENT ME!
+     * @return  The feature that is currently shown in the editor
      */
     public CidsLayerFeature getCidsLayerFeature() {
-        this.feature.syncWithBean();
+        if (feature != null) {
+            this.feature.syncWithBean();
+        }
         return this.feature;
     }
 
@@ -1028,6 +1035,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
             if (baSt != null) {
                 ((TableStationEditor)panStatEdit).setCidsBean(baSt);
+            } else {
+                ((TableStationEditor)panStatEdit).setCidsBean(null);
             }
             final Date date = (Date)cidsBean.getProperty("upl_zeit");
 
@@ -1038,7 +1047,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
             }
             loadFoto();
             showEditor(true, false);
-            setReadOnly(!isUploader());
+            setReadOnly(!hasWriteAccess());
         } else {
             showEditor(false, false);
         }
@@ -1052,26 +1061,20 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     private void setReadOnly(final boolean readOnly) {
         if (readOnly) {
             RendererTools.makeReadOnly(txtAufn);
-            RendererTools.makeReadOnly(txtHo);
-            RendererTools.makeReadOnly(txtRe);
             tcAufnZeit.setEnabled(false);
             RendererTools.makeReadOnly(taBemerkung);
             RendererTools.makeReadOnly(taBemerkung1);
             RendererTools.makeReadOnly(taBeschreibung);
             RendererTools.makeReadOnly(cbFreigabe);
             RendererTools.makeReadOnly(cbLst);
-            RendererTools.makeReadOnly(cbHoehe);
         } else {
             RendererTools.makeWritable(txtAufn);
-            RendererTools.makeWritable(txtHo);
-            RendererTools.makeWritable(txtRe);
             tcAufnZeit.setEnabled(true);
             RendererTools.makeWritable(taBemerkung);
             RendererTools.makeWritable(taBemerkung1);
             RendererTools.makeWritable(taBeschreibung);
             RendererTools.makeWritable(cbFreigabe);
             RendererTools.makeWritable(cbLst);
-            RendererTools.makeWritable(cbHoehe);
         }
     }
 
@@ -1315,7 +1318,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
      *
      * @version  $Revision$, $Date$
      */
-    class CoordinateConverter extends Converter<CidsBean, String> {
+    class CoordinateConverter extends Converter<Geometry, String> {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -1342,8 +1345,9 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
          * @return  DOCUMENT ME!
          */
         @Override
-        public String convertForward(final CidsBean value) {
-            final Object geo = value.getProperty("geo_field");
+        public String convertForward(final Geometry value) {
+//            final Object geo = value.getProperty("geo_field");
+            final Object geo = value;
 
             if (geo instanceof Point) {
                 final Point point = (Point)geo;
@@ -1365,9 +1369,9 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         }
 
         @Override
-        public CidsBean convertReverse(final String value) {
+        public Geometry convertReverse(final String value) {
             try {
-                final double coord = Double.parseDouble(value);
+                final double coord = Double.parseDouble(value.replace(',', '.'));
                 final CidsBean bean = (CidsBean)cidsBean.getProperty("geom");
                 final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
                         CismapBroker.getInstance().getDefaultCrsAlias());
@@ -1377,42 +1381,46 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
                     if (rw) {
                         final double y = geom.getCoordinate().y;
+                        final Geometry point = factory.createPoint(new Coordinate(coord, y));
 
                         try {
-                            bean.setProperty("geo_field", factory.createPoint(new Coordinate(coord, y)));
+                            bean.setProperty("geo_field", point);
                         } catch (Exception ex) {
                             LOG.warn("Cannot create coordinate");
                         }
 
-                        return bean;
+                        return point;
                     } else {
                         final double x = geom.getCoordinate().x;
+                        final Geometry point = factory.createPoint(new Coordinate(x, coord));
 
                         try {
-                            bean.setProperty("geo_field", factory.createPoint(new Coordinate(x, coord)));
+                            bean.setProperty("geo_field", point);
                         } catch (Exception ex) {
                             LOG.warn("Cannot create coordinate");
                         }
 
-                        return bean;
+                        return point;
                     }
                 } else {
                     if (rw) {
                         final Double other = getDouble(txtHo.getText());
 
                         final CidsBean geomBean = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+                        final Geometry point = factory.createPoint(new Coordinate(coord, other));
 
-                        geomBean.setProperty("geo_field", factory.createPoint(new Coordinate(coord, other)));
+                        geomBean.setProperty("geo_field", point);
 
-                        return geomBean;
+                        return point;
                     } else {
                         final Double other = getDouble(txtRe.getText());
 
                         final CidsBean geomBean = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+                        final Geometry point = factory.createPoint(new Coordinate(other, coord));
 
-                        geomBean.setProperty("geo_field", factory.createPoint(new Coordinate(other, coord)));
+                        geomBean.setProperty("geo_field", point);
 
-                        return geomBean;
+                        return point;
                     }
                 }
             } catch (NumberFormatException e) {

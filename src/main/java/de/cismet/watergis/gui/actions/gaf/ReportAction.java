@@ -33,10 +33,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
@@ -152,15 +156,19 @@ public class ReportAction extends AbstractAction {
                             // create reports
                             for (final FeatureServiceFeature feature : features) {
                                 try {
-                                    if (Thread.interrupted()) {
+                                    if (Thread.interrupted() || canceled) {
+                                        // interrupted does sometimes return false, altough the thread was cancelled.
+                                        // Perhaps, the jasper report methods reset the interrupted state
                                         return false;
                                     }
 
                                     if (GafProfReportDialog.getInstance().isBasisSelected()) {
                                         if (feature.getProperty("ba_cd") != null) {
                                             String fileName = GafProf.getBasicReportFileName((CidsLayerFeature)feature);
-                                            fileName = toValidFileName(fileNames, fileName, feature);
-                                            final File basisFile = new File(basisPath, fileName);
+                                            File basisFile = new File(basisPath, fileName);
+                                            fileName = toValidFileName(fileNames, basisFile.getAbsolutePath(), feature);
+                                            basisFile = new File(fileName);
+                                            basisPath.mkdirs();
 
                                             createReport((CidsLayerFeature)feature, basisFile);
                                         }
@@ -168,8 +176,10 @@ public class ReportAction extends AbstractAction {
                                     if (GafProfReportDialog.getInstance().isLawaSelected()) {
                                         if (feature.getProperty("la_cd") != null) {
                                             String fileName = GafProf.getLawaReportFileName((CidsLayerFeature)feature);
-                                            fileName = toValidFileName(fileNames, fileName, feature);
-                                            final File lawaFile = new File(lawaPath, fileName);
+                                            File lawaFile = new File(lawaPath, fileName);
+                                            fileName = toValidFileName(fileNames, lawaFile.getAbsolutePath(), feature);
+                                            lawaFile = new File(fileName);
+                                            lawaPath.mkdirs();
 
                                             createReport((CidsLayerFeature)feature, lawaFile);
                                         }
@@ -178,8 +188,13 @@ public class ReportAction extends AbstractAction {
                                         if (feature.getProperty("ba_cd") == null) {
                                             final String nr = String.valueOf(feature.getProperty("qp_nr"));
                                             String fileName = "gaf_ohne___" + nr + ".pdf";
-                                            fileName = toValidFileName(fileNames, fileName, feature);
-                                            final File withoutFile = new File(withoutPath, fileName);
+                                            File withoutFile = new File(withoutPath, fileName);
+                                            fileName = toValidFileName(
+                                                    fileNames,
+                                                    withoutFile.getAbsolutePath(),
+                                                    feature);
+                                            withoutFile = new File(fileName);
+                                            withoutPath.mkdirs();
 
                                             createReport((CidsLayerFeature)feature, withoutFile);
                                         }
@@ -288,6 +303,32 @@ public class ReportAction extends AbstractAction {
      * @throws  Exception  DOCUMENT ME!
      */
     public static void createReport(final CidsLayerFeature feature, final File file) throws Exception {
+        createReport(feature, null, file);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   qpId  feature DOCUMENT ME!
+     * @param   file  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static void createReport(final Integer qpId, final File file) throws Exception {
+        createReport(null, qpId, file);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature  DOCUMENT ME!
+     * @param   qpId     DOCUMENT ME!
+     * @param   file     DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private static void createReport(final CidsLayerFeature feature, final Integer qpId, final File file)
+            throws Exception {
         if (file.exists()) {
             final int ans = JOptionPane.showConfirmDialog(
                     AppBroker.getInstance().getWatergisApp(),
@@ -303,7 +344,35 @@ public class ReportAction extends AbstractAction {
             }
         }
 
-        final JasperPrint print = GafProf.fillreport(feature);
+        CidsLayerFeature qpFeature = feature;
+
+        if (feature == null) {
+            // load the feature from the layer
+            final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                    "qp");
+            CidsLayer layer;
+
+            if ((services == null) || services.isEmpty()) {
+                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.qp"));
+            } else {
+                layer = (CidsLayer)services.get(0);
+            }
+
+            layer.initAndWait();
+            final List<DefaultFeatureServiceFeature> features = layer.getFeatureFactory()
+                        .createFeatures("qp_nr = " + qpId.toString(),
+                            null,
+                            null,
+                            0,
+                            0,
+                            null);
+
+            if ((features != null) && !features.isEmpty() && (features.get(0) instanceof CidsLayerFeature)) {
+                qpFeature = (CidsLayerFeature)features.get(0);
+            }
+        }
+
+        final JasperPrint print = GafProf.fillreport(qpFeature);
         print.setOrientation(print.getOrientationValue());
         final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);

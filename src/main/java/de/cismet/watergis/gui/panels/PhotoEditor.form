@@ -343,7 +343,10 @@
             </Component>
             <Component class="javax.swing.JLabel" name="labBaCdVal">
               <BindingProperties>
-                <BindingProperty name="text" source="Form" sourcePath="${cidsBean.ba_st.route.ba_cd}" target="labBaCdVal" targetPath="text" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="text" source="Form" sourcePath="${cidsBean.ba_st.route.ba_cd}" target="labBaCdVal" targetPath="text" updateStrategy="0" immediately="false">
+                  <Property name="nullValue" type="java.lang.String" value="null"/>
+                  <Property name="incompletePathValue" type="java.lang.String" value="null"/>
+                </BindingProperty>
               </BindingProperties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
