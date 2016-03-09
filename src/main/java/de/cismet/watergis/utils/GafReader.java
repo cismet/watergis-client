@@ -881,6 +881,8 @@ public class GafReader {
      * DOCUMENT ME!
      *
      * @param   profile  DOCUMENT ME!
+     * @param   kzStart  DOCUMENT ME!
+     * @param   kzEnd    DOCUMENT ME!
      *
      * @return  the geometry of the normal profil
      */
@@ -1264,9 +1266,9 @@ public class GafReader {
         final List<GafErrorContainer> errorList = new ArrayList<GafErrorContainer>();
 
         initialiseCatalogueValues();
-        
+
         errorList.addAll(checkGafSyntax());
-        
+
         if (!errorList.isEmpty()) {
             return errorListToStrings(errorList);
         }
@@ -1295,10 +1297,16 @@ public class GafReader {
 
         Collections.sort(errorList);
 
-
         return errorListToStrings(errorList);
     }
-    
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   errorList  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     private String[] errorListToStrings(final List<GafErrorContainer> errorList) {
         final String[] errorStrings;
         errorStrings = new String[errorList.size()];
@@ -1310,47 +1318,57 @@ public class GafReader {
 
         return errorStrings;
     }
-    
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     private List<GafErrorContainer> checkGafSyntax() {
         final List<GafErrorContainer> errorList = new ArrayList<GafErrorContainer>();
         int indexZero = 0;
-        
-        for (int ind : gafIndex) {
+
+        for (final int ind : gafIndex) {
             if (ind == 0) {
                 ++indexZero;
             }
         }
-        
+
         if (indexZero > 1) {
             errorList.add(new GafErrorContainer(0.0, 0, "Ungültige GAF-Datei"));
-            
+
             return errorList;
         }
-        
+
         int lineNumber = 1;
-        
+
         for (final String[] line : content) {
             ++lineNumber;
-            
+
             if (line.length < 10) {
                 errorList.add(new GafErrorContainer(0.0, lineNumber, "Ungültige GAF-Datei"));
             }
         }
-        
+
         return errorList;
     }
-    
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     public String[] checkFileForHints() {
-        List<String> hints = new ArrayList<String>();
-        
+        final List<String> hints = new ArrayList<String>();
+
         String hint = checkOGHint();
-        
+
         if (hint != null) {
             hints.add(hint);
         }
-        
+
         hint = checkMGHint();
-        
+
         if (hint != null) {
             hints.add(hint);
         }
@@ -1361,59 +1379,63 @@ public class GafReader {
             return new String[0];
         }
     }
-    
+
     /**
-     * check hint: Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK 
+     * check hint: Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK
      * und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE
-     * @return 
+     *
+     * @return  DOCUMENT ME!
      */
     private String checkOGHint() {
-        for (Double profileId : profiles.keySet()) {
+        for (final Double profileId : profiles.keySet()) {
             LineString line = getLineBetween(profileId, "LU", "Ru");
-            
+
             if (line == null) {
                 line = getLineBetween(profileId, "LBOK", "RBOK");
             }
             if (line == null) {
                 line = getLineBetween(profileId, "PA", "PE");
             }
-            
+
             if (line != null) {
                 if (getIntersectionPointCount(line) == 0) {
-                    return "Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
+                    return
+                        "Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
                 }
             }
         }
-        
+
         return null;
     }
-    
+
     /**
-     * check hint: Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, 
-     * zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE
-     * @return 
+     * check hint: Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen
+     * LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE
+     *
+     * @return  DOCUMENT ME!
      */
     private String checkMGHint() {
-        for (Double profileId : profiles.keySet()) {
+        for (final Double profileId : profiles.keySet()) {
             LineString line = getLineBetween(profileId, "LU", "Ru");
-            
+
             if (line == null) {
                 line = getLineBetween(profileId, "LBOK", "RBOK");
             }
             if (line == null) {
                 line = getLineBetween(profileId, "PA", "PE");
             }
-            
+
             if (line != null) {
                 if (getIntersectionPointCount(line) > 1) {
-                    return "Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
+                    return
+                        "Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
                 }
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * DOCUMENT ME!
      *
@@ -1436,7 +1458,6 @@ public class GafReader {
 
         return 0;
     }
-    
 
     /**
      * Check: Profil enthält kein Normalprofil
@@ -1465,10 +1486,10 @@ public class GafReader {
         }
 
         if (!found) {
-            //the last profile has no NP
+            // the last profile has no NP
             errors.add(new GafErrorContainer(station, lineNumber, "NP"));
         }
-        
+
         return errors.toArray(new GafErrorContainer[errors.size()]);
     }
 
@@ -1501,9 +1522,9 @@ public class GafReader {
             }
             station = getStationNumber(line);
         }
-        
+
         if (!pa || !pe) {
-            //the last profile has no end
+            // the last profile has no end
             errors.add(new GafErrorContainer(station, lineNumber, "NP-PA-PE"));
         }
 
@@ -1672,8 +1693,9 @@ public class GafReader {
     }
 
     /**
-     * Check: Verletzung der logischen Reihenfolge UKBA - UKBP - UKBW oder UKBA - UKBP - UKBE
-     * Jetzt:  Verletzung der logischen Reihenfolge UKBA - UKBP - UKWP oder UKBA - UKBP - UKBE 
+     * Check: Verletzung der logischen Reihenfolge UKBA - UKBP - UKBW oder UKBA - UKBP - UKBE Jetzt: Verletzung der
+     * logischen Reihenfolge UKBA - UKBP - UKWP oder UKBA - UKBP - UKBE
+     *
      * @return  true, iff the check was completed successfully
      */
     private GafErrorContainer[] checkUKLogik() {
