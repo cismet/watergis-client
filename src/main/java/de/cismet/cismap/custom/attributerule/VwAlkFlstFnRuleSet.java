@@ -13,8 +13,6 @@ package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
 
-import Sirius.server.middleware.types.MetaClass;
-
 import com.vividsolutions.jts.geom.Geometry;
 
 import java.sql.Timestamp;
@@ -25,20 +23,11 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import de.cismet.cids.navigator.utils.ClassCacheMultiple;
-
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
-import de.cismet.cismap.cidslayer.StationLineCreator;
-
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
-
-import de.cismet.cismap.linearreferencing.StationTableCellEditor;
-
-import de.cismet.watergis.broker.AppBroker;
-
-import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
+import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 
 /**
  * DOCUMENT ME!
@@ -46,15 +35,14 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
+public class VwAlkFlstFnRuleSet extends DefaultAttributeTableRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("laenge")
-                    && !columnName.equals("la_cd") && !columnName.equals("id");
+        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
+                    && !columnName.equals("fn_fl") && !columnName.equals("fn_flst_an") && !columnName.equals("geom");
     }
 
     @Override
@@ -73,13 +61,7 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("lak_st_von")) {
-            return new StationTableCellEditor(columnName);
-        } else if (columnName.equals("lak_st_bis")) {
-            return new StationTableCellEditor(columnName);
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override
@@ -99,12 +81,14 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public String[] getAdditionalFieldNames() {
-        return new String[] { "laenge" };
+        return new String[] { "fn_fl", "fn_flst_an" };
     }
 
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("laenge")) {
+        if (name.equals("fn_fl")) {
+            return -3;
+        } else if (name.equals("fn_flst_an")) {
             return -3;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
@@ -112,15 +96,30 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
+    public Object getAdditionalFieldValue(final String propertyName, final FeatureServiceFeature feature) {
+        Double fn_fl = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            fn_fl = geom.getArea();
         }
-        return value;
+
+        if (propertyName.equals("fn_fl")) {
+            return fn_fl;
+        } else if (propertyName.equals("fn_flst_an")) {
+            Double value = null;
+
+            final Double flst_fl = ((Double)feature.getProperty("flst_fl"));
+
+            if (flst_fl != null) {
+                value = fn_fl * 100 / flst_fl;
+            }
+
+            return value;
+        }
+
+        return null;
     }
 
     @Override
@@ -130,8 +129,6 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_lak");
-
-        return new StationLineCreator("lak_st", routeMc, new LinearReferencingWatergisHelper());
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
     }
 }

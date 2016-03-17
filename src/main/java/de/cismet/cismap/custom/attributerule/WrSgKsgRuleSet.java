@@ -13,31 +13,26 @@ package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
 
-import Sirius.server.middleware.types.MetaClass;
+import org.apache.log4j.Logger;
 
-import com.vividsolutions.jts.geom.Geometry;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import de.cismet.cids.navigator.utils.ClassCacheMultiple;
-
-import de.cismet.cismap.cidslayer.StationLineCreator;
-
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 
-import de.cismet.cismap.linearreferencing.StationTableCellEditor;
-
-import de.cismet.watergis.broker.AppBroker;
-
-import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
+import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -45,15 +40,18 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
+public class WrSgKsgRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(WrSgKsgRuleSet.class);
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("id") && !columnName.equals("laenge") && !columnName.equals("ba_cd")
-                    && !columnName.equals("ww_gr") && !columnName.equals("geom");
+                    && !columnName.equals("geom") && !columnName.equals("id");
     }
 
     @Override
@@ -67,18 +65,18 @@ public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        if (columnName.equals("info")) {
+            return new LinkTableCellRenderer();
+        } else if (columnName.equals("wbbl")) {
+            return new LinkTableCellRenderer();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("bak_st_von")) {
-            return new StationTableCellEditor(columnName);
-        } else if (columnName.equals("bak_st_bis")) {
-            return new StationTableCellEditor(columnName);
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override
@@ -97,39 +95,33 @@ public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public String[] getAdditionalFieldNames() {
-        return new String[] { "laenge" };
-    }
-
-    @Override
-    public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("laenge")) {
-            return -3;
-        } else {
-            return super.getIndexOfAdditionalFieldName(name);
-        }
-    }
-
-    @Override
-    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
-
-        final Geometry geom = ((Geometry)feature.getProperty("geom"));
-        if (geom != null) {
-            value = geom.getLength();
-        }
-        return value;
-    }
-
-    @Override
-    public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
-    }
-
-    @Override
     public FeatureCreator getFeatureCreator() {
-        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+    }
 
-        return new StationLineCreator("bak_st", routeMc, new LinearReferencingWatergisHelper());
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("info")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                try {
+                    final URL u = new URL(value.toString());
+
+                    try {
+                        de.cismet.tools.BrowserLauncher.openURL(u.toString());
+                    } catch (Exception ex) {
+                        LOG.error("Cannot open the url:" + u, ex);
+                    }
+                } catch (MalformedURLException ex) {
+                    // nothing to do
+                }
+            }
+        } else if (columnName.equals("wbbl")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                downloadDocumentFromWebDav(getWbblPath(), addExtension(value.toString(), "pdf"));
+            }
+        }
     }
 }

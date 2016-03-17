@@ -15,23 +15,23 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.apache.log4j.Logger;
 
 import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
-import de.cismet.cismap.cidslayer.StationLineCreator;
+import de.cismet.cismap.cidslayer.PointAndStationCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
@@ -39,6 +39,7 @@ import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
+import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -46,15 +47,14 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
+public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("laenge")
-                    && !columnName.equals("la_cd") && !columnName.equals("id");
+        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
+                    && !columnName.equals("geom") && !columnName.equals("la_cd") && !columnName.equals("la_st");
     }
 
     @Override
@@ -63,19 +63,28 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        if (newValue == null) {
+            if (column.equalsIgnoreCase("wbbl")) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Das Attribut wbbl darf nicht leer sein");
+                return oldValue;
+            }
+        }
         return newValue;
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        if (columnName.equals("wbbl")) {
+            return new LinkTableCellRenderer();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("lak_st_von")) {
-            return new StationTableCellEditor(columnName);
-        } else if (columnName.equals("lak_st_bis")) {
+        if (columnName.equals("ba_st")) {
             return new StationTableCellEditor(columnName);
         } else {
             return null;
@@ -84,6 +93,13 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+        for (final FeatureServiceFeature feature : features) {
+            if (feature.getProperty("wbbl") == null) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Das Attribut wbbl darf nicht leer sein");
+                return false;
+            }
+        }
         return true;
     }
 
@@ -98,40 +114,26 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public String[] getAdditionalFieldNames() {
-        return new String[] { "laenge" };
-    }
-
-    @Override
-    public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("laenge")) {
-            return -3;
-        } else {
-            return super.getIndexOfAdditionalFieldName(name);
-        }
-    }
-
-    @Override
-    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
-
-        final Geometry geom = ((Geometry)feature.getProperty("geom"));
-
-        if (geom != null) {
-            value = geom.getLength();
-        }
-        return value;
-    }
-
-    @Override
-    public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
-    }
-
-    @Override
     public FeatureCreator getFeatureCreator() {
-        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_lak");
+        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
 
-        return new StationLineCreator("lak_st", routeMc, new LinearReferencingWatergisHelper());
+        return new PointAndStationCreator("ba_st", null, routeMc, new LinearReferencingWatergisHelper());
+    }
+
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("wbbl")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                downloadDocumentFromWebDav(getWbblPath(), addExtension(value.toString(), "pdf"));
+            }
+        }
+    }
+
+    @Override
+    public boolean isCatThree() {
+        return true;
     }
 }

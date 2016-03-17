@@ -17,20 +17,31 @@ import Sirius.server.middleware.types.MetaClass;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import org.deegree.datatypes.Types;
+
 import java.sql.Timestamp;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cids.dynamics.CidsBean;
+
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
+import de.cismet.cids.tools.CidsBeanFilter;
+
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
@@ -46,15 +57,14 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBaExpRuleSet extends DefaultAttributeTableRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("laenge")
-                    && !columnName.equals("la_cd") && !columnName.equals("id");
+        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
+                    && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("ba_cd");
     }
 
     @Override
@@ -73,10 +83,39 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("lak_st_von")) {
+        if (columnName.equals("ba_st_von")) {
             return new StationTableCellEditor(columnName);
-        } else if (columnName.equals("lak_st_bis")) {
+        } else if (columnName.equals("ba_st_bis")) {
             return new StationTableCellEditor(columnName);
+        } else if (columnName.equals("ww_gr")) {
+            CidsBeanFilter filter = null;
+
+            if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
+                final String userName = AppBroker.getInstance().getOwner();
+                filter = new CidsBeanFilter() {
+
+                        @Override
+                        public boolean accept(final CidsBean bean) {
+                            if (bean == null) {
+                                return false;
+                            }
+                            return bean.getProperty("owner").equals(userName);
+                        }
+                    };
+            } else {
+                filter = new CidsBeanFilter() {
+
+                        @Override
+                        public boolean accept(final CidsBean bean) {
+                            return bean != null;
+                        }
+                    };
+            }
+            return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
+                        "ww_gr",
+                        String.valueOf(Types.INTEGER),
+                        true),
+                    filter);
         } else {
             return null;
         }
@@ -84,6 +123,22 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+        for (final FeatureServiceFeature feature : features) {
+            if (feature instanceof CidsLayerFeature) {
+                final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
+                final CidsBean bean = cidsFeature.getBean();
+
+                final CidsBean wwGr = (CidsBean)bean.getProperty("ba_st.von.route.ww_gr");
+
+                if (wwGr != null) {
+                    if (AppBroker.getInstance().isOwnerWwGr((Integer)wwGr.getProperty("ww_gr"))) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Ein Objekt liegt auf einer Route, die Ihnen bereits gehört.");
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
     }
 
@@ -120,6 +175,7 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
         if (geom != null) {
             value = geom.getLength();
         }
+
         return value;
     }
 
@@ -130,8 +186,23 @@ public class FgLakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_lak");
+        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
 
-        return new StationLineCreator("lak_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator c = new StationLineCreator("ba_st", routeMc, new LinearReferencingWatergisHelper());
+        c.setProperties(getDefaultValues());
+
+        return c;
+    }
+
+    @Override
+    public Map<String, Object> getDefaultValues() {
+        final Map properties = new HashMap();
+        if ((AppBroker.getInstance().getOwnWwGrList() != null) && !AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGrList().get(0));
+        } else {
+            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
+        }
+
+        return properties;
     }
 }

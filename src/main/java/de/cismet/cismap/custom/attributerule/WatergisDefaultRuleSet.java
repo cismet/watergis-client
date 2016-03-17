@@ -531,7 +531,7 @@ public class WatergisDefaultRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     /**
-     * DOCUMENT ME!
+     * Converts the given argument to a number. Returns 0, if the given argument cannot be converted to a valid number
      *
      * @param   o  DOCUMENT ME!
      *
@@ -539,14 +539,14 @@ public class WatergisDefaultRuleSet extends DefaultAttributeTableRuleSet {
      */
     protected static Number toNumber(final Object o) {
         if (o == null) {
-            return null;
+            return 0.0;
         }
 
         if (!(o instanceof Number)) {
             try {
                 return Double.parseDouble(String.valueOf(o));
             } catch (NumberFormatException e) {
-                return null;
+                return 0.0;
             }
         } else {
             return (Number)o;

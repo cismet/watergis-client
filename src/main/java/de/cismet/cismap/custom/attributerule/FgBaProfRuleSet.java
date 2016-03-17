@@ -17,15 +17,19 @@ import Sirius.server.middleware.types.MetaClass;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import org.apache.log4j.Logger;
+
 import org.deegree.datatypes.Types;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import java.sql.Timestamp;
 
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -49,8 +53,7 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.isNoInteger;
+import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -58,15 +61,15 @@ import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.isNoI
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
+public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
+        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
                     && !columnName.equals("laenge") && !columnName.equals("ww_gr") && !columnName.equals("ba_cd")
-                    && !columnName.equals("geom") && !columnName.equals("obj_nr") && !columnName.equals("id");
+                    && !columnName.equals("geom") && !columnName.equals("obj_nr");
     }
 
     @Override
@@ -84,15 +87,18 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                 return oldValue;
             }
         }
-
-        if (column.equals("ausbaujahr")
-                    && !checkRangeBetweenOrEqual(column, newValue, 1800, getCurrentYear() + 2, true)) {
+        if (column.equals("mw") && !checkRange(column, newValue, 0, 30, true, false, true)) {
             return oldValue;
         }
 
-//        if (column.equals("br_dm_li") && !checkRangeBetweenOrEqual(column, newValue, 10, 4000, true)) {
-//            return oldValue;
-//        }
+        if (column.equals("ausbaujahr")
+                    && !checkRange(column, newValue, 1800, getCurrentYear() + 2, true, true, true)) {
+            return oldValue;
+        }
+
+        if (column.equals("br") && !checkRangeBetweenOrEqual(column, newValue, 0, 30, true)) {
+            return oldValue;
+        }
         if (column.equals("ho_e") && !checkRangeBetweenOrEqual(column, newValue, -6, 179, true)) {
             return oldValue;
         }
@@ -102,16 +108,25 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
         if (column.equals("gefaelle") && !checkRangeBetweenOrEqual(column, newValue, -10, 100, true)) {
             return oldValue;
         }
-        if (column.equals("ho_d_e") && !checkRangeBetweenOrEqual(column, newValue, 0, 5, true)) {
+        if (column.equals("bv_re") && !hasValue(column, newValue, 0.0, true)
+                    && !checkRangeBetweenOrEqual(column, newValue, 0.1, 15, true)) {
             return oldValue;
         }
-        if (column.equals("ho_d_a") && !checkRangeBetweenOrEqual(column, newValue, 0, 5, true)) {
+        if (column.equals("bh_re") && !checkRange(column, newValue, 0, 15, true, false, true)) {
             return oldValue;
         }
-        if (column.equals("ho_d_m") && !checkRange(column, newValue, 0, 10, true, false, true)) {
+        if (column.equals("bl_re") && !checkRangeBetweenOrEqual(column, newValue, 0, 30, true)) {
             return oldValue;
         }
-        if (column.equals("br_tr_o_li") && !checkRangeBetweenOrEqual(column, newValue, 0.025, 4, true)) {
+
+        if (column.equals("bv_li") && !hasValue(column, newValue, 0.0, true)
+                    && !checkRangeBetweenOrEqual(column, newValue, 0.1, 15, true)) {
+            return oldValue;
+        }
+        if (column.equals("bh_li") && !checkRange(column, newValue, 0, 15, true, false, true)) {
+            return oldValue;
+        }
+        if (column.equals("bl_li") && !checkRangeBetweenOrEqual(column, newValue, 0, 30, true)) {
             return oldValue;
         }
 
@@ -120,6 +135,9 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
+        if (columnName.equals("wbbl")) {
+            return new LinkTableCellRenderer();
+        }
         return null;
     }
 
@@ -163,44 +181,6 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                 });
 
             return editor;
-        } else if (columnName.equals("material")) {
-            final CidsBeanFilter filter = createCidsBeanFilter("rl");
-
-            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
-                    new FeatureServiceAttribute(
-                        columnName,
-                        String.valueOf(Types.VARCHAR),
-                        true),
-                    filter);
-
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
-
-                    @Override
-                    protected String toString(final CidsBean bean) {
-                        return bean.getProperty("material") + " - " + bean.getProperty("name");
-                    }
-                });
-
-            return editor;
-        } else if (columnName.equals("profil")) {
-            final CidsBeanFilter filter = createCidsBeanFilter("rl");
-
-            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
-                    new FeatureServiceAttribute(
-                        columnName,
-                        String.valueOf(Types.VARCHAR),
-                        true),
-                    filter);
-
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
-
-                    @Override
-                    protected String toString(final CidsBean bean) {
-                        return bean.getProperty("profil") + " - " + bean.getProperty("name");
-                    }
-                });
-
-            return editor;
         } else if (columnName.equals("l_st")) {
             final CidsBeanFilter filter = createCidsBeanFilter("nicht_qp");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
@@ -220,6 +200,24 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                 });
 
             return editor;
+        } else if (columnName.equals("profil")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true),
+                    createCidsBeanFilter("prof"));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsBean bean) {
+                        return bean.getProperty("profil") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
         } else {
             return null;
         }
@@ -230,17 +228,18 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
         for (final FeatureServiceFeature feature : features) {
             if (feature.getProperty("profil") == null) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut Profil darf nicht leer sein");
+                    "Das Attribut profil darf nicht leer sein");
                 return false;
             }
-
             if (
-                !checkRangeBetweenOrEqual(
+                !checkRange(
                             "ausbaujahr",
                             feature.getProperty("ausbaujahr"),
                             1800,
                             getCurrentYear()
                             + 2,
+                            true,
+                            true,
                             true)) {
                 return false;
             }
@@ -250,74 +249,56 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
             if (!checkRangeBetweenOrEqual("ho_a", feature.getProperty("ho_a"), -6, 179, true)) {
                 return false;
             }
-            if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), 0, 50, true)) {
-                return false;
-            }
-            if (!checkRangeBetweenOrEqual("ho_d_e", feature.getProperty("ho_d_e"), 0, 5, true)) {
-                return false;
-            }
-            if (!checkRangeBetweenOrEqual("ho_d_a", feature.getProperty("ho_d_a"), 0, 5, true)) {
+            if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), -10, 100, true)) {
                 return false;
             }
 
-            if (feature.getProperty("profil").equals("kr") || feature.getProperty("profil").equals("ei")) {
-                if (!checkRangeBetweenOrEqual("br_dm_li", feature.getProperty("br_dm_li"), 25, 4000, true)) {
-                    return false;
-                }
-            }
-            if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
-                if (!checkRangeBetweenOrEqual("br_dm_li", feature.getProperty("br_dm_li"), 0.05, 2, true)) {
-                    return false;
-                }
-                if (isNoInteger("br_dm_li", feature.getProperty("br_dm_li"), false)) {
-                    return false;
-                }
-                if (isNoInteger("ho_li", feature.getProperty("ho_li"), false)) {
-                    return false;
-                }
-            }
-            if (feature.getProperty("profil").equals("ei")) {
-                if (!checkRangeBetweenOrEqual("ho_li", feature.getProperty("ho_li"), 25, 4000, true)) {
-                    return false;
-                }
-            }
-            if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
-                if (!checkRangeBetweenOrEqual("ho_li", feature.getProperty("ho_li"), 0.025, 4, true)) {
-                    return false;
-                }
-            }
-            if (feature.getProperty("profil").equals("kr")
-                        && ((feature.getProperty("ho_li") != null) || (feature.getProperty("br_tr_o_li") != null))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Die Attribute ho_li und br_tr_o_li dürfen nicht belegt sein, wenn profil = kr.");
+            if (!hasValue("bv_re", feature.getProperty("bv_re"), 0.0, true)
+                        && !checkRangeBetweenOrEqual("bv_re", feature.getProperty("bv_re"), 0.25, 5, true)) {
                 return false;
             }
-            if ((feature.getProperty("profil").equals("ei") || feature.getProperty("profil").equals("re"))
-                        && (feature.getProperty("br_tr_o_li") != null)) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribute br_tr_o_li darf nicht belegt sein, wenn profil = ei oder re.");
+            if (!checkRange("bh_re", feature.getProperty("bh_re"), 0, 15, true, false, true)) {
                 return false;
             }
-            if (feature.getProperty("profil").equals("tr")
-                        && ((feature.getProperty("br_dm_li") != null) && (feature.getProperty("br_tr_o_li") != null))) {
-                if (feature.getProperty("br_dm_li") == feature.getProperty("br_tr_o_li")) {
+            if (!checkRangeBetweenOrEqual("bl_re", feature.getProperty("bl_re"), 0, 30, true)) {
+                return false;
+            }
+
+            if (!hasValue("bv_li", feature.getProperty("bv_li"), 0.0, true)
+                        && !checkRangeBetweenOrEqual("bv_li", feature.getProperty("bv_li"), 0.25, 5, true)) {
+                return false;
+            }
+            if (!checkRange("bh_li", feature.getProperty("bh_li"), 0, 15, true, false, true)) {
+                return false;
+            }
+            if (!checkRangeBetweenOrEqual("bl_li", feature.getProperty("bl_li"), 0, 30, true)) {
+                return false;
+            }
+
+            if ((feature.getProperty("profil") != null) && feature.getProperty("profil").toString().equals("re")) {
+                if (!hasValue("bv_re", feature.getProperty("bv_re"), 0, true)
+                            || !hasValue("bv_li", feature.getProperty("bv_li"), 0, true)) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Die Attribute br_dm_li und br_tr_o_li dürfen nicht gleich sein, wenn profil = tr.");
+                        "Die Attribute bv_re und bv_li müssen beide 0 sein, wenn das Attribut profil den Wert re hat.");
                     return false;
                 }
             }
+
+            if ((feature.getProperty("profil") != null) && feature.getProperty("profil").toString().equals("tr")) {
+                if (hasValue("bv_re", feature.getProperty("bv_re"), 0, true)
+                            && hasValue("bv_li", feature.getProperty("bv_li"), 0, true)) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Die Attribute bv_re und bv_li dürfen nicht beide 0 sein, wenn das Attribut profil den Wert tr hat.");
+                    return false;
+                }
+            }
+
             if ((feature.getProperty("ho_e") != null) && (feature.getProperty("ho_a") != null)) {
-                if (((Number)feature.getProperty("ho_e")).doubleValue()
-                            < ((Number)feature.getProperty("ho_a")).doubleValue()) {
-                    final int answ = JOptionPane.showConfirmDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Sind Sie sicher, dass das Attribut ho_e ("
-                                    + feature.getProperty("ho_e")
-                                    + ") kleiner als das Attribut ho_a("
-                                    + feature.getProperty("ho_a")
-                                    + ") sein soll?",
-                            "Bestätigung",
-                            JOptionPane.YES_NO_OPTION);
-                    return answ == JOptionPane.OK_OPTION;
+                if (toNumber(feature.getProperty("ho_e")).doubleValue()
+                            < toNumber(feature.getProperty("ho_a")).doubleValue()) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Das Attribute ho_e muss größer oder gleich dem Attribut ho_a sein.");
+                    return false;
                 }
             }
         }
@@ -337,6 +318,54 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
             final double gefaelle = (toNumber(feature.getProperty("ho_e")).doubleValue()
                             - toNumber(feature.getProperty("ho_a")).doubleValue()) / laenge * 1000;
             feature.setProperty("gefaelle", gefaelle);
+        }
+
+        if ((feature.getProperty("profil") != null) && feature.getProperty("profil").toString().equals("re")) {
+            if (feature.getProperty("bv_re") == null) {
+                feature.setProperty("bv_re", 0);
+            }
+
+            if (feature.getProperty("bv_li") == null) {
+                feature.setProperty("bv_li", 0);
+            }
+
+            if (toNumber(feature.getProperty("bh_re")).doubleValue() != 0.0) {
+                feature.setProperty("bl_re", feature.getProperty("bh_re"));
+            }
+
+            if (toNumber(feature.getProperty("bh_li")).doubleValue() != 0.0) {
+                feature.setProperty("bl_li", feature.getProperty("bh_li"));
+            }
+        }
+
+        if ((feature.getProperty("profil") != null) && feature.getProperty("profil").toString().equals("tr")) {
+            if ((feature.getProperty("bv_re") != null) && isNumberOrNull(feature.getProperty("bv_re"))
+                        && (feature.getProperty("bh_re") != null) && isNumberOrNull(feature.getProperty("bh_re"))) {
+                if ((toNumber(feature.getProperty("bv_re")).doubleValue() != 0.0)
+                            && (toNumber(feature.getProperty("bh_re")).doubleValue() != 0.0)) {
+                    // we assume, that bv = ba / bh and bl^2 = ba^2 + bh^2
+                    // so bl = sqrt((bv*bh)^2 + bh^2)
+                    final double bh = toNumber(feature.getProperty("bh_re")).doubleValue();
+                    final double bv = toNumber(feature.getProperty("bv_re")).doubleValue();
+                    final double bl = Math.sqrt(Math.pow(bv * bh, 2) + Math.pow(bh, 2));
+
+                    feature.setProperty("bl_re", Math.round(bl * 100) / 100.0);
+                }
+            }
+
+            if ((feature.getProperty("bv_li") != null) && isNumberOrNull(feature.getProperty("bv_li"))
+                        && (feature.getProperty("bh_li") != null) && isNumberOrNull(feature.getProperty("bh_li"))) {
+                if ((toNumber(feature.getProperty("bv_li")).doubleValue() != 0.0)
+                            && (toNumber(feature.getProperty("bh_li")).doubleValue() != 0.0)) {
+                    // we assume, that bv = ba / bh and bl^2 = ba^2 + bh^2
+                    // so bl = sqrt((bv*bh)^2 + bh^2)
+                    final double bh = toNumber(feature.getProperty("bh_li")).doubleValue();
+                    final double bv = toNumber(feature.getProperty("bv_li")).doubleValue();
+                    final double bl = Math.sqrt(Math.pow(bv * bh, 2) + Math.pow(bh, 2));
+
+                    feature.setProperty("bl_li", Math.round(bl * 100) / 100.0);
+                }
+            }
         }
     }
 
@@ -374,6 +403,18 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
+    }
+
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("wbbl")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                downloadDocumentFromWebDav(getWbblPath(), addExtension(value.toString(), "pdf"));
+            }
+        }
     }
 
     @Override

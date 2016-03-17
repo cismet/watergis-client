@@ -15,25 +15,22 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
-import org.deegree.datatypes.Types;
+import com.vividsolutions.jts.geom.Geometry;
 
 import java.sql.Timestamp;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
@@ -49,14 +46,15 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBakGwkRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBakGn1RuleSet extends DefaultAttributeTableRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("geo_field") && !columnName.equals("geom") && !columnName.equals("ba_cd");
+                    && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("ww_gr")
+                    && !columnName.equals("ba_cd");
     }
 
     @Override
@@ -65,15 +63,11 @@ public class FgBakGwkRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-//        final String[] validLawaCodes = AppBroker.getInstance().getValidLawaCodes();
-//        if (((validLawaCodes != null) && column.equals("la_cd")
-//                        && (Arrays.binarySearch(validLawaCodes, newValue.toString()) < 0))
-//                    || (newValue == null)) {
-//            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-//                "Das Attribut la_cd hat keinen gültigen Wert");
-//            return oldValue;
-//        }
-
+        if (column.equals("gn1") && (newValue == null)) {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                "Das Attribut gn1 darf nicht null sein");
+            return oldValue;
+        }
         return newValue;
     }
 
@@ -88,14 +82,6 @@ public class FgBakGwkRuleSet extends DefaultAttributeTableRuleSet {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("bak_st_bis")) {
             return new StationTableCellEditor(columnName);
-        } else if (columnName.equals("la_cd")) {
-            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
-                    new FeatureServiceAttribute(
-                        columnName,
-                        String.valueOf(Types.BIGINT),
-                        true));
-
-            return editor;
         } else {
             return null;
         }
@@ -103,16 +89,13 @@ public class FgBakGwkRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-//        final String[] validLawaCodes = AppBroker.getInstance().getValidLawaCodes();
-
-//        for (final FeatureServiceFeature f : features) {
-//            final Object laCd = f.getProperty("la_cd");
-//            if ((laCd == null) || (Arrays.binarySearch(validLawaCodes, laCd.toString()) < 0)) {
-//                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-//                    "Das Attribut la_cd hat keinen gültigen Wert");
-//                return false;
-//            }
-//        }
+        for (final FeatureServiceFeature f : features) {
+            if (f.getProperty("gn1") == null) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Das Attribut gn1 darf nicht null sein");
+                return false;
+            }
+        }
 
         return true;
     }
@@ -128,18 +111,41 @@ public class FgBakGwkRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
+    public String[] getAdditionalFieldNames() {
+        return new String[] { "laenge" };
+    }
+
+    @Override
+    public int getIndexOfAdditionalFieldName(final String name) {
+        if (name.equals("laenge")) {
+            return -3;
+        } else {
+            return super.getIndexOfAdditionalFieldName(name);
+        }
+    }
+
+    @Override
+    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
+        Double value = null;
+
+        final Geometry geom = ((Geometry)feature.getProperty("geom"));
+
+        if (geom != null) {
+            value = geom.getLength();
+        }
+
+        return value;
+    }
+
+    @Override
+    public Class getAdditionalFieldClass(final int index) {
+        return Double.class;
+    }
+
+    @Override
     public FeatureCreator getFeatureCreator() {
-        final Map properties = new HashMap();
-        properties.put("la_cd", 0);
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
 
-        final StationLineCreator slc = new StationLineCreator(
-                "bak_st",
-                routeMc,
-                new LinearReferencingWatergisHelper(),
-                0.5f);
-        slc.setProperties(properties);
-
-        return slc;
+        return new StationLineCreator("bak_st", routeMc, new LinearReferencingWatergisHelper());
     }
 }

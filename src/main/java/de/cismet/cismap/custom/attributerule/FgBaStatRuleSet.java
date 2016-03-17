@@ -11,7 +11,7 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-//import java.util.Date;
+import java.util.List;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -37,7 +37,11 @@ public class FgBaStatRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object afterEdit(final String column, final int row, final Object oldValue, final Object newValue) {
+    public Object afterEdit(final FeatureServiceFeature feature,
+            final String column,
+            final int row,
+            final Object oldValue,
+            final Object newValue) {
         return newValue;
     }
 
@@ -52,7 +56,7 @@ public class FgBaStatRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
         return true;
     }
 
@@ -64,21 +68,6 @@ public class FgBaStatRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
-    }
-
-    @Override
-    public String[] getAdditionalFieldNames() {
-        return new String[0];
-    }
-
-    @Override
-    public Object getAdditionalFieldValue(final int index, final FeatureServiceFeature feature) {
-        return null;
-    }
-
-    @Override
-    public Class getAdditionalFieldClass(final int index) {
-        return null;
     }
 
     @Override

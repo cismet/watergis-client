@@ -19,6 +19,7 @@ import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
+import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 /**
  * DOCUMENT ME!
@@ -26,7 +27,7 @@ import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLakRuleSet extends DefaultAttributeTableRuleSet {
+public class FgLaStatRuleSet extends DefaultAttributeTableRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
@@ -61,11 +62,16 @@ public class FgLakRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-//        feature.getProperties().put("fis_g_date", new Date(System.currentTimeMillis()));
+//        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
 //        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
     }
 
     @Override
     public void afterSave(final TableModel model) {
+    }
+
+    @Override
+    public FeatureCreator getFeatureCreator() {
+        return null;
     }
 }
