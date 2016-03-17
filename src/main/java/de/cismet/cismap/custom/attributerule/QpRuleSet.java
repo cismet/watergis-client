@@ -58,6 +58,8 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.download.QpDownload;
 
+import de.cismet.watergis.gui.panels.GafProf;
+
 import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -73,12 +75,16 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
 
     private static final org.apache.log4j.Logger LOG = Logger.getLogger(QpRuleSet.class);
     public static final BufferedImage ARROW;
+    public static final BufferedImage SELECTED_ARROW;
 
     static {
         try {
             final URL arrowUrl = QpRuleSet.class.getResource(
                     "/de/cismet/watergis/res/icons16/angle.png");
             ARROW = ImageIO.read(arrowUrl);
+            final URL arrowSelectedUrl = QpRuleSet.class.getResource(
+                    "/de/cismet/watergis/res/icons16/angleSelected.png");
+            SELECTED_ARROW = ImageIO.read(arrowSelectedUrl);
 //            ARROW_NULL = new FeatureAnnotationSymbol(new ImageIcon(
 //                        "/de/cismet/cids/custom/objecteditors/wrrl_db_mv/angle_null.png").getImage());
         } catch (Exception ex) {
@@ -324,8 +330,13 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureAnnotationSymbol getPointAnnotationSymbol(final FeatureServiceFeature feature) {
-        final Object angle = feature.getProperty("winkel");
-        final FeatureAnnotationSymbol symb = new FeatureAnnotationSymbol(ARROW);
+        final FeatureAnnotationSymbol symb;
+
+        if ((GafProf.selectedFeature != null) && (GafProf.selectedFeature.getId() == feature.getId())) {
+            symb = new FeatureAnnotationSymbol(SELECTED_ARROW);
+        } else {
+            symb = new FeatureAnnotationSymbol(ARROW);
+        }
 
         symb.setSweetSpotX(0.5);
         symb.setSweetSpotY(0.5);
