@@ -15,14 +15,15 @@ import Sirius.navigator.connection.SessionManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
-
-//import java.util.Date;
+import java.util.List;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+
+import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
@@ -36,18 +37,22 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class GemeindeRuleSet extends DefaultAttributeTableRuleSet {
+public class VwAlkGmkRuleSet extends DefaultAttributeTableRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("object_id") && !columnName.equals("geo_field");
+                    && !columnName.equals("gmk_fl") && !columnName.equals("geom") && !columnName.equals("id");
     }
 
     @Override
-    public Object afterEdit(final String column, final int row, final Object oldValue, final Object newValue) {
+    public Object afterEdit(final FeatureServiceFeature feature,
+            final String column,
+            final int row,
+            final Object oldValue,
+            final Object newValue) {
         return newValue;
     }
 
@@ -62,13 +67,13 @@ public class GemeindeRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
         return true;
     }
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-        final Object o = feature.getProperties().put("fis_g_date", new Date(System.currentTimeMillis()));
+        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
         feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
     }
 
@@ -78,15 +83,27 @@ public class GemeindeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public String[] getAdditionalFieldNames() {
-        return new String[] { "Area" };
+        return new String[] { "gmk_fl" };
     }
 
     @Override
-    public Object getAdditionalFieldValue(final int index, final FeatureServiceFeature feature) {
+    public int getIndexOfAdditionalFieldName(final String name) {
+        if (name.equals("gmk_fl")) {
+            return -3;
+        } else {
+            return super.getIndexOfAdditionalFieldName(name);
+        }
+    }
+
+    @Override
+    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
         Double value = null;
 
-        final Geometry geom = ((Geometry)feature.getProperties().get("geo_field"));
-        value = geom.getArea();
+        final Geometry geom = ((Geometry)feature.getProperty("geom"));
+
+        if (geom != null) {
+            value = geom.getArea();
+        }
 
         return value;
     }

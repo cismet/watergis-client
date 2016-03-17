@@ -34,7 +34,6 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -82,12 +81,18 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
 
     private static final org.apache.log4j.Logger LOG = Logger.getLogger(FotoRuleSet.class);
     public static final BufferedImage ARROW;
+    public static final BufferedImage SELECTED_ARROW;
 
     static {
         try {
-            final URL arrowUrl = FotoRuleSet.class.getResource(
+            final URL arrowUrl = QpRuleSet.class.getResource(
                     "/de/cismet/watergis/res/icons16/angle.png");
             ARROW = ImageIO.read(arrowUrl);
+            final URL arrowSelectedUrl = QpRuleSet.class.getResource(
+                    "/de/cismet/watergis/res/icons16/angleSelected.png");
+            SELECTED_ARROW = ImageIO.read(arrowSelectedUrl);
+//            ARROW_NULL = new FeatureAnnotationSymbol(new ImageIcon(
+//                        "/de/cismet/cids/custom/objecteditors/wrrl_db_mv/angle_null.png").getImage());
         } catch (Exception ex) {
             LOG.fatal(ex, ex);
             throw new RuntimeException(ex);
@@ -367,10 +372,19 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
 
         if (angle instanceof Double) {
             final double winkel = (Double)angle;
-            final BufferedImage rotatedArrow = rotateImage(ARROW, winkel);
+            final BufferedImage rotatedArrow;
+            if ((Photo.selectedFeature != null) && (Photo.selectedFeature.getId() == feature.getId())) {
+                rotatedArrow = rotateImage(SELECTED_ARROW, winkel);
+            } else {
+                rotatedArrow = rotateImage(ARROW, winkel);
+            }
             symb = new FeatureAnnotationSymbol(rotatedArrow);
         } else {
-            symb = new FeatureAnnotationSymbol(ARROW);
+            if ((Photo.selectedFeature != null) && (Photo.selectedFeature.getId() == feature.getId())) {
+                symb = new FeatureAnnotationSymbol(SELECTED_ARROW);
+            } else {
+                symb = new FeatureAnnotationSymbol(ARROW);
+            }
         }
 
         symb.setSweetSpotX(0.5);

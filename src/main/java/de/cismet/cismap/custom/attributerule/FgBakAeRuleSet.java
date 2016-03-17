@@ -17,11 +17,9 @@ import Sirius.server.middleware.types.MetaClass;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
-
-//import java.util.Date;
+import java.util.List;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -29,7 +27,6 @@ import javax.swing.table.TableModel;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -55,11 +52,16 @@ public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("id") && !columnName.equals("geom") && !columnName.equals("fg_bak");
+                    && !columnName.equals("id") && !columnName.equals("laenge") && !columnName.equals("ba_cd")
+                    && !columnName.equals("ww_gr") && !columnName.equals("geom");
     }
 
     @Override
-    public Object afterEdit(final String column, final int row, final Object oldValue, final Object newValue) {
+    public Object afterEdit(final FeatureServiceFeature feature,
+            final String column,
+            final int row,
+            final Object oldValue,
+            final Object newValue) {
         return newValue;
     }
 
@@ -70,25 +72,22 @@ public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("von")) {
+        if (columnName.equals("bak_st_von")) {
             return new StationTableCellEditor(columnName);
-        } else if (columnName.equals("bis")) {
+        } else if (columnName.equals("bak_st_bis")) {
             return new StationTableCellEditor(columnName);
-        } else if (columnName.equals("ae_code")) {
-            return new CidsLayerReferencedComboEditor("ae_code");
         } else {
             return null;
         }
     }
 
     @Override
-    public boolean prepareForSave(final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
         return true;
     }
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-//        feature.getProperties().put("fis_g_date", new Date(System.currentTimeMillis()));
         feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
         feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
     }
@@ -99,31 +98,38 @@ public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public String[] getAdditionalFieldNames() {
-//        return new String[] { "Area" };
-        return new String[0];
+        return new String[] { "laenge" };
     }
 
     @Override
-    public Object getAdditionalFieldValue(final int index, final FeatureServiceFeature feature) {
-//        Double value = null;
-//
-//        final Geometry geom = ((Geometry)feature.getProperties().get("geo_field"));
-//        value = geom.getArea();
-//
-//        return value;
-        return null;
+    public int getIndexOfAdditionalFieldName(final String name) {
+        if (name.equals("laenge")) {
+            return -3;
+        } else {
+            return super.getIndexOfAdditionalFieldName(name);
+        }
+    }
+
+    @Override
+    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
+        Double value = null;
+
+        final Geometry geom = ((Geometry)feature.getProperty("geom"));
+        if (geom != null) {
+            value = geom.getLength();
+        }
+        return value;
     }
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-//        return Double.class;
-        return null;
+        return Double.class;
     }
 
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
 
-        return new StationLineCreator("bis", routeMc, new LinearReferencingWatergisHelper());
+        return new StationLineCreator("bak_st", routeMc, new LinearReferencingWatergisHelper());
     }
 }
