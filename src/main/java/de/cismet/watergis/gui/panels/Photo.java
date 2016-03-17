@@ -90,10 +90,12 @@ import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.commons.BoundingBox;
 import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.XBoundingBox;
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
+import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.util.SelectionChangedEvent;
 import de.cismet.cismap.commons.util.SelectionChangedListener;
@@ -1146,7 +1148,36 @@ public class Photo extends javax.swing.JPanel {
         }
         editor.setCidsLayerFeature(feature);
         enableToolbar(feature != null);
+        final CidsLayerFeature formerSelectedFeature = selectedFeature;
         selectedFeature = feature;
+
+        refreshFeatureVisualisation(formerSelectedFeature);
+        refreshFeatureVisualisation(selectedFeature);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  feature  DOCUMENT ME!
+     */
+    private void refreshFeatureVisualisation(final CidsLayerFeature feature) {
+        if (feature != null) {
+            final AbstractFeatureService service = feature.getLayerProperties().getFeatureService();
+            if (service != null) {
+                final List<PFeature> pfeatureList = service.getPNode().getChildrenReference();
+
+                for (final PFeature pf : pfeatureList) {
+                    final Feature f = pf.getFeature();
+
+                    if (f instanceof FeatureServiceFeature) {
+                        if (((FeatureServiceFeature)f).getId() == feature.getId()) {
+                            pf.visualize();
+                            pf.refreshDesign();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

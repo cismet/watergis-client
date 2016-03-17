@@ -92,10 +92,13 @@ import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.commons.BoundingBox;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.features.ModifiableFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
+import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.util.SelectionChangedEvent;
 import de.cismet.cismap.commons.util.SelectionChangedListener;
@@ -150,6 +153,7 @@ public class GafProf extends javax.swing.JPanel {
     private javax.swing.JButton butPrintPreview;
     private javax.swing.JButton butRemoveSelection;
     private javax.swing.JButton butSave;
+    private javax.swing.JButton butSaveAll;
     private javax.swing.JButton butZoomToProfile;
     private de.cismet.watergis.gui.panels.GafProfEditor editor;
     private javax.swing.JScrollPane jScrollPane1;
@@ -165,6 +169,7 @@ public class GafProf extends javax.swing.JPanel {
      */
     public GafProf() {
         initComponents();
+        tbLocate.setVisible(false);
         editor.setPpLayer(ppLayer);
         tbProcessing.setVisible(false);
 //        butRemoveSelection.setVisible(true);
@@ -318,6 +323,7 @@ public class GafProf extends javax.swing.JPanel {
         butDelete = new javax.swing.JButton();
         butSave = new javax.swing.JButton();
         butRemoveSelection = new javax.swing.JButton();
+        butSaveAll = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         editor = new de.cismet.watergis.gui.panels.GafProfEditor();
 
@@ -528,6 +534,26 @@ public class GafProf extends javax.swing.JPanel {
                 }
             });
         jToolBar1.add(butRemoveSelection);
+
+        butSaveAll.setIcon(new javax.swing.ImageIcon(
+                getClass().getResource("/de/cismet/watergis/res/icons16/saveAll.png")));     // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butSaveAll,
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butSaveAll.text")); // NOI18N
+        butSaveAll.setToolTipText(org.openide.util.NbBundle.getMessage(
+                GafProf.class,
+                "GafProf.butSaveAll.toolTipText"));                                          // NOI18N
+        butSaveAll.setFocusable(false);
+        butSaveAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        butSaveAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        butSaveAll.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butSaveAllActionPerformed(evt);
+                }
+            });
+        jToolBar1.add(butSaveAll);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1147,6 +1173,66 @@ public class GafProf extends javax.swing.JPanel {
     /**
      * DOCUMENT ME!
      *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void butSaveAllActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butSaveAllActionPerformed
+        final WaitingDialogThread<Void> wdt = new WaitingDialogThread<Void>(AppBroker.getInstance().getWatergisApp(),
+                true,
+                NbBundle.getMessage(GafProf.class, "GafProf.butSaveAllActionPerformed"),
+                null,
+                100) {
+
+                @Override
+                protected Void doInBackground() throws Exception {
+                    final CidsLayerFeature feature = editor.getCidsLayerFeature();
+                    final AttributeTableRuleSet ruleSet = feature.getLayerProperties().getAttributeTableRuleSet();
+                    final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
+                            "qp");
+
+                    if ((features != null) && !features.isEmpty()) {
+                        for (final FeatureServiceFeature selectedF : features) {
+                            if (selectedF.getId() != feature.getId()) {
+                                selectedF.setProperty("aufn_name", feature.getProperty("aufn_name"));
+                                selectedF.setProperty("aufn_datum", feature.getProperty("aufn_datum"));
+                                selectedF.setProperty("aufn_zeit", feature.getProperty("aufn_zeit"));
+                                selectedF.setProperty("titel", feature.getProperty("titel"));
+                                selectedF.setProperty("beschreib", feature.getProperty("beschreib"));
+                                selectedF.setProperty("bemerkung", feature.getProperty("bemerkung"));
+                                selectedF.setProperty("l_st", feature.getBean().getProperty("l_st"));
+                                selectedF.setProperty("freigabe", feature.getBean().getProperty("freigabe"));
+
+                                if (selectedF instanceof ModifiableFeature) {
+                                    ((ModifiableFeature)selectedF).saveChanges();
+                                }
+                            }
+                        }
+                    }
+
+                    if (ruleSet != null) {
+                        ruleSet.beforeSave(feature);
+                    }
+                    feature.saveChanges();
+
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        get();
+                        reloadGafProfileServices();
+                    } catch (Exception e) {
+                        LOG.error("Error apply changes for all selected profiles", e);
+                    }
+                }
+            };
+
+        wdt.start();
+    } //GEN-LAST:event_butSaveAllActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param  feature  DOCUMENT ME!
      */
     private void setEditorFeature(final CidsLayerFeature feature) {
@@ -1180,10 +1266,39 @@ public class GafProf extends javax.swing.JPanel {
 
         editor.setCidsLayerFeature(feature);
         enableToolbar(feature != null);
+        final CidsLayerFeature formerSelectedFeature = selectedFeature;
         selectedFeature = feature;
+
+        refreshFeatureVisualisation(formerSelectedFeature);
+        refreshFeatureVisualisation(selectedFeature);
 
         if (feature != null) {
             butDelete.setEnabled(editor.hasWriteAccess());
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  feature  DOCUMENT ME!
+     */
+    private void refreshFeatureVisualisation(final CidsLayerFeature feature) {
+        if (feature != null) {
+            final AbstractFeatureService service = feature.getLayerProperties().getFeatureService();
+            if (service != null) {
+                final List<PFeature> pfeatureList = service.getPNode().getChildrenReference();
+
+                for (final PFeature pf : pfeatureList) {
+                    final Feature f = pf.getFeature();
+
+                    if (f instanceof FeatureServiceFeature) {
+                        if (((FeatureServiceFeature)f).getId() == feature.getId()) {
+                            pf.visualize();
+                            pf.refreshDesign();
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1302,6 +1417,7 @@ public class GafProf extends javax.swing.JPanel {
             final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                     "qp");
             CidsLayer layer = null;
+            final Date currentTime = new Date();
 
             if ((services != null) && !services.isEmpty()) {
                 layer = (CidsLayer)services.get(0);
@@ -1418,7 +1534,6 @@ public class GafProf extends javax.swing.JPanel {
                             layer.getLayerProperties(),
                             null);
 
-                    final Date currentTime = new Date();
                     newGafBean.setProperty("id", id);
                     newGafBean.setProperty("upl_datum", new java.sql.Date(currentTime.getTime()));
                     newGafBean.setProperty("upl_zeit", new java.sql.Timestamp(currentTime.getTime()));
