@@ -52,7 +52,8 @@ public abstract class WatergisPermissionProvider extends AbstractCustomBeanPermi
         if ((wwGr != null) && wwGr.getProperty("owner").equals(u.getUserGroup().getName())) {
             return true;
         } else {
-            return (wwGr == null) || wwGr.getProperty("ww_gr").equals(4000);
+            return false;
+//            return (wwGr == null) || wwGr.getProperty("ww_gr").equals(4000);
         }
     }
 
