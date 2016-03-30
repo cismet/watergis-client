@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 
-
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -86,8 +85,9 @@ public class DrawingManager implements FeatureCollectionListener {
         "SELECT id, geom, type, text, autoscale, background, fontsize, sld FROM \""
                 + DRAWING_TABLE_NAME
                 + "\"";
-    private static final String FEATURES_EXISTS =
-        "SELECT 1 FROM \"" + DRAWING_TABLE_NAME + "\" limit 1";
+    private static final String FEATURES_EXISTS = "SELECT 1 FROM \""
+                + DRAWING_TABLE_NAME
+                + "\" limit 1";
     private static final String CHANGE_FEATURE = "UPDATE \""
                 + DRAWING_TABLE_NAME
                 + "\" SET geom = ?, type = ?, text = ?, sld = ?  WHERE ID = ?";
@@ -111,7 +111,12 @@ public class DrawingManager implements FeatureCollectionListener {
     }
 
     //~ Methods ----------------------------------------------------------------
-    
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     public static DrawingManager getInstance() {
         return LazyInitialiser.INSTANCE;
     }
@@ -219,7 +224,7 @@ public class DrawingManager implements FeatureCollectionListener {
                             }
                         }
                     }
-                    
+
                     fireDrawingCountChanged();
                 }
             });
@@ -249,7 +254,7 @@ public class DrawingManager implements FeatureCollectionListener {
                             removeFeature((DrawingSLDStyledFeature)feature);
                         }
                     }
-                    
+
                     fireDrawingCountChanged();
                 }
             });
@@ -302,18 +307,31 @@ public class DrawingManager implements FeatureCollectionListener {
             });
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  l  DOCUMENT ME!
+     */
     public void addDrawingsListener(final DrawingsListener l) {
         listener.add(l);
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  l  DOCUMENT ME!
+     */
     public void removeDrawingsListener(final DrawingsListener l) {
         listener.remove(l);
     }
 
+    /**
+     * DOCUMENT ME!
+     */
     public void fireDrawingCountChanged() {
-        DrawingCountChangedEvent e = new DrawingCountChangedEvent(this);
-        
-        for (DrawingsListener l : listener) {
+        final DrawingCountChangedEvent e = new DrawingCountChangedEvent(this);
+
+        for (final DrawingsListener l : listener) {
             l.drawingsCountChanged(e);
         }
     }
@@ -425,7 +443,7 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing connection", ex);
                 }
             }
-            
+
             fireDrawingCountChanged();
         }
     }
@@ -438,7 +456,7 @@ public class DrawingManager implements FeatureCollectionListener {
     private void removeFeature(final DrawingSLDStyledFeature feature) {
         final String delete = String.format(DELETE_FEATURE, feature.getId());
         executeUpdate(delete);
-        
+
         fireDrawingCountChanged();
     }
 
@@ -488,7 +506,7 @@ public class DrawingManager implements FeatureCollectionListener {
      */
     private void removeAllFeatures() {
         executeUpdate(DELETE_ALL_FEATURE);
-        
+
         fireDrawingCountChanged();
     }
 
@@ -563,7 +581,7 @@ public class DrawingManager implements FeatureCollectionListener {
                 }
             }
             executeUpdate("drop table \"" + TEMP_TABLE + "\"");
-            
+
             fireDrawingCountChanged();
         }
     }
@@ -819,8 +837,7 @@ public class DrawingManager implements FeatureCollectionListener {
             DrawingManager.getInstance().executeUpdate("delete from \"" + DRAWING_TABLE_NAME + "\"");
         }
     }
-    
-    
+
     /**
      * DOCUMENT ME!
      *

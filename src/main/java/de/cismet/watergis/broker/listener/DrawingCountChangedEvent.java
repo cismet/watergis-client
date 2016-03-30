@@ -25,9 +25,10 @@ public class DrawingCountChangedEvent extends EventObject {
 
     /**
      * Creates a new SelectionModeChangedEvent object.
+     *
+     * @param  source  DOCUMENT ME!
      */
     public DrawingCountChangedEvent(final Object source) {
         super(source);
     }
-
 }
