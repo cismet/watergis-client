@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 
-import org.openide.util.Exceptions;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -55,10 +54,11 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.commons.cismap.io.converters.GeomFromWktConverter;
 
-import de.cismet.commons.concurrency.CismetConcurrency;
 import de.cismet.commons.concurrency.CismetExecutors;
 
 import de.cismet.watergis.broker.AppBroker;
+import de.cismet.watergis.broker.listener.DrawingCountChangedEvent;
+import de.cismet.watergis.broker.listener.DrawingsListener;
 
 import de.cismet.watergis.gui.dialog.VisualizingDialog;
 
@@ -86,6 +86,8 @@ public class DrawingManager implements FeatureCollectionListener {
         "SELECT id, geom, type, text, autoscale, background, fontsize, sld FROM \""
                 + DRAWING_TABLE_NAME
                 + "\"";
+    private static final String FEATURES_EXISTS =
+        "SELECT 1 FROM \"" + DRAWING_TABLE_NAME + "\" limit 1";
     private static final String CHANGE_FEATURE = "UPDATE \""
                 + DRAWING_TABLE_NAME
                 + "\" SET geom = ?, type = ?, text = ?, sld = ?  WHERE ID = ?";
@@ -95,24 +97,29 @@ public class DrawingManager implements FeatureCollectionListener {
     //~ Instance fields --------------------------------------------------------
 
     private final Executor executor = CismetExecutors.newSingleThreadExecutor();
+    private final List<DrawingsListener> listener = new ArrayList<DrawingsListener>();
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new DrawingManager object.
      */
-    public DrawingManager() {
+    private DrawingManager() {
         AppBroker.getInstance().getMappingComponent().getFeatureCollection().addFeatureCollectionListener(this);
         initDB();
         loadFeatures();
     }
 
     //~ Methods ----------------------------------------------------------------
+    
+    public static DrawingManager getInstance() {
+        return LazyInitialiser.INSTANCE;
+    }
 
     /**
      * DOCUMENT ME!
      */
-    public static void loadFeatures() {
+    public void loadFeatures() {
         final List<Feature> featuresToRemove = new ArrayList<Feature>();
         final List<Feature> oldFeatures = AppBroker.getInstance()
                     .getMappingComponent()
@@ -140,7 +147,7 @@ public class DrawingManager implements FeatureCollectionListener {
     /**
      * DOCUMENT ME!
      */
-    private static void initDB() {
+    private void initDB() {
         ConnectionWrapper conn = null;
         StatementWrapper st = null;
         try {
@@ -212,6 +219,8 @@ public class DrawingManager implements FeatureCollectionListener {
                             }
                         }
                     }
+                    
+                    fireDrawingCountChanged();
                 }
             });
     }
@@ -240,6 +249,8 @@ public class DrawingManager implements FeatureCollectionListener {
                             removeFeature((DrawingSLDStyledFeature)feature);
                         }
                     }
+                    
+                    fireDrawingCountChanged();
                 }
             });
     }
@@ -291,49 +302,21 @@ public class DrawingManager implements FeatureCollectionListener {
             });
     }
 
-//    /**
-//     * Correct the ordering of the give features. This method ensures the feature ordering. This means, text features
-//     * are in front of point and points are in front of linestring and so on.
-//     *
-//     * @param  fce  DOCUMENT ME!
-//     */
-//    private void orderFeature_internal(final FeatureCollectionEvent fce) {
-//        final MappingComponent map = AppBroker.getInstance().getMappingComponent();
-//        final FeatureCollection fc = map.getFeatureCollection();
-//        final Collection<Feature> eventFeatures = fce.getEventFeatures();
-//
-//        if ((eventFeatures == null) || (eventFeatures.size() > 1)) {
-//            // orderAllFeatures has a better performance as this method with more than one feature
-//            orderAllFeatures();
-//            return;
-//        }
-//
-//        for (final Feature eventFeature : eventFeatures) {
-//            if (eventFeature instanceof DrawingFeature) {
-//                final DrawingFeature eFeature = (DrawingFeature)eventFeature;
-//                final PFeature eventPFeature = map.getPFeatureHM().get(eventFeature);
-//
-//                if (eventPFeature != null) {
-//                    for (final Feature feature : fc.getAllFeatures()) {
-//                        if (feature instanceof DrawingFeature) {
-//                            final DrawingFeature dFeature = (DrawingFeature)feature;
-//                            final PFeature otherPFeature = map.getPFeatureHM().get(dFeature);
-//
-//                            if (otherPFeature != null) {
-//                                if (eFeature.getTypeOrder() < dFeature.getTypeOrder()) {
-//                                    eventPFeature.moveInFrontOf(otherPFeature);
-//                                } else {
-//                                    if (eFeature.getTypeOrder() != dFeature.getTypeOrder()) {
-//                                        otherPFeature.moveInFrontOf(eventPFeature);
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    public void addDrawingsListener(final DrawingsListener l) {
+        listener.add(l);
+    }
+
+    public void removeDrawingsListener(final DrawingsListener l) {
+        listener.remove(l);
+    }
+
+    public void fireDrawingCountChanged() {
+        DrawingCountChangedEvent e = new DrawingCountChangedEvent(this);
+        
+        for (DrawingsListener l : listener) {
+            l.drawingsCountChanged(e);
+        }
+    }
 
     /**
      * Order all features. This method ensures the feature ordering. This means, text features are in front of point and
@@ -389,7 +372,7 @@ public class DrawingManager implements FeatureCollectionListener {
      *
      * @param  feature  the feature to add
      */
-    private static synchronized void addFeatureToDb(final DrawingFeature feature) {
+    private synchronized void addFeatureToDb(final DrawingFeature feature) {
         ConnectionWrapper cw = null;
         PreparedStatement ps = null;
 
@@ -442,6 +425,8 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing connection", ex);
                 }
             }
+            
+            fireDrawingCountChanged();
         }
     }
 
@@ -453,6 +438,8 @@ public class DrawingManager implements FeatureCollectionListener {
     private void removeFeature(final DrawingSLDStyledFeature feature) {
         final String delete = String.format(DELETE_FEATURE, feature.getId());
         executeUpdate(delete);
+        
+        fireDrawingCountChanged();
     }
 
     /**
@@ -499,8 +486,10 @@ public class DrawingManager implements FeatureCollectionListener {
     /**
      * remove all features from the database.
      */
-    public static void removeAllFeatures() {
+    private void removeAllFeatures() {
         executeUpdate(DELETE_ALL_FEATURE);
+        
+        fireDrawingCountChanged();
     }
 
     /**
@@ -508,7 +497,7 @@ public class DrawingManager implements FeatureCollectionListener {
      *
      * @param  drawingFile  DOCUMENT ME!
      */
-    public static synchronized void addFeatures(final File drawingFile) {
+    public synchronized void addFeatures(final File drawingFile) {
         final String readCvsQuery = String.format(CREATE_TABLE_FROM_CSV, TEMP_TABLE, drawingFile.getAbsolutePath());
         ConnectionWrapper cw = null;
         StatementWrapper st = null;
@@ -574,6 +563,8 @@ public class DrawingManager implements FeatureCollectionListener {
                 }
             }
             executeUpdate("drop table \"" + TEMP_TABLE + "\"");
+            
+            fireDrawingCountChanged();
         }
     }
 
@@ -582,7 +573,7 @@ public class DrawingManager implements FeatureCollectionListener {
      *
      * @param  statement  the statement to execute
      */
-    private static synchronized void executeUpdate(final String statement) {
+    private synchronized void executeUpdate(final String statement) {
         ConnectionWrapper cw = null;
         StatementWrapper st = null;
 
@@ -616,7 +607,7 @@ public class DrawingManager implements FeatureCollectionListener {
      *
      * @return  All drawing features from the db
      */
-    public static synchronized List<DrawingSLDStyledFeature> getAllFeatures() {
+    public synchronized List<DrawingSLDStyledFeature> getAllFeatures() {
         final List<DrawingSLDStyledFeature> features = new ArrayList<DrawingSLDStyledFeature>();
 
         ConnectionWrapper cw = null;
@@ -680,6 +671,45 @@ public class DrawingManager implements FeatureCollectionListener {
         }
 
         return features;
+    }
+
+    /**
+     * Retreive all drawing features from the database.
+     *
+     * @return  All drawing features from the db
+     */
+    public synchronized boolean featuresExists() {
+        ConnectionWrapper cw = null;
+        StatementWrapper st = null;
+
+        try {
+            cw = H2FeatureServiceFactory.getDBConnection(null);
+            st = H2FeatureServiceFactory.createStatement(cw);
+            final ResultSet rs = st.executeQuery(FEATURES_EXISTS);
+
+            while (rs.next()) {
+                return true;
+            }
+        } catch (Exception e) {
+            LOG.error("Error while checking, whether features exists in the database: ", e);
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (SQLException ex) {
+                    LOG.error("Error while closing statement", ex);
+                }
+            }
+            if (cw != null) {
+                try {
+                    cw.close();
+                } catch (SQLException ex) {
+                    LOG.error("Error while closing connection", ex);
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -752,7 +782,7 @@ public class DrawingManager implements FeatureCollectionListener {
                         feature.setPrimaryAnnotationFont(new Font("sansserif", Font.PLAIN, fontsize));
                     }
 
-                    addFeatureToDb(feature);
+                    DrawingManager.getInstance().addFeatureToDb(feature);
                 }
             } catch (Exception e) {
                 LOG.error("Error while inserting features into the db: ", e);
@@ -786,7 +816,20 @@ public class DrawingManager implements FeatureCollectionListener {
 
         @Override
         public void run() {
-            executeUpdate("delete from \"" + DRAWING_TABLE_NAME + "\"");
+            DrawingManager.getInstance().executeUpdate("delete from \"" + DRAWING_TABLE_NAME + "\"");
         }
+    }
+    
+    
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private static final class LazyInitialiser {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        static final DrawingManager INSTANCE = new DrawingManager();
     }
 }
