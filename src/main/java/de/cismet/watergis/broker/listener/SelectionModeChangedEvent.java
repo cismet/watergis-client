@@ -11,27 +11,22 @@
  */
 package de.cismet.watergis.broker.listener;
 
+import java.util.EventObject;
+
 /**
  * DOCUMENT ME!
  *
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class SelectionModeChangedEvent {
+public class SelectionModeChangedEvent extends EventObject {
 
     //~ Instance fields --------------------------------------------------------
 
-    private Object source;
     private String oldMode;
     private String newMode;
 
     //~ Constructors -----------------------------------------------------------
-
-    /**
-     * Creates a new SelectionModeChangedEvent object.
-     */
-    public SelectionModeChangedEvent() {
-    }
 
     /**
      * Creates a new SelectionModeChangedEvent object.
@@ -41,30 +36,12 @@ public class SelectionModeChangedEvent {
      * @param  newMode  DOCUMENT ME!
      */
     public SelectionModeChangedEvent(final Object source, final String oldMode, final String newMode) {
-        this.source = source;
+        super(source);
         this.oldMode = oldMode;
         this.newMode = newMode;
     }
 
     //~ Methods ----------------------------------------------------------------
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @return  the source
-     */
-    public Object getSource() {
-        return source;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  source  the source to set
-     */
-    public void setSource(final Object source) {
-        this.source = source;
-    }
 
     /**
      * DOCUMENT ME!

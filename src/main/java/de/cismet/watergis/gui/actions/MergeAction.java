@@ -12,10 +12,6 @@
 package de.cismet.watergis.gui.actions;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 import org.apache.log4j.Logger;
 
@@ -30,13 +26,17 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.features.ModifiableFeature;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+
+import de.cismet.math.geometry.StaticGeometryFunctions;
 
 import de.cismet.tools.gui.StaticSwingTools;
 
@@ -45,8 +45,6 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.gui.actions.merge.FeatureMerger;
 import de.cismet.watergis.gui.actions.merge.FeatureMergerFactory;
 import de.cismet.watergis.gui.components.AttributeTableDialog;
-
-import de.cismet.watergis.utils.GeometryUtils;
 
 /**
  * DOCUMENT ME!
@@ -120,7 +118,7 @@ public class MergeAction extends AbstractAction {
                 if (geometryType.toLowerCase().startsWith("multi")
                             && !geometryType.equals(resultedFeature.getGeometry().getGeometryType())) {
                     final Geometry g = resultedFeature.getGeometry();
-                    resultedFeature.setGeometry(GeometryUtils.toMultiGeometry(g));
+                    resultedFeature.setGeometry(StaticGeometryFunctions.toMultiGeometry(g));
                 }
 
                 if (geometryType.equals(resultedFeature.getGeometry().getGeometryType())
@@ -129,6 +127,18 @@ public class MergeAction extends AbstractAction {
 
                     // Save the merged feature
                     try {
+                        if (serviceFeature instanceof DefaultFeatureServiceFeature) {
+                            final DefaultFeatureServiceFeature dfsf = (DefaultFeatureServiceFeature)serviceFeature;
+
+                            if ((dfsf.getLayerProperties() != null)
+                                        && (dfsf.getLayerProperties().getAttributeTableRuleSet() != null)) {
+                                final AttributeTableRuleSet ruleSet = dfsf.getLayerProperties()
+                                            .getAttributeTableRuleSet();
+
+                                ruleSet.beforeSave(dfsf);
+                            }
+                        }
+
                         serviceFeature.saveChanges();
 
                         for (final Feature f : allValidFeatures) {

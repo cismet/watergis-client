@@ -113,7 +113,7 @@ public class SaveDrawingsAction extends AbstractAction {
      */
     private void saveDrawing(final File file) {
         try {
-            final List<DrawingSLDStyledFeature> features = DrawingManager.getAllFeatures();
+            final List<DrawingSLDStyledFeature> features = DrawingManager.getInstance().getAllFeatures();
             final List<DefaultFeatureServiceFeature> featureList = new ArrayList<DefaultFeatureServiceFeature>();
             final LayerProperties layerProps = new DefaultLayerProperties();
             H2FeatureService service = new H2FeatureService(

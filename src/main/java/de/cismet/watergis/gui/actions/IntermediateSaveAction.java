@@ -56,14 +56,14 @@ public class IntermediateSaveAction extends AbstractAction {
         putValue(
             SHORT_DESCRIPTION,
             NbBundle.getMessage(IntermediateSaveAction.class,
-                "DownloadManagerAction.toolTipText"));
+                "IntermediateSaveAction.toolTipText"));
         putValue(
             MNEMONIC_KEY,
             KeyStroke.getKeyStroke(
                 NbBundle.getMessage(IntermediateSaveAction.class,
-                    "DownloadManagerAction.mnemonic")).getKeyCode());
+                    "IntermediateSaveAction.mnemonic")).getKeyCode());
         putValue(NAME, NbBundle.getMessage(IntermediateSaveAction.class,
-                "DownloadManagerAction.text"));
+                "IntermediateSaveAction.text"));
     }
 
     //~ Methods ----------------------------------------------------------------

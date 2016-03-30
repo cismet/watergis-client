@@ -76,8 +76,8 @@ public class LoadDrawingsAction extends AbstractAction {
         if (file != null) {
             if (file.exists()) {
                 try {
-                    DrawingManager.addFeatures(file);
-                    DrawingManager.loadFeatures();
+                    DrawingManager.getInstance().addFeatures(file);
+                    DrawingManager.getInstance().loadFeatures();
                 } catch (Exception ex) {
                     LOG.error("Error while loading drawings.", ex);
                 }
