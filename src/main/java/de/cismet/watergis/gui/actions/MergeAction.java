@@ -46,7 +46,6 @@ import de.cismet.watergis.gui.actions.merge.FeatureMerger;
 import de.cismet.watergis.gui.actions.merge.FeatureMergerFactory;
 import de.cismet.watergis.gui.components.AttributeTableDialog;
 
-
 /**
  * DOCUMENT ME!
  *
