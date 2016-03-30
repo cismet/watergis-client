@@ -30,6 +30,8 @@ import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 
+import de.cismet.tools.gui.StaticSwingTools;
+
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
@@ -79,7 +81,8 @@ public class InfoWindowAction extends AbstractAction {
 
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.FEATURE_INFO_MULTI_GEOM);
         putValue(SELECTED_KEY, Boolean.TRUE);
-        dialog.setVisible(true);
+        StaticSwingTools.showDialog(dialog);
+//        dialog.setVisible(true);
     }
 
     /**
@@ -124,7 +127,15 @@ public class InfoWindowAction extends AbstractAction {
      */
     public void showDialog() {
         initDialog();
-        dialog.setVisible(true);
+        StaticSwingTools.showDialog(dialog);
+//        dialog.setVisible(true);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    public void showAllFeature() {
+        featureInfoPanel.showAllFeatures();
     }
 
     /**
