@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.actions;
 
+import Sirius.navigator.connection.SessionManager;
+
 import org.apache.log4j.Logger;
 
 import org.openide.util.NbBundle;
@@ -28,8 +30,10 @@ import javax.swing.JOptionPane;
 
 import de.cismet.cids.dynamics.CidsBean;
 
+import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
+import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
@@ -40,6 +44,8 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import static javax.swing.Action.NAME;
 
 /**
  * DOCUMENT ME!
@@ -53,6 +59,10 @@ public class ReleaseAction extends AbstractAction {
 
     private static final Logger LOG = Logger.getLogger(ReleaseAction.class);
     private static final String FG_BA_CLASS_NAME = "fg_bak";
+
+    //~ Instance fields --------------------------------------------------------
+
+    protected int featureCount = 0;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -76,7 +86,8 @@ public class ReleaseAction extends AbstractAction {
     public void actionPerformed(final ActionEvent e) {
         final MappingComponent mc = CismapBroker.getInstance().getMappingComponent();
         final SelectionListener sl = (SelectionListener)mc.getInputEventListener().get(MappingComponent.SELECT);
-        final CidsLayerFeature[] features = getRelevantFeatures(sl.getAllSelectedPFeatures());
+        final CidsLayerFeature[] features = getRelevantFeatures(sl.getAllSelectedPFeatures(), sl, true);
+        featureCount = 0;
 
         if ((features != null) && (features.length > 0)) {
             final WaitingDialogThread<TreeSet<AbstractFeatureService>> wdt =
@@ -103,8 +114,20 @@ public class ReleaseAction extends AbstractAction {
                                     services.add(cidsFeature.getLayerProperties().getFeatureService());
                                 }
                                 final CidsBean cidsBean = cidsFeature.getBean();
-                                cidsBean.setProperty("ww_gr", null);
+                                cidsBean.setProperty("ww_gr", AppBroker.getInstance().getNiemandWwGr());
+
+                                if ((cidsBean.getProperty("ba_cd") == null)
+                                            || !((String)cidsBean.getProperty("ba_cd")).startsWith(
+                                                (String)AppBroker.getInstance().getNiemandWwGr().getProperty(
+                                                    "praefix"))) {
+                                    cidsBean.setProperty(
+                                        "ba_cd",
+                                        AppBroker.getInstance().getNiemandWwGr().getProperty("praefix")
+                                                + ":"
+                                                + cidsBean.hashCode());
+                                }
                                 cidsBean.persist();
+                                ++featureCount;
                             } catch (Exception ex) {
                                 LOG.error("Cannot release feature", ex);
                             }
@@ -116,8 +139,15 @@ public class ReleaseAction extends AbstractAction {
                     @Override
                     protected void done() {
                         try {
-                            refreshServiceAttributeTables(get());
+                            final TreeSet<AbstractFeatureService> services = get();
+                            refreshServiceAttributeTables(services);
                             AppBroker.getInstance().getWatergisApp().initRouteCombo();
+                            refreshServiceLayer(services);
+
+                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                NbBundle.getMessage(ReleaseAction.class, "ReleaseAction.done().message", featureCount),
+                                NbBundle.getMessage(ReleaseAction.class, "ReleaseAction.done().title"),
+                                JOptionPane.INFORMATION_MESSAGE);
                         } catch (Exception e) {
                             LOG.error("Error while releasing objects", e);
                         }
@@ -145,14 +175,30 @@ public class ReleaseAction extends AbstractAction {
     }
 
     /**
+     * DOCUMENT ME!
+     *
+     * @param  services  DOCUMENT ME!
+     */
+    protected void refreshServiceLayer(final TreeSet<AbstractFeatureService> services) {
+        for (final AbstractFeatureService service : services) {
+            service.retrieve(true);
+        }
+    }
+
+    /**
      * Determines all selected features, that can be released.
      *
-     * @param   features  all selected features
+     * @param   features   all selected features
+     * @param   sl         DOCUMENT ME!
+     * @param   isRelease  DOCUMENT ME!
      *
      * @return  an array with all selected features, that can be released
      */
-    protected CidsLayerFeature[] getRelevantFeatures(final List<PFeature> features) {
+    protected CidsLayerFeature[] getRelevantFeatures(final List<PFeature> features,
+            final SelectionListener sl,
+            final boolean isRelease) {
         final List<CidsLayerFeature> featureList = new ArrayList<CidsLayerFeature>();
+        final List<Feature> toBeUnselected = new ArrayList<Feature>();
 
         for (final PFeature pf : features) {
             final Feature f = pf.getFeature();
@@ -161,12 +207,60 @@ public class ReleaseAction extends AbstractAction {
                 final CidsLayerFeature cidsFeature = (CidsLayerFeature)f;
                 if (cidsFeature.getBean().getMetaObject().getMetaClass().getName().toLowerCase().equals(
                                 FG_BA_CLASS_NAME)) {
-                    featureList.add(cidsFeature);
+                    if ((isRelease
+                                    && cidsFeature.getBean().hasObjectWritePermission(
+                                        SessionManager.getSession().getUser()))
+                                || (!isRelease
+                                    && cidsFeature.getBean().getProperty("ww_gr").equals(
+                                        AppBroker.getInstance().getNiemandWwGr()))) {
+                        featureList.add(cidsFeature);
+                    } else {
+                        sl.removeSelectedFeature(pf);
+                    }
                 }
             }
         }
 
+        if (!toBeUnselected.isEmpty()) {
+            ((DefaultFeatureCollection)CismapBroker.getInstance().getMappingComponent().getFeatureCollection())
+                    .unselect(
+                        toBeUnselected);
+        }
+
         return featureList.toArray(new CidsLayerFeature[featureList.size()]);
+    }
+
+    /**
+     * Determines all selected features, that can be released.
+     *
+     * @param   features   all selected features
+     * @param   isRelease  DOCUMENT ME!
+     *
+     * @return  an array with all selected features, that can be released
+     */
+    public boolean containsAnyRelevantFeature(final List<PFeature> features, final boolean isRelease) {
+        for (final PFeature pf : features) {
+            final Feature f = pf.getFeature();
+
+            if (f instanceof CidsLayerFeature) {
+                final CidsLayerFeature cidsFeature = (CidsLayerFeature)f;
+                final CidsLayer cidsLayer = (CidsLayer)cidsFeature.getLayerProperties().getFeatureService();
+
+                if (cidsLayer.getMetaClass().getName().toLowerCase().equals(FG_BA_CLASS_NAME)) {
+                    if ((!isRelease
+                                    && ((cidsFeature.getProperty("ww_gr") == null)
+                                        || cidsFeature.getProperty("ww_gr").equals(
+                                            AppBroker.getInstance().getNiemandWwGr().getProperty("ww_gr"))))
+                                || (isRelease
+                                    && AppBroker.getInstance().isOwnerWwGr(
+                                        (Integer)cidsFeature.getProperty("ww_gr")))) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override

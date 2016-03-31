@@ -46,15 +46,15 @@ public class MeasureLineAction extends AbstractAction {
         setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 MeasureLineAction.class,
-                "PanModeAction.toolTipText");
+                "MeasureLineAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(
                 MeasureLineAction.class,
-                "PanModeAction.text");
+                "MeasureLineAction.text");
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(
                 MeasureLineAction.class,
-                "PanModeAction.mnemonic");
+                "MeasureLineAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-timeline.png"));

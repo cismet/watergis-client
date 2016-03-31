@@ -67,7 +67,7 @@ public class PrintAction extends AbstractAction {
         if (LOG.isDebugEnabled()) {
             LOG.debug("oldInteractionMode:" + oldMode);
         }
-        mappingComponent.showPrintingSettingsDialog(oldMode);
+        mappingComponent.showPrintingSettingsDialog(oldMode, true);
     }
     @Override
     public boolean isEnabled() {

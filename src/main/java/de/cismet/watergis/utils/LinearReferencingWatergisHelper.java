@@ -173,7 +173,11 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
      */
     @Override
     public void setPointGeometryToStationBean(final Geometry point, final CidsBean stationBean) throws Exception {
-        getPointGeomBeanFromStationBean(stationBean).setProperty(PROP_GEOM_GEOFIELD, point);
+        final Geometry oldGeom = (Geometry)getPointGeomBeanFromStationBean(stationBean).getProperty(PROP_GEOM_GEOFIELD);
+
+        if ((oldGeom != point) && ((oldGeom != null) && !oldGeom.equals(point))) {
+            getPointGeomBeanFromStationBean(stationBean).setProperty(PROP_GEOM_GEOFIELD, point);
+        }
     }
 
     /**
@@ -318,6 +322,54 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
             }
         }
         return stationBean;
+    }
+
+    @Override
+    public CidsBean createLineBeanFromStationBean(final CidsBean fromBean, final CidsBean toBean) {
+        final CidsBean routeBean = getRouteBeanFromStationBean(fromBean);
+        if (routeBean == null) {
+            return null;
+        }
+
+        CidsBean linieBean = null;
+
+        if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BAK)) {
+            linieBean = MC_FG_BAK_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BA)) {
+            linieBean = MC_FG_BA_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_LAK)) {
+            linieBean = MC_FG_LAK_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_LA)) {
+            linieBean = MC_FG_LA_STATIONLINIE.getEmptyInstance().getBean();
+        } else {
+            LOG.error("Unknown route bean. Cannot create the corresponding line bean.");
+        }
+
+        final CidsBean geomBean = MC_GEOM.getEmptyInstance().getBean();
+
+        try {
+            toBean.setProperty(
+                PROP_STATION_VALUE,
+                ((Geometry)((CidsBean)routeBean.getProperty(PROP_ROUTE_GEOM)).getProperty(PROP_GEOM_GEOFIELD))
+                            .getLength());
+
+            linieBean.setProperty(PROP_STATIONLINIE_FROM, fromBean);
+            linieBean.setProperty(PROP_STATIONLINIE_TO, toBean);
+            geomBean.setProperty(
+                PROP_GEOM_GEOFIELD,
+                ((Geometry)((CidsBean)routeBean.getProperty(PROP_ROUTE_GEOM)).getProperty(PROP_GEOM_GEOFIELD)));
+            linieBean.setProperty(PROP_STATIONLINIE_GEOM, geomBean);
+
+            linieBean.setProperty("id", NEW_LINE_ID);
+            linieBean.getMetaObject().setID(NEW_LINE_ID);
+
+            NEW_LINE_ID--;
+        } catch (Exception ex) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Error while filling bean", ex);
+            }
+        }
+        return linieBean;
     }
 
     /**
@@ -468,6 +520,29 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     @Override
     public String getValueProperty(final CidsBean station) {
         return PROP_STATION_VALUE;
+    }
+
+    @Override
+    public String getRouteNamePropertyFromRouteByClassName(final String routeClass) {
+        String routeNameProperty = null;
+
+        if (routeClass != null) {
+            if (routeClass.equals(MC_NAME_FG_BAK)) {
+                routeNameProperty = PROP_FG_BAK_NAME;
+            } else if (routeClass.equals(MC_NAME_FG_BA)) {
+                routeNameProperty = PROP_FG_BA_NAME;
+            } else if (routeClass.equals(MC_NAME_FG_LAK)) {
+                routeNameProperty = PROP_FG_LAK_NAME;
+            } else if (routeClass.equals(MC_NAME_FG_LA)) {
+                routeNameProperty = PROP_FG_LA_NAME;
+            } else {
+                LOG.error("Unknown station bean. Cannot extract route name from station.");
+            }
+        } else {
+            LOG.error("Cannot extract route name from bean.");
+        }
+
+        return routeNameProperty;
     }
 
     @Override

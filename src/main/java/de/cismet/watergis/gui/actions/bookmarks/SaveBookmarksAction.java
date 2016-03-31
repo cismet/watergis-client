@@ -24,11 +24,14 @@ import javax.swing.filechooser.FileFilter;
 
 import de.cismet.cismap.commons.RestrictedFileSystemView;
 
+import de.cismet.tools.gui.StaticSwingTools;
+
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.OpenProjectAction;
+import de.cismet.watergis.gui.actions.SaveProjectAction;
 import de.cismet.watergis.gui.dialog.ManageBookmarksDialog;
 
 /**
@@ -71,41 +74,15 @@ public class SaveBookmarksAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        JFileChooser fc;
+        final File file = StaticSwingTools.chooseFile(WatergisApp.getDIRECTORYPATH_WATERGIS(),
+                true,
+                new String[] { "lz" },
+                org.openide.util.NbBundle.getMessage(
+                    SaveBookmarksAction.class,
+                    "SaveBookmarksAction.save.FileFilter.getDescription.return"),
+                AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
-        try {
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
-        } catch (Exception bug) {
-            // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
-        }
-
-        fc.setAcceptAllFileFilterUsed(false);
-        fc.setFileFilter(new FileFilter() {
-
-                @Override
-                public boolean accept(final File f) {
-                    return f.isDirectory()
-                                || f.getName().toLowerCase().endsWith(".lz"); // NOI18N
-                }
-
-                @Override
-                public String getDescription() {
-                    return org.openide.util.NbBundle.getMessage(
-                            SaveBookmarksAction.class,
-                            "SaveBookmarksAction.save.FileFilter.getDescription.return"); // NOI18N
-                }
-            });
-
-        final int state = fc.showSaveDialog(AppBroker.getInstance().getComponent(ComponentName.MAIN));
-
-        if (state == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-
-            if (!file.getName().endsWith(".lz")) {
-                file = new File(file.getAbsolutePath() + ".lz");
-            }
-
+        if (file != null) {
             AppBroker.getInstance().getBookmarkManager().saveToFile(file);
         }
     }
