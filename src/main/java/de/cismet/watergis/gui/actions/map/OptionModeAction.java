@@ -14,6 +14,7 @@ package de.cismet.watergis.gui.actions.map;
 import java.awt.event.ActionEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.components.DrawingMode;
 import de.cismet.watergis.gui.dialog.VisualizingDialog;
-import java.util.Collections;
 
 /**
  * DOCUMENT ME!

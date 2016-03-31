@@ -16,6 +16,8 @@ import com.vividsolutions.jts.geom.LineString;
 
 import org.apache.log4j.Logger;
 
+import org.openide.util.NbBundle;
+
 import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -24,15 +26,22 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
+import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.features.ModifiableFeature;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.creator.GeometryFinishedListener;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+
+import de.cismet.tools.gui.StaticSwingTools;
+
+import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.split.FeatureSplitter;
 import de.cismet.watergis.gui.actions.split.FeatureSplitterFactory;
@@ -100,6 +109,24 @@ public class SplitAction extends AbstractAction {
                                                         && (validFeature instanceof ModifiableFeature)) {
                                                 // Save the merged feature
                                                 try {
+                                                    if (validFeature instanceof DefaultFeatureServiceFeature) {
+                                                        final DefaultFeatureServiceFeature dfsf =
+                                                            (DefaultFeatureServiceFeature)validFeature;
+
+                                                        if ((dfsf.getLayerProperties() != null)
+                                                                    && (dfsf.getLayerProperties()
+                                                                        .getAttributeTableRuleSet() != null)) {
+                                                            final AttributeTableRuleSet ruleSet =
+                                                                dfsf.getLayerProperties().getAttributeTableRuleSet();
+
+                                                            ruleSet.beforeSave(validFeature);
+                                                            if (newFeature instanceof DefaultFeatureServiceFeature) {
+                                                                ruleSet.beforeSave(
+                                                                    (DefaultFeatureServiceFeature)newFeature);
+                                                            }
+                                                        }
+                                                    }
+
                                                     ((ModifiableFeature)newFeature).saveChanges();
                                                     ((ModifiableFeature)validFeature).saveChanges();
                                                     if (LOG.isDebugEnabled()) {
@@ -148,7 +175,10 @@ public class SplitAction extends AbstractAction {
                 }
             }
         } else {
-            // todo message: ungleich ein Feature selektiert
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                NbBundle.getMessage(SplitAction.class, "SplitAction.determineValidFeature().message"),
+                NbBundle.getMessage(SplitAction.class, "SplitAction.determineValidFeature().title"),
+                JOptionPane.ERROR_MESSAGE);
         }
 
         return null;

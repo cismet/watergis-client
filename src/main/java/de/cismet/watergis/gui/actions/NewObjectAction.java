@@ -13,14 +13,24 @@ package de.cismet.watergis.gui.actions;
 
 import java.awt.event.ActionEvent;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeMap;
+
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
+import de.cismet.cismap.commons.featureservice.LayerProperties;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
+import de.cismet.cismap.commons.gui.attributetable.FeatureCreatedEvent;
+import de.cismet.cismap.commons.gui.attributetable.FeatureCreatedListener;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.rasterservice.MapService;
+import de.cismet.cismap.commons.retrieval.RetrievalEvent;
+import de.cismet.cismap.commons.retrieval.RetrievalListener;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -66,6 +76,69 @@ public class NewObjectAction extends AbstractAction {
             final FeatureCreator creator = ruleSet.getFeatureCreator();
             final FeatureServiceFeature feature = service.getFeatureFactory().createNewFeature();
             ruleSet.beforeSave(feature);
+            creator.addFeatureCreatedListener(new FeatureCreatedListener() {
+
+                    @Override
+                    public void featureCreated(final FeatureCreatedEvent event) {
+                        // reload layer
+                        final LayerProperties props = feature.getLayerProperties();
+                        if (feature.getProperty("id") != null) {
+                            feature.setId((Integer)feature.getProperty("id"));
+                        }
+
+                        if (props != null) {
+                            final AbstractFeatureService service = props.getFeatureService();
+
+                            if (service != null) {
+                                service.retrieve(true);
+                                service.addRetrievalListener(new RetrievalListener() {
+
+                                        @Override
+                                        public void retrievalStarted(final RetrievalEvent e) {
+                                        }
+
+                                        @Override
+                                        public void retrievalProgress(final RetrievalEvent e) {
+                                        }
+
+                                        @Override
+                                        public void retrievalComplete(final RetrievalEvent e) {
+                                            AppBroker.getInstance()
+                                                    .getWatergisApp()
+                                                    .addFeatureToAttributeTable(feature);
+                                            service.removeRetrievalListener(this);
+                                        }
+
+                                        @Override
+                                        public void retrievalAborted(final RetrievalEvent e) {
+                                        }
+
+                                        @Override
+                                        public void retrievalError(final RetrievalEvent e) {
+                                        }
+                                    });
+
+                                final Timer t = new Timer("reload");
+                                t.schedule(new TimerTask() {
+
+                                        @Override
+                                        public void run() {
+                                            final TreeMap<Integer, MapService> services = AppBroker.getInstance()
+                                                        .getMappingComponent()
+                                                        .getMappingModel()
+                                                        .getRasterServices();
+
+                                            for (final MapService mapService : services.values()) {
+                                                if (!mapService.equals(service)) {
+                                                    mapService.retrieve(true);
+                                                }
+                                            }
+                                        }
+                                    }, 1000);
+                            }
+                        }
+                    }
+                });
             creator.createFeature(CismapBroker.getInstance().getMappingComponent(), feature);
         }
 

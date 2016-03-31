@@ -21,15 +21,11 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileFilter;
-
-import de.cismet.cismap.commons.RestrictedFileSystemView;
 
 import de.cismet.tools.configuration.ConfigurationManager;
 
-import de.cismet.tools.gui.ConfirmationJFileChooser;
+import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -90,46 +86,17 @@ public class SaveProjectAction extends AbstractAction {
      * DOCUMENT ME!
      */
     private void save() {
-        JFileChooser fc;
+        final File file = StaticSwingTools.chooseFile(WatergisApp.getDIRECTORYPATH_WATERGIS(),
+                true,
+                new String[] { "xml" },
+                org.openide.util.NbBundle.getMessage(
+                    SaveProjectAction.class,
+                    "SaveProjectAction.save.FileFilter.getDescription.return"),
+                AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
-        try {
-            fc = new ConfirmationJFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
-        } catch (Exception bug) {
-            // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
-        }
-
-        fc.setAcceptAllFileFilterUsed(false);
-        fc.setFileFilter(new FileFilter() {
-
-                @Override
-                public boolean accept(final File f) {
-                    return f.isDirectory()
-                                || f.getName().toLowerCase().endsWith(".xml"); // NOI18N
-                }
-
-                @Override
-                public String getDescription() {
-                    return org.openide.util.NbBundle.getMessage(
-                            SaveProjectAction.class,
-                            "SaveProjectAction.save.FileFilter.getDescription.return"); // NOI18N
-                }
-            });
-
-        final int state = fc.showSaveDialog(AppBroker.getInstance().getComponent(ComponentName.MAIN));
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("state:" + state); // NOI18N
-        }
-
-        final ConfigurationManager configurationManager = AppBroker.getConfigManager();
-        if (state == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            String name = file.getAbsolutePath();
-
-            if (!name.endsWith(".xml")) { // NOI18N
-                file = new File(file.getAbsolutePath() + ".xml");
-                name = name + ".xml";
-            }
+        if (file != null) {
+            final ConfigurationManager configurationManager = AppBroker.getConfigManager();
+            final String name = file.getAbsolutePath();
 
             configurationManager.writeConfiguration(name);
             AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);

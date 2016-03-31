@@ -15,6 +15,10 @@ package de.cismet.watergis.utils;
 import Sirius.navigator.types.treenode.DefaultMetaTreeNode;
 import Sirius.navigator.types.treenode.ObjectTreeNode;
 
+import org.apache.log4j.Logger;
+
+import org.openide.util.NbBundle;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,9 +26,7 @@ import java.util.List;
 import de.cismet.cids.utils.interfaces.DefaultMetaTreeNodeVisualizationService;
 
 import de.cismet.cismap.cidslayer.CidsLayer;
-import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
-import de.cismet.cismap.commons.BoundingBox;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
@@ -33,6 +35,8 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.GetFeatureInfoMultiGeo
 import de.cismet.cismap.commons.interaction.events.GetFeatureInfoEvent;
 
 import de.cismet.cismap.navigatorplugin.CidsFeature;
+
+import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -47,6 +51,10 @@ import de.cismet.watergis.broker.AppBroker;
     service = DefaultMetaTreeNodeVisualizationService.class
 )
 public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNodeVisualizationService {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(WatergisTreeNodeVisualizationService.class);
 
     //~ Methods ----------------------------------------------------------------
 
@@ -78,6 +86,7 @@ public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNode
             AppBroker.getInstance().getMappingComponent().addFeaturesToMap(new Feature[] { feature });
             AppBroker.getInstance().getMappingComponent().zoomToAFeatureCollection(featureList, false, false);
             AppBroker.getInstance().getInfoWindowAction().showDialog();
+            AppBroker.getInstance().getInfoWindowAction().showAllFeature();
             addFeatureToFeatureInfoDialog(oNode);
         }
     }
@@ -91,26 +100,52 @@ public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNode
      */
     private void addFeatureToFeatureInfoDialog(final ObjectTreeNode oNode) throws Exception {
         final CidsFeature feature = new CidsFeature(oNode.getMetaObject());
-        final GetFeatureInfoMultiGeomListener l = (GetFeatureInfoMultiGeomListener)AppBroker
-                    .getInstance().getMappingComponent().getInputListener(MappingComponent.FEATURE_INFO_MULTI_GEOM);
-        final GetFeatureInfoEvent event = new GetFeatureInfoEvent(this, feature.getGeometry());
-        final CidsLayer layer = new CidsLayer(oNode.getMetaClass());
-        final List<DefaultFeatureServiceFeature> features = layer.retrieveFeatures(new XBoundingBox(
-                    feature.getGeometry()),
-                0,
-                0,
-                null);
-        DefaultFeatureServiceFeature cidsFeature = null;
-        for (final DefaultFeatureServiceFeature f : features) {
-            if (f.getId() == feature.getMetaObject().getId()) {
-                cidsFeature = f;
-                break;
-            }
-        }
-        final List<Feature> featureList = new ArrayList<Feature>();
-        featureList.add(cidsFeature);
-        event.setFeatures(featureList);
-        l.fireGetFeatureInfoEvent(event);
+
+        final WaitingDialogThread<List<DefaultFeatureServiceFeature>> wdt =
+            new WaitingDialogThread<List<DefaultFeatureServiceFeature>>(AppBroker.getInstance().getWatergisApp(),
+                true,
+                NbBundle.getMessage(
+                    WatergisTreeNodeVisualizationService.class,
+                    "WatergisTreeNodeVisualizationService.addFeatureToFeatureInfoDialog.text"),
+                null,
+                100) {
+
+                @Override
+                protected List<DefaultFeatureServiceFeature> doInBackground() throws Exception {
+                    final CidsLayer layer = new CidsLayer(oNode.getMetaClass());
+
+                    return layer.retrieveFeatures(new XBoundingBox(feature.getGeometry()), 0, 0, null);
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        final GetFeatureInfoMultiGeomListener l = (GetFeatureInfoMultiGeomListener)AppBroker
+                                    .getInstance().getMappingComponent()
+                                    .getInputListener(MappingComponent.FEATURE_INFO_MULTI_GEOM);
+                        final List<Feature> featureList = new ArrayList<Feature>();
+                        final GetFeatureInfoEvent event = new GetFeatureInfoEvent(this, feature.getGeometry());
+                        final List<DefaultFeatureServiceFeature> features = get();
+                        DefaultFeatureServiceFeature cidsFeature = null;
+
+                        for (final DefaultFeatureServiceFeature f : features) {
+                            if (f.getId() == feature.getMetaObject().getId()) {
+                                cidsFeature = f;
+                                break;
+                            }
+                        }
+
+                        featureList.add(cidsFeature);
+                        event.setFeatures(featureList);
+
+                        l.fireGetFeatureInfoEvent(event);
+                    } catch (Exception e) {
+                        LOG.error("Error while loading feature with id ", e);
+                    }
+                }
+            };
+
+        wdt.start();
     }
 
     @Override

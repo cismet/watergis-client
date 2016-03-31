@@ -13,6 +13,7 @@ package de.cismet.watergis.gui.actions.map;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
@@ -31,7 +32,7 @@ import de.cismet.watergis.gui.components.SnappingMode;
     service = SnappingMode.class,
     position = 10
 )
-public class NoSnappingModeAction extends AbstractNewGeometryModeAction implements SnappingMode {
+public class NoSnappingModeAction extends AbstractAction implements SnappingMode {
 
     //~ Constructors -----------------------------------------------------------
 
@@ -56,8 +57,6 @@ public class NoSnappingModeAction extends AbstractNewGeometryModeAction implemen
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        super.actionPerformed(e);
-
         if (!e.getSource().equals(AppBroker.getInstance())) {
             final MappingComponent map = AppBroker.getInstance().getMappingComponent();
             map.setSnappingEnabled(false);

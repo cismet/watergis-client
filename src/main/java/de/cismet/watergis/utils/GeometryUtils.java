@@ -11,11 +11,13 @@
  */
 package de.cismet.watergis.utils;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 
@@ -147,5 +149,80 @@ public class GeometryUtils {
 
             return g1.union(g2);
         }
+    }
+
+    /**
+     * Creates a dummy geometry of the given type.
+     *
+     * @param   geometryType  DOCUMENT ME!
+     *
+     * @return  a dummy geometry of the given type
+     */
+    public static Geometry createDummyGeometry(final String geometryType) {
+        final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), -1);
+
+        if (geometryType.equalsIgnoreCase("Point")) {
+            return factory.createPoint(new Coordinate(1, 2));
+        } else if (geometryType.equalsIgnoreCase("MultiPoint")) {
+            return factory.createMultiPoint(new Coordinate[] { new Coordinate(1, 2), new Coordinate(2, 2) });
+        } else if (geometryType.equalsIgnoreCase("LineString")) {
+            return factory.createLineString(new Coordinate[] { new Coordinate(1, 2), new Coordinate(2, 2) });
+        } else if (geometryType.equalsIgnoreCase("MultiLineString")) {
+            final LineString ls1 = factory.createLineString(
+                    new Coordinate[] { new Coordinate(1, 2), new Coordinate(2, 2) });
+            final LineString ls2 = factory.createLineString(
+                    new Coordinate[] { new Coordinate(3, 3), new Coordinate(4, 3) });
+
+            return factory.createMultiLineString(new LineString[] { ls1, ls2 });
+        } else if (geometryType.equalsIgnoreCase("Polygon")) {
+            return factory.createPolygon(
+                    new Coordinate[] {
+                        new Coordinate(1, 2),
+                        new Coordinate(2, 2),
+                        new Coordinate(2, 3),
+                        new Coordinate(1, 3),
+                        new Coordinate(1, 2)
+                    });
+        } else if (geometryType.equalsIgnoreCase("MultiPolygon")) {
+            final Polygon p = factory.createPolygon(
+                    new Coordinate[] {
+                        new Coordinate(1, 2),
+                        new Coordinate(2, 2),
+                        new Coordinate(2, 3),
+                        new Coordinate(1, 3),
+                        new Coordinate(1, 2)
+                    });
+
+            return factory.createMultiPolygon(new Polygon[] { p });
+        }
+
+        return null;
+    }
+
+    /**
+     * Determines the shape geometry type. In a shape file, every geometry type is described by one byte.
+     *
+     * @param   geometryType  DOCUMENT ME!
+     *
+     * @return  the shape geometry type.
+     */
+    public static byte getShpGeometryType(final String geometryType) {
+        final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), -1);
+
+        if (geometryType.equalsIgnoreCase("Point")) {
+            return 1;
+        } else if (geometryType.equalsIgnoreCase("MultiPoint")) {
+            return 8;
+        } else if (geometryType.equalsIgnoreCase("LineString")) {
+            return 3;
+        } else if (geometryType.equalsIgnoreCase("MultiLineString")) {
+            return 3;
+        } else if (geometryType.equalsIgnoreCase("Polygon")) {
+            return 5;
+        } else if (geometryType.equalsIgnoreCase("MultiPolygon")) {
+            return 5;
+        }
+
+        return 0;
     }
 }
