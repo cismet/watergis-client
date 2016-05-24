@@ -28,6 +28,8 @@ import javax.swing.KeyStroke;
 import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.custom.attributerule.MessageDialog;
+import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -82,24 +84,31 @@ public class FlipAction extends AbstractAction implements CleanUpAction {
 
         for (final Feature feature : selectedFeature) {
             if (feature.getGeometry().getGeometryType().equals("LineString")) {
-                feature.setGeometry(feature.getGeometry().reverse());
-                geometryChanged = true;
+                if (feature.isEditable()) {
+                    feature.setGeometry(feature.getGeometry().reverse());
+                    geometryChanged = true;
+                }
             } else {
                 invalidGeometryType = true;
             }
         }
 
         if (geometryChanged) {
-            final Component c = AppBroker.getInstance().getComponent(ComponentName.STATUSBAR);
-
-            if (c instanceof StatusBar) {
-                ((StatusBar)c).showNotification(NbBundle.getMessage(
-                        FlipAction.class,
-                        "FlipAction.actionPerformed.geometryChanged"));
-            }
+//            final Component c = AppBroker.getInstance().getComponent(ComponentName.STATUSBAR);
+//
+//            if (c instanceof StatusBar) {
+//                ((StatusBar)c).showNotification(NbBundle.getMessage(
+//                        FlipAction.class,
+//                        "FlipAction.actionPerformed.geometryChanged"));
+//            }
+            
+            MessageDialog dialog = new MessageDialog(AppBroker.getInstance().getWatergisApp(), true, 
+                    NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.geometryChanged"));
+            dialog.setSize(200,100);
+            StaticSwingTools.showDialog(dialog);
         }
 
-        if (invalidGeometryType) {
+        if (!geometryChanged && invalidGeometryType) {
             JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                 NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.wrongGeometryType.text"),
                 NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.wrongGeometryType.title"),
