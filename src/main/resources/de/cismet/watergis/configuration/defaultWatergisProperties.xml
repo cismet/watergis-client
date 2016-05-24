@@ -37,9 +37,12 @@
         <capabilitiesList titlestring="" type="SEPARATOR"/>
     </cismapCapabilitiesPreferences>    
     <cismapMappingPreferences interactionMode="ZOOM" creationMode="POLYGON" handleInteractionMode="MOVE_HANDLE" snapping="false">
-        <home default="true" srs="EPSG:35833" metric="true">
+        <home substitutionAttribute="watergis.home" default="true" srs="EPSG:35833" metric="true">
             <BoundingBox x1="33206890" y1="5890624" x2="33460858" y2="6060841" />
         </home>
+        <!--home default="true" srs="EPSG:35833" metric="true">
+            <BoundingBox x1="33206890" y1="5890624" x2="33460858" y2="6060841" />
+        </home-->
         <Position CRS="EPSG:35833">
             <BoundingBox x1="3.3184695056179777E7" y1="5890624.0" x2="3.3483052943820227E7" y2="6060841.0" srs="EPSG:35833" metric="true" />
         </Position>

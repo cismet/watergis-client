@@ -93,37 +93,44 @@ public class GoToAction extends AbstractAction {
         final String message = org.openide.util.NbBundle.getMessage(
                 GoToAction.class,
                 "GoToAction.actionPerformed().dialogMessage");
+        final String title = "Gehe zu xy";
 
-        final String s = JOptionPane.showInputDialog(
+        final Object s = JOptionPane.showInputDialog(
                 AppBroker.getInstance().getComponent(ComponentName.MAIN),
                 message,
+                title,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
                 StaticDecimalTools.round(x)
                         + ","
                         + StaticDecimalTools.round(y));
+        
+        if (s instanceof String) {
+            try {
+                final String[] sa = ((String)s).split(",");
+                final Double gotoX = new Double(sa[0]);
+                final Double gotoY = new Double(sa[1]);
+                final String currentCrsCode = CismapBroker.getInstance().getSrs().getCode();
+                final XBoundingBox bb = new XBoundingBox(
+                        gotoX,
+                        gotoY,
+                        gotoX,
+                        gotoY,
+                        currentCrsCode,
+                        mappingComponent.isInMetricSRS());
+                mappingComponent.gotoBoundingBox(bb, true, false, mappingComponent.getAnimationDuration());
 
-        try {
-            final String[] sa = s.split(",");
-            final Double gotoX = new Double(sa[0]);
-            final Double gotoY = new Double(sa[1]);
-            final String currentCrsCode = CismapBroker.getInstance().getSrs().getCode();
-            final XBoundingBox bb = new XBoundingBox(
-                    gotoX,
-                    gotoY,
-                    gotoX,
-                    gotoY,
-                    currentCrsCode,
-                    mappingComponent.isInMetricSRS());
-            mappingComponent.gotoBoundingBox(bb, true, false, mappingComponent.getAnimationDuration());
+                final Timer t = new Timer();
+                t.schedule(new TimerTask() {
 
-            final Timer t = new Timer();
-            t.schedule(new TimerTask() {
-
-                    @Override
-                    public void run() {
-                        showPointInMap(mappingComponent, gotoX, gotoY);
-                    }
-                }, mappingComponent.getAnimationDuration());
-        } catch (Exception skip) {
+                        @Override
+                        public void run() {
+                            showPointInMap(mappingComponent, gotoX, gotoY);
+                        }
+                    }, mappingComponent.getAnimationDuration());
+            } catch (Exception skip) {
+            }
         }
     }
 
