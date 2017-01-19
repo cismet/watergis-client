@@ -36,10 +36,11 @@ import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.download.FakeFileDownload;
+
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.dialog.GafCheckDialog;
 
-import de.cismet.watergis.utils.FakeFileDownload;
 import de.cismet.watergis.utils.GafReader;
 
 /**
