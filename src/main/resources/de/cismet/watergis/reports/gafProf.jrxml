@@ -259,7 +259,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[Upload | Bild-ID:]]></text>
+				<text><![CDATA[Upload | QP-Nr:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="75" y="24" width="129" height="14" uuid="af5c1bb5-d3a5-4d70-8e6f-027c4202868b"/>
@@ -308,7 +308,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[Verortung | Winkel:]]></text>
+				<text><![CDATA[Verortung]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="11" y="90" width="64" height="14" uuid="aac83823-7f87-45ae-b884-48fa64a4f283"/>
