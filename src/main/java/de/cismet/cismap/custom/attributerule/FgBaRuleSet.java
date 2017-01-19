@@ -21,8 +21,6 @@ import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
-import de.cismet.watergis.gui.actions.reports.GewaesserReportAction;
-
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
@@ -110,27 +108,5 @@ public class FgBaRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
-    }
-
-    @Override
-    public void mouseClicked(final FeatureServiceFeature feature,
-            final String columnName,
-            final Object value,
-            final int clickCount) {
-        if (columnName.equals("ba_cd")) {
-            if ((value instanceof String) && (clickCount == 1)) {
-                createGuReport(value.toString());
-            }
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  bacd  DOCUMENT ME!
-     */
-    private void createGuReport(final String bacd) {
-        final GewaesserReportAction action = new GewaesserReportAction();
-        action.actionPerformed(null);
     }
 }

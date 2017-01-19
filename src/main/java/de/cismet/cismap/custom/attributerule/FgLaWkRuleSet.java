@@ -44,8 +44,6 @@ import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.download.WkFgDownload;
-
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -151,41 +149,5 @@ public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
 
         return new StationLineCreator("la_st", routeMc, new LinearReferencingWatergisHelper());
-    }
-
-    @Override
-    public void mouseClicked(final FeatureServiceFeature feature,
-            final String columnName,
-            final Object value,
-            final int clickCount) {
-        if (columnName.equals("wk_nr")) {
-            if ((value instanceof String) && (clickCount == 1)) {
-                createWkFgReport((String)value);
-            }
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  wkk  DOCUMENT ME!
-     */
-    private void createWkFgReport(final String wkk) {
-        if (DownloadManagerDialog.getInstance().showAskingForUserTitleDialog(AppBroker.getInstance().getRootWindow())) {
-            final String jobname = DownloadManagerDialog.getInstance().getJobName();
-            String dir;
-
-            if ((jobname != null) && !jobname.equals("")) {
-                final File path = new File(DownloadManager.instance().getDestinationDirectory().getAbsolutePath(),
-                        DownloadManagerDialog.getInstance().getJobName());
-                dir = path.getAbsolutePath();
-            } else {
-                dir = DownloadManager.instance().getDestinationDirectory().getAbsolutePath();
-            }
-
-            final WkFgDownload download = new WkFgDownload(dir, wkk);
-
-            DownloadManager.instance().add(download);
-        }
     }
 }
