@@ -30,7 +30,6 @@ import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -43,14 +42,48 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class SonstHwEnFRuleSet extends DefaultAttributeTableRuleSet {
+public class SonstHwEnFRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, true));
+        typeMap.put("nr", new Numeric(16, 0, false, true));
+        typeMap.put("wann", new Varchar(16, false, true));
+        typeMap.put("wer", new Varchar(250, true, true));
+        typeMap.put("firma", new Varchar(250, false, true));
+        typeMap.put("vorwahl", new Varchar(10, false, true));
+        typeMap.put("nummer", new Varchar(20, false, true));
+        typeMap.put("mail", new Varchar(50, false, true));
+        typeMap.put("text", new Varchar(250, true, true));
+        typeMap.put("gewaesser", new Varchar(250, false, true));
+        typeMap.put("station", new Numeric(10, 2, false, true));
+        typeMap.put("koord_rw", new Numeric(11, 2, false, true));
+        typeMap.put("koord_hw", new Numeric(10, 2, false, true));
+        typeMap.put("bearb_wann", new Varchar(16, false, true));
+        typeMap.put("bearb_wer", new Varchar(250, false, true));
+        typeMap.put("bearb_komm", new Varchar(250, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("nr") && !columnName.equals("wann") && !columnName.equals("geom");
+        if (columnName.equals("bearb_wann") || columnName.equals("bearb_wer") || columnName.equals("bearb_komm")) {
+            return SessionManager.getSession().getUser().getUserGroup().getName().equals("lung_edit1")
+                        || SessionManager.getSession()
+                        .getUser()
+                        .getUserGroup()
+                        .getName()
+                        .equalsIgnoreCase("Administratoren");
+        } else {
+            return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
+                        && !columnName.equals("nr") && !columnName.equals("wann") && !columnName.equals("geom")
+                        && !columnName.equals("id");
+        }
     }
 
     @Override
@@ -59,22 +92,12 @@ public class SonstHwEnFRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (column.equals("wer") && (newValue == null)) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut wer darf nicht leer sein");
-            return oldValue;
-        }
-        if (column.equals("text") && (newValue == null)) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut text darf nicht leer sein");
-            return oldValue;
-        }
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -89,30 +112,19 @@ public class SonstHwEnFRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("wer") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wer darf nicht leer sein");
-
-                return false;
-            }
-            if ((feature.getProperty("mail") == null)
-                        && ((feature.getProperty("vorwahl") == null) || (feature.getProperty("nummer") == null))) {
+            if ((isValueEmpty(feature.getProperty("mail")))
+                        && ((isValueEmpty(feature.getProperty("vorwahl")))
+                            || (isValueEmpty(feature.getProperty("nummer"))))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Es muss immer entweder das Mail-Feld oder das Vorwahl- und Nummer-Feld gesetzt sein.");
 
                 return false;
             }
-
-            if (feature.getProperty("text") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut text darf nicht leer sein.");
-
-                return false;
-            }
         }
-        return true;
+
+        return super.prepareForSave(features);
     }
 
     @Override

@@ -13,6 +13,7 @@ package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
@@ -38,11 +39,8 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import de.cismet.cids.dynamics.CidsBean;
-
-import de.cismet.cids.tools.CidsBeanFilter;
-
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -64,9 +62,10 @@ import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.actions.foto.ReportAction;
 import de.cismet.watergis.gui.panels.Photo;
 
-import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
@@ -82,21 +81,55 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
     private static final org.apache.log4j.Logger LOG = Logger.getLogger(FotoRuleSet.class);
     public static final BufferedImage ARROW;
     public static final BufferedImage SELECTED_ARROW;
+    public static final BufferedImage ARROW_NULL;
+    public static final BufferedImage SELECTED_ARROW_NULL;
 
     static {
         try {
             final URL arrowUrl = QpRuleSet.class.getResource(
                     "/de/cismet/watergis/res/icons16/angle.png");
             ARROW = ImageIO.read(arrowUrl);
-            final URL arrowSelectedUrl = QpRuleSet.class.getResource(
+            final URL arrowSelectedUrl = FotoRuleSet.class.getResource(
                     "/de/cismet/watergis/res/icons16/angleSelected.png");
             SELECTED_ARROW = ImageIO.read(arrowSelectedUrl);
-//            ARROW_NULL = new FeatureAnnotationSymbol(new ImageIcon(
-//                        "/de/cismet/cids/custom/objecteditors/wrrl_db_mv/angle_null.png").getImage());
+            final URL arrowNullUrl = FotoRuleSet.class.getResource(
+                    "/de/cismet/watergis/res/icons16/angle_null.png");
+            ARROW_NULL = ImageIO.read(arrowNullUrl);
+            final URL arrowNullSelectedUrl = FotoRuleSet.class.getResource(
+                    "/de/cismet/watergis/res/icons16/angle_null_selected.png");
+            SELECTED_ARROW_NULL = ImageIO.read(arrowNullSelectedUrl);
         } catch (Exception ex) {
             LOG.fatal(ex, ex);
             throw new RuntimeException(ex);
         }
+    }
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st", new Numeric(10, 2, false, false));
+        typeMap.put("la_cd", new Numeric(15, 0, true, false));
+        typeMap.put("la_st", new Numeric(10, 2, false, false));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", false, true));
+        typeMap.put("re", new Numeric(11,2, false, true));
+        typeMap.put("ho", new Numeric(10,2, false, true));
+        typeMap.put("winkel", new Numeric(5,1, false, true));
+        typeMap.put("foto_nr", new Numeric(15,0, false, false));
+        typeMap.put("foto", new Varchar(250, false, false));
+        typeMap.put("upl_name", new Varchar(50, false, false));
+        typeMap.put("upl_datum", new Varchar(10, false, false));
+        typeMap.put("upl_zeit", new Varchar(8, false, false));
+        typeMap.put("aufn_name", new Varchar(50, false, true));
+        typeMap.put("aufn_datum", new Varchar(10, false, true));
+        typeMap.put("aufn_zeit", new Varchar(8, false, true));
+        typeMap.put("freigabe", new Catalogue("k_freigabe", true, true));
+        typeMap.put("titel", new Varchar(250, false, true));
+        typeMap.put("beschreib", new Varchar(250, false, true));        
+        typeMap.put("bemerkung", new Varchar(250, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -105,7 +138,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("geom") && !columnName.equals("ba_cd") && !columnName.equals("id")
-                    && !columnName.equals("ho") && !columnName.equals("re") && !columnName.equals("foto")
+                    && !columnName.equals("foto")
                     && !columnName.equals("foto_nr") && !columnName.equals("la_st") && !columnName.equals("la_cd")
                     && !columnName.equals("ww_gr") && !columnName.startsWith("upl");
     }
@@ -116,47 +149,47 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-//        if (newValue == null) {
-//            if (column.equals("foto") || column.equals("title")) {
-//                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-//                    "Das Attribut "
-//                            + column
-//                            + " darf nicht null sein");
-//                return oldValue;
-//            }
-//        }
+        if (column.equals("re") && (newValue instanceof Double)) {
+            final Geometry g = (Geometry)feature.getGeometry();
+            final Geometry newPoint = g.getFactory().createPoint(new Coordinate((Double)newValue, g.getCoordinate().y));
+            feature.setGeometry(newPoint);
+        }
 
-//        if (column.equals("ausbaujahr")
-//                    && !checkRange(column, newValue, 1800, getCurrentYear() + 2, true, true, true)) {
-//            return oldValue;
-//        }
+        if (column.equals("ho") && (newValue instanceof Double)) {
+            final Geometry g = (Geometry)feature.getGeometry();
+            final Geometry newPoint = g.getFactory().createPoint(new Coordinate(g.getCoordinate().x, (Double)newValue));
+            feature.setGeometry(newPoint);
+        }
 
         if (column.equals("winkel") && !checkRange(column, newValue, 0, 360, true, true, false)) {
             return oldValue;
         }
 
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("foto")) {
             return new LinkTableCellRenderer();
+        } else if (columnName.equals("foto_nr")) {
+            return new LinkTableCellRenderer();
         }
-        return null;
+
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         if (columnName.equals("ww_gr")) {
-            CidsBeanFilter filter = null;
+            CidsLayerFeatureFilter filter = null;
 
             if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
                 final String userName = AppBroker.getInstance().getOwner();
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             if (bean == null) {
                                 return false;
                             }
@@ -164,10 +197,10 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             return bean != null;
                         }
                     };
@@ -178,7 +211,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
                         true),
                     filter);
         } else if (columnName.equals("l_st")) {
-            final CidsBeanFilter filter = createCidsBeanFilter("nicht_qp");
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("nicht_qp");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         columnName,
@@ -187,10 +220,10 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
                     filter);
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_st") + " - " + bean.getProperty("name");
                     }
                 });
@@ -202,13 +235,13 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
                         columnName,
                         String.valueOf(Types.VARCHAR),
                         true),
-                    createCidsBeanFilter("foto"));
+                    createCidsLayerFeatureFilter("foto"));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_rl") + " - " + bean.getProperty("name");
                     }
                 });
@@ -222,10 +255,10 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(false);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("freigabe") + " - " + bean.getProperty("name");
                     }
                 });
@@ -238,18 +271,18 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
         } else if (columnName.equals("aufn_zeit")) {
             return new DateCellEditor();
         } else {
-            return null;
+            return super.getCellEditor(columnName);
         }
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             if (!checkRange("winkel", feature.getProperty("winkel"), 0, 360, true, true, false)) {
                 return false;
             }
         }
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override
@@ -270,7 +303,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("re")) {
-            return 8;
+            return 9;
         } else if (name.equals("ho")) {
             return 9;
         } else {
@@ -362,7 +395,19 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
                                     extension));
                 }
             }
+        } else if (columnName.equals("foto_nr")) {
+            if ((value != null) && (clickCount == 1)) {
+                createFotoReport();
+            }
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void createFotoReport() {
+        final ReportAction action = new ReportAction();
+        action.actionPerformed(null);
     }
 
     @Override
@@ -381,9 +426,9 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
             symb = new FeatureAnnotationSymbol(rotatedArrow);
         } else {
             if ((Photo.selectedFeature != null) && (Photo.selectedFeature.getId() == feature.getId())) {
-                symb = new FeatureAnnotationSymbol(SELECTED_ARROW);
+                symb = new FeatureAnnotationSymbol(SELECTED_ARROW_NULL);
             } else {
-                symb = new FeatureAnnotationSymbol(ARROW);
+                symb = new FeatureAnnotationSymbol(ARROW_NULL);
             }
         }
 

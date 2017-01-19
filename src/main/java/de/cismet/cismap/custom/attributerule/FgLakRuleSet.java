@@ -18,7 +18,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 
 /**
  * DOCUMENT ME!
@@ -26,7 +25,26 @@ import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLakRuleSet extends DefaultAttributeTableRuleSet {
+public class FgLakRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("la_cd", new Numeric(20, 0, true, false));
+        typeMap.put("lak_st_von", new Numeric(10, 2, false, false));
+        typeMap.put("lak_st_bis", new Numeric(10, 2, false, false));
+        typeMap.put("la_cd_k", new Numeric(20, 0, true, false));
+        typeMap.put("la_gn", new Varchar(75, true, false));
+        typeMap.put("la_gn_t", new Numeric(1, 0, true, false));
+        typeMap.put("la_lage", new Varchar(1, true, false));
+        typeMap.put("la_ordn", new Numeric(2, 0, true, false));
+        typeMap.put("la_wrrl", new Numeric(1, 0, true, false));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("ezg_fl", new Numeric(12, 0, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -41,12 +59,12 @@ public class FgLakRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -55,14 +73,12 @@ public class FgLakRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return super.prepareForSave(features);
     }
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-//        feature.getProperties().put("fis_g_date", new Date(System.currentTimeMillis()));
-//        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
     }
 
     @Override

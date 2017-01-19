@@ -34,6 +34,7 @@ import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.actions.foto.ReportAction;
 import de.cismet.watergis.gui.panels.Photo;
 
 import de.cismet.watergis.utils.LinkTableCellRenderer;
@@ -49,7 +50,33 @@ public class FotoPrPfRuleSet extends WatergisDefaultRuleSet {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final org.apache.log4j.Logger LOG = Logger.getLogger(FotoPrPfRuleSet.class);
-
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st", new Numeric(10, 2, false, false));
+        typeMap.put("la_cd", new Numeric(15, 0, true, false));
+        typeMap.put("la_st", new Numeric(10, 2, false, false));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, false));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", false, false));
+        typeMap.put("re", new Numeric(11,2, false, false));
+        typeMap.put("ho", new Numeric(10,2, false, false));
+        typeMap.put("winkel", new Numeric(5,1, false, false));
+        typeMap.put("foto_nr", new Numeric(15,0, false, false));
+        typeMap.put("foto", new Varchar(250, false, false));
+        typeMap.put("upl_name", new Varchar(50, false, false));
+        typeMap.put("upl_datum", new Varchar(10, false, false));
+        typeMap.put("upl_zeit", new Varchar(8, false, false));
+        typeMap.put("aufn_name", new Varchar(50, false, false));
+        typeMap.put("aufn_datum", new Varchar(10, false, false));
+        typeMap.put("aufn_zeit", new Varchar(8, false, false));
+        typeMap.put("freigabe", new Catalogue("k_freigabe", true, false));
+        typeMap.put("titel", new Varchar(250, false, false));
+        typeMap.put("beschreib", new Varchar(250, false, false));        
+        typeMap.put("bemerkung", new Varchar(250, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -58,39 +85,16 @@ public class FotoPrPfRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("foto")) {
             return new LinkTableCellRenderer();
+        } else if (columnName.equals("foto_nr")) {
+            return new LinkTableCellRenderer();
         }
-        return null;
+
+        return super.getCellRenderer(columnName);
     }
 
-    @Override
-    public TableCellEditor getCellEditor(final String columnName) {
-        return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
-    }
-
-    @Override
-    public void beforeSave(final FeatureServiceFeature feature) {
-    }
-
-    @Override
-    public void afterSave(final TableModel model) {
-    }
 
     @Override
     public void mouseClicked(final FeatureServiceFeature feature,
@@ -132,7 +136,19 @@ public class FotoPrPfRuleSet extends WatergisDefaultRuleSet {
                                     extension));
                 }
             }
+        } else if (columnName.equals("foto_nr")) {
+            if ((value != null) && (clickCount == 1)) {
+                createFotoReport();
+            }
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void createFotoReport() {
+        final ReportAction action = new ReportAction();
+        action.actionPerformed(null);
     }
 
     @Override

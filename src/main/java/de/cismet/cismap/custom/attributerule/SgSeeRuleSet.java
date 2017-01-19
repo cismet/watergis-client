@@ -20,7 +20,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -42,6 +41,40 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  */
 public class SgSeeRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("see_gn", new Varchar(50, true, true));
+        typeMap.put("see_gn_t", new Numeric(1, 0, false, true));
+        typeMap.put("see_lawa", new Varchar(20, true, true));
+        typeMap.put("gbk_lawa", new Numeric(15, 0, true, true));
+        typeMap.put("gwk_lawa", new Numeric(15, 0, false, true));
+        typeMap.put("see_sp", new Varchar(8, true, true));
+        typeMap.put("see_typ", new Varchar(3, true, true));
+        typeMap.put("see_art", new Varchar(3, false, true));
+        typeMap.put("see_wrrl", new Numeric(1, 0, false, true));
+        typeMap.put("see_nhn", new Numeric(6, 2, false, true));
+        typeMap.put("see_verm", new Numeric(1, 0, false, true));
+        typeMap.put("verm_datum", new Varchar(10, false, true));
+        typeMap.put("verm_nhn", new Numeric(6, 2, false, true));
+        typeMap.put("bz", new Numeric(2, 0, true, true));
+        typeMap.put("tmax", new Numeric(5, 2, false, true));
+        typeMap.put("td", new Numeric(5, 2, false, true));
+        typeMap.put("vol", new Numeric(10, 0, false, true));
+        typeMap.put("tg", new Numeric(6, 3, false, true));
+        typeMap.put("ue", new Numeric(6, 3, false, true));
+        typeMap.put("ul", new Numeric(7, 3, false, true));
+        typeMap.put("leff", new Numeric(6, 3, false, true));
+        typeMap.put("beff", new Numeric(6, 3, false, true));
+        typeMap.put("tabelle", new Varchar(50, false, true));
+        typeMap.put("ezg", new Numeric(1, 0, false, true));
+        typeMap.put("ezg_fl", new Numeric(12, 0, false, true));
+        typeMap.put("flaeche", new Numeric(12, 0, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -51,86 +84,17 @@ public class SgSeeRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if (newValue == null) {
-            if (column.equalsIgnoreCase("see_gn")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_gn darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("see_lawa")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_lawa darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("gbk_lawa")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_lawa darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("see_sp")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_sp darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("see_typ")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_typ darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("bz")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut bz darf nicht leer sein");
-                return oldValue;
-            }
-        }
-
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("tabelle")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("see_gn") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_gn darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("see_lawa") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_lawa darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("gbk_lawa") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_lawa darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("see_sp") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_sp darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("see_typ") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_typ darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("bz") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut bz darf nicht leer sein");
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override
@@ -159,12 +123,12 @@ public class SgSeeRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
+        Integer value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getArea();
+            value = (int)geom.getArea();
         }
 
         return value;
@@ -172,12 +136,12 @@ public class SgSeeRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
+        return Integer.class;
     }
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }
 
     @Override

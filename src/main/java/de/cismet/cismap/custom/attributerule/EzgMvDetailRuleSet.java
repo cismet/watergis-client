@@ -17,20 +17,14 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import java.sql.Timestamp;
 
-import java.util.List;
-
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-
-import de.cismet.watergis.broker.AppBroker;
 
 /**
  * DOCUMENT ME!
@@ -38,7 +32,29 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class EzgMvDetailRuleSet extends DefaultAttributeTableRuleSet {
+public class EzgMvDetailRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("gbk_lawa", new Numeric(15, 0, true, true));
+        typeMap.put("gbk_lawa_k", new Numeric(15, 0, true, true));
+        typeMap.put("gwk_lawa", new Numeric(15, 0, true, true));
+        typeMap.put("gwk_gn", new Varchar(60, true, true));
+        typeMap.put("gbk_von", new Varchar(100, true, true));
+        typeMap.put("gbk_bis", new Varchar(100, false, true));
+        typeMap.put("gbk_ordn", new Numeric(2, 0, true, true));
+        typeMap.put("gbk_pl", new Numeric(10, 0, false, true));
+        typeMap.put("rbd_cd", new Varchar(4, true, true));
+        typeMap.put("wa_cd", new Varchar(4, true, true));
+        typeMap.put("planu_cd", new Varchar(8, true, true));
+        typeMap.put("wbv", new Numeric(2, 0, true, true));
+        typeMap.put("ezg_fl", new Numeric(12, 0, false, true));
+        typeMap.put("flaeche", new Numeric(12, 0, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -49,115 +65,13 @@ public class EzgMvDetailRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if (newValue == null) {
-            if (column.equalsIgnoreCase("gbk_lawa")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_lawa darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("gbk_lawa_k")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_lawa_k darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("gwk_lawa")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gwk_lawa darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("gwk_gn")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gwk_gn darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("gbk_von")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_von darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("gbk_ordn")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_ordn darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("rbd_cd")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut rbd_cd darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("wa_cd")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wa_cd darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("planu_cd")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut planu_cd darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("wbv")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wbv darf nicht leer sein");
-                return oldValue;
-            }
-        }
-
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("gbk_lawa") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_lawa darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("gbk_lawa_k") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_lawa_k darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("gwk_lawa") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gwk_lawa darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("gwk_gn") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gwk_gn darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("gbk_von") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_von darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("gbk_ordn") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_ordn darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("rbd_cd") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut rbd_cd darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("wa_cd") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wa_cd darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("planu_cd") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut planu_cd darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("wbv") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wbv darf nicht leer sein");
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override
@@ -186,12 +100,12 @@ public class EzgMvDetailRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
+        Integer value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getArea();
+            value = (int)geom.getArea();
         }
 
         return value;
@@ -199,11 +113,11 @@ public class EzgMvDetailRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
+        return Integer.class;
     }
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }
 }

@@ -15,14 +15,8 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
-import org.apache.log4j.Logger;
-
 import java.sql.Timestamp;
 
-import java.util.List;
-
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -33,6 +27,7 @@ import de.cismet.cismap.cidslayer.PointAndStationCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
@@ -49,6 +44,24 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  */
 public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st", new Numeric(10, 2, false, true));
+        typeMap.put("la_cd", new Numeric(15, 0, false, false));
+        typeMap.put("la_st", new Numeric(10, 2, false, false));
+        typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, true, true));
+        typeMap.put("wbaktzei", new Varchar(75, false, true));
+        typeMap.put("wbbehakt", new Varchar(65, false, true));
+        typeMap.put("wbbescheid", new Varchar(75, false, true));
+        typeMap.put("wbausbau1", new Varchar(75, false, true));
+        typeMap.put("wbausbau2", new Varchar(75, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -58,49 +71,23 @@ public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if (newValue == null) {
-            if (column.equalsIgnoreCase("wbbl")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wbbl darf nicht leer sein");
-                return oldValue;
-            }
-        }
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("wbbl")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("ba_st")) {
+        if (columnName.equals("ba_cd")) {
+            return new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+        } else if (columnName.equals("ba_st")) {
             return new StationTableCellEditor(columnName);
         } else {
             return null;
         }
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("wbbl") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wbbl darf nicht leer sein");
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override

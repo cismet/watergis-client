@@ -48,6 +48,40 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
 
     private static final org.apache.log4j.Logger LOG = Logger.getLogger(QpGafPRuleSet.class);
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st", new Numeric(10, 2, false, false));
+        typeMap.put("la_cd", new Numeric(15, 0, false, false));
+        typeMap.put("la_st", new Numeric(10, 2, false, false));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, false));
+        typeMap.put("re", new Numeric(11, 2, false, false));
+        typeMap.put("ho", new Numeric(10, 2, false, false));
+        typeMap.put("qp_nr", new Numeric(20, 0, false, false));
+        typeMap.put("upl_name", new Varchar(50, false, false));
+        typeMap.put("upl_datum", new Varchar(10, false, false));
+        typeMap.put("upl_zeit", new Varchar(8, false, false));
+        typeMap.put("aufn_name", new Varchar(50, false, false));
+        typeMap.put("aufn_datum", new Varchar(10, false, false));
+        typeMap.put("aufn_zeit", new Varchar(8, false, false));
+        typeMap.put("titel", new Varchar(250, false, false));
+        typeMap.put("beschreib", new Varchar(250, false, false));
+        typeMap.put("bemerkung", new Varchar(250, false, false));
+        typeMap.put("p_nr", new Numeric(20, 0, false, false));
+        typeMap.put("id_gaf", new Varchar(50, false, false));
+        typeMap.put("y", new Numeric(6, 2, false, false));
+        typeMap.put("z", new Numeric(6, 2, false, false));
+        typeMap.put("kz", new Catalogue("k_qp_gaf_kz", true, false));
+        typeMap.put("hw", new Numeric(10, 2, false, false));
+        typeMap.put("rw", new Numeric(11, 2, false, false));
+        typeMap.put("hyk", new Varchar(10, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -56,31 +90,12 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("qp_nr")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
-    }
-
-    @Override
-    public TableCellEditor getCellEditor(final String columnName) {
-        return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
     }
 
     @Override

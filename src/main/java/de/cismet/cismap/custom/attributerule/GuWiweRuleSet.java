@@ -32,8 +32,8 @@ import javax.swing.table.TableModel;
 
 import de.cismet.cids.dynamics.CidsBean;
 
-import de.cismet.cids.tools.CidsBeanFilter;
-
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -44,7 +44,7 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 
 import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRange;
 
@@ -77,6 +77,25 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
 
     private final Logger LOG = Logger.getLogger(GuWiweRuleSet.class);
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
+        typeMap.put("wiwe", new Catalogue("k_wiwe", true, true));
+        typeMap.put("material", new Catalogue("k_material", false, true));
+        typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
+        typeMap.put("bemerkung", new Varchar(250, false, true));
+        typeMap.put("br", new Numeric(4, 2, false, true));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -92,31 +111,31 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (newValue == null) {
-            if (column.equals("ww_gr") || column.equals("wiwe")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
-                            + column
-                            + " darf nicht leer sein");
-                return oldValue;
-            }
-        }
-
         if (column.equals("ausbaujahr")
-                    && !checkRange(column, newValue, 1800, getCurrentYear() + 2, true, true, true)) {
+                    && !checkRange(
+                        column,
+                        newValue,
+                        1950,
+                        getCurrentYear(),
+                        1800,
+                        getCurrentYear()
+                        + 2,
+                        true,
+                        true,
+                        true)) {
             return oldValue;
         }
 
-        if (column.equals("br") && !checkRange(column, newValue, 0, 30, true, false, true)) {
+        if (column.equals("br") && !checkRange(column, newValue, 0, 10, 0, 30, true, false, true)) {
             return oldValue;
         }
 
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -137,10 +156,10 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("traeger") + " - " + bean.getProperty("name");
                     }
                 });
@@ -154,10 +173,10 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("zust_kl") + " - " + bean.getProperty("name");
                     }
                 });
@@ -171,17 +190,17 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(false);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("wiwe") + " - " + bean.getProperty("name");
                     }
                 });
 
             return editor;
         } else if (columnName.equals("l_st")) {
-            final CidsBeanFilter filter = createCidsBeanFilter("nicht_qp");
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("nicht_qp");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         columnName,
@@ -190,10 +209,10 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                     filter);
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_st") + " - " + bean.getProperty("name");
                     }
                 });
@@ -207,10 +226,10 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("material") + " - " + bean.getProperty("name");
                     }
                 });
@@ -221,19 +240,8 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("ww_gr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ww_gr darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("wiwe") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wiwe darf nicht leer sein");
-                return false;
-            }
-
             if (
                 !checkRange(
                             "ausbaujahr",
@@ -254,7 +262,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                 final String[] allowedMaterialArray = allowedMaterial.get(feature.getProperty("wiwe").toString());
 
                 if (allowedMaterialArray != null) {
-                    if ((feature.getProperty("material") == null)
+                    if ((isValueEmpty(feature.getProperty("material")))
                                 || !arrayContains(allowedMaterialArray,
                                     feature.getProperty("material").toString())) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -269,7 +277,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override
@@ -303,7 +311,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
         return value;
     }

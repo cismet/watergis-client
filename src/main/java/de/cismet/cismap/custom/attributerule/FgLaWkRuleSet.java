@@ -17,39 +17,37 @@ import Sirius.server.middleware.types.MetaClass;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import org.deegree.datatypes.Types;
+import org.apache.log4j.Logger;
 
-import java.awt.Component;
+import java.io.File;
 
 import java.sql.Timestamp;
 
 import java.util.List;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import de.cismet.cids.dynamics.CidsBean;
-
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
+import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
+
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.download.WkFgDownload;
+
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
+import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -57,7 +55,25 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLaWkRuleSet extends DefaultAttributeTableRuleSet {
+public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(FgLaWkRuleSet.class);
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("la_cd", new Numeric(15, 0, false, false));
+        typeMap.put("la_st_von", new Numeric(10, 2, false, true));
+        typeMap.put("la_st_bis", new Numeric(10, 2, false, true));
+        typeMap.put("wk_nr", new Varchar(10, true, true));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("laenge_wk", new Numeric(10, 2, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -69,25 +85,12 @@ public class FgLaWkRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if (newValue == null) {
-            if (column.equalsIgnoreCase("wk_nr")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wk_nr darf nicht leer sein");
-                return oldValue;
-            }
-        }
-
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        if (columnName.equals("wk_nr")) {
+            return new LinkTableCellRenderer();
+        } else {
+            return super.getCellRenderer(columnName);
+        }
     }
 
     @Override
@@ -99,19 +102,6 @@ public class FgLaWkRuleSet extends DefaultAttributeTableRuleSet {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("wk_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wk_nr darf nicht leer sein");
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override
@@ -132,7 +122,7 @@ public class FgLaWkRuleSet extends DefaultAttributeTableRuleSet {
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("laenge")) {
-            return -3;
+            return -4;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }
@@ -145,7 +135,7 @@ public class FgLaWkRuleSet extends DefaultAttributeTableRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
 
         return value;
@@ -161,5 +151,41 @@ public class FgLaWkRuleSet extends DefaultAttributeTableRuleSet {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
 
         return new StationLineCreator("la_st", routeMc, new LinearReferencingWatergisHelper());
+    }
+
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("wk_nr")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                createWkFgReport((String)value);
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  wkk  DOCUMENT ME!
+     */
+    private void createWkFgReport(final String wkk) {
+        if (DownloadManagerDialog.getInstance().showAskingForUserTitleDialog(AppBroker.getInstance().getRootWindow())) {
+            final String jobname = DownloadManagerDialog.getInstance().getJobName();
+            String dir;
+
+            if ((jobname != null) && !jobname.equals("")) {
+                final File path = new File(DownloadManager.instance().getDestinationDirectory().getAbsolutePath(),
+                        DownloadManagerDialog.getInstance().getJobName());
+                dir = path.getAbsolutePath();
+            } else {
+                dir = DownloadManager.instance().getDestinationDirectory().getAbsolutePath();
+            }
+
+            final WkFgDownload download = new WkFgDownload(dir, wkk);
+
+            DownloadManager.instance().add(download);
+        }
     }
 }

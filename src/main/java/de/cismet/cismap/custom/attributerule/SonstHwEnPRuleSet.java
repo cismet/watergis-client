@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -38,13 +39,39 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
 
 import de.cismet.watergis.broker.AppBroker;
 
+import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.isValueEmpty;
+
 /**
  * DOCUMENT ME!
  *
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class SonstHwEnPRuleSet extends DefaultAttributeTableRuleSet {
+public class SonstHwEnPRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
+        typeMap.put("ww_gr", new WatergisDefaultRuleSet.Catalogue("k_ww_gr", false, true));
+        typeMap.put("nr", new Numeric(16, 0, false, true));
+        typeMap.put("wann", new Varchar(16, false, true));
+        typeMap.put("wer", new Varchar(250, true, true));
+        typeMap.put("firma", new Varchar(250, false, true));
+        typeMap.put("vorwahl", new Varchar(10, false, true));
+        typeMap.put("nummer", new Varchar(20, false, true));
+        typeMap.put("mail", new Varchar(50, false, true));
+        typeMap.put("text", new Varchar(250, true, true));
+        typeMap.put("gewaesser", new Varchar(250, false, true));
+        typeMap.put("station", new Numeric(10, 2, false, true));
+        typeMap.put("koord_rw", new Numeric(11, 2, false, true));
+        typeMap.put("koord_hw", new Numeric(10, 2, false, true));
+        typeMap.put("bearb_wann", new Varchar(16, false, true));
+        typeMap.put("bearb_wer", new Varchar(250, false, true));
+        typeMap.put("bearb_komm", new Varchar(250, false, true));
+        typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
+        typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -60,7 +87,7 @@ public class SonstHwEnPRuleSet extends DefaultAttributeTableRuleSet {
         } else {
             return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                         && !columnName.equals("nr") && !columnName.equals("wann") && !columnName.equals("geom")
-                        && !columnName.equals("angelegt_von") && !columnName.equals("id");
+                        && !columnName.equals("id");
         }
     }
 
@@ -70,12 +97,12 @@ public class SonstHwEnPRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -90,8 +117,19 @@ public class SonstHwEnPRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        for (final FeatureServiceFeature feature : features) {
+            if ((isValueEmpty(feature.getProperty("mail")))
+                        && ((isValueEmpty(feature.getProperty("vorwahl")))
+                            || (isValueEmpty(feature.getProperty("nummer"))))) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Es muss immer entweder das Mail-Feld oder das Vorwahl- und Nummer-Feld gesetzt sein.");
+
+                return false;
+            }
+        }
+
+        return super.prepareForSave(features);
     }
 
     @Override

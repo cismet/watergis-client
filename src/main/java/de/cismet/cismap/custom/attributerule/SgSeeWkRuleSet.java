@@ -15,23 +15,16 @@ import Sirius.navigator.connection.SessionManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import org.apache.log4j.Logger;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import java.sql.Timestamp;
 
 import java.util.List;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -48,6 +41,28 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  */
 public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("wk_nr", new Varchar(10, true, true));
+        typeMap.put("see_gn", new Varchar(50, true, true));
+        typeMap.put("see_lawa", new Varchar(20, true, true));
+        typeMap.put("see_sp", new Varchar(8, true, true));
+        typeMap.put("tmax", new Numeric(5, 2, false, true));
+        typeMap.put("td", new Numeric(5, 2, false, true));
+        typeMap.put("vol", new Numeric(10, 0, false, true));
+        typeMap.put("tg", new Numeric(6, 3, false, true));
+        typeMap.put("ue", new Numeric(6, 3, false, true));
+        typeMap.put("ul", new Numeric(7, 3, false, true));
+        typeMap.put("leff", new Numeric(6, 3, false, true));
+        typeMap.put("beff", new Numeric(6, 3, false, true));
+        typeMap.put("tabelle", new Varchar(50, false, true));
+        typeMap.put("flaeche", new Numeric(12, 0, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -62,7 +77,7 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (newValue == null) {
+        if (isValueEmpty(newValue)) {
             if (column.equalsIgnoreCase("wk_nr")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut ms_cd_lw darf nicht leer sein");
@@ -89,7 +104,7 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("tabelle")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
@@ -99,21 +114,21 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("wk_nr") == null) {
+            if (isValueEmpty(feature.getProperty("wk_nr"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut wk_nr darf nicht leer sein");
                 return false;
-            } else if (feature.getProperty("see_gn") == null) {
+            } else if (isValueEmpty(feature.getProperty("see_gn"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut see_gn darf nicht leer sein");
                 return false;
-            } else if (feature.getProperty("see_lawa") == null) {
+            } else if (isValueEmpty(feature.getProperty("see_lawa"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut gbk_lawa darf nicht leer sein");
                 return false;
-            } else if (feature.getProperty("see_sp") == null) {
+            } else if (isValueEmpty(feature.getProperty("see_sp"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut see_sp darf nicht leer sein");
                 return false;
@@ -149,12 +164,12 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
+        Integer value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getArea();
+            value = (int)geom.getArea();
         }
 
         return value;
@@ -162,12 +177,12 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
+        return Integer.class;
     }
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }
 
     @Override

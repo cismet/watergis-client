@@ -32,8 +32,8 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cids.tools.CidsBeanFilter;
-
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
@@ -46,7 +46,7 @@ import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 
 /**
@@ -55,7 +55,7 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBaGmdRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBaGmdRuleSet extends WatergisDefaultRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
@@ -72,7 +72,7 @@ public class FgBaGmdRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (newValue == null) {
+        if (isValueEmpty(newValue)) {
             JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                 "Das Attribut "
                         + column
@@ -85,7 +85,7 @@ public class FgBaGmdRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -95,15 +95,15 @@ public class FgBaGmdRuleSet extends DefaultAttributeTableRuleSet {
         } else if (columnName.equals("ba_st_bis")) {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("gmd_nr_re") || columnName.equals("gmd_nr_li")) {
-            CidsBeanFilter filter;
+            CidsLayerFeatureFilter filter;
             final String owner = AppBroker.getInstance().getOwner();
 
             if (!owner.equalsIgnoreCase("Administratoren")
                         && !owner.equalsIgnoreCase("lung_edit1")) {
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             if (owner.startsWith("wbv") || owner.startsWith("stalu")) {
                                 final Boolean b = (Boolean)bean.getProperty(owner.substring(0, owner.indexOf("_edit")));
                                 return (b != null) && b;
@@ -121,10 +121,10 @@ public class FgBaGmdRuleSet extends DefaultAttributeTableRuleSet {
                         }
                     };
             } else {
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             return bean != null;
                         }
                     };
@@ -136,10 +136,10 @@ public class FgBaGmdRuleSet extends DefaultAttributeTableRuleSet {
                         String.valueOf(Types.VARCHAR),
                         true),
                     filter);
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("gb") + " - " + bean.getProperty("name");
                     }
                 });
@@ -151,25 +151,25 @@ public class FgBaGmdRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("gmd_nr") == null) {
+            if (isValueEmpty(feature.getProperty("gmd_nr"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut gmd_nr darf nicht leer sein");
                 return false;
-            } else if (feature.getProperty("amt_nr") == null) {
+            } else if (isValueEmpty(feature.getProperty("amt_nr"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut amt_nr darf nicht leer sein");
                 return false;
-            } else if (feature.getProperty("amt_name") == null) {
+            } else if (isValueEmpty(feature.getProperty("amt_name"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut amt_name darf nicht leer sein");
                 return false;
-            } else if (feature.getProperty("kreis_nr") == null) {
+            } else if (isValueEmpty(feature.getProperty("kreis_nr"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut kreis_nr darf nicht leer sein");
                 return false;
-            } else if (feature.getProperty("kreis_name") == null) {
+            } else if (isValueEmpty(feature.getProperty("kreis_name"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut kreis_name darf nicht leer sein");
                 return false;
@@ -210,7 +210,7 @@ public class FgBaGmdRuleSet extends DefaultAttributeTableRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
 
         return value;

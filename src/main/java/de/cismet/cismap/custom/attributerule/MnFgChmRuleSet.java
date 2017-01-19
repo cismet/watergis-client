@@ -15,13 +15,8 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
-import org.apache.log4j.Logger;
-
 import java.sql.Timestamp;
 
-import java.util.List;
-
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -31,8 +26,8 @@ import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 import de.cismet.cismap.cidslayer.PointAndStationCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
@@ -46,7 +41,23 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class MnFgChmRuleSet extends DefaultAttributeTableRuleSet {
+public class MnFgChmRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st", new Numeric(10, 2, false, true));
+        typeMap.put("la_cd", new Numeric(15, 0, false, false));
+        typeMap.put("la_st", new Numeric(10, 2, false, false));
+        typeMap.put("ms_nr", new Varchar(20, true, true));
+        typeMap.put("ms_name", new Varchar(50, true, true));
+        typeMap.put("re", new Numeric(11, 2, true, false));
+        typeMap.put("ho", new Numeric(10, 2, true, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -57,64 +68,19 @@ public class MnFgChmRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if ((column.equals("ms_nr") || column.equals("ms_name") || column.equals("re") || column.equals("ho"))
-                    && (newValue == null)) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
-                        + column
-                        + " darf nicht null sein");
-            return oldValue;
-        }
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("ba_st")) {
+        if (columnName.equals("ba_cd")) {
+            return new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+        } else if (columnName.equals("ba_st")) {
             return new StationTableCellEditor(columnName);
         } else {
             return null;
         }
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        for (final FeatureServiceFeature f : features) {
-            if (f.getProperty("ms_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ms_nr darf nicht null sein");
-                return false;
-            }
-
-            if (f.getProperty("ms_name") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ms_name darf nicht null sein");
-                return false;
-            }
-
-            if (f.getProperty("re") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut re darf nicht null sein");
-                return false;
-            }
-
-            if (f.getProperty("ho") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ho darf nicht null sein");
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override

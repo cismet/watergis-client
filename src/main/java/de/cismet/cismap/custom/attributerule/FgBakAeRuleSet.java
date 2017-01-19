@@ -20,6 +20,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Timestamp;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -27,10 +28,13 @@ import javax.swing.table.TableModel;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
+import de.cismet.cids.server.cidslayer.CidsLayerInfo;
+
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
+import de.cismet.cismap.commons.featureservice.LayerProperties;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
@@ -45,7 +49,7 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBakAeRuleSet extends WatergisDefaultRuleSet {
 
     //~ Methods ----------------------------------------------------------------
 
@@ -67,7 +71,7 @@ public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -82,7 +86,7 @@ public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         return true;
     }
 
@@ -116,7 +120,7 @@ public class FgBakAeRuleSet extends DefaultAttributeTableRuleSet {
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
         return value;
     }
