@@ -27,9 +27,12 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import de.cismet.cids.custom.watergis.server.search.BakCount;
 import de.cismet.cids.custom.watergis.server.search.BakWithIncompleteGbkCoverage;
 import de.cismet.cids.custom.watergis.server.search.BakWithIncompleteObjartCoverage;
+import de.cismet.cids.custom.watergis.server.search.FgBaOnEzgBorder;
+import de.cismet.cids.custom.watergis.server.search.FgBaOutsideEzgBorder;
+import de.cismet.cids.custom.watergis.server.search.FgBakCount;
+import de.cismet.cids.custom.watergis.server.search.GbkInIncorrectEzg;
 import de.cismet.cids.custom.watergis.server.search.GwkLaCdFailure;
 import de.cismet.cids.custom.watergis.server.search.MergeBakGbk;
 import de.cismet.cids.custom.watergis.server.search.MergeBakGn;
@@ -44,6 +47,7 @@ import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 
 import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.WaitDialog;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -53,7 +57,9 @@ import static javax.swing.Action.SHORT_DESCRIPTION;
 import static javax.swing.Action.SMALL_ICON;
 
 /**
- * DOCUMENT ME!
+ * Diese Prüfung bezieht sich auf Issue 240.
+ *
+ * <p>Anmerkung: Bei komplexen Prüfungen werden immer alle Objekte geprüft.</p>
  *
  * @author   therter
  * @version  $Revision$, $Date$
@@ -65,9 +71,9 @@ public class LawaCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BAK = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_bak");
-    private static final MetaClass FG_BAK_OBJART = ClassCacheMultiple.getMetaClass(
-            AppBroker.DOMAIN_NAME,
-            "dlm25w.fg_bak_objart");
+//    private static final MetaClass FG_BAK_OBJART = ClassCacheMultiple.getMetaClass(
+//            AppBroker.DOMAIN_NAME,
+//            "dlm25w.fg_bak_objart");
     private static final MetaClass FG_BAK_GBK = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_bak_gbk");
@@ -76,10 +82,35 @@ public class LawaCheckAction extends AbstractCheckAction {
             "dlm25w.fg_bak_gwk");
     private static String QUERY_GBK_CATALOGUE;
     private static String QUERY_GWK_CATALOGUE;
-    private static String QUERY_OBJART_CATALOGUE;
+//    private static String QUERY_OBJART_CATALOGUE;
+    private static final String CHECK_BA_EZG_AUSSEN =
+        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: außen";
+    private static final String CHECK_BA_EZG_RAND = "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: Rand";
+    private static final String CHECKEZG_DELTA_GBK =
+        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: innen: Delta GBK/EZG";
+    private static final String CHECK_GWK_DELTA_GWK =
+        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gwk mit Delta GWK/GBK";
+//    private static final String CHECK_GBK_CAT_OBJECT =
+//        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_objart";
+    private static final String CHECK_GBK_CAT_GWK =
+        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_gwk_lawa";
+    private static final String CHECK_GBK_CAT_LAWA =
+        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_gbk_lawa";
+    private static final String CHECK_BAK_OHNE_GBK =
+        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak ohne fg_bak_gbk";
+    private static final String[] ALL_CHECKS = new String[] {
+            CHECK_BA_EZG_AUSSEN,
+            CHECK_BA_EZG_RAND,
+            CHECKEZG_DELTA_GBK,
+            CHECK_GWK_DELTA_GWK,
+//            CHECK_GBK_CAT_OBJECT,
+            CHECK_GBK_CAT_GWK,
+            CHECK_GBK_CAT_LAWA,
+            CHECK_BAK_OHNE_GBK
+        };
 
     static {
-        if ((FG_BAK_OBJART != null) && (FG_BAK_GBK != null) && (FG_BAK_GWK != null) && (FG_BAK != null)) {
+        if ((FG_BAK_GBK != null) && (FG_BAK_GWK != null) && (FG_BAK != null)) {
             final User user = SessionManager.getSession().getUser();
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -89,7 +120,7 @@ public class LawaCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
                             + "join dlm25w.fg_bak_punkt von on (linie.von = von.id) "
                             + "join dlm25w.fg_bak bak on (von.route = bak.id) "
-                            + "where not exists (select 1 from dlm25w.k_gbk_lawa where id = t.gbk_lawa);";
+                            + "where not exists (select 1 from dlm25w.k_gbk_lawa where id = t.gbk_lawa)";
             } else {
                 QUERY_GBK_CATALOGUE = "select " + FG_BAK_GBK.getID() + ", t." + FG_BAK_GBK.getPrimaryKey()
                             + " from " + FG_BAK_GBK.getTableName() + " t \n"
@@ -109,7 +140,7 @@ public class LawaCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
                             + "join dlm25w.fg_bak_punkt von on (linie.von = von.id) "
                             + "join dlm25w.fg_bak bak on (von.route = bak.id) "
-                            + "where not exists (select 1 from dlm25w.k_gwk_lawa where id = t.la_cd);";
+                            + "where not exists (select 1 from dlm25w.k_gwk_lawa where id = t.la_cd)";
             } else {
                 QUERY_GWK_CATALOGUE = "select " + FG_BAK_GWK.getID() + ", t." + FG_BAK_GWK.getPrimaryKey()
                             + " from " + FG_BAK_GWK.getTableName() + " t \n"
@@ -122,25 +153,25 @@ public class LawaCheckAction extends AbstractCheckAction {
                             + "'";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_OBJART_CATALOGUE = "select " + FG_BAK_OBJART.getID() + ", t." + FG_BAK_OBJART.getPrimaryKey()
-                            + " from " + FG_BAK_OBJART.getTableName() + " t\n"
-                            + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
-                            + "join dlm25w.fg_bak_punkt von on (linie.von = von.id) "
-                            + "join dlm25w.fg_bak bak on (von.route = bak.id) "
-                            + "where not exists (select 1 from dlm25w.k_gwk_lawa where id = t.la_cd);";
-            } else {
-                QUERY_OBJART_CATALOGUE = "select " + FG_BAK_OBJART.getID() + ", t." + FG_BAK_OBJART.getPrimaryKey()
-                            + " from " + FG_BAK_OBJART.getTableName() + " t \n"
-                            + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
-                            + "join dlm25w.fg_bak_punkt von on (linie.von = von.id) "
-                            + "join dlm25w.fg_bak bak on (von.route = bak.id) "
-                            + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where not exists (select 1 from dlm25w.k_gwk_lawa where id = t.la_cd) and gr.owner = '"
-                            + user.getUserGroup().getName()
-                            + "'";
-            }
+//            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
+//                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+//                QUERY_OBJART_CATALOGUE = "select " + FG_BAK_OBJART.getID() + ", t." + FG_BAK_OBJART.getPrimaryKey()
+//                            + " from " + FG_BAK_OBJART.getTableName() + " t\n"
+//                            + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
+//                            + "join dlm25w.fg_bak_punkt von on (linie.von = von.id) "
+//                            + "join dlm25w.fg_bak bak on (von.route = bak.id) "
+//                            + "where not exists (select 1 from dlm25w.k_objart where id = t.objart)";
+//            } else {
+//                QUERY_OBJART_CATALOGUE = "select " + FG_BAK_OBJART.getID() + ", t." + FG_BAK_OBJART.getPrimaryKey()
+//                            + " from " + FG_BAK_OBJART.getTableName() + " t \n"
+//                            + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
+//                            + "join dlm25w.fg_bak_punkt von on (linie.von = von.id) "
+//                            + "join dlm25w.fg_bak bak on (von.route = bak.id) "
+//                            + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
+//                            + "where not exists (select 1 from dlm25w.k_objart where id = t.objart) and gr.owner = '"
+//                            + user.getUserGroup().getName()
+//                            + "'";
+//            }
         }
     }
 
@@ -171,7 +202,14 @@ public class LawaCheckAction extends AbstractCheckAction {
     //~ Methods ----------------------------------------------------------------
 
     @Override
-    public boolean startCheck(final boolean isExport) {
+    public int getProgressSteps() {
+        return 12;
+    }
+
+    @Override
+    public boolean startCheckInternal(final boolean isExport,
+            final WaitDialog wd,
+            final List<H2FeatureService> result) {
         final WaitingDialogThread<CheckResult> wdt = new WaitingDialogThread<CheckResult>(
                 StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                 true,
@@ -184,9 +222,17 @@ public class LawaCheckAction extends AbstractCheckAction {
                 protected CheckResult doInBackground() throws Exception {
                     final CheckResult result = new CheckResult();
                     String user = AppBroker.getInstance().getOwner();
+                    this.wd.setMax(getProgressSteps());
+
+                    if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
+                        user = null;
+                    }
+
+                    removeServicesFromDb(ALL_CHECKS);
 
                     final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
-                                .customServerSearch(SessionManager.getSession().getUser(), new BakCount(user));
+                                .customServerSearch(SessionManager.getSession().getUser(),
+                                        new FgBakCount(user, null, null));
 
                     if ((countList != null) && !countList.isEmpty()) {
                         final ArrayList innerList = countList.get(0);
@@ -195,66 +241,92 @@ public class LawaCheckAction extends AbstractCheckAction {
                             result.setBakCount(((Number)innerList.get(0)).intValue());
                         }
                     }
-
-                    if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
-                        user = null;
-                    }
+                    increaseProgress(wd, 1);
 
                     // start auto correction
                     final CidsServerSearch mergeGwk = new MergeFgBakGwk(user);
                     SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGwk);
+                    increaseProgress(wd, 1);
                     final CidsServerSearch mergeGbk = new MergeBakGbk(user);
                     SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGbk);
+                    increaseProgress(wd, 1);
                     final CidsServerSearch mergeGn = new MergeBakGn(user);
                     SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGn);
+                    increaseProgress(wd, 1);
                     final CidsServerSearch mergeObjart = new MergeBakObjart(user);
                     SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeObjart);
+                    increaseProgress(wd, 1);
 
-                    // start checks
-                    final List<FeatureServiceAttribute> bakServiceAttributeDefinition =
+                    // start checks final List<FeatureServiceAttribute> objartServiceAttributeDefinition = new
+                    // ArrayList<FeatureServiceAttribute>();
+                    //
+                    // FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute( "id",
+                    // String.valueOf(Types.INTEGER), true); objartServiceAttributeDefinition.add(serviceAttribute);
+                    // serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
+                    // FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
+                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
+                    // FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
+                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
+                    // FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
+                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
+                    // FeatureServiceAttribute("objart", String.valueOf(Types.INTEGER), true);
+                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
+                    // FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
+                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
+                    // FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
+                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
+                    // FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
+                    // objartServiceAttributeDefinition.add(serviceAttribute);
+
+//                    result.setFgBakWithoutObjart(analyseByCustomSearch(
+//                            new BakWithIncompleteObjartCoverage(user, null),
+//                            "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak ohne fg_bak_objart",
+//                            objartServiceAttributeDefinition));
+//                    increaseProgress(wd, 1);
+
+                    final List<FeatureServiceAttribute> gbkServiceAttributeDefinition =
                         new ArrayList<FeatureServiceAttribute>();
 
                     FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
                             "id",
                             String.valueOf(Types.INTEGER),
                             true);
-                    bakServiceAttributeDefinition.add(serviceAttribute);
+                    gbkServiceAttributeDefinition.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
-                    bakServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
-                    bakServiceAttributeDefinition.add(serviceAttribute);
+                    gbkServiceAttributeDefinition.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
-                    bakServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("ba_gn", String.valueOf(Types.VARCHAR), true);
-                    bakServiceAttributeDefinition.add(serviceAttribute);
+                    gbkServiceAttributeDefinition.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
+                    gbkServiceAttributeDefinition.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
+                    gbkServiceAttributeDefinition.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.VARCHAR), true);
+                    gbkServiceAttributeDefinition.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
-                    bakServiceAttributeDefinition.add(serviceAttribute);
+                    gbkServiceAttributeDefinition.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
-                    bakServiceAttributeDefinition.add(serviceAttribute);
+                    gbkServiceAttributeDefinition.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
-                    bakServiceAttributeDefinition.add(serviceAttribute);
-
-                    result.setFgBakWithoutObjart(analyseByCustomSearch(
-                            new BakWithIncompleteObjartCoverage(user),
-                            "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak ohne fg_bak_objart",
-                            bakServiceAttributeDefinition));
+                    gbkServiceAttributeDefinition.add(serviceAttribute);
 
                     result.setFgBakWithoutGbk(analyseByCustomSearch(
-                            new BakWithIncompleteGbkCoverage(user),
-                            "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak ohne fg_bak_gbk",
-                            bakServiceAttributeDefinition));
+                            new BakWithIncompleteGbkCoverage(user, null),
+                            CHECK_BAK_OHNE_GBK,
+                            gbkServiceAttributeDefinition));
+                    increaseProgress(wd, 1);
 
-                    result.setGbkCat(analyseByQuery(
-                            QUERY_GBK_CATALOGUE,
-                            "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak_gbk mit Katalogfehler k_gbk_lawa"));
+                    result.setGbkCat(analyseByQuery(FG_BAK_GBK,
+                            QUERY_GBK_CATALOGUE, CHECK_GBK_CAT_LAWA));
+                    increaseProgress(wd, 1);
 
-                    result.setGwkCat(analyseByQuery(
-                            QUERY_GWK_CATALOGUE,
-                            "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak_gbk mit Katalogfehler k_gwk_lawa"));
+                    result.setGwkCat(analyseByQuery(FG_BAK_GWK,
+                            QUERY_GWK_CATALOGUE, CHECK_GBK_CAT_GWK));
+                    increaseProgress(wd, 1);
 
-                    result.setObjartCat(analyseByQuery(
-                            QUERY_OBJART_CATALOGUE,
-                            "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak_gbk mit Katalogfehler k_objart"));
+//                    result.setObjartCat(analyseByQuery(FG_BAK_OBJART,
+//                            QUERY_OBJART_CATALOGUE, CHECK_GBK_CAT_OBJECT));
+//                    increaseProgress(wd, 1);
 
                     final List<FeatureServiceAttribute> serviceAttributeDefinition =
                         new ArrayList<FeatureServiceAttribute>();
@@ -277,17 +349,57 @@ public class LawaCheckAction extends AbstractCheckAction {
                     serviceAttributeDefinition.add(serviceAttribute);
 
                     result.setGwkGbk(analyseByCustomSearch(
-                            new GwkLaCdFailure(user),
-                            "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak_gwk mit Delta GWK/GBK->fg_bak_gwk mit Delta GWK/GBK",
+                            new GwkLaCdFailure(user, null),
+                            CHECK_GWK_DELTA_GWK,
                             serviceAttributeDefinition));
+                    increaseProgress(wd, 1);
+
+                    final List<FeatureServiceAttribute> serviceAttributeDefinitionFgBa =
+                        new ArrayList<FeatureServiceAttribute>();
+
+                    serviceAttribute = new FeatureServiceAttribute("id", String.valueOf(Types.INTEGER), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("ba_gn", String.valueOf(Types.VARCHAR), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("wdm", String.valueOf(Types.INTEGER), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("gu_zust", String.valueOf(Types.VARCHAR), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("gu_cd", String.valueOf(Types.VARCHAR), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
+
+                    result.setGbkInIncorrectEzg(analyseByCustomSearch(
+                            new GbkInIncorrectEzg(user, null),
+                            CHECKEZG_DELTA_GBK,
+                            serviceAttributeDefinitionFgBa));
+                    increaseProgress(wd, 1);
+
+                    result.setGbkOnEzgBorder(analyseByCustomSearch(
+                            new FgBaOnEzgBorder(user, null),
+                            CHECK_BA_EZG_RAND,
+                            serviceAttributeDefinitionFgBa));
+                    increaseProgress(wd, 1);
+
+                    result.setGbkOutsideEzgBorder(analyseByCustomSearch(
+                            new FgBaOutsideEzgBorder(user, null),
+                            CHECK_BA_EZG_AUSSEN,
+                            serviceAttributeDefinitionFgBa));
+                    increaseProgress(wd, 1);
 
                     if (result.getFgBakWithoutGbk() != null) {
                         result.setFgBakWithoutGbkErrors(result.getFgBakWithoutGbk().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    if (result.getFgBakWithoutObjart() != null) {
-                        result.setFgBakWithoutObjartErrors(result.getFgBakWithoutObjart().getFeatureCount(null));
                         successful = false;
                     }
 
@@ -303,11 +415,6 @@ public class LawaCheckAction extends AbstractCheckAction {
 
                     if (result.getGwkGbk() != null) {
                         result.setGwkGbkErrors(result.getGwkGbk().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    if (result.getObjartCat() != null) {
-                        result.setObjartCatErrors(result.getObjartCat().getFeatureCount(null));
                         successful = false;
                     }
 
@@ -334,6 +441,8 @@ public class LawaCheckAction extends AbstractCheckAction {
                     try {
                         final CheckResult result = get();
 
+                        removeServicesFromLayerModel(ALL_CHECKS);
+
                         if (isExport) {
                             return;
                         }
@@ -345,10 +454,8 @@ public class LawaCheckAction extends AbstractCheckAction {
                                 new Object[] {
                                     result.getBakCount(),
                                     result.getFgBakWithoutGbkErrors(),
-                                    result.getFgBakWithoutObjartErrors(),
                                     result.getGbkCatErrors(),
                                     result.getGwkCatErrors(),
-                                    result.getObjartCatErrors(),
                                     result.getGwkGbkErrors(),
                                     result.getGbkInIncorrectEzgErrors(),
                                     result.getGbkOnEzgBorderErrors(),
@@ -359,44 +466,36 @@ public class LawaCheckAction extends AbstractCheckAction {
                                 "LawaCheckAction.actionPerformed().result.title"),
                             JOptionPane.INFORMATION_MESSAGE);
 
-                        if (result.getFgBakWithoutGbk() != null) {
-                            showService(result.getFgBakWithoutGbk(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak ohne fg_bak_gbk");
-                        }
-                        if (result.getFgBakWithoutObjart() != null) {
-                            showService(result.getFgBakWithoutObjart(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak ohne fg_bak_objart");
-                        }
-                        if (result.getGbkCat() != null) {
-                            showService(result.getGbkCat(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak_gbk mit Katalogfehler k_gbk_lawa");
-                        }
-                        if (result.getGwkCat() != null) {
-                            showService(result.getGwkCat(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak_gbk mit Katalogfehler k_gwk_lawa");
-                        }
-                        if (result.getGwkGbk() != null) {
-                            showService(result.getGwkGbk(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak_gwk mit Delta GWK/GBK");
-                        }
-                        if (result.getObjartCat() != null) {
-                            showService(result.getObjartCat(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak_gbk mit Katalogfehler k_objart");
-                        }
-                        if (result.getGbkInIncorrectEzg() != null) {
-                            showService(result.getGbkInIncorrectEzg(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx-> fg_ba vs. EZG: innen: Delta GBK/EZG");
+                        if (result.getGbkOutsideEzgBorder() != null) {
+                            showService(result.getGbkOutsideEzgBorder(),
+                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: außen");
                         }
                         if (result.getGbkOnEzgBorder() != null) {
                             showService(result.getGbkOnEzgBorder(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_ba vs. EZG: Rand");
+                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: Rand");
                         }
-                        if (result.getGbkOutsideEzgBorder() != null) {
-                            showService(result.getGbkOutsideEzgBorder(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_ba vs. EZG: außen");
+                        if (result.getGbkInIncorrectEzg() != null) {
+                            showService(result.getGbkInIncorrectEzg(),
+                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx-> fg_ba vs. EZG: innen: Delta GBK/EZG");
+                        }
+                        if (result.getGwkGbk() != null) {
+                            showService(result.getGwkGbk(),
+                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gwk mit Delta GWK/GBK");
+                        }
+                        if (result.getGwkCat() != null) {
+                            showService(result.getGwkCat(),
+                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_gwk_lawa");
+                        }
+                        if (result.getGbkCat() != null) {
+                            showService(result.getGbkCat(),
+                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_gbk_lawa");
+                        }
+                        if (result.getFgBakWithoutGbk() != null) {
+                            showService(result.getFgBakWithoutGbk(),
+                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak ohne fg_bak_gbk");
                         }
                     } catch (Exception e) {
-                        LOG.error("Error while performing the lawa connection analyse.", e);
+                        LOG.error("Error while performing the lawa analyse.", e);
                         successful = false;
                     }
                 }
@@ -424,45 +523,27 @@ public class LawaCheckAction extends AbstractCheckAction {
 
         //~ Instance fields ----------------------------------------------------
 
-        private int fgBakWithoutObjartErrors;
+// private int fgBakWithoutObjartErrors;
         private int fgBakWithoutGbkErrors;
         private int gbkCatErrors;
         private int gwkCatErrors;
-        private int objartCatErrors;
+//        private int objartCatErrors;
         private int gwkGbkErrors;
         private int bakCount;
         private int gbkInIncorrectEzgErrors;
         private int gbkOnEzgBorderErrors;
         private int gbkOutsideEzgBorderErrors;
-        private H2FeatureService fgBakWithoutObjart;
+//        private H2FeatureService fgBakWithoutObjart;
         private H2FeatureService fgBakWithoutGbk;
         private H2FeatureService gbkCat;
         private H2FeatureService gwkCat;
-        private H2FeatureService objartCat;
+//        private H2FeatureService objartCat;
         private H2FeatureService gwkGbk;
         private H2FeatureService gbkInIncorrectEzg;
         private H2FeatureService gbkOnEzgBorder;
         private H2FeatureService gbkOutsideEzgBorder;
 
         //~ Methods ------------------------------------------------------------
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the fgBakWithoutObjartErrors
-         */
-        public int getFgBakWithoutObjartErrors() {
-            return fgBakWithoutObjartErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  fgBakWithoutObjartErrors  the fgBakWithoutObjartErrors to set
-         */
-        public void setFgBakWithoutObjartErrors(final int fgBakWithoutObjartErrors) {
-            this.fgBakWithoutObjartErrors = fgBakWithoutObjartErrors;
-        }
 
         /**
          * DOCUMENT ME!
@@ -480,24 +561,6 @@ public class LawaCheckAction extends AbstractCheckAction {
          */
         public void setFgBakWithoutGbkErrors(final int fgBakWithoutGbkErrors) {
             this.fgBakWithoutGbkErrors = fgBakWithoutGbkErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the fgBakWithoutObjart
-         */
-        public H2FeatureService getFgBakWithoutObjart() {
-            return fgBakWithoutObjart;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  fgBakWithoutObjart  the fgBakWithoutObjart to set
-         */
-        public void setFgBakWithoutObjart(final H2FeatureService fgBakWithoutObjart) {
-            this.fgBakWithoutObjart = fgBakWithoutObjart;
         }
 
         /**
@@ -557,24 +620,6 @@ public class LawaCheckAction extends AbstractCheckAction {
         /**
          * DOCUMENT ME!
          *
-         * @return  the objartCatErrors
-         */
-        public int getObjartCatErrors() {
-            return objartCatErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  objartCatErrors  the objartCatErrors to set
-         */
-        public void setObjartCatErrors(final int objartCatErrors) {
-            this.objartCatErrors = objartCatErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
          * @return  the gbkCat
          */
         public H2FeatureService getGbkCat() {
@@ -606,24 +651,6 @@ public class LawaCheckAction extends AbstractCheckAction {
          */
         public void setGwkCat(final H2FeatureService gwkCat) {
             this.gwkCat = gwkCat;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the objartCat
-         */
-        public H2FeatureService getObjartCat() {
-            return objartCat;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  objartCat  the objartCat to set
-         */
-        public void setObjartCat(final H2FeatureService objartCat) {
-            this.objartCat = objartCat;
         }
 
         /**

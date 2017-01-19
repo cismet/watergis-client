@@ -45,6 +45,7 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final String PROP_FG_BA_NAME = "ba_cd";
     private static final String PROP_FG_LAK_NAME = "la_cd";
     private static final String PROP_FG_LA_NAME = "la_cd";
+    private static final String PROP_SG_SU_NAME = "su_cd";
     private static final String PROP_STATIONLINIE_FROM = "von";
     private static final String PROP_STATIONLINIE_TO = "bis";
     private static final String PROP_STATIONLINIE_GEOM = "geom";
@@ -52,6 +53,7 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final String MC_NAME_FG_BA = "fg_ba";
     private static final String MC_NAME_FG_LA = "fg_la";
     private static final String MC_NAME_FG_LAK = "fg_lak";
+    private static final String MC_NAME_SG_SU = "sg_su";
     private static final String CN_GEOM = "GEOM";
     private static final String CN_FG_BAK_STATIONLINE = "dlm25w.FG_BAK_LINIE";
     private static final String CN_FG_BAK_STATION = "dlm25w.FG_BAK_PUNKT";
@@ -61,6 +63,8 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final String CN_FG_LAK_STATION = "dlm25w.FG_LAK_PUNKT";
     private static final String CN_FG_LA_STATIONLINE = "dlm25w.FG_LA_LINIE";
     private static final String CN_FG_LA_STATION = "dlm25w.FG_LA_PUNKT";
+    private static final String CN_SG_SU_STATION = "dlm25w.SG_SU_PUNKT";
+    private static final String CN_SG_SU_STATIONLINE = "dlm25w.SG_SU_LINIE";
 
     private static final MetaClass MC_GEOM = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, CN_GEOM);
     private static final MetaClass MC_FG_BAK_STATION = ClassCacheMultiple.getMetaClass(
@@ -75,6 +79,9 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final MetaClass MC_FG_LA_STATION = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_FG_LA_STATION);
+    private static final MetaClass MC_SG_SU_STATION = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_SG_SU_STATION);
     private static final MetaClass MC_FG_BAK_STATIONLINIE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_FG_BAK_STATIONLINE);
@@ -87,6 +94,9 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final MetaClass MC_FG_LA_STATIONLINIE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_FG_LA_STATIONLINE);
+    private static final MetaClass MC_SG_SU_STATIONLINIE = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_SG_SU_STATIONLINE);
 
     //~ Instance fields --------------------------------------------------------
 
@@ -130,7 +140,13 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
      */
     @Override
     public Geometry getRouteGeometryFromStationBean(final CidsBean stationBean) {
-        return (Geometry)getRouteGeomBeanFromStationBean(stationBean).getProperty(PROP_GEOM_GEOFIELD);
+        final CidsBean geomBean = getRouteGeomBeanFromStationBean(stationBean);
+
+        if (geomBean != null) {
+            return (Geometry)geomBean.getProperty(PROP_GEOM_GEOFIELD);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -160,7 +176,13 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
      */
     @Override
     public Geometry getPointGeometryFromStationBean(final CidsBean stationBean) {
-        return (Geometry)getPointGeomBeanFromStationBean(stationBean).getProperty(PROP_GEOM_GEOFIELD);
+        final CidsBean geomBean = getPointGeomBeanFromStationBean(stationBean);
+
+        if (geomBean != null) {
+            return (Geometry)geomBean.getProperty(PROP_GEOM_GEOFIELD);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -175,7 +197,11 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     public void setPointGeometryToStationBean(final Geometry point, final CidsBean stationBean) throws Exception {
         final Geometry oldGeom = (Geometry)getPointGeomBeanFromStationBean(stationBean).getProperty(PROP_GEOM_GEOFIELD);
 
-        if ((oldGeom != point) && ((oldGeom != null) && !oldGeom.equals(point))) {
+        if ((oldGeom == null) && (point == null)) {
+            return;
+        }
+
+        if (((oldGeom == null) || (point == null)) || !oldGeom.equalsExact(point)) {
             getPointGeomBeanFromStationBean(stationBean).setProperty(PROP_GEOM_GEOFIELD, point);
         }
     }
@@ -214,6 +240,8 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
                 result = routeBean.getProperty(PROP_FG_LAK_NAME);
             } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_LA)) {
                 result = routeBean.getProperty(PROP_FG_LA_NAME);
+            } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_SU)) {
+                result = routeBean.getProperty(PROP_SG_SU_NAME);
             } else {
                 LOG.error("Unknown station bean. Cannot extract route name from station.");
             }
@@ -261,7 +289,12 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
      * @return  DOCUMENT ME!
      */
     private CidsBean getRouteGeomBeanFromStationBean(final CidsBean stationBean) {
-        return (CidsBean)getRouteBeanFromStationBean(stationBean).getProperty(PROP_ROUTE_GEOM);
+        final CidsBean route = (CidsBean)getRouteBeanFromStationBean(stationBean);
+        if (route != null) {
+            return (CidsBean)route.getProperty(PROP_ROUTE_GEOM);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -297,6 +330,8 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
             stationBean = MC_FG_LAK_STATION.getEmptyInstance().getBean();
         } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_LA)) {
             stationBean = MC_FG_LA_STATION.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_SU)) {
+            stationBean = MC_SG_SU_STATION.getEmptyInstance().getBean();
         } else {
             LOG.error("Unknown route bean. Cannot create the corresponding station bean.");
         }
@@ -341,6 +376,8 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
             linieBean = MC_FG_LAK_STATIONLINIE.getEmptyInstance().getBean();
         } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_LA)) {
             linieBean = MC_FG_LA_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_SU)) {
+            linieBean = MC_SG_SU_STATIONLINIE.getEmptyInstance().getBean();
         } else {
             LOG.error("Unknown route bean. Cannot create the corresponding line bean.");
         }
@@ -395,6 +432,8 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
             linieBean = MC_FG_LAK_STATIONLINIE.getEmptyInstance().getBean();
         } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_LA)) {
             linieBean = MC_FG_LA_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_SU)) {
+            linieBean = MC_SG_SU_STATIONLINIE.getEmptyInstance().getBean();
         } else {
             LOG.error("Unknown route bean. Cannot create the corresponding line bean.");
         }
@@ -437,7 +476,7 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
      */
     @Override
     public double getLinearValueFromStationBean(final CidsBean stationBean) {
-        if (stationBean == null) {
+        if ((stationBean == null) || (stationBean.getProperty(PROP_STATION_VALUE) == null)) {
             return 0d;
         }
         return (Double)stationBean.getProperty(PROP_STATION_VALUE);
@@ -527,14 +566,16 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
         String routeNameProperty = null;
 
         if (routeClass != null) {
-            if (routeClass.equals(MC_NAME_FG_BAK)) {
+            if (routeClass.endsWith(MC_NAME_FG_BAK)) {
                 routeNameProperty = PROP_FG_BAK_NAME;
-            } else if (routeClass.equals(MC_NAME_FG_BA)) {
+            } else if (routeClass.endsWith(MC_NAME_FG_BA)) {
                 routeNameProperty = PROP_FG_BA_NAME;
-            } else if (routeClass.equals(MC_NAME_FG_LAK)) {
+            } else if (routeClass.endsWith(MC_NAME_FG_LAK)) {
                 routeNameProperty = PROP_FG_LAK_NAME;
-            } else if (routeClass.equals(MC_NAME_FG_LA)) {
+            } else if (routeClass.endsWith(MC_NAME_FG_LA)) {
                 routeNameProperty = PROP_FG_LA_NAME;
+            } else if (routeClass.endsWith(MC_NAME_SG_SU)) {
+                routeNameProperty = PROP_SG_SU_NAME;
             } else {
                 LOG.error("Unknown station bean. Cannot extract route name from station.");
             }
@@ -551,7 +592,7 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     }
 
     @Override
-    public String[] getAllUsedDomains() {
+    public String[] getDomainOfRouteTable(final String routeTable) {
         return new String[] { "DLM25W" };
     }
 

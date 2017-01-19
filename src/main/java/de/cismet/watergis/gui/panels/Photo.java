@@ -94,6 +94,7 @@ import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
@@ -195,7 +196,7 @@ public class Photo extends javax.swing.JPanel {
                     final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
                             "foto");
 
-                    if (tbLocate.isSelected()) {
+                    if (tbLocate.isSelected() || !Photo.this.isDisplayable()) {
                         return;
                     }
 
@@ -812,7 +813,7 @@ public class Photo extends javax.swing.JPanel {
     /**
      * DOCUMENT ME!
      */
-    private void addPhotoServicesToTree() {
+    public static void addPhotoServicesToTree() {
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                 "foto");
 
@@ -821,6 +822,9 @@ public class Photo extends javax.swing.JPanel {
                         AppBroker.DOMAIN_NAME,
                         "dlm25w.foto"));
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(layer);
+            AttributeTableFactory.getInstance().switchProcessingMode(layer);
+        } else {
+            AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
         }
 
         addLayerToTree("foto_pr_pf");
@@ -831,7 +835,7 @@ public class Photo extends javax.swing.JPanel {
      *
      * @param  layerName  DOCUMENT ME!
      */
-    private void addLayerToTree(final String layerName) {
+    private static void addLayerToTree(final String layerName) {
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                 layerName);
 
@@ -925,7 +929,7 @@ public class Photo extends javax.swing.JPanel {
             if (ruleSet != null) {
                 ruleSet.beforeSave(feature);
             }
-            feature.saveChanges();
+            feature.saveChangesWithoutReload();
             editor.setCidsLayerFeature(feature);
             reloadPhotoServices();
         } catch (Exception e) {
@@ -1075,7 +1079,7 @@ public class Photo extends javax.swing.JPanel {
                 if (ruleSet != null) {
                     ruleSet.beforeSave(layerFeature);
                 }
-                layerFeature.saveChanges();
+                layerFeature.saveChangesWithoutReload();
                 editor.setCidsLayerFeature(layerFeature);
                 layerFeature.setEditable(false);
                 EventQueue.invokeLater(new Thread() {

@@ -20,8 +20,6 @@ import org.deegree.datatypes.Types;
 
 import org.openide.util.NbBundle;
 
-import java.awt.event.ActionEvent;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
@@ -45,6 +43,7 @@ import de.cismet.cismap.commons.featureservice.H2FeatureService;
 import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
 
 import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.WaitDialog;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -54,7 +53,7 @@ import static javax.swing.Action.SHORT_DESCRIPTION;
 import static javax.swing.Action.SMALL_ICON;
 
 /**
- * DOCUMENT ME!
+ * Anmerkung: Bei komplexen Prüfungen werden immer alle Objekte geprüft. Issue 237
  *
  * @author   therter
  * @version  $Revision$, $Date$
@@ -67,6 +66,14 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_lak_ae");
     private static String QUERY_AE = null;
+    private static final String CHECK_LAWA_ROUTEN_AUS_EINLEITUNG = "Prüfungen->LAWA-Routen->Aus-/Einleitung";
+    private static final String CHECK_LAWA_ROUTEN_GERICHTETHEIT = "Prüfungen->LAWA-Routen->Gerichtetheit";
+    private static final String CHECK_LAWA_ROUTEN_KONNEKTIVITAET = "Prüfungen->LAWA-Routen->Konnektivität";
+    private static final String[] ALL_CHECKS = new String[] {
+            CHECK_LAWA_ROUTEN_AUS_EINLEITUNG,
+            CHECK_LAWA_ROUTEN_GERICHTETHEIT,
+            CHECK_LAWA_ROUTEN_KONNEKTIVITAET
+        };
 
     static {
         if (LAK_AE_MC != null) {
@@ -109,7 +116,14 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
     //~ Methods ----------------------------------------------------------------
 
     @Override
-    public boolean startCheck(final boolean isExport) {
+    public int getProgressSteps() {
+        return 7;
+    }
+
+    @Override
+    public boolean startCheckInternal(final boolean isExport,
+            final WaitDialog wd,
+            final List<H2FeatureService> result) {
         final WaitingDialogThread<CheckResult> wdt = new WaitingDialogThread<CheckResult>(
                 StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                 true,
@@ -123,14 +137,19 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                 protected CheckResult doInBackground() throws Exception {
                     final CheckResult result = new CheckResult();
                     String user = AppBroker.getInstance().getOwner();
+                    this.wd.setMax(getProgressSteps());
 
                     if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
                         user = null;
                     }
 
+                    removeServicesFromDb(ALL_CHECKS);
+
                     // start auto correction
                     final CidsServerSearch search = new MergeLawa(user);
                     SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), search);
+                    increaseProgress(wd, 1);
+
                     final List<FeatureServiceAttribute> serviceAttributeDefinition =
                         new ArrayList<FeatureServiceAttribute>();
 
@@ -145,13 +164,18 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                     // start checks
                     result.setConnectionService(analyseByCustomSearch(
                             new LawaConnected(user),
-                            "Prüfungen->LAWA-Routen->Konnektivität",
+                            CHECK_LAWA_ROUTEN_KONNEKTIVITAET,
                             serviceAttributeDefinition));
+                    increaseProgress(wd, 1);
+
                     result.setDirectionService(analyseByCustomSearch(
                             new LawaDirection(user),
-                            "Prüfungen->LAWA-Routen->Gerichtetheit",
+                            CHECK_LAWA_ROUTEN_GERICHTETHEIT,
                             serviceAttributeDefinition));
-                    result.setLakAeService(analyseByQuery(QUERY_AE, "Prüfungen->LAWA-Routen->Aus-/Einleitung"));
+                    increaseProgress(wd, 1);
+
+                    result.setLakAeService(analyseByQuery(LAK_AE_MC, QUERY_AE, CHECK_LAWA_ROUTEN_AUS_EINLEITUNG));
+                    increaseProgress(wd, 1);
 
                     final ArrayList<ArrayList> lawaCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
                                 .customServerSearch(SessionManager.getSession().getUser(), new LawaCount(user));
@@ -163,6 +187,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                             result.setLawaCount(((Number)innerList.get(0)).intValue());
                         }
                     }
+                    increaseProgress(wd, 1);
 
                     if (result.getConnectionService() != null) {
                         final H2FeatureServiceFactory fac = (H2FeatureServiceFactory)result.getConnectionService()
@@ -188,6 +213,8 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                         result.setConnectionErrors(laCdSet.size());
                         successful = false;
                     }
+                    increaseProgress(wd, 1);
+
                     if (result.getDirectionService() != null) {
                         final H2FeatureServiceFactory fac = (H2FeatureServiceFactory)result.getDirectionService()
                                     .getFeatureFactory();
@@ -211,6 +238,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                         result.setDirectionErrors(laCdSet.size());
                         successful = false;
                     }
+                    increaseProgress(wd, 1);
 
                     if (result.getLakAeService() != null) {
                         result.setLakAeErrors(result.getLakAeService().getFeatureCount(null));
@@ -224,6 +252,8 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                 protected void done() {
                     try {
                         final CheckResult result = get();
+
+                        removeServicesFromLayerModel(ALL_CHECKS);
 
                         if (isExport) {
                             return;
@@ -244,14 +274,14 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                                 "GWKConnectionCheckAction.actionPerformed().result.title"),
                             JOptionPane.INFORMATION_MESSAGE);
 
-                        if (result.getConnectionService() != null) {
-                            showService(result.getConnectionService(), "Prüfungen->LAWA-Routen");
+                        if (result.getLakAeService() != null) {
+                            showService(result.getLakAeService(), "Prüfungen->LAWA-Routen");
                         }
                         if (result.getDirectionService() != null) {
                             showService(result.getDirectionService(), "Prüfungen->LAWA-Routen");
                         }
-                        if (result.getLakAeService() != null) {
-                            showService(result.getLakAeService(), "Prüfungen->LAWA-Routen");
+                        if (result.getConnectionService() != null) {
+                            showService(result.getConnectionService(), "Prüfungen->LAWA-Routen");
                         }
                     } catch (Exception e) {
                         LOG.error("Error while performing the lawa connection analyse.", e);

@@ -44,9 +44,9 @@ public class PrintAction extends AbstractAction {
      * Creates a new PrintAction object.
      */
     public PrintAction() {
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
-                KeyEvent.VK_P,
-                ActionEvent.CTRL_MASK));
+//        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+//                KeyEvent.VK_P,
+//                ActionEvent.CTRL_MASK));
         final String tooltip = org.openide.util.NbBundle.getMessage(PrintAction.class, "PrintAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(PrintAction.class, "PrintAction.text");
@@ -67,7 +67,7 @@ public class PrintAction extends AbstractAction {
         if (LOG.isDebugEnabled()) {
             LOG.debug("oldInteractionMode:" + oldMode);
         }
-        mappingComponent.showPrintingSettingsDialog(oldMode, true);
+        mappingComponent.showPrintingSettingsDialog(true);
     }
     @Override
     public boolean isEnabled() {
