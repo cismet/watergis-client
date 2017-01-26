@@ -104,6 +104,8 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
         }
     }
 
+    //~ Instance initializers --------------------------------------------------
+
     {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
@@ -113,10 +115,10 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("la_st", new Numeric(10, 2, false, false));
         typeMap.put("l_st", new Catalogue("k_l_st", false, true));
         typeMap.put("l_rl", new Catalogue("k_l_rl", false, true));
-        typeMap.put("re", new Numeric(11,2, false, true));
-        typeMap.put("ho", new Numeric(10,2, false, true));
-        typeMap.put("winkel", new Numeric(5,1, false, true));
-        typeMap.put("foto_nr", new Numeric(15,0, false, false));
+        typeMap.put("re", new Numeric(11, 2, false, true));
+        typeMap.put("ho", new Numeric(10, 2, false, true));
+        typeMap.put("winkel", new Numeric(5, 1, false, true));
+        typeMap.put("foto_nr", new Numeric(15, 0, false, false));
         typeMap.put("foto", new Varchar(250, false, false));
         typeMap.put("upl_name", new Varchar(50, false, false));
         typeMap.put("upl_datum", new Varchar(10, false, false));
@@ -126,7 +128,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("aufn_zeit", new Varchar(8, false, true));
         typeMap.put("freigabe", new Catalogue("k_freigabe", true, true));
         typeMap.put("titel", new Varchar(250, false, true));
-        typeMap.put("beschreib", new Varchar(250, false, true));        
+        typeMap.put("beschreib", new Varchar(250, false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));

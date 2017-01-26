@@ -11,8 +11,6 @@
  */
 package de.cismet.watergis.gui.actions.selection;
 
-import de.cismet.cismap.DrawingManager;
-import de.cismet.cismap.commons.features.DrawingSLDStyledFeature;
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
@@ -23,6 +21,9 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.cismap.DrawingManager;
+
+import de.cismet.cismap.commons.features.DrawingSLDStyledFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.gui.layerwidget.ZoomToFeaturesWorker;
 
@@ -46,13 +47,16 @@ public class ZoomAllDrawingsAction extends AbstractAction {
      * Creates a new CloseAction object.
      */
     public ZoomAllDrawingsAction() {
-        final String tooltip = org.openide.util.NbBundle.getMessage(ZoomAllDrawingsAction.class,
+        final String tooltip = org.openide.util.NbBundle.getMessage(
+                ZoomAllDrawingsAction.class,
                 "ZoomAllDrawingsAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
-        final String text = org.openide.util.NbBundle.getMessage(ZoomAllDrawingsAction.class,
+        final String text = org.openide.util.NbBundle.getMessage(
+                ZoomAllDrawingsAction.class,
                 "ZoomAllDrawingsAction.text");
         putValue(NAME, text);
-        final String mnemonic = org.openide.util.NbBundle.getMessage(ZoomAllDrawingsAction.class,
+        final String mnemonic = org.openide.util.NbBundle.getMessage(
+                ZoomAllDrawingsAction.class,
                 "ZoomAllDrawingsAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(

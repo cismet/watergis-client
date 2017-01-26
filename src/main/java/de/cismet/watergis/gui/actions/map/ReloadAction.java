@@ -11,16 +11,13 @@
  */
 package de.cismet.watergis.gui.actions.map;
 
-
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
 
-
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
-
 
 import de.cismet.watergis.broker.AppBroker;
 

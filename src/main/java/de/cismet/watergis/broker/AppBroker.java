@@ -83,7 +83,6 @@ import de.cismet.cids.dynamics.CidsBean;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener;
-import de.cismet.cismap.commons.styling.CustomSLDParser;
 
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
@@ -741,7 +740,7 @@ public class AppBroker implements Configurable {
         final XMLInputFactory factory = XMLInputFactory.newInstance();
 
         try {
-            styles = CustomSLDParser.getStyles(factory.createXMLStreamReader(input));
+            styles = SLDParser.getStyles(factory.createXMLStreamReader(input));
         } catch (Exception ex) {
             LOG.error("Fehler in der SLD", ex);
         }
@@ -764,7 +763,7 @@ public class AppBroker implements Configurable {
         final XMLInputFactory factory = XMLInputFactory.newInstance();
 
         try {
-            styles = CustomSLDParser.getStyles(factory.createXMLStreamReader(input));
+            styles = SLDParser.getStyles(factory.createXMLStreamReader(input));
         } catch (Exception ex) {
             LOG.error("Fehler in der SLD", ex);
         }

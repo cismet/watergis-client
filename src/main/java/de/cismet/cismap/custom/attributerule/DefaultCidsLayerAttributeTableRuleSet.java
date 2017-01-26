@@ -1,3 +1,10 @@
+/***************************************************
+*
+* cismet GmbH, Saarbruecken, Germany
+*
+*              ... and it just works.
+*
+****************************************************/
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -5,21 +12,28 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
+import java.util.HashMap;
+
 import de.cismet.cids.dynamics.CidsBean;
+
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
+
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
-import java.util.HashMap;
 
 /**
+ * DOCUMENT ME!
  *
- * @author therter
+ * @author   therter
+ * @version  $Revision$, $Date$
  */
 public class DefaultCidsLayerAttributeTableRuleSet extends DefaultAttributeTableRuleSet {
 
+    //~ Methods ----------------------------------------------------------------
+
     @Override
-    public FeatureServiceFeature cloneFeature(FeatureServiceFeature feature) {
+    public FeatureServiceFeature cloneFeature(final FeatureServiceFeature feature) {
         final DefaultFeatureServiceFeature newFeature = (DefaultFeatureServiceFeature)feature
                     .getLayerProperties().getFeatureService().getFeatureFactory().createNewFeature();
 

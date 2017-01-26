@@ -42,8 +42,8 @@ import de.cismet.cismap.cidslayer.LineAndStationCreator;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
-import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 
+import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -65,7 +65,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
     {
         final Numeric bermeW = new Numeric(1, 0, false, true);
         final Numeric bermeB = new Numeric(1, 0, false, true);
-        Numeric esw = new Numeric(1, 0, false, true);
+        final Numeric esw = new Numeric(1, 0, false, true);
         esw.setRange(0.0, 1.0);
 
         bermeW.setRange(0.0, 1.0);

@@ -45,6 +45,7 @@ import java.util.TreeSet;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
@@ -74,7 +75,6 @@ import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
 import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
-import javax.swing.border.EmptyBorder;
 
 /**
  * DOCUMENT ME!
@@ -909,7 +909,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         final DataType type = typeMap.get(columnName);
-        
+
         if (columnName.equals("id") || columnName.equals("ww_gr")) {
             return new DefaultTableCellRenderer() {
 

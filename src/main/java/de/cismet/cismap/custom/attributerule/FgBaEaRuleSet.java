@@ -58,7 +58,7 @@ public class FgBaEaRuleSet extends WatergisDefaultRuleSet {
     //~ Instance initializers --------------------------------------------------
 
     {
-        Numeric esw = new Numeric(1, 0, false, true);
+        final Numeric esw = new Numeric(1, 0, false, true);
         esw.setRange(0.0, 1.0);
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));

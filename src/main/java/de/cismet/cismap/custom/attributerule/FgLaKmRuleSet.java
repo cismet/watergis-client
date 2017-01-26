@@ -30,6 +30,7 @@ import de.cismet.cismap.cidslayer.PointAndStationCreator;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+
 import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -86,7 +87,7 @@ public class FgLaKmRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("ba_cd")) {
             return new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
         }
-        
+
         return null;
     }
 

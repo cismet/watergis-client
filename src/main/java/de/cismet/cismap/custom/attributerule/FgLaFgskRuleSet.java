@@ -12,9 +12,8 @@
 package de.cismet.cismap.custom.attributerule;
 
 import Sirius.server.middleware.types.MetaClass;
+
 import com.vividsolutions.jts.geom.Geometry;
-import de.cismet.cids.navigator.utils.ClassCacheMultiple;
-import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import org.apache.log4j.Logger;
 
@@ -26,6 +25,10 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cismap.cidslayer.StationLineCreator;
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
@@ -33,8 +36,9 @@ import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRange;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
+
+import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRange;
 
 /**
  * DOCUMENT ME!

@@ -14,9 +14,8 @@ package de.cismet.cismap.custom.attributerule;
 import Sirius.navigator.connection.SessionManager;
 
 import com.vividsolutions.jts.geom.Geometry;
-import de.cismet.cismap.cidslayer.CidsLayerFeature;
-import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+
+import org.deegree.datatypes.Types;
 
 import java.sql.Timestamp;
 
@@ -26,17 +25,21 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
+import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 
+import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
+
 import de.cismet.watergis.broker.AppBroker;
-import org.deegree.datatypes.Types;
 
 /**
  * DOCUMENT ME!
@@ -80,7 +83,8 @@ public class FgBaFlRuleSet extends WatergisDefaultRuleSet {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("ba_st_bis")) {
             return new StationTableCellEditor(columnName);
-        } if (columnName.equals("ww_gr")) {
+        }
+        if (columnName.equals("ww_gr")) {
             CidsLayerFeatureFilter filter = null;
 
             if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {

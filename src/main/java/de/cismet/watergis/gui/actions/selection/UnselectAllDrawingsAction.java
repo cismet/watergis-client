@@ -29,7 +29,6 @@ import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
-
 import static javax.swing.Action.NAME;
 
 /**
@@ -46,10 +45,12 @@ public class UnselectAllDrawingsAction extends AbstractAction {
      * Creates a new CloseAction object.
      */
     public UnselectAllDrawingsAction() {
-        final String tooltip = org.openide.util.NbBundle.getMessage(UnselectAllDrawingsAction.class,
+        final String tooltip = org.openide.util.NbBundle.getMessage(
+                UnselectAllDrawingsAction.class,
                 "UnselectAllDrawingsAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
-        final String text = org.openide.util.NbBundle.getMessage(UnselectAllDrawingsAction.class,
+        final String text = org.openide.util.NbBundle.getMessage(
+                UnselectAllDrawingsAction.class,
                 "UnselectAllDrawingsAction.text");
         putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
@@ -64,7 +65,7 @@ public class UnselectAllDrawingsAction extends AbstractAction {
 //        final MappingComponent mc = AppBroker.getInstance().getMappingComponent();
 //        final SelectionListener sl = (SelectionListener)mc.getInputEventListener().get(MappingComponent.SELECT);
         final List<Feature> toBeUnSelected = new ArrayList<Feature>();
-        List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures(null);
+        final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures(null);
 
         for (final Feature feature : selectedFeatures) {
             if (feature instanceof DrawingSLDStyledFeature) {

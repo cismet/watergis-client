@@ -156,7 +156,7 @@ public class ReportAction extends AbstractAction {
                             // create reports
                             for (final FeatureServiceFeature feature : features) {
                                 try {
-                                    if (Thread.interrupted() || canceled) {
+                                    if (Thread.interrupted()) {
                                         // interrupted does sometimes return false, altough the thread was cancelled.
                                         // Perhaps, the jasper report methods reset the interrupted state
                                         return false;
