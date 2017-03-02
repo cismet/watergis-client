@@ -1,65 +1,143 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- 
+      FIXME: Replace deprecated cids-parent by cismet-parent
+    -->
     <parent>
         <groupId>de.cismet.cids</groupId>
         <artifactId>cids-parent</artifactId>
-        <version>2.4</version>
+        <version>5.0-SNAPSHOT</version>
     </parent>
 
     <groupId>de.cismet.watergis</groupId>
     <artifactId>watergis-client</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>WaterGIS Client</name>
     <description>!!! description pending !!!</description>
 
     <properties>
+        <!-- 
+            TODO: Remove when deprecated cids-parent is replaced by cismet-parent
+        -->
         <de.cismet.libDir>lib/localWatergis</de.cismet.libDir>
     </properties>
-
-    <prerequisites>
-        <maven>3</maven>
-    </prerequisites>
 
     <scm>
         <connection>https://github.com/cismet/watergis-client.git</connection>
         <developerConnection>scm:git:git@github.com:cismet/watergis-client.git</developerConnection>
         <url>https://github.com/cismet/s-client</url>
-      <tag>HEAD</tag>
-  </scm>
+    </scm>
 
-    <repositories>
-        <repository>
-            <id>cismet-repo</id>
-            <url>https://repo.cismet.de/repo</url>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>daily</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>interval:60</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
+    
 
-    <dependencies>
-<!--        <dependency>
-            <groupId>de.cismet.cids.navigator.plugin</groupId>
-            <artifactId>tim-easy</artifactId>
-            <version>2.0-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>groovy-all</artifactId>
-                    <groupId>groovy</groupId>
-                </exclusion>                         
-            </exclusions>
-        </dependency>        -->
+    <dependencyManagement>  
+        <!-- IMPORT of cismet-ext-bom -->
+        <dependencies>
+            <dependency>
+                <groupId>de.cismet</groupId>
+                <artifactId>cismet-ext-bom</artifactId>
+                <version>5.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        
+            <!-- BEGIN: managed cids-dependencies -->
+            <dependency>
+                <groupId>de.cismet.commons</groupId>
+                <artifactId>cismet-commons</artifactId>
+                <version>5.0-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+                        
+            <dependency>
+                <groupId>de.cismet.commons</groupId>
+                <artifactId>cismet-gui-commons</artifactId>
+                <version>5.0-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>de.cismet.commons</groupId>
+                <artifactId>cismap-commons</artifactId>
+                <version>5.0-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>de.cismet.cids</groupId>
+                <artifactId>cids-server</artifactId>
+                <version>5.0-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>de.cismet.cismap</groupId>
+                <artifactId>cismap-plugin</artifactId>
+                <version>5.0-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>de.cismet.watergis</groupId>
+                <artifactId>watergis-server</artifactId>
+                <version>5.0-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>de.cismet</groupId>
+                <artifactId>Jump-sld-editor</artifactId>
+                <version>5.0-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            
+        </dependencies>
+
+    </dependencyManagement> 
+         <dependencies>
+        <!-- BEGIN: cids-dependencies -->
+        <!--
+            DANGER  DANGER  DANGER  DANGER  DANGER  DANGER  DANGER  DANGER 
+            cismet-deegree must have precedence over deegree-deegree due to incompatible
+            duplicate class  org.deegree.crs.Identifiable
+            
+            See https://cismet.slack.com/files/pascal.dihe/F454S3R0B/cids-deegree_v2_3_8_vs_deegree_v3_2_x
+        -->
+        <dependency>
+            <groupId>de.cismet.custom</groupId>
+            <artifactId>cismet-deegree</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.cismet.cids</groupId>
+            <artifactId>cids-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.cismet.cismap</groupId>
+            <artifactId>cismap-plugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.cismet.watergis</groupId>
+            <artifactId>watergis-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.cismet</groupId>
+            <artifactId>Jump-sld-editor</artifactId>
+        </dependency>
+        <!-- END: cids-dependencies -->
+        
+        <!-- BEGIN: BEGIN UNKOWN cids dependencies -->
         <dependency>
             <groupId>de.cismet.todo</groupId>
             <artifactId>wizard</artifactId>
@@ -70,46 +148,75 @@
             <artifactId>grappa</artifactId>
             <version>unknown</version>
         </dependency>
+        <!-- END: UNKOWN cids dependencies -->
+        
+        <!-- BEGIN: managed dependencies -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.0.4</version>
         </dependency>
         <dependency>
-            <groupId>de.cismet</groupId>
-            <artifactId>Jump-sld-editor</artifactId>
-            <version>4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jdesktop</groupId>
+            <groupId>org.swinglabs</groupId>
             <artifactId>swing-worker</artifactId>
-            <version>1.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-visual</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-libs-javacup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swingx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom-legacy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swing-layout</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <!-- END: managed dependencies -->
+        
+        <!-- BEGIN: runtime dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <!-- BEGIN: runtime dependencies -->
+        
         <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-swing</artifactId>
             <version>1.6-1</version>
         </dependency>
-        <dependency>
-            <groupId>org.netbeans.modules</groupId>
-            <artifactId>org-netbeans-libs-javacup</artifactId>
-            <version>RELEASE67</version>
-        </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
             <version>1.7-beta-1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-util</artifactId>
-            <version>RELEASE67</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-api-visual</artifactId>
-            <version>RELEASE67</version>
-        </dependency>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>2.6-SNAPSHOT</version>
+        </dependency>-->
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
@@ -119,31 +226,6 @@
             <groupId>org.jdesktop</groupId>
             <artifactId>beansbinding</artifactId>
             <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.swinglabs</groupId>
-            <artifactId>swingx</artifactId>
-            <version>1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cismet.cids</groupId>
-            <artifactId>cids-server</artifactId>
-            <version>4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cismet.cismap</groupId>
-            <artifactId>cismap-plugin</artifactId>
-            <version>4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.swinglabs</groupId>
-            <artifactId>swing-layout</artifactId>
-            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.jhlabs</groupId>
@@ -160,16 +242,6 @@
             <groupId>toplink.essentials</groupId>
             <artifactId>toplink-essentials</artifactId>
             <version>2.0-36</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
-            <version>1.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -192,11 +264,6 @@
             <version>10.8</version>
         </dependency>
         <dependency>
-            <groupId>de.cismet.watergis</groupId>
-            <artifactId>watergis-server</artifactId>
-            <version>4.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.drewnoakes</groupId>
             <artifactId>metadata-extractor</artifactId>
             <version>2.8.1</version>
@@ -214,31 +281,26 @@
     </dependencies>
     
     <build>
+         <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <mainClass>de.cismet.watergis.gui.WatergisApp</mainClass>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>        
+            </plugins>
+        </pluginManagement>
+        
+        <!--
+            CAUTION ! Ugly Winning bei der Namens-Auswahl !!! siehe Slack =>
+            https://cismet.slack.com/files/jruiz/F3ZC7HX7V/Snapshot_als_finalName_in_pom_xml
+        -->
         <finalName>WaterGISClient</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archive>
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                        <manifestEntries>
-                            <Permissions>all-permissions</Permissions>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
-    
-    <profiles>
-        <profile>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <dependencies>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>
