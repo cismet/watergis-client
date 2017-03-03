@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -40,8 +39,8 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cids.tools.CidsBeanFilter;
-
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
@@ -84,7 +83,7 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (newValue == null) {
+        if (isValueEmpty(newValue)) {
             if (column.equals("titel") || column.equals("doc")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut "
@@ -102,21 +101,21 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("doc")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         if (columnName.equals("ww_gr")) {
-            CidsBeanFilter filter = null;
+            CidsLayerFeatureFilter filter = null;
 
             if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
                 final String userName = AppBroker.getInstance().getOwner();
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             if (bean == null) {
                                 return false;
                             }
@@ -124,10 +123,10 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             return bean != null;
                         }
                     };
@@ -149,14 +148,14 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("titel") == null) {
+            if (isValueEmpty(feature.getProperty("titel"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut titel darf nicht leer sein");
                 return false;
             }
-            if (feature.getProperty("doc") == null) {
+            if (isValueEmpty(feature.getProperty("doc"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut doc darf nicht leer sein");
                 return false;
@@ -197,7 +196,7 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
 
         return value;

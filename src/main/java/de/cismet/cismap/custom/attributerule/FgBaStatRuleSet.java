@@ -47,7 +47,7 @@ public class FgBaStatRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class FgBaStatRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         return true;
     }
 

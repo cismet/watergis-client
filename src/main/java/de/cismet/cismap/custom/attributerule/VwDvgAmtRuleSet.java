@@ -19,11 +19,11 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
@@ -37,7 +37,20 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class VwDvgAmtRuleSet extends DefaultAttributeTableRuleSet {
+public class VwDvgAmtRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("amt_nr", new Numeric(4, 0, true, true, "amt_nr", "vw_dvg_amt"));
+        typeMap.put("amt_name", new Varchar(50, true));
+        typeMap.put("kreis_nr", new Numeric(5, 0, true));
+        typeMap.put("kreis_name", new Varchar(50, true));
+        typeMap.put("amt_fl", new Numeric(12, 0, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -48,27 +61,19 @@ public class VwDvgAmtRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
+        if (columnName.equals("kreis_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        if (columnName.equals("amt_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
         return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
     }
 
     @Override
@@ -97,12 +102,12 @@ public class VwDvgAmtRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
+        Integer value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getArea();
+            value = (int)geom.getArea();
         }
 
         return value;
@@ -110,11 +115,11 @@ public class VwDvgAmtRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
+        return Integer.class;
     }
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }
 }

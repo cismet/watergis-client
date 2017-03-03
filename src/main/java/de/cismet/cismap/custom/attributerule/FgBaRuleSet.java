@@ -20,9 +20,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
-
-import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -32,23 +29,31 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBaRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBaRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(false, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, true));
+        // wenn ba_cd == null, dann wird es automatisch gefuellt (in prepareforSave)
+        typeMap.put("ba_cd", new Varchar(50, false));
+        typeMap.put("ba_st_von", new Numeric(10, 2, false, false));
+        typeMap.put("ba_st_bis", new Numeric(10, 2, false, false));
+        typeMap.put("ba_gn", new Varchar(50, false));
+        typeMap.put("wdm", new Numeric(4, 0, false));
+        typeMap.put("gu_zust", new Varchar(2, false));
+        typeMap.put("gu_cd", new Varchar(50, false));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("id");
-    }
-
-    @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
+        return false;
     }
 
     @Override
@@ -56,18 +61,13 @@ public class FgBaRuleSet extends DefaultAttributeTableRuleSet {
         if (columnName.equals("ba_cd")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class FgBaRuleSet extends DefaultAttributeTableRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
 
         return value;
@@ -108,17 +108,5 @@ public class FgBaRuleSet extends DefaultAttributeTableRuleSet {
     @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
-    }
-
-    @Override
-    public void mouseClicked(final FeatureServiceFeature feature,
-            final String columnName,
-            final Object value,
-            final int clickCount) {
-        if (columnName.equals("ba_cd")) {
-            if ((value instanceof String) && (clickCount == 1)) {
-//                AppBroker.getInstance().getPhotoPrint().actionPerformed(null);
-            }
-        }
     }
 }

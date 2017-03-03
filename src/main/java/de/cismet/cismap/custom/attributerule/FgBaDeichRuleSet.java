@@ -17,12 +17,7 @@ import Sirius.server.middleware.types.MetaClass;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import org.apache.log4j.Logger;
-
 import org.deegree.datatypes.Types;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import java.sql.Timestamp;
 
@@ -31,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -40,8 +34,8 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cids.tools.CidsBeanFilter;
-
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.LineAndStationCreator;
 
@@ -53,11 +47,9 @@ import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
-
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRangeBetweenOrEqual;
 
 /**
  * DOCUMENT ME!
@@ -66,6 +58,59 @@ import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.check
  * @version  $Revision$, $Date$
  */
 public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        final Numeric bermeW = new Numeric(1, 0, false, true);
+        final Numeric bermeB = new Numeric(1, 0, false, true);
+        final Numeric esw = new Numeric(1, 0, false, true);
+        esw.setRange(0.0, 1.0);
+
+        bermeW.setRange(0.0, 1.0);
+        bermeB.setRange(0.0, 1.0);
+
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
+        typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
+        typeMap.put("km_von", new Numeric(10, 2, false, true));
+        typeMap.put("km_bis", new Numeric(10, 2, false, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", false, true));
+        typeMap.put("nr", new Varchar(50, false, true));
+        typeMap.put("name", new Varchar(50, false, true));
+        typeMap.put("deich", new Catalogue("k_deich", true, true));
+        typeMap.put("ord", new Catalogue("k_deich_ord", true, true));
+        typeMap.put("l_fk", new Catalogue("k_deich_l_fk", true, true));
+        typeMap.put("schgr", new Catalogue("k_deich_schgr", false, true));
+        typeMap.put("material_f", new Catalogue("k_material", false, true));
+        typeMap.put("material_w", new Catalogue("k_material", false, true));
+        typeMap.put("material_k", new Catalogue("k_material", false, true));
+        typeMap.put("material_i", new Catalogue("k_material", false, true));
+        typeMap.put("material_b", new Catalogue("k_material", false, true));
+        typeMap.put("berme_w", bermeW);
+        typeMap.put("berme_b", bermeB);
+        typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
+        typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
+        typeMap.put("esw", esw);
+        typeMap.put("bemerkung", new Varchar(250, false, true));
+        typeMap.put("br_f", new Numeric(4, 2, false, true));
+        typeMap.put("br_k", new Numeric(4, 2, false, true));
+        typeMap.put("ho_k_f", new Numeric(4, 2, false, true));
+        typeMap.put("ho_k_pn", new Numeric(4, 2, false, true));
+        typeMap.put("ho_bhw_pn", new Numeric(4, 2, false, true));
+        typeMap.put("ho_mw_pn", new Numeric(4, 2, false, true));
+        typeMap.put("bv_w", new Numeric(4, 2, false, true));
+        typeMap.put("bv_b", new Numeric(4, 2, false, true));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -82,7 +127,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (newValue == null) {
+        if (isValueEmpty(newValue)) {
             if (column.equalsIgnoreCase("deich") || column.equalsIgnoreCase("ord") || column.equalsIgnoreCase("l_fk")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut "
@@ -93,19 +138,29 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         }
 
         if (column.equals("ausbaujahr")
-                    && !checkRangeBetweenOrEqual(column, newValue, 1800, getCurrentYear() + 2, true)) {
+                    && !checkRange(
+                        column,
+                        newValue,
+                        1950,
+                        getCurrentYear(),
+                        1800,
+                        getCurrentYear()
+                        + 2,
+                        true,
+                        true,
+                        true)) {
             return oldValue;
         }
 
-        if (column.equals("bv_w") && !checkRangeBetweenOrEqual(column, newValue, 1, 15, true)) {
+        if (column.equals("bv_w") && !checkRangeBetweenOrEqual(column, newValue, 3, 6, 1, 15, true)) {
             return oldValue;
         }
 
-        if (column.equals("bv_b") && !checkRangeBetweenOrEqual(column, newValue, 1, 15, true)) {
+        if (column.equals("bv_b") && !checkRangeBetweenOrEqual(column, newValue, 3, 6, 1, 15, true)) {
             return oldValue;
         }
 
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -113,7 +168,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("wbbl")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
@@ -124,14 +179,14 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         } else if (columnName.equals("ba_st_bis")) {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("ww_gr")) {
-            CidsBeanFilter filter = null;
+            CidsLayerFeatureFilter filter = null;
 
             if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
                 final String userName = AppBroker.getInstance().getOwner();
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             if (bean == null) {
                                 return false;
                             }
@@ -139,10 +194,10 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             return bean != null;
                         }
                     };
@@ -160,10 +215,10 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("traeger") + " - " + bean.getProperty("name");
                     }
                 });
@@ -177,17 +232,17 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("zust_kl") + " - " + bean.getProperty("name");
                     }
                 });
 
             return editor;
         } else if (columnName.equals("l_st")) {
-            final CidsBeanFilter filter = createCidsBeanFilter("nicht_qp");
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("nicht_qp");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         columnName,
@@ -196,17 +251,17 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                     filter);
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_st") + " - " + bean.getProperty("name");
                     }
                 });
 
             return editor;
         } else if (columnName.equals("l_rl")) {
-            final CidsBeanFilter filter = createCidsBeanFilter("deich");
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("deich");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         columnName,
@@ -215,10 +270,10 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                     filter);
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_rl") + " - " + bean.getProperty("name");
                     }
                 });
@@ -232,10 +287,10 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("deich") + " - " + bean.getProperty("name");
                     }
                 });
@@ -249,10 +304,10 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("ord") + " - " + bean.getProperty("name");
                     }
                 });
@@ -266,10 +321,10 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_fk") + " - " + bean.getProperty("name");
                     }
                 });
@@ -283,36 +338,36 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("schgr") + " - " + bean.getProperty("name");
                     }
                 });
 
             return editor;
         } else if (columnName.startsWith("material")) {
-            final AbstractBeanListCellRenderer renderer = new AbstractBeanListCellRenderer() {
+            final AbstractCidsLayerListCellRenderer renderer = new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("material") + " - " + bean.getProperty("name");
                     }
                 };
 
-            final CidsBeanFilter filter;
+            final CidsLayerFeatureFilter filter;
 
             if (columnName.equals("material_f")) {
-                filter = createCidsBeanFilter("deich_f");
+                filter = createCidsLayerFeatureFilter("deich_f");
             } else if (columnName.equals("material_w")) {
-                filter = createCidsBeanFilter("deich_w");
+                filter = createCidsLayerFeatureFilter("deich_w");
             } else if (columnName.equals("material_k")) {
-                filter = createCidsBeanFilter("deich_k");
+                filter = createCidsLayerFeatureFilter("deich_k");
             } else if (columnName.equals("material_i")) {
-                filter = createCidsBeanFilter("deich_i");
+                filter = createCidsLayerFeatureFilter("deich_i");
             } else if (columnName.equals("material_b")) {
-                filter = createCidsBeanFilter("deich_b");
+                filter = createCidsLayerFeatureFilter("deich_b");
             } else {
                 return null;
             }
@@ -333,19 +388,19 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("deich") == null) {
+            if (isValueEmpty(feature.getProperty("deich"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut deich darf nicht leer sein");
                 return false;
             }
-            if (feature.getProperty("ord") == null) {
+            if (isValueEmpty(feature.getProperty("ord"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut ord darf nicht leer sein");
                 return false;
             }
-            if (feature.getProperty("l_fk") == null) {
+            if (isValueEmpty(feature.getProperty("l_fk"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut l_fk darf nicht leer sein");
                 return false;
@@ -387,6 +442,8 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                 }
 
                 if (!isValueIn(feature.getProperty("l_rl"), new Object[] { "re", "li" }, false)) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn l_fk = fd, dann muss l_rl = re oder li");
                     return false;
                 }
             } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
@@ -458,7 +515,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                 }
             }
         }
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override
@@ -492,7 +549,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
 
         return value;

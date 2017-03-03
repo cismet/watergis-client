@@ -13,12 +13,18 @@
 package de.cismet.watergis.gui.panels;
 
 import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.tools.MetaObjectCache;
+
+import Sirius.server.middleware.types.MetaClass;
+import Sirius.server.middleware.types.MetaObject;
+import Sirius.server.newuser.User;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.WKBReader;
 
 import org.apache.log4j.Logger;
 
@@ -31,25 +37,40 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import java.lang.ref.SoftReference;
+
+import java.sql.Time;
+import java.sql.Timestamp;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
+
+import de.cismet.cids.custom.watergis.server.search.RouteEnvelopes;
 
 import de.cismet.cids.dynamics.CidsBean;
 import de.cismet.cids.dynamics.DisposableCidsBeanStore;
 
 import de.cismet.cids.editors.DefaultCustomObjectEditor;
+
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cids.server.search.CidsServerSearch;
 
 import de.cismet.cids.tools.CidsBeanFilter;
 
@@ -61,10 +82,17 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.cismap.linearreferencing.TableStationEditor;
 
+import de.cismet.commons.concurrency.CismetConcurrency;
+
 import de.cismet.tools.CismetThreadPool;
+
+import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.gui.WatergisApp;
 
 import de.cismet.watergis.utils.CidsBeanUtils;
 import de.cismet.watergis.utils.GafReader;
+import de.cismet.watergis.utils.ModelLoader;
 import de.cismet.watergis.utils.RendererTools;
 
 /**
@@ -102,6 +130,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     private Timer timer;
     private ImageResizeWorker currentResizeWorker;
     private Dimension lastDims;
+    private Date tmpTime;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.cids.editors.DefaultBindableReferenceCombo cbFreigabe;
@@ -172,31 +201,12 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         RendererTools.makeReadOnly(txtHo);
         RendererTools.makeReadOnly(txtRe);
         lblBusy.setBusy(false);
-        CidsBeanFilter filter = new CidsBeanFilter() {
 
-                @Override
-                public boolean accept(final CidsBean bean) {
-                    if (bean == null) {
-                        return true;
-                    }
+        final ModelLoader lstLoader = new ModelLoader("k_l_st", cbLst, "qp");
+        final ModelLoader freigabeLoader = new ModelLoader("k_freigabe", cbFreigabe, "qp");
 
-                    return (bean.getProperty("qp") != null) && (Boolean)bean.getProperty("qp");
-                }
-            };
-        cbLst.setBeanFilter(filter);
-
-        filter = new CidsBeanFilter() {
-
-                @Override
-                public boolean accept(final CidsBean bean) {
-                    if (bean == null) {
-                        return true;
-                    }
-
-                    return (bean.getProperty("qp") != null) && (Boolean)bean.getProperty("qp");
-                }
-            };
-        cbFreigabe.setBeanFilter(filter);
+        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(lstLoader);
+        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(freigabeLoader);
 
         timer = new javax.swing.Timer(300, new ActionListener() {
 
@@ -322,8 +332,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labEmpty,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labEmpty.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labEmpty.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -552,8 +564,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
                 org.jdesktop.beansbinding.ELProperty.create("${cidsBean.ba_st.route.ba_cd}"),
                 labBaCdVal,
                 org.jdesktop.beansbinding.BeanProperty.create("text"));
-        binding.setSourceNullValue(null);
-        binding.setSourceUnreadableValue(null);
+        binding.setSourceNullValue("null");
+        binding.setSourceUnreadableValue("null");
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -584,8 +596,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labHoehe.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labHoehe,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labHoehe.text", new Object[] {
-                }));                                          // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labHoehe.text",
+                new Object[] {}));                            // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -593,8 +607,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labHoehe, gridBagConstraints);
 
-        cbLst.setMinimumSize(new java.awt.Dimension(120, 25));
-        cbLst.setPreferredSize(new java.awt.Dimension(120, 25));
+        cbLst.setMinimumSize(new java.awt.Dimension(150, 25));
+        cbLst.setPreferredSize(new java.awt.Dimension(150, 25));
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
                 org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
@@ -614,8 +628,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labStatLa.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labStatLa,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labStatLa.text", new Object[] {
-                }));                                           // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labStatLa.text",
+                new Object[] {}));                             // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -627,8 +643,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labStatBa.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labStatBa,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labStatBa.text", new Object[] {
-                }));                                           // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labStatBa.text",
+                new Object[] {}));                             // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -638,6 +656,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         panGewaesserBezug.add(labStatBa, gridBagConstraints);
 
         labStatLaVal.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
+        labStatLaVal.setPreferredSize(new java.awt.Dimension(150, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
@@ -646,7 +665,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labStatLaVal, gridBagConstraints);
 
-        panStatEdit.setPreferredSize(new java.awt.Dimension(120, 25));
+        panStatEdit.setPreferredSize(new java.awt.Dimension(150, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -773,10 +792,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
                 org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
                 this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.aufn_zeit}"),
+                org.jdesktop.beansbinding.ELProperty.create("${tmpTime}"),
                 tcAufnZeit,
                 org.jdesktop.beansbinding.BeanProperty.create("timestamp"));
-        binding.setConverter(tcAufnZeit.getConverter());
+        binding.setConverter(new SqlTimestampToUtilDateConverter());
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -812,8 +831,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labTitle.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labTitle,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labTitle.text", new Object[] {
-                }));                                          // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labTitle.text",
+                new Object[] {}));                            // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -1021,9 +1042,32 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     public void setCidsBean(final CidsBean cidsBean) {
         bindingGroup.unbind();
         ((TableStationEditor)panStatEdit).setCidsBean(null);
+        ((TableStationEditor)panStatEdit).setParentFeature(null);
         this.cidsBean = cidsBean;
+        tmpTime = null;
 
         if (cidsBean != null) {
+            final Date aufnDatum = (Date)cidsBean.getProperty("aufn_datum");
+            final Time aufnZeit = (Time)cidsBean.getProperty("aufn_zeit");
+
+            if ((aufnDatum != null) || (aufnZeit != null)) {
+                if (aufnDatum == null) {
+                    tmpTime = new Date(aufnZeit.getTime());
+                } else if (aufnZeit == null) {
+                    tmpTime = new Date(aufnDatum.getTime());
+                } else {
+                    final GregorianCalendar dateTime = new GregorianCalendar();
+                    final GregorianCalendar time = new GregorianCalendar();
+                    time.setTime(aufnZeit);
+                    dateTime.setTime(aufnDatum);
+                    dateTime.set(GregorianCalendar.HOUR_OF_DAY, time.get(GregorianCalendar.HOUR_OF_DAY));
+                    dateTime.set(GregorianCalendar.MINUTE, time.get(GregorianCalendar.MINUTE));
+                    dateTime.set(GregorianCalendar.SECOND, time.get(GregorianCalendar.SECOND));
+
+                    tmpTime = new Date(dateTime.getTimeInMillis());
+                }
+            }
+
             DefaultCustomObjectEditor.setMetaClassInformationToMetaClassStoreComponentsInBindingGroup(
                 bindingGroup,
                 this.cidsBean);
@@ -1032,6 +1076,9 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
             labLaCdVal.setText(getPropString("la_cd"));
             labStatLaVal.setText(getPropString("la_st"));
             final CidsBean baSt = (CidsBean)cidsBean.getProperty("ba_st");
+
+            ((TableStationEditor)panStatEdit).setParentFeature(feature);
+            ((TableStationEditor)panStatEdit).setStationProperty("ba_st");
 
             if (baSt != null) {
                 ((TableStationEditor)panStatEdit).setCidsBean(baSt);
@@ -1173,6 +1220,24 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
             final CardLayout cardLayout = (CardLayout)getLayout();
             cardLayout.show(this, "empty");
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the tmpTime
+     */
+    public Date getTmpTime() {
+        return tmpTime;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  tmpTime  the tmpTime to set
+     */
+    public void setTmpTime(final Date tmpTime) {
+        this.tmpTime = tmpTime;
     }
 
     //~ Inner Classes ----------------------------------------------------------
@@ -1442,6 +1507,38 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
          */
         private Double getDouble(final String text) throws NumberFormatException {
             return Double.parseDouble(text);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class SqlTimestampToUtilDateConverter extends Converter<java.util.Date, java.util.Date> {
+
+        //~ Instance fields ----------------------------------------------------
+
+        // this converter is used to fill the cids bean
+
+        private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.getClass());
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public java.util.Date convertForward(final java.util.Date value) {
+            return value;
+        }
+
+        @Override
+        public java.util.Date convertReverse(final java.util.Date value) {
+            try {
+                cidsBean.setProperty("aufn_zeit", new Time(value.getTime()));
+                cidsBean.setProperty("aufn_datum", new java.sql.Date(value.getTime()));
+            } catch (Exception e) {
+                LOG.error("Error while filling time properties", e);
+            }
+            return value;
         }
     }
 }

@@ -15,16 +15,10 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
-import org.apache.log4j.Logger;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import java.sql.Timestamp;
 
 import java.util.List;
 
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -34,13 +28,13 @@ import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 import de.cismet.cismap.cidslayer.PointAndStationCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+
+import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -48,14 +42,43 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLaUestRuleSet extends DefaultAttributeTableRuleSet {
+public class FgLaUestRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("gn1", new Varchar(50, false, true));
+        typeMap.put("gwk_lawa", new Numeric(15, 0, false, true));
+        typeMap.put("re", new Numeric(11, 2, false, true));
+        typeMap.put("ho", new Numeric(10, 2, false, true));
+        typeMap.put("abst_re", new Numeric(12, 3, false, true));
+        typeMap.put("abst_ho", new Numeric(11, 3, false, true));
+        typeMap.put("ba_cd", new Varchar(50, false, true));
+        typeMap.put("ba_st", new Numeric(10, 2, false, true));
+        typeMap.put("la_cd", new Numeric(15, 0, false, true));
+        typeMap.put("la_st", new Numeric(10, 2, false, true));
+        typeMap.put("land", new Varchar(8, false, true));
+        typeMap.put("abst_inst", new Varchar(50, false, true));
+        typeMap.put("abst_datum", new Varchar(10, false, true));
+        typeMap.put("abst_statu", new Numeric(1, 0, false, true));
+        typeMap.put("gwk_st_m", new Numeric(10, 2, false, true));
+        typeMap.put("gwk_km_m", new Numeric(10, 2, false, true));
+        typeMap.put("gwk2_lawa", new Numeric(15, 0, false, true));
+        typeMap.put("gwk2_st_m", new Numeric(10, 2, false, true));
+        typeMap.put("wsa_km_m", new Numeric(10, 2, false, true));
+        typeMap.put("bemerkung", new Varchar(250, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("id");
+                    && !columnName.equals("geom") && !columnName.equals("id") && !columnName.equals("la_st")
+                    && !columnName.equals("la_cd");
     }
 
     @Override
@@ -64,22 +87,26 @@ public class FgLaUestRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        return null;
+        if (columnName.equals("ba_st")) {
+            return new StationTableCellEditor(columnName);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return super.prepareForSave(features);
     }
 
     @Override

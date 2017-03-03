@@ -104,11 +104,12 @@ import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
 
+import de.cismet.watergis.download.FakeFileDownload;
+
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.checks.AbstractCheckAction;
 import de.cismet.watergis.gui.dialog.ExportDialog;
 
-import de.cismet.watergis.utils.FakeFileDownload;
 import de.cismet.watergis.utils.GeometryUtils;
 
 import static javax.swing.Action.NAME;

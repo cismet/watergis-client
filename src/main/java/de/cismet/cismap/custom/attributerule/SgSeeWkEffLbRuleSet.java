@@ -25,7 +25,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -38,7 +37,19 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class SgSeeWkEffLbRuleSet extends DefaultAttributeTableRuleSet {
+public class SgSeeWkEffLbRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("wk_nr", new Varchar(10, true, true));
+        typeMap.put("distanz", new Numeric(10, 2, true, false));
+        typeMap.put("winkel", new Numeric(5, 1, true, true));
+        typeMap.put("typ", new Varchar(1, true, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -49,60 +60,13 @@ public class SgSeeWkEffLbRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if ((newValue == null)
-                    && (column.equals("wk_nr") || column.equals("distanz") || column.equals("winkel")
-                        || column.equals("typ"))) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
-                        + column
-                        + " darf nicht null sein");
-            return oldValue;
-        }
-
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("wk_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wk_nr darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("distanz") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut distanz darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("winkel") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut winkel darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("typ") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut typ darf nicht leer sein");
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override
@@ -123,7 +87,7 @@ public class SgSeeWkEffLbRuleSet extends DefaultAttributeTableRuleSet {
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("distanz")) {
-            return -3;
+            return -5;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }
@@ -135,7 +99,7 @@ public class SgSeeWkEffLbRuleSet extends DefaultAttributeTableRuleSet {
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
         return value;
     }

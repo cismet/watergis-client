@@ -36,6 +36,7 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationCreator;
 
@@ -47,12 +48,12 @@ import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
- * DOCUMENT ME!
+ * Not used.
  *
  * @author   therter
  * @version  $Revision$, $Date$
@@ -74,7 +75,7 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (newValue == null) {
+        if (isValueEmpty(newValue)) {
             if (column.equals("eswa") || column.equals("lage")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut "
@@ -96,7 +97,7 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("wbbl")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
@@ -112,10 +113,10 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("traeger") + " - " + bean.getProperty("name");
                     }
                 });
@@ -129,10 +130,10 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("zust_kl") + " - " + bean.getProperty("name");
                     }
                 });
@@ -146,10 +147,10 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(false);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_rl") + " - " + bean.getProperty("name");
                     }
                 });
@@ -163,10 +164,10 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(false);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("eswa") + " - " + bean.getProperty("name");
                     }
                 });
@@ -178,14 +179,14 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("eswa") == null) {
+            if (isValueEmpty(feature.getProperty("eswa"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut eswa darf nicht leer sein");
                 return false;
             }
-            if (feature.getProperty("lage") == null) {
+            if (isValueEmpty(feature.getProperty("lage"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut lage darf nicht leer sein");
                 return false;

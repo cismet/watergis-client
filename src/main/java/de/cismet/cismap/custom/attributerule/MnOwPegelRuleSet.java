@@ -27,7 +27,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -39,7 +38,6 @@ import de.cismet.cismap.cidslayer.PointAndStationCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
@@ -55,11 +53,40 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class MnOwPegelRuleSet extends DefaultAttributeTableRuleSet {
+public class MnOwPegelRuleSet extends WatergisDefaultRuleSet {
 
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(MnOwPegelRuleSet.class);
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st", new Numeric(10, 2, false, true));
+        typeMap.put("la_cd", new Numeric(15, 0, false, false));
+        typeMap.put("la_st", new Numeric(10, 2, false, false));
+        typeMap.put("gwk_lawa", new Numeric(15, 0, false, false));
+        typeMap.put("station", new Numeric(10, 2, false, false));
+        typeMap.put("ms_nr", new Varchar(20, false, true));
+        typeMap.put("ms_nr_wsa", new Varchar(20, false, true));
+        typeMap.put("ms_name", new Varchar(50, true, true));
+        typeMap.put("re", new Numeric(11, 2, true, true));
+        typeMap.put("ho", new Numeric(10, 2, true, true));
+        typeMap.put("typ", new Varchar(2, true, true));
+        typeMap.put("gbk_lawa", new Numeric(15, 0, false, true));
+        typeMap.put("gwk_gn", new Varchar(60, false, true));
+        typeMap.put("see_gn", new Varchar(50, false, true));
+        typeMap.put("ezg_fl", new Numeric(12, 0, false, true));
+        typeMap.put("ezg_fl_d", new Numeric(12, 0, false, true));
+        typeMap.put("ezg_fl_dp", new Numeric(6, 2, false, true));
+        typeMap.put("steckbrief", new Link(250, false, true));
+        typeMap.put("ganglin_w", new Link(250, false, true));
+        typeMap.put("ganglin_q", new Link(250, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -75,27 +102,7 @@ public class MnOwPegelRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (newValue == null) {
-            if (column.equalsIgnoreCase("ms_name")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ms_name darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("re")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut re darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("ho")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ho darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("typ")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut typ darf nicht leer sein");
-                return oldValue;
-            }
-        }
-
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -103,13 +110,15 @@ public class MnOwPegelRuleSet extends DefaultAttributeTableRuleSet {
         if (columnName.equals("steckbrief") || columnName.equals("ganglin_w") || columnName.equals("ganglin_q")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("station")) {
+        if (columnName.equals("ba_st")) {
+            return new StationTableCellEditor(columnName);
+        } else if (columnName.equals("station")) {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("ww_gr")) {
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
@@ -121,34 +130,16 @@ public class MnOwPegelRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("ms_name") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut pg_name darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("typ") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut typ darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("re") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut re darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("ho") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ho darf nicht leer sein");
-                return false;
-            }
-
-            if ((feature.getProperty("ms_nr") == null) && (feature.getProperty("ms_nr_wsa") == null)) {
+            if ((isValueEmpty(feature.getProperty("ms_nr"))) && (isValueEmpty(feature.getProperty("ms_nr_wsa")))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.");
                 return false;
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override

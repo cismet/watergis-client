@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
 
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 
 import java.sql.Timestamp;
@@ -36,6 +37,7 @@ import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -45,10 +47,9 @@ import de.cismet.cids.custom.watergis.server.search.FgBaCdCheck;
 
 import de.cismet.cids.dynamics.CidsBean;
 
-import de.cismet.cids.tools.CidsBeanFilter;
-
 import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -57,6 +58,7 @@ import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
+import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.rasterservice.MapService;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -67,21 +69,36 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBakRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBakRuleSet extends WatergisDefaultRuleSet {
 
     //~ Instance fields --------------------------------------------------------
 
     private final Logger LOG = Logger.getLogger(FgBakRuleSet.class);
     private TreeSet<FeatureServiceFeature> changedBaCdObjects;
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true));
+        // wenn ba_cd == null, dann wird es automatisch gefuellt (in prepareforSave)
+        typeMap.put("ba_cd", new Varchar(50, true));
+        typeMap.put("bak_st_von", new Numeric(10, 2, false, false));
+        typeMap.put("bak_st_bis", new Numeric(10, 2, false, false));
+        typeMap.put("ba_gn", new Varchar(50, false));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("id") && !columnName.equals("laenge") && !columnName.equals("ba_cd")
+                    && !columnName.equals("id") && !columnName.equals("laenge")
                     && !columnName.equals("geom") && !columnName.equals("bak_st_von")
-                    && !columnName.equals("bak_st_von");
+                    && !columnName.equals("bak_st_bis");
     }
 
     @Override
@@ -90,35 +107,80 @@ public class FgBakRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (column.equals("ba_cd")
-                    && ((oldValue == null) || oldValue.equals("")
-                        || ((String)oldValue).startsWith(
-                            AppBroker.getInstance().getNiemandWwGr().getProperty("praefix")
-                            + ":"))) {
+        if (column.equals("ba_cd")) {
             if (changedBaCdObjects == null) {
                 changedBaCdObjects = new TreeSet<FeatureServiceFeature>();
             }
             changedBaCdObjects.add(feature);
+            if ((newValue != null) && !newValue.equals("")) {
+                final String userGroup = SessionManager.getSession().getUser().getUserGroup().getName();
+
+                if (!oldValue.equals(newValue) && !userGroup.equalsIgnoreCase("administratoren")) {
+                    final String prefix = (String)AppBroker.getInstance().getOwnWwGr().getProperty("praefix");
+
+                    if (prefix != null) {
+                        return prefix + ":" + newValue;
+                    }
+                } else if (!oldValue.equals(newValue)) {
+                    final String valString = String.valueOf(newValue);
+
+                    if (valString.contains(":") && userGroup.equalsIgnoreCase("administratoren")) {
+                        final String prefix = valString.substring(0, valString.indexOf(":"));
+                        boolean listFound = false;
+
+                        while (!listFound) {
+                            final ComboBoxModel<Object> model = ((CidsLayerFeature)feature).getCatalogueCombo("ww_gr")
+                                        .getModel();
+
+                            if (model.getSize() > 1) {
+                                listFound = true;
+
+                                for (int i = 0; i < model.getSize(); ++i) {
+                                    final Object tmp = model.getElementAt(i);
+
+                                    if (tmp instanceof CidsLayerFeature) {
+                                        final CidsLayerFeature wwGrFeature = (CidsLayerFeature)tmp;
+                                        final Object prefixTmp = wwGrFeature.getProperty("praefix");
+
+                                        if ((prefixTmp != null) && prefixTmp.equals(prefix)) {
+                                            model.setSelectedItem(wwGrFeature);
+                                            feature.setProperty("ww_gr", wwGrFeature);
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else {
+                                try {
+                                    Thread.sleep(20);
+                                } catch (InterruptedException ex) {
+                                    // nothing to do
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        return newValue;
+
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         if (columnName.equals("ww_gr")) {
-            CidsBeanFilter filter = null;
+            CidsLayerFeatureFilter filter = null;
 
             if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
                 final String userName = AppBroker.getInstance().getOwner();
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             if (bean == null) {
                                 return false;
                             }
@@ -126,10 +188,10 @@ public class FgBakRuleSet extends DefaultAttributeTableRuleSet {
                         }
                     };
             } else {
-                filter = new CidsBeanFilter() {
+                filter = new CidsLayerFeatureFilter() {
 
                         @Override
-                        public boolean accept(final CidsBean bean) {
+                        public boolean accept(final CidsLayerFeature bean) {
                             return bean != null;
                         }
                     };
@@ -144,7 +206,7 @@ public class FgBakRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         final Map<Integer, String> baCdMap = new HashMap<Integer, String>();
 
         for (final FeatureServiceFeature feature : features) {
@@ -197,7 +259,7 @@ public class FgBakRuleSet extends DefaultAttributeTableRuleSet {
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     /**
@@ -208,7 +270,7 @@ public class FgBakRuleSet extends DefaultAttributeTableRuleSet {
     private void setBaCd(final FeatureServiceFeature feature) {
         if (feature instanceof CidsLayerFeature) {
             final CidsLayerFeature cLayerFeature = (CidsLayerFeature)feature;
-            final CidsBean wwGr = (CidsBean)cLayerFeature.getPropertyObject("ww_gr");
+            final CidsLayerFeature wwGr = (CidsLayerFeature)cLayerFeature.getPropertyObject("ww_gr");
             final String baCd = (String)feature.getProperty("ba_cd");
             final String praefix = (String)wwGr.getProperty("praefix");
 
@@ -283,7 +345,7 @@ public class FgBakRuleSet extends DefaultAttributeTableRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
         return value;
     }
@@ -315,7 +377,7 @@ public class FgBakRuleSet extends DefaultAttributeTableRuleSet {
     public FeatureServiceFeature cloneFeature(final FeatureServiceFeature feature) {
         boolean unique;
         final FeatureServiceFeature newFeature = super.cloneFeature(feature);
-        final CidsBean wwGr = (CidsBean)newFeature.getProperty("original:ww_gr");
+        final CidsBean wwGr = (CidsBean)feature.getProperty("original:ww_gr");
         final String prefix = String.valueOf(wwGr.getProperty("praefix"));
         String baCd = (String)newFeature.getProperty("ba_cd");
         if (baCd != null) {

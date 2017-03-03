@@ -15,32 +15,23 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
-import org.apache.log4j.Logger;
-
 import org.deegree.datatypes.Types;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import java.sql.Timestamp;
 
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import de.cismet.cids.dynamics.CidsBean;
-
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cids.tools.CidsBeanFilter;
-
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationCreator;
 
@@ -52,7 +43,7 @@ import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -66,30 +57,60 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Map<String, String[]> allowedWehrV = new HashMap<String, String[]>();
-    private static final Map<String, String[]> allowedWehrAV = new HashMap<String, String[]>();
-    private static final Map<String, String[]> materialV = new HashMap<String, String[]>();
+    private static final Map<String, String[]> ALLOWED_WEHR_V = new HashMap<String, String[]>();
+    private static final Map<String, String[]> ALLOWED_WEHR_AV = new HashMap<String, String[]>();
+    private static final Map<String, String[]> MATERIAL_V = new HashMap<String, String[]>();
 
     static {
-        allowedWehrV.put("s-kbw", new String[] { "bo", "bo-j", "schü" });
-        allowedWehrV.put("s-sbw", new String[] { "bo", "bo-j", "schü" });
-        allowedWehrV.put("s-stw", new String[] { "bo", "bo-j", "schü" });
-        allowedWehrV.put("s-moe", new String[] { "bo", "bo-j", "schü" });
-        allowedWehrV.put("w-strei", new String[] { "schw" });
-        allowedWehrV.put("w-üfa", new String[] { "schw" });
-        allowedWehrV.put("kl", new String[] { "ki", "ki-fb", "ki-fb-schü", "ki-schü" });
-        allowedWehrV.put("na", new String[] { "na" });
-        allowedWehrV.put("seg", new String[] { "seg", "seg-fb" });
-        allowedWehrV.put("sek", new String[] { "sek" });
-        allowedWehrV.put("schl", new String[] { "schl" });
-        allowedWehrV.put("w-schü", new String[] { "schü", "schü-dop", "schü-dreh", "schü-haken", "schü-seg" });
-        allowedWehrV.put("tro", new String[] { "tro" });
-        allowedWehrV.put("wz", new String[] { "wz" });
-        allowedWehrAV.put("w-strei", new String[] { "ohne" });
-        allowedWehrAV.put("w-üfa", new String[] { "ohne" });
-        materialV.put("bo", new String[] { "h", "k", "st" });
-        materialV.put("bo-j", new String[] { "h", "k", "st" });
-        materialV.put("schw", new String[] { "b", "k" });
+        ALLOWED_WEHR_V.put("s-kbw", new String[] { "bo", "bo-j", "schü" });
+        ALLOWED_WEHR_V.put("s-sbw", new String[] { "bo", "bo-j", "schü" });
+        ALLOWED_WEHR_V.put("s-stw", new String[] { "bo", "bo-j", "schü" });
+        ALLOWED_WEHR_V.put("s-moe", new String[] { "bo", "bo-j", "schü" });
+        ALLOWED_WEHR_V.put("w-strei", new String[] { "schw" });
+        ALLOWED_WEHR_V.put("w-üfa", new String[] { "schw" });
+        ALLOWED_WEHR_V.put("kl", new String[] { "ki", "ki-fb", "ki-fb-schü", "ki-schü" });
+        ALLOWED_WEHR_V.put("na", new String[] { "na" });
+        ALLOWED_WEHR_V.put("seg", new String[] { "seg", "seg-fb" });
+        ALLOWED_WEHR_V.put("sek", new String[] { "sek" });
+        ALLOWED_WEHR_V.put("schl", new String[] { "schl" });
+        ALLOWED_WEHR_V.put("w-schü", new String[] { "schü", "schü-dop", "schü-dreh", "schü-haken", "schü-seg" });
+        ALLOWED_WEHR_V.put("tro", new String[] { "tro" });
+        ALLOWED_WEHR_V.put("wz", new String[] { "wz" });
+        ALLOWED_WEHR_AV.put("w-strei", new String[] { "ohne" });
+        ALLOWED_WEHR_AV.put("w-üfa", new String[] { "ohne" });
+        MATERIAL_V.put("bo", new String[] { "h", "k", "st" });
+        MATERIAL_V.put("bo-j", new String[] { "h", "k", "st" });
+        MATERIAL_V.put("schw", new String[] { "b", "k" });
+    }
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        final Numeric esw = new Numeric(1, 0, false, true);
+        esw.setRange(0.0, 1.0);
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st", new Numeric(10, 2, false, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
+        typeMap.put("wehr", new Catalogue("k_wehr", true, true));
+        typeMap.put("wehr_v", new Catalogue("k_wehr_v", true, true));
+        typeMap.put("material_v", new Catalogue("k_material_v", false, true));
+        typeMap.put("wehr_av", new Catalogue("k_wehr_av", true, true));
+        typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
+        typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
+        typeMap.put("esw", esw);
+        typeMap.put("bemerkung", new Varchar(250, false, true));
+        typeMap.put("br", new Numeric(4, 2, false, true));
+        typeMap.put("br_li", new Numeric(4, 2, false, true));
+        typeMap.put("ho_so", new Numeric(6, 2, false, true));
+        typeMap.put("sz", new Numeric(6, 2, false, true));
+        typeMap.put("az", new Numeric(6, 2, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -107,7 +128,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (newValue == null) {
+        if (isValueEmpty(newValue)) {
             if (column.equals("wehr") || column.equals("wehr_v") || column.equals("wehr_av")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut "
@@ -118,15 +139,25 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         }
 
         if (column.equals("ausbaujahr")
-                    && !checkRange(column, newValue, 1800, getCurrentYear() + 2, true, true, true)) {
+                    && !checkRange(
+                        column,
+                        newValue,
+                        1950,
+                        getCurrentYear(),
+                        1800,
+                        getCurrentYear()
+                        + 2,
+                        true,
+                        true,
+                        true)) {
             return oldValue;
         }
 
-        if (column.equals("br") && !checkRange(column, newValue, 0, 10, true, false, true)) {
+        if (column.equals("br") && !checkRange(column, newValue, 0, 10, 0, 30, true, false, true)) {
             return oldValue;
         }
 
-        if (column.equals("br_li") && !checkRange(column, newValue, 0, 100, true, false, true)) {
+        if (column.equals("br_li") && !checkRange(column, newValue, 0, 30, 0, 100, true, false, true)) {
             return oldValue;
         }
 
@@ -140,7 +171,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -148,7 +179,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("wbbl")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
@@ -164,10 +195,10 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("traeger") + " - " + bean.getProperty("name");
                     }
                 });
@@ -181,10 +212,10 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("zust_kl") + " - " + bean.getProperty("name");
                     }
                 });
@@ -198,10 +229,10 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(false);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("wehr") + " - " + bean.getProperty("name");
                     }
                 });
@@ -215,10 +246,10 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(false);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("wehr_v") + " - " + bean.getProperty("name");
                     }
                 });
@@ -232,17 +263,17 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(false);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("wehr_av") + " - " + bean.getProperty("name");
                     }
                 });
 
             return editor;
         } else if (columnName.equals("l_st")) {
-            final CidsBeanFilter filter = createCidsBeanFilter("nicht_qp");
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("nicht_qp");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         columnName,
@@ -251,17 +282,17 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                     filter);
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_st") + " - " + bean.getProperty("name");
                     }
                 });
 
             return editor;
         } else if (columnName.equals("material_v")) {
-            final CidsBeanFilter filter = createCidsBeanFilter("wehr_v");
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("wehr_v");
 
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
@@ -270,10 +301,10 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                         true),
                     filter);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("material") + " - " + bean.getProperty("name");
                     }
                 });
@@ -285,19 +316,19 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("wehr") == null) {
+            if (isValueEmpty(feature.getProperty("wehr"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut wehr darf nicht leer sein");
                 return false;
             }
-            if (feature.getProperty("wehr_v") == null) {
+            if (isValueEmpty(feature.getProperty("wehr_v"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut wehr_v darf nicht leer sein");
                 return false;
             }
-            if (feature.getProperty("wehr_av") == null) {
+            if (isValueEmpty(feature.getProperty("wehr_av"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut wehr_av darf nicht leer sein");
                 return false;
@@ -359,13 +390,13 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             }
 
             if (feature.getProperty("wehr") != null) {
-                final String[] allowedWehrVArray = allowedWehrV.get(feature.getProperty("wehr").toString()
+                final String[] allowedWehrVArray = ALLOWED_WEHR_V.get(feature.getProperty("wehr").toString()
                                 .toLowerCase());
-                final String[] allowedWehrAVArray = allowedWehrAV.get(feature.getProperty("wehr").toString()
+                final String[] allowedWehrAVArray = ALLOWED_WEHR_AV.get(feature.getProperty("wehr").toString()
                                 .toLowerCase());
 
                 if (allowedWehrVArray != null) {
-                    if ((feature.getProperty("wehr_v") == null)
+                    if ((isValueEmpty(feature.getProperty("wehr_v")))
                                 || !arrayContains(
                                     allowedWehrVArray,
                                     feature.getProperty("wehr_v").toString().toLowerCase())) {
@@ -380,7 +411,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                 }
 
                 if (allowedWehrAVArray != null) {
-                    if ((feature.getProperty("wehr_av") == null)
+                    if ((isValueEmpty(feature.getProperty("wehr_av")))
                                 || !arrayContains(
                                     allowedWehrAVArray,
                                     feature.getProperty("wehr_av").toString().toLowerCase())) {
@@ -396,7 +427,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             }
 
             if (feature.getProperty("wehr_v") != null) {
-                final String[] allowedMaterialVArray = allowedWehrV.get(feature.getProperty("wehr_v").toString()
+                final String[] allowedMaterialVArray = ALLOWED_WEHR_V.get(feature.getProperty("wehr_v").toString()
                                 .toLowerCase());
 
                 if (allowedMaterialVArray != null) {
@@ -423,7 +454,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override

@@ -19,11 +19,11 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
@@ -37,7 +37,20 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class VwAlkGmkRuleSet extends DefaultAttributeTableRuleSet {
+public class VwAlkGmkRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
+        typeMap.put("gmk_nr", new WatergisDefaultRuleSet.Numeric(6, 0, true, true, "gmk_nr", "vw_alk_gmk"));
+        typeMap.put("gmk_name", new WatergisDefaultRuleSet.Varchar(50, true));
+        typeMap.put("gmd_nr", new WatergisDefaultRuleSet.Numeric(8, 0, true));
+        typeMap.put("gmd_name", new WatergisDefaultRuleSet.Varchar(50, true));
+        typeMap.put("gmk_fl", new WatergisDefaultRuleSet.Numeric(12, 0, false, false));
+        typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
+        typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -48,27 +61,20 @@ public class VwAlkGmkRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        return null;
-    }
+        if (columnName.equals("gmk_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        if (columnName.equals("gmd_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
 
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
+        return null;
     }
 
     @Override
@@ -97,12 +103,12 @@ public class VwAlkGmkRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
+        Integer value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getArea();
+            value = (int)geom.getArea();
         }
 
         return value;
@@ -110,11 +116,11 @@ public class VwAlkGmkRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
+        return Integer.class;
     }
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }
 }

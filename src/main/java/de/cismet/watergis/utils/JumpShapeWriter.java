@@ -191,7 +191,7 @@ public class JumpShapeWriter implements ShapeWriter {
                     if (fileWithoutExtension.contains(".")) {
                         fileWithoutExtension = fileWithoutExtension.substring(0, fileWithoutExtension.lastIndexOf("."));
                     }
-                    
+
                     bin = new BufferedInputStream(in);
                     out = new BufferedOutputStream(new FileOutputStream(fileWithoutExtension + ".pdf"));
                     final byte[] tmp = new byte[256];
@@ -250,8 +250,8 @@ public class JumpShapeWriter implements ShapeWriter {
                 } else if (DATE_AS_STRING && ((value instanceof Timestamp) || (value instanceof Date))) {
                     value = String.valueOf(value);
                 }
-                
-                if (schema.getAttributeType(name[0]) == AttributeType.DOUBLE && value instanceof Integer) {
+
+                if ((schema.getAttributeType(name[0]) == AttributeType.DOUBLE) && (value instanceof Integer)) {
                     value = ((Integer)value).doubleValue();
                 }
 

@@ -28,7 +28,9 @@ import javax.swing.KeyStroke;
 import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.gui.MappingComponent;
+
 import de.cismet.cismap.custom.attributerule.MessageDialog;
+
 import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -101,10 +103,11 @@ public class FlipAction extends AbstractAction implements CleanUpAction {
 //                        FlipAction.class,
 //                        "FlipAction.actionPerformed.geometryChanged"));
 //            }
-            
-            MessageDialog dialog = new MessageDialog(AppBroker.getInstance().getWatergisApp(), true, 
+
+            final MessageDialog dialog = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    true,
                     NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.geometryChanged"));
-            dialog.setSize(200,100);
+            dialog.setSize(200, 100);
             StaticSwingTools.showDialog(dialog);
         }
 

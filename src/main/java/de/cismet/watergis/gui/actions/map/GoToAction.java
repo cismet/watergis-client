@@ -105,7 +105,7 @@ public class GoToAction extends AbstractAction {
                 StaticDecimalTools.round(x)
                         + ","
                         + StaticDecimalTools.round(y));
-        
+
         if (s instanceof String) {
             try {
                 final String[] sa = ((String)s).split(",");

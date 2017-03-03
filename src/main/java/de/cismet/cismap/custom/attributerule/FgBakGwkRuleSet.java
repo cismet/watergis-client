@@ -49,7 +49,20 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBakGwkRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ba_cd", new Varchar(50, true, false));
+        typeMap.put("bak_st_von", new Numeric(10, 2, true, false));
+        typeMap.put("bak_st_bis", new Numeric(10, 2, true, false));
+        typeMap.put("la_cd", new Catalogue("k_gwk_lawa", true, true));
+        typeMap.put("laenge", new Numeric(12, 0, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -65,21 +78,12 @@ public class FgBakGwkRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-//        final String[] validLawaCodes = AppBroker.getInstance().getValidLawaCodes();
-//        if (((validLawaCodes != null) && column.equals("la_cd")
-//                        && (Arrays.binarySearch(validLawaCodes, newValue.toString()) < 0))
-//                    || (newValue == null)) {
-//            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-//                "Das Attribut la_cd hat keinen gültigen Wert");
-//            return oldValue;
-//        }
-
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -102,19 +106,8 @@ public class FgBakGwkRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-//        final String[] validLawaCodes = AppBroker.getInstance().getValidLawaCodes();
-
-//        for (final FeatureServiceFeature f : features) {
-//            final Object laCd = f.getProperty("la_cd");
-//            if ((laCd == null) || (Arrays.binarySearch(validLawaCodes, laCd.toString()) < 0)) {
-//                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-//                    "Das Attribut la_cd hat keinen gültigen Wert");
-//                return false;
-//            }
-//        }
-
-        return true;
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return super.prepareForSave(features);
     }
 
     @Override

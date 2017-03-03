@@ -37,6 +37,37 @@ import de.cismet.watergis.broker.AppBroker;
  */
 public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ms_nr", new Varchar(20, true, true));
+        typeMap.put("ms_name", new Varchar(50, true, true));
+        typeMap.put("re", new Numeric(11, 2, true, true));
+        typeMap.put("ho", new Numeric(10, 2, true, true));
+        typeMap.put("pn_von", new Varchar(10, true, true));
+        typeMap.put("pn_bis", new Varchar(10, true, true));
+        typeMap.put("cl", new Numeric(3, 0, true, true));
+        typeMap.put("cl_min", new Numeric(12, 6, false, true));
+        typeMap.put("cl_mw", new Numeric(12, 6, false, true));
+        typeMap.put("cl_max", new Numeric(12, 6, false, true));
+        typeMap.put("nh4", new Numeric(3, 0, true, true));
+        typeMap.put("nh4_min", new Numeric(12, 6, false, true));
+        typeMap.put("nh4_mw", new Numeric(12, 6, false, true));
+        typeMap.put("nh4_max", new Numeric(12, 6, false, true));
+        typeMap.put("no3", new Numeric(3, 0, true, true));
+        typeMap.put("no3_min", new Numeric(12, 6, false, true));
+        typeMap.put("no3_mw", new Numeric(12, 6, false, true));
+        typeMap.put("no3_max", new Numeric(12, 6, false, true));
+        typeMap.put("so4", new Numeric(3, 0, true, true));
+        typeMap.put("so4_min", new Numeric(12, 6, false, true));
+        typeMap.put("so4_mw", new Numeric(12, 6, false, true));
+        typeMap.put("so4_max", new Numeric(12, 6, false, true));
+        typeMap.put("ue_sw_psm", new Numeric(1, 0, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -51,24 +82,12 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if ((column.equals("ms_nr") || column.equals("ms_name") || column.equals("re") || column.equals("ho")
-                        || column.equals("pn_von") || column.equals("pn_bis") || column.equals("cl")
-                        || column.equals("nh4")
-                        || column.equals("no3") || column.equals("so4"))
-                    && (newValue == null)) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
-                        + column
-                        + " darf nicht null sein");
-            return oldValue;
-        }
-
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -77,63 +96,63 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature f : features) {
-            if (f.getProperty("ms_nr") == null) {
+            if (isValueEmpty(f.getProperty("ms_nr"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut ms_nr darf nicht null sein");
                 return false;
             }
 
-            if (f.getProperty("ms_name") == null) {
+            if (isValueEmpty(f.getProperty("ms_name"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut ms_name darf nicht null sein");
                 return false;
             }
 
-            if (f.getProperty("re") == null) {
+            if (isValueEmpty(f.getProperty("re"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut re darf nicht null sein");
                 return false;
             }
 
-            if (f.getProperty("ho") == null) {
+            if (isValueEmpty(f.getProperty("ho"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut ho darf nicht null sein");
                 return false;
             }
 
-            if (f.getProperty("pn_von") == null) {
+            if (isValueEmpty(f.getProperty("pn_von"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut pn_von darf nicht null sein");
                 return false;
             }
 
-            if (f.getProperty("pn_bis") == null) {
+            if (isValueEmpty(f.getProperty("pn_bis"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut pn_bis darf nicht null sein");
                 return false;
             }
 
-            if (f.getProperty("cl") == null) {
+            if (isValueEmpty(f.getProperty("cl"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut cl darf nicht null sein");
                 return false;
             }
 
-            if (f.getProperty("nh4") == null) {
+            if (isValueEmpty(f.getProperty("nh4"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut nh4 darf nicht null sein");
                 return false;
             }
 
-            if (f.getProperty("no3") == null) {
+            if (isValueEmpty(f.getProperty("no3"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut no3 darf nicht null sein");
                 return false;
             }
 
-            if (f.getProperty("so4") == null) {
+            if (isValueEmpty(f.getProperty("so4"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut so4 darf nicht null sein");
                 return false;
@@ -148,18 +167,18 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
                         return false;
                     }
                 } else if (((Number)f.getProperty("cl")).intValue() == 1) {
-                    if (!((f.getProperty("cl_min") == f.getProperty("cl_mw"))
-                                    && (f.getProperty("cl_mw") == f.getProperty("cl_max"))
+                    if (!(isEqual((Number)f.getProperty("cl_min"), (Number)f.getProperty("cl_mw"))
+                                    && isEqual((Number)f.getProperty("cl_mw"), (Number)f.getProperty("cl_max"))
                                     && (f.getProperty("cl_max") != null))) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Attribute cl_min / cl_mw / cl_max müssen identisch und ungleich NULL sein, wenn pn = 1.");
+                            "Die Attribute cl_min / cl_mw / cl_max müssen identisch und ungleich NULL sein, wenn cl = 1.");
                         return false;
                     }
                 } else if (((Number)f.getProperty("cl")).intValue() > 1) {
-                    if ((f.getProperty("cl_min") == null) || (f.getProperty("cl_mw") == null)
-                                || (f.getProperty("cl_max") == null)) {
+                    if ((isValueEmpty(f.getProperty("cl_min"))) || (isValueEmpty(f.getProperty("cl_mw")))
+                                || (isValueEmpty(f.getProperty("cl_max")))) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Attribute cl_min / cl_mw / cl_max dürfen nicht NULL sein, wenn pn > 1.");
+                            "Die Attribute cl_min / cl_mw / cl_max dürfen nicht NULL sein, wenn cl > 1.");
                         return false;
                     }
                 }
@@ -174,18 +193,18 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
                         return false;
                     }
                 } else if (((Number)f.getProperty("nh4")).intValue() == 1) {
-                    if (!((f.getProperty("nh4_min") == f.getProperty("nh4_mw"))
-                                    && (f.getProperty("nh4_mw") == f.getProperty("nh4_max"))
+                    if (!(isEqual((Number)f.getProperty("nh4_min"), (Number)f.getProperty("nh4_mw"))
+                                    && isEqual((Number)f.getProperty("nh4_mw"), (Number)f.getProperty("nh4_max"))
                                     && (f.getProperty("nh4_max") != null))) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Attribute nh4_min / nh4_mw / nh4_max müssen identisch und ungleich NULL sein, wenn pn = 1.");
+                            "Die Attribute nh4_min / nh4_mw / nh4_max müssen identisch und ungleich NULL sein, wenn nh4 = 1.");
                         return false;
                     }
                 } else if (((Number)f.getProperty("nh4")).intValue() > 1) {
-                    if ((f.getProperty("nh4_min") == null) || (f.getProperty("nh4_mw") == null)
-                                || (f.getProperty("nh4_max") == null)) {
+                    if ((isValueEmpty(f.getProperty("nh4_min"))) || (isValueEmpty(f.getProperty("nh4_mw")))
+                                || (isValueEmpty(f.getProperty("nh4_max")))) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Attribute nh4_min / nh4_mw / nh4_max dürfen nicht NULL sein, wenn pn > 1.");
+                            "Die Attribute nh4_min / nh4_mw / nh4_max dürfen nicht NULL sein, wenn nh4 > 1.");
                         return false;
                     }
                 }
@@ -200,18 +219,18 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
                         return false;
                     }
                 } else if (((Number)f.getProperty("no3")).intValue() == 1) {
-                    if (!((f.getProperty("no3_min") == f.getProperty("no3_mw"))
-                                    && (f.getProperty("no3_mw") == f.getProperty("no3_max"))
+                    if (!(isEqual((Number)f.getProperty("no3_min"), (Number)f.getProperty("no3_mw"))
+                                    && isEqual((Number)f.getProperty("no3_mw"), (Number)f.getProperty("no3_max"))
                                     && (f.getProperty("no3_max") != null))) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Attribute no3_min / no3_mw / no3_max müssen identisch und ungleich NULL sein, wenn pn = 1.");
+                            "Die Attribute no3_min / no3_mw / no3_max müssen identisch und ungleich NULL sein, wenn no3 = 1.");
                         return false;
                     }
                 } else if (((Number)f.getProperty("no3")).intValue() > 1) {
-                    if ((f.getProperty("no3_min") == null) || (f.getProperty("no3_mw") == null)
-                                || (f.getProperty("no3_max") == null)) {
+                    if ((isValueEmpty(f.getProperty("no3_min"))) || (isValueEmpty(f.getProperty("no3_mw")))
+                                || (isValueEmpty(f.getProperty("no3_max")))) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Attribute no3_min / no3_mw / no3_max dürfen nicht NULL sein, wenn pn > 1.");
+                            "Die Attribute no3_min / no3_mw / no3_max dürfen nicht NULL sein, wenn no3 > 1.");
                         return false;
                     }
                 }
@@ -226,16 +245,16 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
                         return false;
                     }
                 } else if (((Number)f.getProperty("so4")).intValue() == 1) {
-                    if (!((f.getProperty("so4_min") == f.getProperty("so4_mw"))
-                                    && (f.getProperty("so4_mw") == f.getProperty("so4_max"))
+                    if (!(isEqual((Number)f.getProperty("so4_min"), (Number)f.getProperty("so4_mw"))
+                                    && isEqual((Number)f.getProperty("so4_mw"), (Number)f.getProperty("so4_max"))
                                     && (f.getProperty("so4_max") != null))) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                             "Die Attribute so4_min / so4_mw / so4_max müssen identisch und ungleich NULL sein, wenn pn = 1.");
                         return false;
                     }
                 } else if (((Number)f.getProperty("so4")).intValue() > 1) {
-                    if ((f.getProperty("so4_min") == null) || (f.getProperty("so4_mw") == null)
-                                || (f.getProperty("so4_max") == null)) {
+                    if ((isValueEmpty(f.getProperty("so4_min"))) || (isValueEmpty(f.getProperty("so4_mw")))
+                                || (isValueEmpty(f.getProperty("so4_max")))) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                             "Die Attribute so4_min / so4_mw / so4_max dürfen nicht NULL sein, wenn pn > 1.");
                         return false;
@@ -244,7 +263,7 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override

@@ -41,14 +41,29 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLaKmRuleSet extends DefaultAttributeTableRuleSet {
+public class FgLaKmRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st", new Numeric(10, 2, false, true));
+        typeMap.put("la_cd", new Numeric(15, 0, false, false));
+        typeMap.put("la_st", new Numeric(10, 2, false, true));
+        typeMap.put("km_km", new Numeric(7, 1, false, true));
+        typeMap.put("km_km_c", new Varchar(9, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("id");
+                    && !columnName.equals("geom") && !columnName.equals("id")
+                    && !columnName.equals("la_st") && !columnName.equals("la_cd");
     }
 
     @Override
@@ -57,12 +72,12 @@ public class FgLaKmRuleSet extends DefaultAttributeTableRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -71,8 +86,8 @@ public class FgLaKmRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return super.prepareForSave(features);
     }
 
     @Override

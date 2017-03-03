@@ -15,6 +15,8 @@ import Sirius.navigator.connection.SessionManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import org.deegree.datatypes.Types;
+
 import java.sql.Timestamp;
 
 import java.util.List;
@@ -23,7 +25,12 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
+import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
@@ -31,35 +38,40 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
+import de.cismet.watergis.broker.AppBroker;
+
 /**
  * DOCUMENT ME!
  *
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBaFlRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBaFlRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
+        typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
+        typeMap.put("flaeche", new Numeric(12, 0, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("flaeche") && !columnName.equals("geom") && !columnName.equals("ww_gr")
-                    && !columnName.equals("ba_cd");
-    }
-
-    @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
+                    && !columnName.equals("flaeche") && !columnName.equals("geom");
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -68,14 +80,39 @@ public class FgBaFlRuleSet extends DefaultAttributeTableRuleSet {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("ba_st_bis")) {
             return new StationTableCellEditor(columnName);
-        } else {
-            return null;
         }
-    }
+        if (columnName.equals("ww_gr")) {
+            CidsLayerFeatureFilter filter = null;
 
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
+            if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
+                final String userName = AppBroker.getInstance().getOwner();
+                filter = new CidsLayerFeatureFilter() {
+
+                        @Override
+                        public boolean accept(final CidsLayerFeature bean) {
+                            if (bean == null) {
+                                return false;
+                            }
+                            return bean.getProperty("owner").equals(userName);
+                        }
+                    };
+            } else {
+                filter = new CidsLayerFeatureFilter() {
+
+                        @Override
+                        public boolean accept(final CidsLayerFeature bean) {
+                            return bean != null;
+                        }
+                    };
+            }
+            return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
+                        "ww_gr",
+                        String.valueOf(Types.INTEGER),
+                        true),
+                    filter);
+        } else {
+            return super.getCellEditor(columnName);
+        }
     }
 
     @Override
@@ -109,7 +146,7 @@ public class FgBaFlRuleSet extends DefaultAttributeTableRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
 
         return value;

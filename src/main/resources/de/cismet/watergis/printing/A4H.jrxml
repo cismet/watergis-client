@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="A4H" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" isSummaryNewPage="true" uuid="3f7589ab-677f-47ef-a938-bc91531089f4">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.7715610000000015"/>
+	<property name="ireport.x" value="20"/>
+	<property name="ireport.y" value="1165"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="map" class="java.lang.Object" isForPrompting="false"/>
+	<parameter name="scale" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[Maßstab]]></parameterDescription>
+	</parameter>
+	<parameter name="Ueberschrift" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[Haupttext]]></parameterDescription>
+	</parameter>
+	<parameter name="Unterschrift" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[Zusatztext]]></parameterDescription>
+	</parameter>
+	<parameter name="logo" class="java.lang.Object" isForPrompting="false">
+		<parameterDescription><![CDATA[WBV Logo]]></parameterDescription>
+	</parameter>
+	<parameter name="legend" class="java.lang.Object" isForPrompting="false"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/therter/git-projects/watergis-client/src/main/resources/de/cismet/watergis/printing/"]]></defaultValueExpression>
+	</parameter>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="802" splitType="Stretch">
+			<rectangle>
+				<reportElement key="rectangle-1" mode="Transparent" x="10" y="0" width="517" height="757" uuid="fb907193-02ff-4893-aa90-5615c4bbf5d4"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement key="rectangle-2" mode="Transparent" x="12" y="2" width="513" height="753" uuid="a531caf8-d86d-4748-89c8-2d7e135eacfb"/>
+			</rectangle>
+			<line>
+				<reportElement key="line-4" x="401" y="722" width="124" height="1" uuid="ed2755bc-981c-4931-b56c-41a5130cb545"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement key="line-5" x="0" y="385" width="10" height="1" uuid="8a13a1e7-0383-4c8e-b5a9-b2c362db38eb"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<image scaleImage="RetainShape">
+				<reportElement key="image-2" x="14" y="4" width="508" height="699" uuid="df9aa63a-bcaa-46d4-9aa7-43bb3bbde6cd"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<imageExpression><![CDATA[$P{map}]]></imageExpression>
+			</image>
+			<rectangle>
+				<reportElement key="rectangle-3" mode="Transparent" x="12" y="705" width="513" height="50" uuid="786c029a-9f3a-4155-a137-fe4a097d1bd9"/>
+			</rectangle>
+			<image>
+				<reportElement key="image-1" x="19" y="710" width="58" height="20" uuid="32167880-36fe-4d47-8bcc-e8bcd8a7e6ca"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Solid"/>
+				</graphicElement>
+				<imageExpression><![CDATA[de.cismet.watergis.utils.ConversionUtils.String2Image((String)$P{logo})]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement key="staticText-1" x="19" y="746" width="502" height="10" uuid="d55bee67-2e11-4bab-8d95-e2fb0225cbd0"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Justified">
+					<font fontName="SansSerif" size="5" pdfFontName="ARIALN.TTF" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Vervielfältigungen, Umarbeiten, Veröffentlichungen oder die Weitergabe an Dritte nur mit Zustimmung des Herausgebers, ausgenommen Vervielfältigungen und Umarbeitungen zur innerbetrieblichen Verwendung bei Behörden oder zum eigenen Gebrauch.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-3" x="19" y="737" width="153" height="8" uuid="e1633f1a-1ea0-4bf4-8855-8c9c717428be"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="6" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Dieser Ausdruck ist gesetzlich geschützt!]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-4" x="79" y="709" width="90" height="9" uuid="1749695a-3f3c-4f09-b86d-1594c121bc74"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement markup="styled">
+					<font fontName="SansSerif" size="6" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Herausgeber:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-6" x="79" y="718" width="51" height="8" uuid="f552f3b7-3c2b-469e-b249-a788dc2ebd5c"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="6" pdfFontName="ARIALN.TTF" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[LUNG MV]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-7" x="79" y="724" width="90" height="8" uuid="c741ed8d-0468-42bd-852f-ff8c2b3a2208"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="6" pdfFontName="ARIALN.TTF" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Hintergrundkarten: LAiV MV]]></text>
+			</staticText>
+			<line>
+				<reportElement key="line-1" x="400" y="705" width="1" height="32" uuid="e7cd9df4-b94a-4b8d-98e6-7e9057be62f7"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement key="staticText-10" x="405" y="707" width="58" height="14" uuid="4f6241d9-74b9-447d-a059-6a7bbf68ddb7"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Maßstab]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-11" x="464" y="707" width="14" height="14" uuid="05c83157-97bf-49a7-b799-4eb4fc1de6ad"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[1:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-13" x="405" y="725" width="45" height="11" uuid="cd2a2f73-7afe-4e4b-b1cc-79cb5705f0ee"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="8" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Erstellt am]]></text>
+			</staticText>
+			<textField evaluationTime="Report" pattern="dd.MM.yyyy" isBlankWhenNull="false">
+				<reportElement key="textField" x="452" y="725" width="67" height="11" uuid="c9f3084a-94e1-418b-8775-94ae924285e8"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="8" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement key="line-2" x="12" y="736" width="513" height="1" uuid="998c5347-5cae-43d7-9718-9e5977bfb770"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement key="line-3" x="175" y="705" width="1" height="32" uuid="ed53cc82-917e-42cf-a4af-ccd77bd65d45"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField" x="180" y="707" width="215" height="15" uuid="251cf7ca-0359-4597-8eef-e2f96ad2f264"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Ueberschrift}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField" x="180" y="723" width="215" height="12" uuid="7730d175-969b-4c12-a2ad-9c6a29e15398"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="8" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Unterschrift}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField" x="479" y="707" width="45" height="14" uuid="e46d9314-9473-4eb5-ae6d-055df9283c6b"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{scale}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="802" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="6" width="535" height="28" uuid="fb28de1b-e806-44ab-8d7e-762447a418ac"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Legende]]></text>
+			</staticText>
+			<image scaleImage="FillFrame">
+				<reportElement key="image-3" x="0" y="44" width="535" height="758" uuid="991950e4-a079-4731-981c-3962b193cdd6"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Solid"/>
+				</graphicElement>
+				<imageExpression><![CDATA[de.cismet.watergis.utils.ConversionUtils.String2Image((String)$P{legend})]]></imageExpression>
+			</image>
+		</band>
+	</summary>
+</jasperReport>

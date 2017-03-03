@@ -21,7 +21,6 @@ import Sirius.navigator.connection.SessionManager;
 import Sirius.navigator.event.CatalogueActivationListener;
 import Sirius.navigator.event.CatalogueSelectionListener;
 import Sirius.navigator.resource.PropertyManager;
-import Sirius.navigator.search.dynamic.SearchDialog;
 import Sirius.navigator.types.treenode.RootTreeNode;
 import Sirius.navigator.ui.ComponentRegistry;
 import Sirius.navigator.ui.DescriptionPane;
@@ -122,6 +121,7 @@ public class AppBroker implements Configurable {
     public static final String GAF_PROF_MC_NAME = "qp";
     private static ConfigurationManager configManager;
     public static final String DOMAIN_NAME = "DLM25W";
+    public static final String DOMAIN_NAME_WRRL = "WRRL_DB_MV";
 
     //~ Instance fields --------------------------------------------------------
 
@@ -447,6 +447,15 @@ public class AppBroker implements Configurable {
     /**
      * DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     */
+    public Action getSelectionMode() {
+        return mapModeSelectionActions.get(MappingComponent.SELECT);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param  factor  DOCUMENT ME!
      */
     public void simpleZoom(final float factor) {
@@ -557,7 +566,6 @@ public class AppBroker implements Configurable {
         final LayoutedContainer container = new LayoutedContainer(toolBar, menuBar, true);
         final AttributeViewer attributeViewer = new AttributeViewer();
         final AttributeEditor attributeEditor = new AttributeEditor();
-        final SearchDialog searchDialog = null;
 
         final DescriptionPane descriptionPane = new DescriptionPaneFS();
         final MutablePopupMenu popupMenu = new MutablePopupMenu();
@@ -602,7 +610,6 @@ public class AppBroker implements Configurable {
             null,
             attributeViewer,
             attributeEditor,
-            searchDialog,
             descriptionPane);
 
         setComponentRegistry(ComponentRegistry.getRegistry());
@@ -746,6 +753,29 @@ public class AppBroker implements Configurable {
     /**
      * DOCUMENT ME!
      *
+     * @param   sld  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Map<String, LinkedList<org.deegree.style.se.unevaluated.Style>> getDrawingStylesBySld(final String sld) {
+        final Reader input = new StringReader(sld);
+        Map<String, LinkedList<org.deegree.style.se.unevaluated.Style>> styles = null;
+        final XMLInputFactory factory = XMLInputFactory.newInstance();
+
+        try {
+            styles = SLDParser.getStyles(factory.createXMLStreamReader(input));
+        } catch (Exception ex) {
+            LOG.error("Fehler in der SLD", ex);
+        }
+        if (styles == null) {
+            LOG.info("SLD Parser funtkioniert nicht");
+        }
+        return styles;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @return  the ownWwGr
      */
     public List<CidsBean> getOwnWwGrList() {
@@ -818,7 +848,7 @@ public class AppBroker implements Configurable {
             for (int i = 0; i < getOwnWwGrList().size(); ++i) {
                 if ((min == null)
                             || ((Integer)min.getProperty("ww_gr")
-                                < (Integer)getOwnWwGrList().get(i).getProperty("ww_gr"))) {
+                                > (Integer)getOwnWwGrList().get(i).getProperty("ww_gr"))) {
                     min = getOwnWwGrList().get(i);
                 }
             }
@@ -958,6 +988,15 @@ public class AppBroker implements Configurable {
      */
     public void setGafPrint(final de.cismet.watergis.gui.actions.gaf.ReportAction gafPrint) {
         this.gafPrint = gafPrint;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the lastActionMode
+     */
+    public Action getLastActionMode() {
+        return lastActionMode;
     }
 
     //~ Inner Classes ----------------------------------------------------------

@@ -15,20 +15,13 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
-import org.apache.log4j.Logger;
-
 import org.deegree.datatypes.Types;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import java.sql.Timestamp;
 
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -37,8 +30,8 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cids.tools.CidsBeanFilter;
-
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationCreator;
 
@@ -50,7 +43,7 @@ import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.utils.AbstractBeanListCellRenderer;
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -63,6 +56,30 @@ import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.check
  * @version  $Revision$, $Date$
  */
 public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        final Numeric esw = new Numeric(1, 0, false, true);
+        esw.setRange(0.0, 1.0);
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st", new Numeric(10, 2, false, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", false, true));
+        typeMap.put("anlp", new Catalogue("k_anlp", true, true));
+        typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
+        typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
+        typeMap.put("esw", esw);
+        typeMap.put("bemerkung", new Varchar(250, false, true));
+        typeMap.put("br", new Numeric(4, 2, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -79,7 +96,7 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (newValue == null) {
+        if (isValueEmpty(newValue)) {
             if (column.equals("anlp") || column.equals("l_rl")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut "
@@ -90,7 +107,17 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
         }
 
         if (column.equals("ausbaujahr")
-                    && !checkRange(column, newValue, 1800, getCurrentYear() + 2, true, true, true)) {
+                    && !checkRange(
+                        column,
+                        newValue,
+                        1950,
+                        getCurrentYear(),
+                        1800,
+                        getCurrentYear()
+                        + 2,
+                        true,
+                        true,
+                        true)) {
             return oldValue;
         }
 
@@ -98,7 +125,7 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -106,7 +133,7 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("wbbl")) {
             return new LinkTableCellRenderer();
         } else {
-            return null;
+            return super.getCellRenderer(columnName);
         }
     }
 
@@ -122,10 +149,10 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("traeger") + " - " + bean.getProperty("name");
                     }
                 });
@@ -139,10 +166,10 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("zust_kl") + " - " + bean.getProperty("name");
                     }
                 });
@@ -156,17 +183,17 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                         true));
             editor.setNullable(false);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("anlp") + " - " + bean.getProperty("name");
                     }
                 });
 
             return editor;
         } else if (columnName.equals("l_st")) {
-            final CidsBeanFilter filter = createCidsBeanFilter("nicht_qp");
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("nicht_qp");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         columnName,
@@ -175,10 +202,10 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                     filter);
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_st") + " - " + bean.getProperty("name");
                     }
                 });
@@ -190,13 +217,13 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                         columnName,
                         String.valueOf(Types.VARCHAR),
                         true),
-                    createCidsBeanFilter("anlp"));
+                    createCidsLayerFeatureFilter("anlp"));
             editor.setNullable(true);
 
-            editor.setListRenderer(new AbstractBeanListCellRenderer() {
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
-                    protected String toString(final CidsBean bean) {
+                    protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_rl") + " - " + bean.getProperty("name");
                     }
                 });
@@ -208,19 +235,19 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("anlp") == null) {
+            if (isValueEmpty(feature.getProperty("anlp"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut anlp darf nicht leer sein");
                 return false;
             }
-            if (feature.getProperty("l_rl") == null) {
+            if (isValueEmpty(feature.getProperty("l_rl"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut l_rl darf nicht leer sein");
                 return false;
             }
-            if (feature.getProperty("br") == null) {
+            if (isValueEmpty(feature.getProperty("br"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut br darf nicht leer sein");
                 return false;
@@ -294,7 +321,7 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override

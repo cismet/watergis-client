@@ -19,13 +19,14 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -38,7 +39,25 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class VwAlkFlstWbvGRuleSet extends DefaultAttributeTableRuleSet {
+public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
+        typeMap.put("flst", new WatergisDefaultRuleSet.Varchar(10, true));
+        typeMap.put("fl_nr", new WatergisDefaultRuleSet.Numeric(3, 0, true));
+        typeMap.put("gmk_nr", new WatergisDefaultRuleSet.Numeric(6, 0, true));
+        typeMap.put("gmk_name", new WatergisDefaultRuleSet.Varchar(50, true));
+        typeMap.put("gmd_nr", new WatergisDefaultRuleSet.Numeric(8, 0, true));
+        typeMap.put("gmd_name", new WatergisDefaultRuleSet.Varchar(50, true));
+        typeMap.put("wbv", new Numeric(2, 0, true));
+        typeMap.put("flst_fl", new WatergisDefaultRuleSet.Numeric(16, 4, true));
+        typeMap.put("fn_g_an", new Numeric(5, 2, false, false));
+        typeMap.put("fn_g_fl", new Numeric(16, 4, false, false));
+        typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
+        typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -49,76 +68,25 @@ public class VwAlkFlstWbvGRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if (newValue == null) {
-            if (column.equals("flst") || column.equals("fl_nr") || column.equals("gmk_nr") || column.equals("gmk_name")
-                        || column.equals("gmd_nr")
-                        || column.equals("gmd_name") || column.equals("wbv") || column.equals("flst_g_an")
-                        || column.equals("flst_g_fl")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
-                            + column
-                            + " darf nicht leer sein");
-                return oldValue;
-            }
-        }
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("flst") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut flst darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("fl_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut fl_nr darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("gmk_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gmk_nr darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("gmk_name") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gmk_name darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("gmd_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gmd_nr darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("gmd_name") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gmd_name darf nicht leer sein");
-                return false;
-            }
-            if (feature.getProperty("wbv") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wbv darf nicht leer sein");
-                return false;
-            }
+        if (columnName.equals("fl_nr")) {
+            return new DefaultCellEditor(new JTextField());
         }
-        return true;
+        if (columnName.equals("gmk_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        if (columnName.equals("gmd_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        if (columnName.equals("flst")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        return null;
     }
 
     @Override
@@ -139,9 +107,9 @@ public class VwAlkFlstWbvGRuleSet extends DefaultAttributeTableRuleSet {
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("flst_g_an")) {
-            return 3;
+            return -4;
         } else if (name.equals("flst_g_fl")) {
-            return 3;
+            return -3;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }
@@ -181,6 +149,6 @@ public class VwAlkFlstWbvGRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }
 }

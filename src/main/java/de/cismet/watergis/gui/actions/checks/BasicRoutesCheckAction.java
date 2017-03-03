@@ -19,17 +19,17 @@ import Sirius.server.newuser.User;
 
 import org.openide.util.NbBundle;
 
-import java.awt.event.ActionEvent;
-
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import de.cismet.cids.custom.watergis.server.search.BakCount;
+import de.cismet.cids.custom.helper.SQLFormatter;
+import de.cismet.cids.custom.watergis.server.search.FgBakCount;
+import de.cismet.cids.custom.watergis.server.search.FgBakIdsByFgBaIds;
 import de.cismet.cids.custom.watergis.server.search.MergeBakAe;
 import de.cismet.cids.custom.watergis.server.search.RemoveDuplicatedNodesFromFgBak;
-import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -38,6 +38,7 @@ import de.cismet.cids.server.search.CidsServerSearch;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 
 import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.WaitDialog;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -47,7 +48,7 @@ import static javax.swing.Action.SHORT_DESCRIPTION;
 import static javax.swing.Action.SMALL_ICON;
 
 /**
- * DOCUMENT ME!
+ * Issue 239.
  *
  * @author   therter
  * @version  $Revision$, $Date$
@@ -62,13 +63,30 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
     private static final MetaClass BAK_MC = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_bak");
-    private static String QUERY_AE = null;
+    private static String QUERY_AE;
     private static String QUERY_FG_BAK_LENGTH;
     private static String QUERY_CROSSING_LINES;
     private static String QUERY_WITHOUT_BA_CD;
     private static String QUERY_DUPLICATED_BA_CD;
     private static String QUERY_PREFIX;
     private static String QUERY_PREFIX_ME_WW_GR_OTHER;
+    private static final String CHECK_BASISROUTENWW_GR = "Prüfungen->Basisrouten->ww_gr";
+    private static final String CHECK_BASISROUTEN_PRAEFIX = "Prüfungen->Basisrouten->Präfix";
+    private static final String CHECK_BASISROUTEN_AUS_EINLEITUNG = "Prüfungen->Basisrouten->Aus-/Einleitung";
+    private static final String CHECK_BASISROUTEN_GEWAESSERCODE_MEHRFACH =
+        "Prüfungen->Basisrouten->Gewässercode_mehrfach";
+    private static final String CHECK_BASISROUTEN_GEWAESSERCODE_FEHLT = "Prüfungen->Basisrouten->Gewässercode_fehlt";
+    private static final String CHECK_BASISROUTEN_GEWAESSER_SCHNEIDEND = "Prüfungen->Basisrouten->Gewässer_schneidend";
+    private static final String CHECK_BASISROUTEN_GEWAESSER_ZU_KURZ = "Prüfungen->Basisrouten->Gewässer_zu_kurz";
+    private static final String[] ALL_CHECKS = new String[] {
+            CHECK_BASISROUTENWW_GR,
+            CHECK_BASISROUTEN_PRAEFIX,
+            CHECK_BASISROUTEN_AUS_EINLEITUNG,
+            CHECK_BASISROUTEN_GEWAESSERCODE_MEHRFACH,
+            CHECK_BASISROUTEN_GEWAESSERCODE_FEHLT,
+            CHECK_BASISROUTEN_GEWAESSER_SCHNEIDEND,
+            CHECK_BASISROUTEN_GEWAESSER_ZU_KURZ
+        };
 
     static {
         if ((BAK_AE_MC != null) && (BAK_MC != null)) {
@@ -79,13 +97,14 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                 QUERY_FG_BAK_LENGTH = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join geom g on (bak.geom = g.id) \n"
-                            + "where st_length(geo_field) < 0.5";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and st_length(geo_field) < 0.5";
             } else {
                 QUERY_FG_BAK_LENGTH = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join geom g on (bak.geom = g.id) \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where st_length(geo_field) < 0.5 and gr.owner = '" + user.getUserGroup().getName() + "'";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and st_length(geo_field) < 0.5 and gr.owner = '"
+                            + user.getUserGroup().getName() + "'";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -93,13 +112,13 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                 QUERY_CROSSING_LINES = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join geom g on (bak.geom = g.id) \n"
-                            + "where not dlm25w.check_for_crossed_lines(geo_field)";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and not dlm25w.check_for_crossed_lines(geo_field)";
             } else {
                 QUERY_CROSSING_LINES = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join geom g on (bak.geom = g.id) \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where not dlm25w.check_for_crossed_lines(geo_field) "
+                            + "where (%1$s is null or bak.id = any(%1$s)) and not dlm25w.check_for_crossed_lines(geo_field) "
                             + "and gr.owner = '" + user.getUserGroup().getName() + "'";
             }
 
@@ -107,12 +126,13 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_WITHOUT_BA_CD = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
-                            + "where ba_cd is null OR ba_cd = ''";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and ba_cd is null OR ba_cd = ''";
             } else {
                 QUERY_WITHOUT_BA_CD = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (ba_cd is null OR ba_cd = '') and gr.owner = '" + user.getUserGroup().getName()
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (ba_cd is null OR ba_cd = '') and gr.owner = '"
+                            + user.getUserGroup().getName()
                             + "'";
             }
 
@@ -120,12 +140,12 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_DUPLICATED_BA_CD = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
-                            + "where ba_cd in (select ba_cd from dlm25w.fg_bak group by ba_cd having count(ba_cd) > 1)";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and ba_cd in (select ba_cd from dlm25w.fg_bak group by ba_cd having count(ba_cd) > 1)";
             } else {
                 QUERY_DUPLICATED_BA_CD = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where ba_cd in (select ba_cd from dlm25w.fg_bak group by ba_cd having count(ba_cd) > 1) "
+                            + "where (%1$s is null or bak.id = any(%1$s)) and ba_cd in (select ba_cd from dlm25w.fg_bak group by ba_cd having count(ba_cd) > 1) "
                             + "and gr.owner = '" + user.getUserGroup().getName() + "'";
             }
 
@@ -134,12 +154,12 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                 QUERY_PREFIX = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':')";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':')";
             } else {
                 QUERY_PREFIX = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':') "
+                            + "where (%1$s is null or bak.id = any(%1$s)) and substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':') "
                             + "and gr.owner = '" + user.getUserGroup().getName() + "'";
             }
 
@@ -148,14 +168,14 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                 QUERY_PREFIX_ME_WW_GR_OTHER = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak "
                             + "join dlm25w.k_ww_gr gr on (substr(ba_cd, 1, length(gr.praefix) + 1) = (gr.praefix || ':'))\n"
-                            + "join dlm25w.k_ww_gr gr1 on (bak.ww_gr = gr1.id)\n"
-                            + "where substr(ba_cd, 1, length(gr1.praefix) + 1) <>  (gr1.praefix || ':')";
+                            + "left join dlm25w.k_ww_gr gr1 on (bak.ww_gr = gr1.id)\n"
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (gr1.praefix is null or substr(ba_cd, 1, length(gr1.praefix) + 1) <>  (gr1.praefix || ':'))";
             } else {
                 QUERY_PREFIX_ME_WW_GR_OTHER = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak "
                             + "join dlm25w.k_ww_gr gr on (substr(ba_cd, 1, length(gr.praefix) + 1) = (gr.praefix || ':'))\n"
-                            + "join dlm25w.k_ww_gr gr1 on (bak.ww_gr = gr1.id)\n"
-                            + "where substr(ba_cd, 1, length(gr1.praefix) + 1) <>  (gr1.praefix || ':')"
+                            + "left join dlm25w.k_ww_gr gr1 on (bak.ww_gr = gr1.id)\n"
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (gr1.praefix is null or substr(ba_cd, 1, length(gr1.praefix) + 1) <>  (gr1.praefix || ':'))"
                             + "and gr.owner = '" + user.getUserGroup().getName() + "'";
             }
 
@@ -168,7 +188,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak_punkt bis on (linie.bis = bis.id)\n"
                             + "join dlm25w.fg_bak bak on (von.route = bak.id) \n"
                             + "join geom on (bak.geom = geom.id) \n"
-                            + "where (von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
                             + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1);";
             } else {
                 QUERY_AE = "select " + BAK_AE_MC.getID() + ", ae." + BAK_AE_MC.getPrimaryKey()
@@ -178,7 +198,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak_punkt bis on (linie.bis = bis.id)\n"
                             + "join dlm25w.fg_bak bak on (von.route = bak.id) \n"
                             + "join geom on (bak.geom = geom.id) \n"
-                            + "where (von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
                             + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1);";
             }
         }
@@ -210,175 +230,267 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
     //~ Methods ----------------------------------------------------------------
 
     @Override
-    public boolean startCheck(final boolean isExport) {
-        final WaitingDialogThread<CheckResult> wdt = new WaitingDialogThread<CheckResult>(
-                StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
-                true,
-                NbBundle.getMessage(BasicRoutesCheckAction.class,
-                    "BasicRoutesCheckAction.actionPerformed().dialog"),
-                null,
-                100) {
+    public int getProgressSteps() {
+        return 9;
+    }
 
-                @Override
-                protected CheckResult doInBackground() throws Exception {
-                    final CheckResult result = new CheckResult();
-                    String user = AppBroker.getInstance().getOwner();
+    @Override
+    public boolean startCheckInternal(final boolean isExport,
+            final WaitDialog wd,
+            final List<H2FeatureService> result) {
+        if (isExport) {
+            try {
+                final CheckResult cr = check(isExport, wd);
 
-                    if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
-                        user = null;
-                    }
-
-                    // start auto correction
-                    final CidsServerSearch search = new MergeBakAe(user);
-                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), search);
-
-                    final CidsServerSearch nodesSearch = new RemoveDuplicatedNodesFromFgBak(user);
-                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), nodesSearch);
-
-                    // start checks
-                    result.setShortService(analyseByQuery(
-                            QUERY_FG_BAK_LENGTH,
-                            "Prüfungen->Basisrouten->Gewässer_zu_kurz"));
-                    result.setCrossedService(analyseByQuery(
-                            QUERY_CROSSING_LINES,
-                            "Prüfungen->Basisrouten->Gewässer_schneidend"));
-                    result.setMissingCodeService(analyseByQuery(
-                            QUERY_WITHOUT_BA_CD,
-                            "Prüfungen->Basisrouten->Gewässercode_fehlt"));
-                    result.setNotUniqueCodeService(analyseByQuery(
-                            QUERY_DUPLICATED_BA_CD,
-                            "Prüfungen->Basisrouten->Gewässercode_mehrfach"));
-                    result.setMissingCodeService(analyseByQuery(
-                            QUERY_AE,
-                            "Prüfungen->Basisrouten->Aus-/Einleitung"));
-                    result.setMissingCodeService(analyseByQuery(
-                            QUERY_PREFIX,
-                            "Prüfungen->Basisrouten->Präfix"));
-                    result.setMissingCodeService(analyseByQuery(
-                            QUERY_PREFIX_ME_WW_GR_OTHER,
-                            "Prüfungen->Basisrouten->ww_gr"));
-
-                    final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
-                                .customServerSearch(SessionManager.getSession().getUser(), new BakCount(user));
-
-                    if ((countList != null) && !countList.isEmpty()) {
-                        final ArrayList innerList = countList.get(0);
-
-                        if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
-                            result.setBakCount(((Number)innerList.get(0)).intValue());
-                        }
-                    }
-
-                    String owner = "null";
-
-                    if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")) {
-                        owner = "'" + AppBroker.getInstance().getOwner() + "'";
-                    }
-                    final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager
-                                .getProxy()
-                                .customServerSearch(SessionManager.getSession().getUser(),
-                                        new RouteProblemsCount(owner));
-
-                    if ((problemCountList != null) && !problemCountList.isEmpty()) {
-                        final ArrayList innerList = problemCountList.get(0);
-
-                        if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
-                            result.setErrorTree(((Number)innerList.get(0)).intValue());
-                        }
-                    }
-
-                    if (result.getAusEinleitungService() != null) {
-                        result.setAusEinleitungErrors(result.getAusEinleitungService().getFeatureCount(null));
-                        successful = false;
-                    }
-                    if (result.getCrossedService() != null) {
-                        result.setCrossedErrors(result.getCrossedService().getFeatureCount(null));
-                        successful = false;
-                    }
-                    if (result.getMissingCodeService() != null) {
-                        result.setMissingCodeErrors(result.getMissingCodeService().getFeatureCount(null));
-                        successful = false;
-                    }
-                    if (result.getNotUniqueCodeService() != null) {
-                        result.setNotUniqueCodeErrors(result.getNotUniqueCodeService().getFeatureCount(null));
-                        successful = false;
-                    }
-                    if (result.getPrefixService() != null) {
-                        result.setPrefixErrors(result.getPrefixService().getFeatureCount(null));
-                        successful = false;
-                    }
-                    if (result.getShortService() != null) {
-                        result.setShortErrors(result.getShortService().getFeatureCount(null));
-                        successful = false;
-                    }
-                    if (result.getWwGrService() != null) {
-                        result.setWwGrErrors(result.getWwGrService().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    return result;
+                if (result != null) {
+                    addService(result, cr.getAusEinleitungService());
+                    addService(result, cr.getCrossedService());
+                    addService(result, cr.getMissingCodeService());
+                    addService(result, cr.getNotUniqueCodeService());
+                    addService(result, cr.getPrefixService());
+                    addService(result, cr.getShortService());
+                    addService(result, cr.getWwGrService());
                 }
+            } catch (Exception e) {
+                LOG.error("Error while performing check", e);
 
-                @Override
-                protected void done() {
-                    try {
-                        final CheckResult result = get();
+                return false;
+            }
 
-                        if (isExport) {
-                            return;
-                        }
+            return true;
+        } else {
+            final WaitingDialogThread<CheckResult> wdt = new WaitingDialogThread<CheckResult>(
+                    StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
+                    true,
+                    NbBundle.getMessage(
+                        BasicRoutesCheckAction.class,
+                        "BasicRoutesCheckAction.actionPerformed().dialog"),
+                    null,
+                    100) {
 
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            NbBundle.getMessage(
-                                BasicRoutesCheckAction.class,
-                                "BasicRoutesCheckAction.actionPerformed().result.text",
-                                new Object[] {
-                                    result.getBakCount(),
-                                    result.getShortErrors(),
-                                    result.getCrossedErrors(),
-                                    result.getMissingCodeErrors(),
-                                    result.getNotUniqueCodeErrors(),
-                                    result.getAusEinleitungErrors(),
-                                    result.getPrefixErrors(),
-                                    result.getWwGrErrors(),
-                                    result.getErrorTree()
-                                }),
-                            NbBundle.getMessage(
-                                BasicRoutesCheckAction.class,
-                                "BasicRoutesCheckAction.actionPerformed().result.title"),
-                            JOptionPane.INFORMATION_MESSAGE);
+                    @Override
+                    protected CheckResult doInBackground() throws Exception {
+                        wd.setMax(getProgressSteps());
+                        return check(isExport, wd);
+                    }
 
-                        if (result.getShortService() != null) {
-                            showService(result.getShortService(), "Prüfungen->Basisrouten");
+                    @Override
+                    protected void done() {
+                        try {
+                            final CheckResult result = get();
+
+                            removeServicesFromLayerModel(ALL_CHECKS);
+
+                            if (isExport) {
+                                return;
+                            }
+
+                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                NbBundle.getMessage(
+                                    BasicRoutesCheckAction.class,
+                                    "BasicRoutesCheckAction.actionPerformed().result.text",
+                                    new Object[] {
+                                        result.getBakCount(),
+                                        result.getShortErrors(),
+                                        result.getCrossedErrors(),
+                                        result.getMissingCodeErrors(),
+                                        result.getNotUniqueCodeErrors(),
+                                        result.getAusEinleitungErrors(),
+                                        result.getPrefixErrors(),
+                                        result.getWwGrErrors(),
+                                        result.getErrorTree()
+                                    }),
+                                NbBundle.getMessage(
+                                    BasicRoutesCheckAction.class,
+                                    "BasicRoutesCheckAction.actionPerformed().result.title"),
+                                JOptionPane.INFORMATION_MESSAGE);
+
+                            if (result.getWwGrService() != null) {
+                                showService(result.getWwGrService(), "Prüfungen->Basisrouten");
+                            }
+                            if (result.getPrefixService() != null) {
+                                showService(result.getPrefixService(), "Prüfungen->Basisrouten");
+                            }
+                            if (result.getAusEinleitungService() != null) {
+                                showService(result.getAusEinleitungService(), "Prüfungen->Basisrouten");
+                            }
+                            if (result.getNotUniqueCodeService() != null) {
+                                showService(result.getNotUniqueCodeService(), "Prüfungen->Basisrouten");
+                            }
+                            if (result.getMissingCodeService() != null) {
+                                showService(result.getMissingCodeService(), "Prüfungen->Basisrouten");
+                            }
+                            if (result.getCrossedService() != null) {
+                                showService(result.getCrossedService(), "Prüfungen->Basisrouten");
+                            }
+                            if (result.getShortService() != null) {
+                                showService(result.getShortService(), "Prüfungen->Basisrouten");
+                            }
+                        } catch (Exception e) {
+                            LOG.error("Error while performing the route analyse.", e);
+                            successful = false;
                         }
-                        if (result.getCrossedService() != null) {
-                            showService(result.getCrossedService(), "Prüfungen->Basisrouten");
+                    }
+                };
+
+            wdt.start();
+
+            return successful;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   isExport  DOCUMENT ME!
+     * @param   wd        DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
+        final CheckResult result = new CheckResult();
+        String user = AppBroker.getInstance().getOwner();
+        int[] selectedIds = null;
+
+        if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
+            user = null;
+        }
+
+        removeServicesFromDb(ALL_CHECKS);
+
+        if (isExport) {
+            if (user == null) {
+                final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
+                            .customServerSearch(SessionManager.getSession().getUser(),
+                                    new FgBakIdsByFgBaIds(getIdsOfSelectedObjects("fg_ba")));
+
+                if ((countList != null) && !countList.isEmpty()) {
+                    final ArrayList innerList = countList.get(0);
+
+                    if ((innerList != null) && !innerList.isEmpty()) {
+                        selectedIds = new int[innerList.size()];
+                        int index = -1;
+
+                        for (final Object tmp : innerList) {
+                            selectedIds[++index] = ((Number)tmp).intValue();
                         }
-                        if (result.getMissingCodeService() != null) {
-                            showService(result.getMissingCodeService(), "Prüfungen->Basisrouten");
-                        }
-                        if (result.getNotUniqueCodeService() != null) {
-                            showService(result.getNotUniqueCodeService(), "Prüfungen->Basisrouten");
-                        }
-                        if (result.getAusEinleitungService() != null) {
-                            showService(result.getAusEinleitungService(), "Prüfungen->Basisrouten");
-                        }
-                        if (result.getPrefixService() != null) {
-                            showService(result.getPrefixService(), "Prüfungen->Basisrouten");
-                        }
-                        if (result.getWwGrService() != null) {
-                            showService(result.getWwGrService(), "Prüfungen->Basisrouten");
-                        }
-                    } catch (Exception e) {
-                        LOG.error("Error while performing the route analyse.", e);
-                        successful = false;
                     }
                 }
-            };
+            }
+        } else {
+            selectedIds = getIdsOfSelectedObjects("fg_bak");
+        }
 
-        wdt.start();
+        // start auto correction
+        final CidsServerSearch search = new MergeBakAe(user);
+        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), search);
+        increaseProgress(wd, 1);
 
-        return successful;
+        final CidsServerSearch nodesSearch = new RemoveDuplicatedNodesFromFgBak(user);
+        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), nodesSearch);
+        increaseProgress(wd, 1);
+
+        // start checks
+        result.setShortService(analyseByQuery(
+                BAK_MC,
+                String.format(QUERY_FG_BAK_LENGTH, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECK_BASISROUTEN_GEWAESSER_ZU_KURZ));
+        increaseProgress(wd, 1);
+
+        result.setCrossedService(analyseByQuery(
+                BAK_MC,
+                String.format(QUERY_CROSSING_LINES, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECK_BASISROUTEN_GEWAESSER_SCHNEIDEND));
+        increaseProgress(wd, 1);
+
+        result.setMissingCodeService(analyseByQuery(
+                BAK_MC,
+                String.format(QUERY_WITHOUT_BA_CD, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECK_BASISROUTEN_GEWAESSERCODE_FEHLT));
+        increaseProgress(wd, 1);
+
+        result.setNotUniqueCodeService(analyseByQuery(
+                BAK_MC,
+                String.format(QUERY_DUPLICATED_BA_CD, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECK_BASISROUTEN_GEWAESSERCODE_MEHRFACH));
+        increaseProgress(wd, 1);
+
+        result.setAusEinleitungService(analyseByQuery(
+                BAK_AE_MC,
+                String.format(QUERY_AE, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECK_BASISROUTEN_AUS_EINLEITUNG));
+        increaseProgress(wd, 1);
+
+        result.setPrefixService(analyseByQuery(
+                BAK_MC,
+                String.format(QUERY_PREFIX, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECK_BASISROUTEN_PRAEFIX));
+        increaseProgress(wd, 1);
+
+        result.setWwGrService(analyseByQuery(
+                BAK_MC,
+                String.format(QUERY_PREFIX_ME_WW_GR_OTHER, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECK_BASISROUTENWW_GR));
+        increaseProgress(wd, 1);
+
+        final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(SessionManager.getSession().getUser(),
+                            new FgBakCount(user, null, selectedIds));
+
+        if ((countList != null) && !countList.isEmpty()) {
+            final ArrayList innerList = countList.get(0);
+
+            if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
+                result.setBakCount(((Number)innerList.get(0)).intValue());
+            }
+        }
+
+        final ArrayList<ArrayList> problemCountList = null;
+//                    final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager
+//                                .getProxy()
+//                                .customServerSearch(SessionManager.getSession().getUser(),
+//                                        new RouteProblemsCount(owner, selectedIds));
+
+        if ((problemCountList != null) && !problemCountList.isEmpty()) {
+            final ArrayList innerList = problemCountList.get(0);
+
+            if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
+                result.setErrorTree(((Number)innerList.get(0)).intValue());
+            }
+        }
+
+        if (result.getAusEinleitungService() != null) {
+            result.setAusEinleitungErrors(result.getAusEinleitungService().getFeatureCount(null));
+            successful = false;
+        }
+        if (result.getCrossedService() != null) {
+            result.setCrossedErrors(result.getCrossedService().getFeatureCount(null));
+            successful = false;
+        }
+        if (result.getMissingCodeService() != null) {
+            result.setMissingCodeErrors(result.getMissingCodeService().getFeatureCount(null));
+            successful = false;
+        }
+        if (result.getNotUniqueCodeService() != null) {
+            result.setNotUniqueCodeErrors(result.getNotUniqueCodeService().getFeatureCount(null));
+            successful = false;
+        }
+        if (result.getPrefixService() != null) {
+            result.setPrefixErrors(result.getPrefixService().getFeatureCount(null));
+            successful = false;
+        }
+        if (result.getShortService() != null) {
+            result.setShortErrors(result.getShortService().getFeatureCount(null));
+            successful = false;
+        }
+        if (result.getWwGrService() != null) {
+            result.setWwGrErrors(result.getWwGrService().getFeatureCount(null));
+            successful = false;
+        }
+
+        return result;
     }
 
     @Override

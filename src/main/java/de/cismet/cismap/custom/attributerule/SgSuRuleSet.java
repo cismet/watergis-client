@@ -30,7 +30,6 @@ import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -43,48 +42,37 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class SgSuRuleSet extends DefaultAttributeTableRuleSet {
+public class SgSuRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("su_cd", new Varchar(50, true, true));
+        typeMap.put("su_st_von", new Numeric(10, 2, false, false));
+        typeMap.put("su_st_bis", new Numeric(10, 2, false, false));
+        typeMap.put("see_gn", new Varchar(50, true, true));
+        typeMap.put("see_lawa", new Varchar(20, true, true));
+        typeMap.put("see_sp", new Varchar(8, true, true));
+        typeMap.put("see_wrrl", new Numeric(1, 0, false, true));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("id");
-    }
-
-    @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if (newValue == null) {
-            if (column.equalsIgnoreCase("su_cd")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut su_cd darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("see_gn")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_gn darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("see_lawa")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_lawa darf nicht leer sein");
-                return oldValue;
-            } else if (column.equalsIgnoreCase("see_sp")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_sp darf nicht leer sein");
-                return oldValue;
-            }
-        }
-
-        return newValue;
+                    && !columnName.equals("laenge") && !columnName.equals("su_st_von")
+                    && !columnName.equals("su_st_bis")
+                    && !columnName.equals("geom") && !columnName.equals("id");
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -96,31 +84,6 @@ public class SgSuRuleSet extends DefaultAttributeTableRuleSet {
                         true));
         }
         return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("su_cd") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut su_cd darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("see_gn") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_gn darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("see_lawa") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_lawa darf nicht leer sein");
-                return false;
-            } else if (feature.getProperty("see_sp") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_sp darf nicht leer sein");
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override
@@ -162,7 +125,7 @@ public class SgSuRuleSet extends DefaultAttributeTableRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getLength();
+            value = round(geom.getLength());
         }
 
         return value;

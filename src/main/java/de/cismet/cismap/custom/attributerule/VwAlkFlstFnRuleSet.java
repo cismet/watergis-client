@@ -19,12 +19,13 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -35,7 +36,27 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class VwAlkFlstFnRuleSet extends DefaultAttributeTableRuleSet {
+public class VwAlkFlstFnRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("flst", new Varchar(10, true));
+        typeMap.put("fl_nr", new Numeric(3, 0, true));
+        typeMap.put("gmk_nr", new Numeric(6, 0, true));
+        typeMap.put("gmk_name", new Varchar(50, true));
+        typeMap.put("gmd_nr", new Numeric(8, 0, true));
+        typeMap.put("gmd_name", new Varchar(50, true));
+        typeMap.put("wbv", new Numeric(2, 0, true));
+        typeMap.put("flst_fl", new Numeric(15, 4, true));
+        typeMap.put("fn_gr", new Numeric(1, 0, true));
+        typeMap.put("fn", new Numeric(4, 0, true));
+        typeMap.put("fn_fl", new Numeric(16, 4, false, false));
+        typeMap.put("fn_flst_an", new Numeric(5, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
@@ -46,27 +67,28 @@ public class VwAlkFlstFnRuleSet extends DefaultAttributeTableRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
+        if (columnName.equals("fl_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        if (columnName.equals("gmk_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        if (columnName.equals("gmd_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        if (columnName.equals("flst")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        if (columnName.equals("fn")) {
+            return new DefaultCellEditor(new JTextField());
+        }
         return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
     }
 
     @Override
@@ -129,6 +151,6 @@ public class VwAlkFlstFnRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }
 }

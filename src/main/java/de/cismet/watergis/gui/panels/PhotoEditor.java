@@ -64,12 +64,15 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.cismap.linearreferencing.TableStationEditor;
 
+import de.cismet.commons.concurrency.CismetConcurrency;
+
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
 
 import de.cismet.tools.CismetThreadPool;
 
 import de.cismet.watergis.utils.CidsBeanUtils;
+import de.cismet.watergis.utils.ModelLoader;
 import de.cismet.watergis.utils.RendererTools;
 
 /**
@@ -103,7 +106,6 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
     private Timer timer;
     private ImageResizeWorker currentResizeWorker;
     private Dimension lastDims;
-    private FeaturePropertyChangeListener changeListener = new FeaturePropertyChangeListener();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.cids.editors.DefaultBindableReferenceCombo cbFreigabe;
@@ -185,39 +187,14 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         this.webDavDirectory = webDavDirectory;
         this.webDavClient = webDavClient;
         initComponents();
-        cbLRl.setBeanFilter(new CidsBeanFilter() {
 
-                @Override
-                public boolean accept(final CidsBean bean) {
-                    if ((bean.getProperty("foto") != null) && ((Boolean)bean.getProperty("foto"))) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
-        cbLst.setBeanFilter(new CidsBeanFilter() {
+        final ModelLoader lrlLoader = new ModelLoader("k_l_rl", cbLRl, "foto");
+        final ModelLoader lstLoader = new ModelLoader("k_l_st", cbLst, "nicht_qp");
+        final ModelLoader freigabeLoader = new ModelLoader("k_freigabe", cbFreigabe, "foto");
 
-                @Override
-                public boolean accept(final CidsBean bean) {
-                    if ((bean.getProperty("nicht_qp") != null) && ((Boolean)bean.getProperty("nicht_qp"))) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
-        cbFreigabe.setBeanFilter(new CidsBeanFilter() {
-
-                @Override
-                public boolean accept(final CidsBean bean) {
-                    if (bean == null) {
-                        return true;
-                    }
-
-                    return (bean.getProperty("foto") != null) && (Boolean)bean.getProperty("foto");
-                }
-            });
+        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(lrlLoader);
+        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(lstLoader);
+        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(freigabeLoader);
 
         lblBusy.setBusy(false);
 
@@ -750,8 +727,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         labAufnDatum.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labAufnDatum,
-            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labAufnDatum.text", new Object[] {
-                }));                                              // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                PhotoEditor.class,
+                "PhotoEditor.labAufnDatum.text",
+                new Object[] {}));                                // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -863,8 +842,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         labBemerkung.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labBemerkung,
-            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labBemerkung.text", new Object[] {
-                }));                                              // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                PhotoEditor.class,
+                "PhotoEditor.labBemerkung.text",
+                new Object[] {}));                                // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -1015,16 +996,12 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
      * @param  feature  The feature that should be shown in the editor
      */
     public void setCidsLayerFeature(final CidsLayerFeature feature) {
-        if (this.feature != null) {
-            this.feature.removePropertyChangeListener(changeListener);
-        }
         this.feature = feature;
 
         if (feature == null) {
             setCidsBean(null);
         } else {
             setCidsBean(feature.getBean());
-            feature.addPropertyChangeListener(changeListener);
         }
     }
 
@@ -1060,6 +1037,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
     public void setCidsBean(final CidsBean cidsBean) {
         bindingGroup.unbind();
         ((TableStationEditor)panStatEdit).setCidsBean(null);
+        ((TableStationEditor)panStatEdit).setParentFeature(null);
         this.cidsBean = cidsBean;
 
         if (cidsBean != null) {
@@ -1072,6 +1050,9 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
             labLaCdVal.setText(getPropString("la_cd"));
             labStatLaVal.setText(getPropString("la_st"));
             final CidsBean baSt = (CidsBean)cidsBean.getProperty("ba_st");
+
+            ((TableStationEditor)panStatEdit).setParentFeature(feature);
+            ((TableStationEditor)panStatEdit).setStationProperty("ba_st");
 
             if (baSt != null) {
                 ((TableStationEditor)panStatEdit).setCidsBean(baSt);
@@ -1180,9 +1161,6 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
     @Override
     public void dispose() {
-        if (this.feature != null) {
-            this.feature.removePropertyChangeListener(changeListener);
-        }
     }
 
     /**
@@ -1515,21 +1493,6 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
          */
         private Double getDouble(final String text) throws NumberFormatException {
             return Double.parseDouble(text);
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @version  $Revision$, $Date$
-     */
-    private class FeaturePropertyChangeListener implements PropertyChangeListener {
-
-        //~ Methods ------------------------------------------------------------
-
-        @Override
-        public void propertyChange(final PropertyChangeEvent evt) {
-            LOG.error(evt.getPropertyName());
         }
     }
 }

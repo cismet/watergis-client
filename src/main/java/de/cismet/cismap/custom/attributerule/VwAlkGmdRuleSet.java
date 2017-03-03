@@ -15,26 +15,18 @@ import Sirius.navigator.connection.SessionManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import org.deegree.datatypes.Types;
-
 import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import de.cismet.cids.dynamics.CidsBean;
-
-import de.cismet.cids.tools.CidsBeanFilter;
-
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
-
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -47,91 +39,49 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class VwAlkGmdRuleSet extends DefaultAttributeTableRuleSet {
+public class VwAlkGmdRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
+        typeMap.put("gmd_nr", new WatergisDefaultRuleSet.Numeric(8, 0, true, true, "gmd_nr", "vw_alk_gmd"));
+        typeMap.put("gmd_name", new WatergisDefaultRuleSet.Varchar(50, true));
+        typeMap.put("amt_nr", new WatergisDefaultRuleSet.Numeric(4, 0, true));
+        typeMap.put("amt_name", new WatergisDefaultRuleSet.Varchar(50, true));
+        typeMap.put("kreis_nr", new WatergisDefaultRuleSet.Numeric(5, 0, true));
+        typeMap.put("kreis_name", new WatergisDefaultRuleSet.Varchar(50, true));
+        typeMap.put("gmd_fl", new WatergisDefaultRuleSet.Numeric(12, 0, false, false));
+        typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
+        typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("gmd_fl") && !columnName.equals("geom") && !columnName.startsWith("wbv")
-                    && !columnName.startsWith("gmd_name") && !columnName.equals("id");
-    }
-
-    @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if (newValue == null) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
-                        + column
-                        + " darf nicht leer sein");
-            return oldValue;
-        }
-
-        return newValue;
+                    && !columnName.equals("gmd_fl") && !columnName.equals("geom")
+                    && !columnName.equals("id");
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        for (final FeatureServiceFeature feature : features) {
-            if (feature.getProperty("geom") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut geom darf nicht leer sein");
-                return false;
-            }
-
-            if (feature.getProperty("gmd_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gmd_nr darf nicht leer sein");
-                return false;
-            }
-
-            if (feature.getProperty("gmd_name") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gmd_name darf nicht leer sein");
-                return false;
-            }
-
-            if (feature.getProperty("amt_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut amt_nr darf nicht leer sein");
-                return false;
-            }
-
-            if (feature.getProperty("amt_name") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut amt_name darf nicht leer sein");
-                return false;
-            }
-
-            if (feature.getProperty("kreis_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut kreis_nr darf nicht leer sein");
-                return false;
-            }
-
-            if (feature.getProperty("kreis_name") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut kreis_name darf nicht leer sein");
-                return false;
-            }
+        if (columnName.equals("kreis_nr")) {
+            return new DefaultCellEditor(new JTextField());
         }
-
-        return true;
+        if (columnName.equals("amt_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        if (columnName.equals("gmd_nr")) {
+            return new DefaultCellEditor(new JTextField());
+        }
+        return null;
     }
 
     @Override
@@ -178,6 +128,6 @@ public class VwAlkGmdRuleSet extends DefaultAttributeTableRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }
 }

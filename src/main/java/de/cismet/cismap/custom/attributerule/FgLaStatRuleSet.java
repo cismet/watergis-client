@@ -18,7 +18,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 /**
@@ -27,51 +26,23 @@ import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLaStatRuleSet extends DefaultAttributeTableRuleSet {
+public class FgLaStatRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("la_st", new Numeric(10, 2, false, false));
+        typeMap.put("la_st_km", new Numeric(7, 1, true, false));
+        typeMap.put("la_st_c", new Varchar(9, true, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return false;
-    }
-
-    @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
-    }
-
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
-    }
-
-    @Override
-    public TableCellEditor getCellEditor(final String columnName) {
-        return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
-        return true;
-    }
-
-    @Override
-    public void beforeSave(final FeatureServiceFeature feature) {
-//        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-//        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
-    }
-
-    @Override
-    public void afterSave(final TableModel model) {
-    }
-
-    @Override
-    public FeatureCreator getFeatureCreator() {
-        return null;
     }
 }

@@ -37,6 +37,28 @@ import de.cismet.watergis.broker.AppBroker;
  */
 public class MnGwPegelRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ms_nr", new Varchar(20, true, true));
+        typeMap.put("ms_name", new Varchar(50, true, true));
+        typeMap.put("re", new Numeric(11, 2, true, true));
+        typeMap.put("ho", new Numeric(10, 2, true, true));
+        typeMap.put("baujahr", new Numeric(4, 0, false, true));
+        typeMap.put("h_gel", new Numeric(6, 2, false, true));
+        typeMap.put("h_mp", new Numeric(6, 2, false, true));
+        typeMap.put("fl_von", new Numeric(6, 2, false, true));
+        typeMap.put("fl_bis", new Numeric(6, 2, false, true));
+        typeMap.put("pn", new Numeric(5, 0, true, true));
+        typeMap.put("pn_von", new Varchar(10, false, true));
+        typeMap.put("pn_bis", new Varchar(10, false, true));
+        typeMap.put("pn_von_h", new Numeric(6, 2, false, true));
+        typeMap.put("pn_bis_h", new Numeric(6, 2, false, true));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -46,26 +68,8 @@ public class MnGwPegelRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        if ((column.equals("ms_nr") || column.equals("ms_name") || column.equals("re") || column.equals("ho"))
-                    && (newValue == null)) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
-                        + column
-                        + " darf nicht null sein");
-            return oldValue;
-        }
-
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return null;
+        return super.getCellRenderer(columnName);
     }
 
     @Override
@@ -74,32 +78,8 @@ public class MnGwPegelRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features, final TableModel model) {
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature f : features) {
-            if (f.getProperty("ms_nr") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ms_nr darf nicht null sein");
-                return false;
-            }
-
-            if (f.getProperty("ms_name") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ms_name darf nicht null sein");
-                return false;
-            }
-
-            if (f.getProperty("re") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut re darf nicht null sein");
-                return false;
-            }
-
-            if (f.getProperty("ho") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ho darf nicht null sein");
-                return false;
-            }
-
             if (isNumberOrNull(f.getProperty("pn")) && (f.getProperty("pn") != null)) {
                 if (((Number)f.getProperty("pn")).intValue() == 0) {
                     if ((f.getProperty("pn_von") != null) || (f.getProperty("pn_bis") != null)
@@ -109,10 +89,10 @@ public class MnGwPegelRuleSet extends WatergisDefaultRuleSet {
                             "Die Attribute  pn_von / pn_bis / pn_von_h / pn_bis_h müssen NULL sein, wenn pn = 0.");
                         return false;
                     }
-                } else if (((Number)f.getProperty("pn")).intValue() > 0) {
-                    if ((f.getProperty("pn_von") == null) || (f.getProperty("pn_bis") == null)
-                                || (f.getProperty("pn_von_h") == null)
-                                || (f.getProperty("pn_bis_h") == null)) {
+                } else if ((f.getProperty("pn") != null) && (((Number)f.getProperty("pn")).intValue() > 0)) {
+                    if ((isValueEmpty(f.getProperty("pn_von"))) || (isValueEmpty(f.getProperty("pn_bis")))
+                                || (isValueEmpty(f.getProperty("pn_von_h")))
+                                || (isValueEmpty(f.getProperty("pn_bis_h")))) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                             "Die Attribute  pn_von / pn_bis / pn_von_h / pn_bis_h dürfen nicht NULL sein, wenn pn > 0.");
                         return false;
@@ -121,7 +101,7 @@ public class MnGwPegelRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override
