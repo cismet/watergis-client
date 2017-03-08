@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="A4H_legend" language="groovy" pageWidth="572" pageHeight="752" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="5c788016-d6e4-4a7b-8ca7-f7ee3cf6ae6d">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="legend" class="java.lang.Object" isForPrompting="false"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="752" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="216" width="553" height="511" uuid="fdf5a754-8a9a-47e9-a13e-4b5f14d7481b"/>
+			</rectangle>
+			<image scaleImage="RetainShape">
+				<reportElement key="legend-image" x="12" y="229" width="530" height="481" uuid="86f40a76-4581-40ea-bf4b-050d4857d37e"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<imageExpression><![CDATA[$P{legend}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="23" y="0" width="100" height="20" uuid="74cf3183-ddf2-48e2-b460-5e43ceaef418"/>
+				<text><![CDATA[ein Testr]]></text>
+			</staticText>
+		</band>
+	</title>
+</jasperReport>
