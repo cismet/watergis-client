@@ -279,11 +279,11 @@ public class LawaCheckAction extends AbstractCheckAction {
                     // FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
                     // objartServiceAttributeDefinition.add(serviceAttribute);
 
-//                    result.setFgBakWithoutObjart(analyseByCustomSearch(
-//                            new BakWithIncompleteObjartCoverage(user, null),
-//                            "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak ohne fg_bak_objart",
-//                            objartServiceAttributeDefinition));
-//                    increaseProgress(wd, 1);
+// result.setFgBakWithoutObjart(analyseByCustomSearch(
+// new BakWithIncompleteObjartCoverage(user, null),
+// "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak ohne fg_bak_objart",
+// objartServiceAttributeDefinition));
+// increaseProgress(wd, 1);
 
                     final List<FeatureServiceAttribute> gbkServiceAttributeDefinition =
                         new ArrayList<FeatureServiceAttribute>();
