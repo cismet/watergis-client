@@ -65,7 +65,7 @@ public class ExifReader {
      */
     public Point getGpsCoords() {
         Point p = null;
-        final GpsDirectory gpsDirectory = metadata.getDirectory(GpsDirectory.class);
+        final GpsDirectory gpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
 
         if (gpsDirectory != null) {
             if ((gpsDirectory.getGeoLocation() != null) && !gpsDirectory.getGeoLocation().isZero()) {
@@ -87,10 +87,10 @@ public class ExifReader {
      * @throws  MetadataException  If an error occurs during the reading of the image metadata
      */
     public Double getGpsDirection() throws MetadataException {
-        final GpsDirectory gpsDirectory = metadata.getDirectory(GpsDirectory.class);
+        final GpsDirectory gpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
 
         if (gpsDirectory != null) {
-            return gpsDirectory.getDouble(GpsDirectory.TAG_GPS_IMG_DIRECTION);
+            return gpsDirectory.getDouble(GpsDirectory.TAG_IMG_DIRECTION);
         }
 
         return null;
@@ -102,7 +102,7 @@ public class ExifReader {
      * @return  DOCUMENT ME!
      */
     public Date getTime() {
-        final ExifIFD0Directory dir = metadata.getDirectory(ExifIFD0Directory.class);
+        final ExifIFD0Directory dir = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
 
         if (dir != null) {
             return dir.getDate(ExifIFD0Directory.TAG_DATETIME);
