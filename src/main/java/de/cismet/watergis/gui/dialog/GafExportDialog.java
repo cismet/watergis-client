@@ -436,8 +436,10 @@ public class GafExportDialog extends javax.swing.JDialog {
         ckGaf.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckGaf,
-            org.openide.util.NbBundle.getMessage(GafExportDialog.class, "GafExportDialog.ckGaf.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafExportDialog.class,
+                "GafExportDialog.ckGaf.text",
+                new Object[] {})); // NOI18N
         ckGaf.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override

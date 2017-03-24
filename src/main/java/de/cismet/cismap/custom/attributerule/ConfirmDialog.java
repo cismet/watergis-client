@@ -92,8 +92,10 @@ public class ConfirmDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jButton1,
-            org.openide.util.NbBundle.getMessage(ConfirmDialog.class, "ConfirmDialog.jButton1.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                ConfirmDialog.class,
+                "ConfirmDialog.jButton1.text",
+                new Object[] {})); // NOI18N
         jButton1.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -110,8 +112,10 @@ public class ConfirmDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jButton2,
-            org.openide.util.NbBundle.getMessage(ConfirmDialog.class, "ConfirmDialog.jButton2.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                ConfirmDialog.class,
+                "ConfirmDialog.jButton2.text",
+                new Object[] {})); // NOI18N
         jButton2.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
