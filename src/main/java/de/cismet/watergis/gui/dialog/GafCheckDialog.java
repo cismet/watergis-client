@@ -117,8 +117,10 @@ public class GafCheckDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             butOk,
-            org.openide.util.NbBundle.getMessage(GafCheckDialog.class, "GafCheckDialog.butOk.text_1", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafCheckDialog.class,
+                "GafCheckDialog.butOk.text_1",
+                new Object[] {})); // NOI18N
         butOk.setMinimumSize(new java.awt.Dimension(170, 29));
         butOk.setPreferredSize(new java.awt.Dimension(170, 29));
         butOk.addActionListener(new java.awt.event.ActionListener() {
