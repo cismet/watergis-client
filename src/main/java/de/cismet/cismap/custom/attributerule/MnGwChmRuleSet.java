@@ -63,7 +63,7 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("so4_min", new Numeric(12, 6, false, true));
         typeMap.put("so4_mw", new Numeric(12, 6, false, true));
         typeMap.put("so4_max", new Numeric(12, 6, false, true));
-        typeMap.put("ue_sw_psm", new Numeric(1, 0, false, true));
+        typeMap.put("ue_sw_psm", new BooleanAsInteger(true, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }

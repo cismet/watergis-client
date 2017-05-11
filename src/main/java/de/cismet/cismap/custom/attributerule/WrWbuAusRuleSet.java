@@ -17,6 +17,7 @@ import Sirius.server.middleware.types.MetaClass;
 
 import java.sql.Timestamp;
 
+import javax.swing.JLabel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -28,6 +29,7 @@ import de.cismet.cismap.cidslayer.PointAndStationCreator;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
+import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -70,17 +72,10 @@ public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
-        }
-    }
-
-    @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("ba_st")) {
+        if (columnName.equals("ba_cd")) {
+            return new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+        } else if (columnName.equals("ba_st")) {
             return new StationTableCellEditor(columnName);
         } else {
             return null;

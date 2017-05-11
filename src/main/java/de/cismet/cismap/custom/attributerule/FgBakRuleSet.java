@@ -188,13 +188,7 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsLayerFeatureFilter() {
-
-                        @Override
-                        public boolean accept(final CidsLayerFeature bean) {
-                            return bean != null;
-                        }
-                    };
+                filter = new WwGrAdminFilter();
             }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",

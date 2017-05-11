@@ -28,6 +28,7 @@ import de.cismet.cismap.cidslayer.PointAndStationCreator;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
+import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -73,7 +74,9 @@ public class MnFgChmRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("ba_st")) {
+        if (columnName.equals("ba_cd")) {
+            return new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+        } else if (columnName.equals("ba_st")) {
             return new StationTableCellEditor(columnName);
         } else {
             return null;
