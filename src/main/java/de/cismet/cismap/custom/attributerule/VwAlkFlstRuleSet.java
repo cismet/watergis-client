@@ -50,7 +50,7 @@ public class VwAlkFlstRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("gmd_nr", new Numeric(8, 0, true));
         typeMap.put("gmd_name", new Varchar(50, true));
         typeMap.put("wbv", new Numeric(2, 0, true));
-        typeMap.put("fl_fl", new Numeric(12, 0, false, false));
+        typeMap.put("flst_fl", new Numeric(16, 4, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
@@ -116,7 +116,7 @@ public class VwAlkFlstRuleSet extends WatergisDefaultRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getArea();
+            value = Math.round(geom.getArea() * 10000) / 10000.0;
         }
 
         return value;

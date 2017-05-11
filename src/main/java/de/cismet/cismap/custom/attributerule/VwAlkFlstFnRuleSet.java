@@ -111,7 +111,7 @@ public class VwAlkFlstFnRuleSet extends WatergisDefaultRuleSet {
         if (name.equals("fn_fl")) {
             return -3;
         } else if (name.equals("fn_flst_an")) {
-            return -3;
+            return -4;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }
@@ -128,7 +128,7 @@ public class VwAlkFlstFnRuleSet extends WatergisDefaultRuleSet {
         }
 
         if (propertyName.equals("fn_fl")) {
-            return fn_fl;
+            return Math.round(fn_fl * 10000) / 10000.0;
         } else if (propertyName.equals("fn_flst_an")) {
             Double value = null;
 
@@ -138,7 +138,7 @@ public class VwAlkFlstFnRuleSet extends WatergisDefaultRuleSet {
                 value = fn_fl * 100 / flst_fl;
             }
 
-            return value;
+            return round(value);
         }
 
         return null;

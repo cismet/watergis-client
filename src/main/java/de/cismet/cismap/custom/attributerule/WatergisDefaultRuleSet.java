@@ -33,6 +33,8 @@ import java.math.RoundingMode;
 import java.sql.Date;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -61,6 +63,7 @@ import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
+import de.cismet.cismap.commons.gui.attributetable.LinkCellRenderer;
 
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
@@ -75,6 +78,8 @@ import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
 import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -105,6 +110,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      * @return  DOCUMENT ME!
      */
     private static final String PROTECTED_AREA_ACTION = "geschuetzte_wbbl";
+    protected static Double minBaLength = null;
 
     //~ Enums ------------------------------------------------------------------
 
@@ -117,7 +123,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
         //~ Enum constants -----------------------------------------------------
 
-        OK, NULL, WRONG_DATA_TYPE, OUT_OF_SIZE, SIZE_CORRECTION, WRONG_RANGE, WBBL_NOT_ACCESSIBLE
+        OK, NULL, WRONG_DATA_TYPE, OUT_OF_SIZE, SIZE_CORRECTION, WRONG_RANGE, WBBL_NOT_ACCESSIBLE, NOT_BINARY
     }
 
     //~ Instance fields --------------------------------------------------------
@@ -442,6 +448,25 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      * @param   newValue    DOCUMENT ME!
      * @param   from        DOCUMENT ME!
      * @param   to          DOCUMENT ME!
+     * @param   nullable    DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected static boolean checkRangeBetweenOrEqual(final String columnName,
+            final Object newValue,
+            final int from,
+            final int to,
+            final boolean nullable) {
+        return checkRange(columnName, newValue, from, to, nullable, true, true);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   columnName  DOCUMENT ME!
+     * @param   newValue    DOCUMENT ME!
+     * @param   from        DOCUMENT ME!
+     * @param   to          DOCUMENT ME!
      * @param   fromMax     DOCUMENT ME!
      * @param   toMax       DOCUMENT ME!
      * @param   nullable    DOCUMENT ME!
@@ -506,6 +531,66 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             Object newValue,
             final double from,
             final double to,
+            final boolean nullable,
+            final boolean fromEqualAllowed,
+            final boolean toEqualAllowed) {
+        if ((newValue == null) && !nullable) {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                "Das Attribut "
+                        + columnName
+                        + " darf nicht leer sein");
+            return false;
+        } else if (newValue == null) {
+            return true;
+        }
+
+        if (!(newValue instanceof Number)) {
+            try {
+                newValue = Double.parseDouble(String.valueOf(newValue));
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Das Attribut "
+                            + columnName
+                            + " darf nur numerische Werte enthalten");
+                return false;
+            }
+        }
+
+        if ((!(fromEqualAllowed && (((Number)newValue).doubleValue() >= from))
+                        && !(!fromEqualAllowed && (((Number)newValue).doubleValue() > from)))
+                    || (!(toEqualAllowed && (((Number)newValue).doubleValue() <= to))
+                        && !(!toEqualAllowed && (((Number)newValue).doubleValue() < to)))) {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                "Beim Attribut "
+                        + columnName
+                        + " sind nur Werte von "
+                        + from
+                        + " bis "
+                        + to
+                        + " erlaubt.");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   columnName        DOCUMENT ME!
+     * @param   newValue          DOCUMENT ME!
+     * @param   from              DOCUMENT ME!
+     * @param   to                DOCUMENT ME!
+     * @param   nullable          DOCUMENT ME!
+     * @param   fromEqualAllowed  DOCUMENT ME!
+     * @param   toEqualAllowed    DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected static boolean checkRange(final String columnName,
+            Object newValue,
+            final int from,
+            final int to,
             final boolean nullable,
             final boolean fromEqualAllowed,
             final boolean toEqualAllowed) {
@@ -621,11 +706,80 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     /**
      * DOCUMENT ME!
      *
+     * @param   columnName        DOCUMENT ME!
+     * @param   newValue          DOCUMENT ME!
+     * @param   from              DOCUMENT ME!
+     * @param   to                DOCUMENT ME!
+     * @param   fromMax           DOCUMENT ME!
+     * @param   toMax             DOCUMENT ME!
+     * @param   nullable          DOCUMENT ME!
+     * @param   fromEqualAllowed  DOCUMENT ME!
+     * @param   toEqualAllowed    DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected static boolean checkRange(final String columnName,
+            Object newValue,
+            final int from,
+            final int to,
+            final int fromMax,
+            final int toMax,
+            final boolean nullable,
+            final boolean fromEqualAllowed,
+            final boolean toEqualAllowed) {
+        if ((newValue == null) && !nullable) {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                "Das Attribut "
+                        + columnName
+                        + " darf nicht leer sein");
+            return false;
+        } else if (newValue == null) {
+            return true;
+        }
+
+        if (!(newValue instanceof Number)) {
+            try {
+                newValue = Double.parseDouble(String.valueOf(newValue));
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Das Attribut "
+                            + columnName
+                            + " darf nur numerische Werte enthalten");
+                return false;
+            }
+        }
+
+        final double newDoubleValue = ((Number)newValue).doubleValue();
+
+        if ((fromEqualAllowed && ((newDoubleValue < from) && (newDoubleValue >= fromMax)))
+                    || (!fromEqualAllowed && ((newDoubleValue <= from) && (newDoubleValue > fromMax)))
+                    || (toEqualAllowed && ((newDoubleValue <= toMax) && (newDoubleValue > to)))
+                    || (!toEqualAllowed && ((newDoubleValue < toMax) && (newDoubleValue >= to)))) {
+            return showSecurityQuestion("Wert außerhalb Standardbereich (" + from + ", " + to + ") --> verwenden ?");
+        } else if ((fromEqualAllowed && (newDoubleValue < fromMax))
+                    || (!fromEqualAllowed && (newDoubleValue <= fromMax))
+                    || (toEqualAllowed && (newDoubleValue > toMax))
+                    || (!toEqualAllowed && (newDoubleValue >= toMax))) {
+            showMessage("Wert nicht zulässig, weil außerhalb "
+                        + (fromEqualAllowed ? " [" : " (")
+                        + fromMax
+                        + ", "
+                        + toMax
+                        + (toEqualAllowed ? " ]" : " )"));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param  text  DOCUMENT ME!
      */
     protected static void showMessage(final String text) {
         final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(), true, text);
-        d.pack();
+        d.setSize(500, 80);
         StaticSwingTools.showDialog(d);
     }
 
@@ -943,11 +1097,14 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 return new DefaultTableCellRenderer() {
 
                         DecimalFormat format = new DecimalFormat();
+                        DecimalFormat formatWithOutdecimals = new DecimalFormat();
 
                         {
                             format.setGroupingUsed(false);
                             format.setMaximumFractionDigits(((Numeric)type).getScale());
                             format.setMinimumFractionDigits(((Numeric)type).getScale());
+                            formatWithOutdecimals.setGroupingUsed(false);
+                            formatWithOutdecimals.setMaximumFractionDigits(0);
                         }
 
                         @Override
@@ -971,6 +1128,20 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 }
                             }
 
+                            if ((val != null) && ((Numeric)type).isShowDecimalsOnlyIfExists()) {
+                                try {
+                                    final double doubleVal = format.parse(val.toString()).doubleValue();
+                                    final long longVal = (long)doubleVal;
+
+                                    if (doubleVal == longVal) {
+                                        val = formatWithOutdecimals.format(longVal);
+                                    }
+                                } catch (final Exception e) {
+                                    // should not happen
+                                    LOG.error("Numeric field does not contain a numeric value", e);
+                                }
+                            }
+
                             final Component c = super.getTableCellRendererComponent(
                                     table,
                                     val,
@@ -987,6 +1158,39 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                             return c;
                         }
                     };
+            }
+
+            if (type instanceof BooleanAsInteger) {
+                return new DefaultTableCellRenderer() {
+
+                        @Override
+                        public Component getTableCellRendererComponent(final JTable table,
+                                final Object value,
+                                final boolean isSelected,
+                                final boolean hasFocus,
+                                final int row,
+                                final int column) {
+                            final Component c = super.getTableCellRendererComponent(
+                                    table,
+                                    value,
+                                    isSelected,
+                                    hasFocus,
+                                    row,
+                                    column);
+
+                            if (c instanceof JLabel) {
+                                ((JLabel)c).setHorizontalAlignment(JLabel.RIGHT);
+                                ((JLabel)c).setBorder(new EmptyBorder(0, 0, 0, 2));
+                            }
+
+                            return c;
+                        }
+                    };
+            }
+
+            if (((type instanceof Catalogue) && ((Catalogue)type).isRightAlignment())
+                        || ((type instanceof Link) && ((Link)type).isRightAlignment())) {
+                return new LinkTableCellRenderer(JLabel.RIGHT);
             }
         }
 
@@ -1010,7 +1214,56 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     changedObjectMap.put(type, changedObjects);
                 }
                 changedObjects.add(feature);
+
+                // start unique check
+                final Map<Integer, String> idValueMap = new HashMap<Integer, String>();
+
+                if ((changedObjects != null) && changedObjects.contains(feature)) {
+                    final String stalu = (String)newValue;
+                    idValueMap.put((Integer)feature.getProperty("id"), stalu);
+                }
+
+                if (!idValueMap.isEmpty()) {
+                    try {
+                        final User user = SessionManager.getSession().getUser();
+                        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
+                                    .getProxy()
+                                    .customServerSearch(user, new UniquenessCheck(idValueMap, type.field, type.table));
+
+                        if ((attributes != null) && !attributes.isEmpty()) {
+                            final ArrayList list = attributes.get(0);
+
+                            if ((list != null) && !list.isEmpty()) {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        WatergisDefaultRuleSet.class,
+                                        "WatergisDefaultRuleSet.prepareForSave().message",
+                                        list.get(0),
+                                        type.field),
+                                    NbBundle.getMessage(
+                                        WatergisDefaultRuleSet.class,
+                                        "WatergisDefaultRuleSet.prepareForSave().title",
+                                        type.field),
+                                    JOptionPane.ERROR_MESSAGE);
+                                return oldValue;
+                            }
+                        }
+                    } catch (final Exception e) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            NbBundle.getMessage(
+                                WatergisDefaultRuleSet.class,
+                                "WatergisDefaultRuleSet.prepareForSave().error.message",
+                                type.field),
+                            NbBundle.getMessage(
+                                WatergisDefaultRuleSet.class,
+                                "WatergisDefaultRuleSet.prepareForSave().error.title"),
+                            JOptionPane.ERROR_MESSAGE);
+                        LOG.error("Error while checking the uniqueness of the ba_cd field.", e);
+                        return oldValue;
+                    }
+                }
             }
+            // end unique check
 
             final ValidationResult result = type.isValidValue(newValue);
 
@@ -1047,9 +1300,13 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                             + " hat folgenden Wertebereich: "
                             + type.range(column));
                 return oldValue;
+            } else if (result.getValidationResult() == Validation.NOT_BINARY) {
+                showMessage("Wert nicht zulässig, weil außerhalb (0/1"
+                            + (type.isNotNull() ? "" : "/NULL")
+                            + ")");
+                return oldValue;
             } else if (result.getValidationResult() == Validation.WBBL_NOT_ACCESSIBLE) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das angegebene Buchungsblatt ist nicht erreichbar");
+                showMessage("Wert nicht zulässig, weil Wasserbuchblatt nicht existiert");
                 return oldValue;
             }
         }
@@ -1113,6 +1370,14 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 + " hat folgenden Wertebereich: "
                                 + type.range(attribute));
                     return false;
+                } else if (result.getValidationResult() == Validation.NOT_BINARY) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Das Attribut "
+                                + attribute
+                                + " hat einen ungültigen Wert. Der Wertebereich ist (0/1"
+                                + (type.isNotNull() ? "" : "/NULL")
+                                + ")");
+                    return false;
                 }
             }
 
@@ -1157,6 +1422,27 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             }
         }
 
+        for (final FeatureServiceFeature feature : features) {
+            if (minBaLength != null) {
+                final Double from = (Double)feature.getProperty("ba_st_von");
+                final Double till = (Double)feature.getProperty("ba_st_bis");
+
+                if ((from != null) && (till != null)) {
+                    if (Math.abs(till - from) < minBaLength) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Die Länge des Objektes mit der id "
+                                    + feature.getId()
+                                    + " darf nicht kleiner "
+                                    + minBaLength
+                                    + " sein",
+                            "Ungültiger Wert",
+                            JOptionPane.ERROR_MESSAGE);
+
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
     }
 
@@ -1215,6 +1501,15 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the notNull
+         */
+        public boolean isNotNull() {
+            return notNull;
+        }
 
         /**
          * DOCUMENT ME!
@@ -1299,6 +1594,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         private Double max = null;
         private boolean minEqualsAllowd = true;
         private boolean maxEqualsAllowd = true;
+        private boolean showDecimalsOnlyIfExists = false;
 
         //~ Constructors -------------------------------------------------------
 
@@ -1332,6 +1628,47 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         /**
          * Creates a new Numeric object.
          *
+         * @param  precision                 DOCUMENT ME!
+         * @param  scale                     DOCUMENT ME!
+         * @param  notNull                   DOCUMENT ME!
+         * @param  editable                  DOCUMENT ME!
+         * @param  showDecimalsOnlyIfExists  DOCUMENT ME!
+         */
+        public Numeric(final int precision,
+                final int scale,
+                final boolean notNull,
+                final boolean editable,
+                final boolean showDecimalsOnlyIfExists) {
+            this(precision, scale, notNull, editable);
+            this.showDecimalsOnlyIfExists = showDecimalsOnlyIfExists;
+        }
+
+        /**
+         * Creates a new Numeric object.
+         *
+         * @param  precision  DOCUMENT ME!
+         * @param  scale      DOCUMENT ME!
+         * @param  notNull    DOCUMENT ME!
+         * @param  editable   DOCUMENT ME!
+         * @param  min        DOCUMENT ME!
+         * @param  max        DOCUMENT ME!
+         */
+        public Numeric(final int precision,
+                final int scale,
+                final boolean notNull,
+                final boolean editable,
+                final double min,
+                final double max) {
+            super(notNull, false, editable, null, null);
+            this.precision = precision;
+            this.scale = scale;
+            this.min = min;
+            this.max = max;
+        }
+
+        /**
+         * Creates a new Numeric object.
+         *
          * @param  precision  DOCUMENT ME!
          * @param  scale      DOCUMENT ME!
          * @param  notNull    DOCUMENT ME!
@@ -1351,6 +1688,24 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the showDecimalsOnlyIfExists
+         */
+        public boolean isShowDecimalsOnlyIfExists() {
+            return showDecimalsOnlyIfExists;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  showDecimalsOnlyIfExists  the showDecimalsOnlyIfExists to set
+         */
+        public void setShowDecimalsOnlyIfExists(final boolean showDecimalsOnlyIfExists) {
+            this.showDecimalsOnlyIfExists = showDecimalsOnlyIfExists;
+        }
 
         /**
          * DOCUMENT ME!
@@ -1546,6 +1901,62 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
+    protected static class BooleanAsInteger extends DataType {
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new BooleanAsInteger object.
+         *
+         * @param  notNull   DOCUMENT ME!
+         * @param  editable  DOCUMENT ME!
+         */
+        public BooleanAsInteger(final boolean notNull, final boolean editable) {
+            super(notNull, false, editable, null, null);
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public ValidationResult isValidValue(final Object value) {
+            ValidationResult result = super.isValidValue(value);
+
+            if (result.getValidationResult() == Validation.OK) {
+                if ((value instanceof String) || (value instanceof Number)) {
+                    final String stringValue = value.toString();
+
+                    try {
+                        final int val = Integer.parseInt(stringValue);
+
+                        if ((val != 1) && (val != 0)) {
+                            result = new ValidationResult(
+                                    Validation.NOT_BINARY);
+                        }
+                    } catch (NumberFormatException e) {
+                        result = new ValidationResult(
+                                Validation.NOT_BINARY);
+                    }
+                } else {
+                    if (value != null) {
+                        result = new ValidationResult(Validation.WRONG_DATA_TYPE);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Numeric(1,0)";
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
     protected static class Varchar extends DataType {
 
         //~ Instance fields ----------------------------------------------------
@@ -1643,6 +2054,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      */
     protected static class Link extends Varchar {
 
+        //~ Instance fields ----------------------------------------------------
+
+        private boolean rightAlignment = false;
+
         //~ Constructors -------------------------------------------------------
 
         /**
@@ -1669,6 +2084,19 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         /**
          * Creates a new Varchar object.
          *
+         * @param  maxLength       DOCUMENT ME!
+         * @param  notNull         DOCUMENT ME!
+         * @param  editable        DOCUMENT ME!
+         * @param  rightAlignment  DOCUMENT ME!
+         */
+        public Link(final int maxLength, final boolean notNull, final boolean editable, final boolean rightAlignment) {
+            this(maxLength, notNull, editable);
+            this.rightAlignment = rightAlignment;
+        }
+
+        /**
+         * Creates a new Varchar object.
+         *
          * @param  maxLength  DOCUMENT ME!
          * @param  notNull    DOCUMENT ME!
          * @param  unique     DOCUMENT ME!
@@ -1684,6 +2112,24 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the rightAlignment
+         */
+        public boolean isRightAlignment() {
+            return rightAlignment;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  rightAlignment  the rightAlignment to set
+         */
+        public void setRightAlignment(final boolean rightAlignment) {
+            this.rightAlignment = rightAlignment;
+        }
 
         @Override
         public ValidationResult isValidValue(final Object value) {
@@ -1721,6 +2167,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         public WbblLink(final String wbblPath, final int maxLength, final boolean notNull) {
             super(maxLength, notNull);
             this.wbblPath = wbblPath;
+            setRightAlignment(true);
         }
 
         /**
@@ -1732,7 +2179,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
          * @param  editable   DOCUMENT ME!
          */
         public WbblLink(final String wbblPath, final int maxLength, final boolean notNull, final boolean editable) {
-            super(maxLength, notNull, editable);
+            super(maxLength, notNull, editable, true);
             this.wbblPath = wbblPath;
         }
 
@@ -1754,6 +2201,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 final String table) {
             super(maxLength, notNull, unique, field, table);
             this.wbblPath = wbblPath;
+            setRightAlignment(true);
         }
 
         //~ Methods ------------------------------------------------------------
@@ -1840,7 +2288,11 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class Time extends DataType {
+    protected static class Time extends Varchar {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
 
         //~ Constructors -------------------------------------------------------
 
@@ -1851,19 +2303,31 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
          * @param  editable  DOCUMENT ME!
          */
         public Time(final boolean notNull, final boolean editable) {
-            super(notNull, false, editable, null, null);
+            super(8, notNull, editable);
         }
 
         //~ Methods ------------------------------------------------------------
 
         @Override
         public ValidationResult isValidValue(final Object value) {
-            return super.isValidValue(value);
+            ValidationResult result = super.isValidValue(value);
+
+            if ((value != null) && !value.equals("") && (result.getValidationResult() == Validation.OK)) {
+                if (value instanceof String) {
+                    try {
+                        formatter.parse((String)value);
+                    } catch (ParseException e) {
+                        result = new ValidationResult(Validation.WRONG_DATA_TYPE);
+                    }
+                }
+            }
+
+            return result;
         }
 
         @Override
         public String toString() {
-            return "Time";
+            return "Time (00:00:00...23:59:59)";
         }
     }
 
@@ -1967,6 +2431,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         //~ Instance fields ----------------------------------------------------
 
         private final String catalogueReference;
+        private boolean rightAlignment = false;
 
         //~ Constructors -------------------------------------------------------
 
@@ -1980,6 +2445,22 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         public Catalogue(final String catalogueReference, final boolean notNull, final boolean editable) {
             super(notNull, false, editable, null, null);
             this.catalogueReference = catalogueReference;
+        }
+
+        /**
+         * Creates a new Time object.
+         *
+         * @param  catalogueReference  DOCUMENT ME!
+         * @param  notNull             DOCUMENT ME!
+         * @param  editable            DOCUMENT ME!
+         * @param  rightAlignment      DOCUMENT ME!
+         */
+        public Catalogue(final String catalogueReference,
+                final boolean notNull,
+                final boolean editable,
+                final boolean rightAlignment) {
+            this(catalogueReference, notNull, editable);
+            this.rightAlignment = rightAlignment;
         }
 
         /**
@@ -2001,6 +2482,24 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the rightAlignment
+         */
+        public boolean isRightAlignment() {
+            return rightAlignment;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  rightAlignment  the rightAlignment to set
+         */
+        public void setRightAlignment(final boolean rightAlignment) {
+            this.rightAlignment = rightAlignment;
+        }
 
         /**
          * DOCUMENT ME!
@@ -2088,6 +2587,21 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
          */
         public Object getChangedValue() {
             return changedValue;
+        }
+    }
+
+    /**
+     * This is only a filter for GU. Hinweis themes are not concerned
+     *
+     * @version  $Revision$, $Date$
+     */
+    protected static class WwGrAdminFilter implements CidsLayerFeatureFilter {
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public boolean accept(final CidsLayerFeature bean) {
+            return (bean != null) && (bean.getProperty("praefix") != null);
         }
     }
 }

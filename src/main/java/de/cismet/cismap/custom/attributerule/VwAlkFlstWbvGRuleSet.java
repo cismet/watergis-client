@@ -53,8 +53,8 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("gmd_name", new WatergisDefaultRuleSet.Varchar(50, true));
         typeMap.put("wbv", new Numeric(2, 0, true));
         typeMap.put("flst_fl", new WatergisDefaultRuleSet.Numeric(16, 4, true));
-        typeMap.put("fn_g_an", new Numeric(5, 2, false, false));
-        typeMap.put("fn_g_fl", new Numeric(16, 4, false, false));
+        typeMap.put("flst_g_an", new Numeric(5, 2, false, false));
+        typeMap.put("flst_g_fl", new Numeric(16, 4, false, false));
         typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
         typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
     }
@@ -107,9 +107,9 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("flst_g_an")) {
-            return -4;
-        } else if (name.equals("flst_g_fl")) {
             return -3;
+        } else if (name.equals("flst_g_fl")) {
+            return -4;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }
@@ -126,7 +126,7 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
         }
 
         if (propertyName.equals("flst_g_fl")) {
-            return flst_g_fl;
+            return Math.round(flst_g_fl * 10000) / 10000.0;
         } else if (propertyName.equals("flst_g_an")) {
             Double value = null;
 
@@ -136,7 +136,7 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
                 value = flst_g_fl * 100 / flst_fl;
             }
 
-            return value;
+            return round(value);
         }
 
         return null;

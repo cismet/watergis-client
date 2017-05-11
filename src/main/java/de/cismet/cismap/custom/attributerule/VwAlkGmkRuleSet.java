@@ -108,7 +108,7 @@ public class VwAlkGmkRuleSet extends WatergisDefaultRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = (int)geom.getArea();
+            value = (int)Math.round(geom.getArea());
         }
 
         return value;

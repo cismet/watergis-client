@@ -39,6 +39,15 @@ import de.cismet.watergis.broker.AppBroker;
  */
 public class VwAlkMvRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("mv_fl", new Numeric(12, 0, true, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -53,15 +62,7 @@ public class VwAlkMvRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        if (isValueEmpty(newValue)) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
-                        + column
-                        + " darf nicht leer sein");
-            return oldValue;
-        }
-
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class VwAlkMvRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        return null;
+        return super.getCellEditor(columnName);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class VwAlkMvRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override
@@ -118,7 +119,7 @@ public class VwAlkMvRuleSet extends WatergisDefaultRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = (int)geom.getArea();
+            value = (int)Math.round(geom.getArea());
         }
 
         return value;
