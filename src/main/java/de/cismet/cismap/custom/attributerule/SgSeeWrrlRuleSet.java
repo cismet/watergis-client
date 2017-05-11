@@ -48,6 +48,7 @@ public class SgSeeWrrlRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("see_sp", new Varchar(8, true, true));
         typeMap.put("see_typ", new Varchar(3, true, true));
         typeMap.put("see_art", new Varchar(3, false, true));
+        typeMap.put("see_nhn", new Numeric(6, 2, false, true));
         typeMap.put("see_verm", new Numeric(1, 0, false, true));
         typeMap.put("verm_datum", new Varchar(10, false, true));
         typeMap.put("verm_nhn", new Numeric(6, 2, false, true));
@@ -61,7 +62,7 @@ public class SgSeeWrrlRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("leff", new Numeric(6, 3, false, true));
         typeMap.put("beff", new Numeric(6, 3, false, true));
         typeMap.put("tabelle", new Varchar(50, false, true));
-        typeMap.put("ezg", new Numeric(1, 0, false, true));
+        typeMap.put("ezg", new BooleanAsInteger(false, true));
         typeMap.put("ezg_fl", new Numeric(12, 0, false, true));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -121,7 +122,7 @@ public class SgSeeWrrlRuleSet extends WatergisDefaultRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = (int)geom.getArea();
+            value = (int)Math.round(geom.getArea());
         }
 
         return value;

@@ -80,7 +80,7 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
         if (isValueEmpty(newValue)) {
             if (column.equalsIgnoreCase("wk_nr")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ms_cd_lw darf nicht leer sein");
+                    "Das Attribut wk_nr darf nicht leer sein");
                 return oldValue;
             } else if (column.equalsIgnoreCase("see_gn")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -169,7 +169,7 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = (int)geom.getArea();
+            value = (int)Math.round(geom.getArea());
         }
 
         return value;

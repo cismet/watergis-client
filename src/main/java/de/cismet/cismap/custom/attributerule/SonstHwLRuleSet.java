@@ -17,6 +17,9 @@ import org.deegree.datatypes.Types;
 
 import java.sql.Timestamp;
 
+import java.text.SimpleDateFormat;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +29,8 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -104,10 +109,34 @@ public class SonstHwLRuleSet extends WatergisDefaultRuleSet {
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         if (columnName.equals("ww_gr")) {
+            CidsLayerFeatureFilter filter = null;
+
+            if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
+                final String userName = AppBroker.getInstance().getOwner();
+                filter = new CidsLayerFeatureFilter() {
+
+                        @Override
+                        public boolean accept(final CidsLayerFeature bean) {
+                            if (bean == null) {
+                                return false;
+                            }
+                            return bean.getProperty("owner").equals(userName);
+                        }
+                    };
+            } else {
+                filter = new CidsLayerFeatureFilter() {
+
+                        @Override
+                        public boolean accept(final CidsLayerFeature feature) {
+                            return feature != null;
+                        }
+                    };
+            }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",
                         String.valueOf(Types.INTEGER),
-                        true));
+                        true),
+                    filter);
         }
         return null;
     }
@@ -142,9 +171,10 @@ public class SonstHwLRuleSet extends WatergisDefaultRuleSet {
     public FeatureCreator getFeatureCreator() {
         final Map properties = new HashMap();
         properties.put("nr", "@id");
-        properties.put("wann", new Timestamp(System.currentTimeMillis()));
-        if ((AppBroker.getInstance().getOwnWwGrList() != null) && !AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGrList().get(0));
+        final SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        properties.put("wann", formatter.format(new Date()));
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }
