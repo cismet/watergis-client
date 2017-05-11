@@ -32,6 +32,7 @@ import javax.swing.table.TableModel;
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -59,10 +60,31 @@ public class FgBakGbkRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ba_cd", new Varchar(50, true, false));
         typeMap.put("bak_st_von", new Numeric(10, 2, true, false));
         typeMap.put("bak_st_bis", new Numeric(10, 2, true, false));
-        typeMap.put("gbk_lawa", new Catalogue("k_gbk_lawa", true, true));
-        typeMap.put("laenge", new Numeric(12, 0, false, false));
+        typeMap.put("gbk_lawa", new Catalogue("k_gbk_lawa", true, true, true));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
+    //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new FgBakGbkRuleSet object.
+     */
+    public FgBakGbkRuleSet() {
+        final Thread t = new Thread() {
+
+                @Override
+                public void run() {
+                    final MetaClass mc = ClassCacheMultiple.getMetaClass("dlm25w", "dlm25w.k_gbk_lawa");
+
+                    if (mc != null) {
+                        DefaultCidsLayerBindableReferenceCombo.preloadData(mc, true, null);
+                    }
+                }
+            };
+
+        t.start();
     }
 
     //~ Methods ----------------------------------------------------------------

@@ -36,6 +36,7 @@ import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 
+import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -76,7 +77,9 @@ public class FgBaFlRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("ba_st_von")) {
+        if (columnName.equals("ba_cd")) {
+            return new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", true);
+        } else if (columnName.equals("ba_st_von")) {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("ba_st_bis")) {
             return new StationTableCellEditor(columnName);
@@ -97,13 +100,7 @@ public class FgBaFlRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsLayerFeatureFilter() {
-
-                        @Override
-                        public boolean accept(final CidsLayerFeature bean) {
-                            return bean != null;
-                        }
-                    };
+                filter = new WwGrAdminFilter();
             }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",

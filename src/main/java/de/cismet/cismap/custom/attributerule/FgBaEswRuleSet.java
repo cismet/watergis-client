@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
@@ -90,15 +91,6 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
         }
 
         return newValue;
-    }
-
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
-        }
     }
 
     @Override

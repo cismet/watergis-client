@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -74,7 +75,7 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br_dm_li", new Numeric(7, 3, false, true));
         typeMap.put("ho_li", new Numeric(7, 3, false, true));
@@ -88,6 +89,7 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+        minBaLength = 0.5;
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -159,15 +161,6 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
-        }
-    }
-
-    @Override
     public TableCellEditor getCellEditor(final String columnName) {
         if (columnName.equals("ba_st_von")) {
             return new StationTableCellEditor(columnName);
@@ -216,6 +209,7 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                         String.valueOf(Types.VARCHAR),
                         true),
                     filter);
+            editor.setNullable(true);
 
             editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 

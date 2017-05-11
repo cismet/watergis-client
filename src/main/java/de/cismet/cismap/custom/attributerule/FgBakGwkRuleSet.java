@@ -15,6 +15,8 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.deegree.datatypes.Types;
 
 import java.sql.Timestamp;
@@ -30,6 +32,7 @@ import javax.swing.table.TableModel;
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -58,10 +61,31 @@ public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ba_cd", new Varchar(50, true, false));
         typeMap.put("bak_st_von", new Numeric(10, 2, true, false));
         typeMap.put("bak_st_bis", new Numeric(10, 2, true, false));
-        typeMap.put("la_cd", new Catalogue("k_gwk_lawa", true, true));
-        typeMap.put("laenge", new Numeric(12, 0, false, false));
+        typeMap.put("la_cd", new Catalogue("k_gwk_lawa", true, true, true));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
+    //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new FgBakGwkRuleSet object.
+     */
+    public FgBakGwkRuleSet() {
+        final Thread t = new Thread() {
+
+                @Override
+                public void run() {
+                    final MetaClass mc = ClassCacheMultiple.getMetaClass("dlm25w", "dlm25w.k_gwk_lawa");
+
+                    if (mc != null) {
+                        DefaultCidsLayerBindableReferenceCombo.preloadData(mc, true, null);
+                    }
+                }
+            };
+
+        t.start();
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -118,6 +142,36 @@ public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
+    }
+
+    @Override
+    public String[] getAdditionalFieldNames() {
+        return new String[] { "laenge" };
+    }
+
+    @Override
+    public int getIndexOfAdditionalFieldName(final String name) {
+        if (name.equals("laenge")) {
+            return -3;
+        } else {
+            return super.getIndexOfAdditionalFieldName(name);
+        }
+    }
+
+    @Override
+    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
+        Double value = null;
+
+        final Geometry geom = ((Geometry)feature.getProperty("geom"));
+        if (geom != null) {
+            value = round(geom.getLength());
+        }
+        return value;
+    }
+
+    @Override
+    public Class getAdditionalFieldClass(final int index) {
+        return Double.class;
     }
 
     @Override

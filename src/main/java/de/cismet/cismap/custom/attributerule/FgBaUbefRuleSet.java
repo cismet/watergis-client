@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -73,13 +74,12 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         allowedMaterial.put("SP", new String[] { "Ste", "Ste-Fs", "Ste-Wb" });
         allowedMaterial.put("Spw", new String[] { "H", "K", "St", "St-B", "Ste-Gab" });
         allowedMaterial.put("Wistü", new String[] { "B", "K", "St", "St-B" });
+        minBaLength = 0.5;
     }
 
     //~ Instance initializers --------------------------------------------------
 
     {
-        final Numeric esw = new Numeric(1, 0, false, true);
-        esw.setRange(0.0, 1.0);
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
         typeMap.put("ba_cd", new Varchar(50, false, false));
@@ -93,8 +93,8 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
-        typeMap.put("esw", esw);
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
+        typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br", new Numeric(4, 2, false, true));
         typeMap.put("ho_d_o", new Numeric(4, 2, false, true));
@@ -152,15 +152,6 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
-    }
-
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
-        }
     }
 
     @Override

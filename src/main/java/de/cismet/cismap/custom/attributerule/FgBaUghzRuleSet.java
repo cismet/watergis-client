@@ -59,8 +59,6 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
     //~ Instance initializers --------------------------------------------------
 
     {
-        final Numeric esw = new Numeric(1, 0, false, true);
-        esw.setRange(0.0, 1.0);
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
         typeMap.put("ba_cd", new Varchar(50, false, false));
@@ -72,7 +70,7 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("esw", esw);
+        typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br", new Numeric(4, 2, false, true));
         typeMap.put("ho_d_o", new Numeric(4, 2, false, true));

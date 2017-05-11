@@ -11,6 +11,7 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
+import javax.swing.JLabel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
@@ -40,7 +41,7 @@ public class FgBaGeroRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("traeger", new Varchar(10, false, false));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, false));
-        typeMap.put("zust_kl", new Numeric(1, 0, false, false));
+        typeMap.put("zust_kl", new Numeric(1, 0, false, false, true));
         typeMap.put("bemerkung", new Varchar(250, false, false));
         typeMap.put("br_so", new Numeric(6, 2, false, false));
         typeMap.put("ho_e", new Numeric(6, 2, false, false));
@@ -95,15 +96,6 @@ public class FgBaGeroRuleSet extends WatergisDefaultRuleSet {
             final Object oldValue,
             final Object newValue) {
         return super.afterEdit(feature, column, row, oldValue, newValue);
-    }
-
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
-        }
     }
 
     @Override

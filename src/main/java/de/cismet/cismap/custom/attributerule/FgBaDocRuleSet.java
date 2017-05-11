@@ -123,13 +123,7 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsLayerFeatureFilter() {
-
-                        @Override
-                        public boolean accept(final CidsLayerFeature bean) {
-                            return bean != null;
-                        }
-                    };
+                filter = new WwGrAdminFilter();
             }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",
@@ -225,8 +219,8 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Map<String, Object> getDefaultValues() {
         final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGrList() != null) && !AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGrList().get(0));
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }

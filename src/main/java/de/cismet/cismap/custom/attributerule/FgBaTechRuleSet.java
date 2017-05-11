@@ -81,7 +81,8 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("laenge") && !columnName.equals("ba_cd")
-                    && !columnName.equals("geom") && !columnName.equals("obj_nr") && !columnName.equals("id");
+                    && !columnName.equals("geom") && !columnName.equals("obj_nr") && !columnName.equals("id")
+                    && !columnName.equals("ww_gr");
     }
 
     @Override
@@ -107,13 +108,7 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsLayerFeatureFilter() {
-
-                        @Override
-                        public boolean accept(final CidsLayerFeature bean) {
-                            return bean != null;
-                        }
-                    };
+                filter = new WwGrAdminFilter();
             }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",
@@ -225,8 +220,8 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Map<String, Object> getDefaultValues() {
         final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGrList() != null) && !AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGrList().get(0));
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }

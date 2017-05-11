@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -75,6 +76,34 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
         allowedMaterial.put("Pl", new String[] { "B" });
         allowedMaterial.put("Rin", new String[] { "B", "St-B", "Ste", "Ste-Fs", "Ste-Mw", "Ste-Wb" });
         allowedMaterial.put("Spreit", new String[] { "H" });
+        minBaLength = 0.5;
+    }
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
+        typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", true, true));
+        typeMap.put("bbef", new Catalogue("k_bbef", true, true, true));
+        typeMap.put("material", new Catalogue("k_material", false, true));
+        typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
+        typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
+        typeMap.put("esw", new BooleanAsInteger(false, true));
+        typeMap.put("bemerkung", new Varchar(250, false, true));
+        typeMap.put("br", new Numeric(4, 2, false, true));
+        typeMap.put("ho_d_o", new Numeric(4, 2, false, true));
+        typeMap.put("ho_d_u", new Numeric(4, 2, false, true));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -129,16 +158,7 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        return newValue;
-    }
-
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
-        }
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -236,8 +256,25 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                 });
 
             return editor;
+        } else if (columnName.equals("zust_kl")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return bean.getProperty("zust_kl") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
         } else {
-            return null;
+            return super.getCellEditor(columnName);
         }
     }
 
@@ -254,7 +291,15 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                     "Das Attribut bbef darf nicht leer sein");
                 return false;
             }
-            if (!checkRange("br", feature.getProperty("br"), 0, 10, true, false, true)) {
+            if (!checkRange("br", feature.getProperty("br"), 0, 15, 0, 30, true, false, true)) {
+                return false;
+            }
+
+            if (!checkRange("ho_d_o", feature.getProperty("ho_d_o"), 0, 10, 0, 15, true, false, true)) {
+                return false;
+            }
+
+            if (!checkRange("ho_d_u", feature.getProperty("ho_d_u"), 0, 10, 0, 15, true, true, false)) {
                 return false;
             }
 
@@ -311,7 +356,7 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override

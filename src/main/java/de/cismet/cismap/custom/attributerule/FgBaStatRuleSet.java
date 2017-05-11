@@ -18,7 +18,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 /**
@@ -27,7 +26,20 @@ import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBaStatRuleSet extends DefaultAttributeTableRuleSet {
+public class FgBaStatRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
+        typeMap.put("ww_gr", new WatergisDefaultRuleSet.Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new WatergisDefaultRuleSet.Varchar(50, false, false));
+        typeMap.put("ba_st", new WatergisDefaultRuleSet.Numeric(10, 0, false, false));
+        typeMap.put("ba_st_km", new WatergisDefaultRuleSet.Numeric(7, 1, false, false, true));
+        typeMap.put("ba_st_c", new WatergisDefaultRuleSet.Varchar(9, false, false));
+        typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
+        typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
+    }
 
     //~ Methods ----------------------------------------------------------------
 

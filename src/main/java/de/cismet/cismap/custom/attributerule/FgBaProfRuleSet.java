@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -71,7 +72,7 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br", new Numeric(6, 2, false, true));
         typeMap.put("ho_e", new Numeric(6, 2, false, true));
@@ -87,6 +88,7 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+        minBaLength = 0.5;
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -132,7 +134,7 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        if (column.equals("br") && !checkRangeBetweenOrEqual(column, newValue, 0, 10, 0, 30, true)) {
+        if (column.equals("br") && !checkRange(column, newValue, 0, 10, 0, 30, true, false, true)) {
             return oldValue;
         }
         if (column.equals("ho_e") && !checkRangeBetweenOrEqual(column, newValue, -6, 179, true)) {
@@ -166,15 +168,44 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        return super.afterEdit(feature, column, row, oldValue, newValue);
-    }
+        if (column.equals("ho_a") || column.equals("ho_e")) {
+            if (column.equals("ho_a") && (feature.getProperty("ho_e") != null)) {
+                final double hoe = toNumber(feature.getProperty("ho_e")).doubleValue();
+                final double hoa = toNumber(newValue).doubleValue();
 
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
+                if (hoe < hoa) {
+                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten");
+                    return oldValue;
+                }
+            } else if (column.equals("ho_e") && (feature.getProperty("ho_a") != null)) {
+                final double hoa = toNumber(feature.getProperty("ho_a")).doubleValue();
+                final double hoe = toNumber(newValue).doubleValue();
+
+                if (hoe < hoa) {
+                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten");
+                    return oldValue;
+                }
+            }
         }
-        return super.getCellRenderer(columnName);
+
+        refillFields(feature, false);
+        checkRangeBetweenOrEqual("bl_re", feature.getProperty("bl_re"), 0, 30, true);
+        checkRangeBetweenOrEqual("bl_li", feature.getProperty("bl_li"), 0, 30, true);
+
+        if (column.equals("ho_a") || column.equals("ho_e") || column.equals("ba_st_bis")
+                    || column.equals("ba_st_von")) {
+            if ((feature.getProperty("ho_a") != null) && isNumberOrNull(feature.getProperty("ho_a"))
+                        && (feature.getProperty("ho_e") != null) && isNumberOrNull(feature.getProperty("ho_e"))) {
+                final double laenge = toNumber(feature.getProperty("ba_st_bis")).doubleValue()
+                            - toNumber(feature.getProperty("ba_st_von")).doubleValue();
+                final double gefaelle = (toNumber(feature.getProperty("ho_e")).doubleValue()
+                                - toNumber(feature.getProperty("ho_a")).doubleValue()) / laenge * 1000;
+                feature.setProperty("gefaelle", gefaelle);
+            }
+        }
+
+        checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), -10, 100, true);
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -279,35 +310,32 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                             true)) {
                 return false;
             }
+            if (!checkRange("br", feature.getProperty("br"), 0, 10, 0, 30, true, false, true)) {
+                return false;
+            }
+            if (!checkRange("mw", feature.getProperty("mw"), 0, 10, 0, 30, true, false, true)) {
+                return false;
+            }
             if (!checkRangeBetweenOrEqual("ho_e", feature.getProperty("ho_e"), -6, 179, true)) {
                 return false;
             }
             if (!checkRangeBetweenOrEqual("ho_a", feature.getProperty("ho_a"), -6, 179, true)) {
                 return false;
             }
-            if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), -10, 100, true)) {
-                return false;
-            }
 
             if (!hasValue("bv_re", feature.getProperty("bv_re"), 0.0, true)
-                        && !checkRangeBetweenOrEqual("bv_re", feature.getProperty("bv_re"), 0.25, 5, true)) {
+                        && !checkRangeBetweenOrEqual("bv_re", feature.getProperty("bv_re"), 0.25, 10, 0.1, 15, true)) {
                 return false;
             }
-            if (!checkRange("bh_re", feature.getProperty("bh_re"), 0, 15, true, false, true)) {
-                return false;
-            }
-            if (!checkRangeBetweenOrEqual("bl_re", feature.getProperty("bl_re"), 0, 30, true)) {
+            if (!checkRange("bh_re", feature.getProperty("bh_re"), 0, 10, 0, 15, true, false, true)) {
                 return false;
             }
 
             if (!hasValue("bv_li", feature.getProperty("bv_li"), 0.0, true)
-                        && !checkRangeBetweenOrEqual("bv_li", feature.getProperty("bv_li"), 0.25, 5, true)) {
+                        && !checkRangeBetweenOrEqual("bv_li", feature.getProperty("bv_li"), 0.25, 10, 0.1, 15, true)) {
                 return false;
             }
-            if (!checkRange("bh_li", feature.getProperty("bh_li"), 0, 15, true, false, true)) {
-                return false;
-            }
-            if (!checkRangeBetweenOrEqual("bl_li", feature.getProperty("bl_li"), 0, 30, true)) {
+            if (!checkRange("bh_li", feature.getProperty("bh_li"), 0, 10, 0, 15, true, false, true)) {
                 return false;
             }
 
@@ -337,6 +365,20 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                     return false;
                 }
             }
+
+            refillFields(feature, true);
+
+            if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), 0, 50, -10, 100, true)) {
+                return false;
+            }
+
+            if (!checkRange("bl_re", feature.getProperty("bl_re"), 0, 15, 0, 30, true, false, true)) {
+                return false;
+            }
+
+            if (!checkRange("bl_li", feature.getProperty("bl_li"), 0, 15, 0, 30, true, false, true)) {
+                return false;
+            }
         }
 
         return super.prepareForSave(features);
@@ -346,16 +388,25 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
     public void beforeSave(final FeatureServiceFeature feature) {
         feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
         feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+    }
 
-        if ((feature.getProperty("ho_a") != null) && isNumberOrNull(feature.getProperty("ho_a"))
-                    && (feature.getProperty("ho_e") != null) && isNumberOrNull(feature.getProperty("ho_e"))) {
-            final double laenge = toNumber(feature.getProperty("ba_st_bis")).doubleValue()
-                        - toNumber(feature.getProperty("ba_st_von")).doubleValue();
-            final double gefaelle = (toNumber(feature.getProperty("ho_e")).doubleValue()
-                            - toNumber(feature.getProperty("ho_a")).doubleValue()) / laenge * 1000;
-            feature.setProperty("gefaelle", gefaelle);
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  feature       DOCUMENT ME!
+     * @param  withGefaelle  DOCUMENT ME!
+     */
+    private void refillFields(final FeatureServiceFeature feature, final boolean withGefaelle) {
+        if (withGefaelle) {
+            if ((feature.getProperty("ho_a") != null) && isNumberOrNull(feature.getProperty("ho_a"))
+                        && (feature.getProperty("ho_e") != null) && isNumberOrNull(feature.getProperty("ho_e"))) {
+                final double laenge = toNumber(feature.getProperty("ba_st_bis")).doubleValue()
+                            - toNumber(feature.getProperty("ba_st_von")).doubleValue();
+                final double gefaelle = (toNumber(feature.getProperty("ho_e")).doubleValue()
+                                - toNumber(feature.getProperty("ho_a")).doubleValue()) / laenge * 1000;
+                feature.setProperty("gefaelle", gefaelle);
+            }
         }
-
         if ((feature.getProperty("profil") != null) && feature.getProperty("profil").toString().equals("re")) {
             if (feature.getProperty("bv_re") == null) {
                 feature.setProperty("bv_re", 0);
