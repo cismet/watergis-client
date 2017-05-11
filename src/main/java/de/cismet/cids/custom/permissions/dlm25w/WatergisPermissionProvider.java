@@ -17,6 +17,8 @@ import Sirius.server.newuser.User;
 import de.cismet.cids.dynamics.AbstractCustomBeanPermissionProvider;
 import de.cismet.cids.dynamics.CidsBean;
 
+import de.cismet.watergis.broker.AppBroker;
+
 /**
  * DOCUMENT ME!
  *
@@ -27,7 +29,7 @@ public abstract class WatergisPermissionProvider extends AbstractCustomBeanPermi
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final transient org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(
+    protected static final transient org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(
             WatergisPermissionProvider.class);
 
     //~ Methods ----------------------------------------------------------------
@@ -49,11 +51,15 @@ public abstract class WatergisPermissionProvider extends AbstractCustomBeanPermi
 
         final CidsBean wwGr = getWwGrBean();
 
-        if ((wwGr != null) && wwGr.getProperty("owner").equals(u.getUserGroup().getName())) {
-            return true;
+        if ((AppBroker.getInstance().getOwnWwGr() != null)
+                    && (AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr") != null)) {
+            if ((wwGr != null) && wwGr.getProperty("owner").equals(u.getUserGroup().getName())) {
+                return true;
+            } else {
+                return (wwGr != null) && wwGr.getProperty("ww_gr").equals(4000);
+            }
         } else {
             return false;
-//            return (wwGr == null) || wwGr.getProperty("ww_gr").equals(4000);
         }
     }
 

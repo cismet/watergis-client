@@ -26,6 +26,6 @@ public class Dlm25wFgBaExpPermissionProvider extends WatergisPermissionProvider 
 
     @Override
     protected CidsBean getWwGrBean() {
-        return (CidsBean)cidsBean.getProperty("ba_st.von.route.ww_gr");
+        return (CidsBean)cidsBean.getProperty("ww_gr");
     }
 }
