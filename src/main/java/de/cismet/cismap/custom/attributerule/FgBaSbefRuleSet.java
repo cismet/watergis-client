@@ -24,13 +24,9 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -49,7 +45,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -199,6 +194,39 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
 
         if (column.equals("gefaelle") && !checkRangeBetweenOrEqual(column, newValue, 0, 50, -10, 100, true)) {
             return oldValue;
+        }
+
+        if (column.equals("sbef") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
+
+            if (allowedMaterialVArray != null) {
+                if ((!isValueEmpty(feature.getProperty("material")))
+                            && !arrayContains(
+                                allowedMaterialVArray,
+                                feature.getProperty("material").toString())) {
+                    showMessage("Wenn das Attribut sbef = "
+                                + newValue
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("material") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("sbef").toString());
+
+            if (allowedMaterialVArray != null) {
+                if (!arrayContains(allowedMaterialVArray, newValue.toString())) {
+                    showMessage("Wenn das Attribut sbef = "
+                                + feature.getProperty("sbef").toString()
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
         }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
@@ -351,8 +379,8 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
                 final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("sbef").toString());
 
                 if (allowedMaterialVArray != null) {
-                    if ((isValueEmpty(feature.getProperty("material")))
-                                || !arrayContains(
+                    if ((!isValueEmpty(feature.getProperty("material")))
+                                && !arrayContains(
                                     allowedMaterialVArray,
                                     feature.getProperty("material").toString())) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),

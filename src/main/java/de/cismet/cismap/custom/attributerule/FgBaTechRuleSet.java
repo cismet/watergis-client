@@ -22,15 +22,11 @@ import org.deegree.datatypes.Types;
 import java.sql.Timestamp;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -73,6 +69,7 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+        minBaLength = 0.5;
     }
 
     //~ Methods ----------------------------------------------------------------

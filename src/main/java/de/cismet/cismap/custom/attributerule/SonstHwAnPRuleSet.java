@@ -56,7 +56,7 @@ public class SonstHwAnPRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, true));
         typeMap.put("nr", new Numeric(16, 0, false, true));
-        typeMap.put("wann", new Varchar(16, false, true));
+        typeMap.put("wann", new Varchar(16, false, false));
         typeMap.put("wer", new Varchar(250, true, true));
         typeMap.put("firma", new Varchar(250, false, true));
         typeMap.put("vorwahl", new Varchar(10, false, true));
@@ -78,8 +78,12 @@ public class SonstHwAnPRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("nr") && !columnName.equals("wann") && !columnName.equals("geom");
+        if (columnName.equals("ww_gr")) {
+            return AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren");
+        } else {
+            return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
+                        && !columnName.equals("nr") && !columnName.equals("wann") && !columnName.equals("geom");
+        }
     }
 
     @Override
@@ -160,7 +164,6 @@ public class SonstHwAnPRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final Map properties = new HashMap();
-        properties.put("nr", "@id");
         final SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         properties.put("wann", formatter.format(new Date()));
         if ((AppBroker.getInstance().getOwnWwGr() != null)) {

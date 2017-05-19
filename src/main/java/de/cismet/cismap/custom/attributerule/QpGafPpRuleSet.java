@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -75,7 +76,7 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("p_nr", new Numeric(20, 0, true, false));
         typeMap.put("qp_nr", new Numeric(20, 0, true, false));
-        typeMap.put("id_gaf", new Varchar(50, false));
+        typeMap.put("id_gaf", new Varchar(50, true));
         typeMap.put("y", y);
         typeMap.put("z", z);
         typeMap.put("kz", new Catalogue("k_qp_gaf_kz", true, true));
@@ -84,10 +85,10 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("rk_k", new Numeric(6, 2, false));
         typeMap.put("rk_kst", new Numeric(6, 2, false));
         typeMap.put("bk", new Catalogue("k_qp_gaf_bk", false, true));
-        typeMap.put("bk_name", new Varchar(75, true));
-        typeMap.put("bk_ax", new Numeric(6, 2, true));
-        typeMap.put("bk_ay", new Numeric(6, 2, true));
-        typeMap.put("bk_dp", new Numeric(6, 3, true));
+        typeMap.put("bk_name", new Varchar(75, false));
+        typeMap.put("bk_ax", new Numeric(6, 2, false));
+        typeMap.put("bk_ay", new Numeric(6, 2, false));
+        typeMap.put("bk_dp", new Numeric(6, 3, false));
         typeMap.put("hw", new Numeric(10, 2, false, false));
         typeMap.put("rw", new Numeric(11, 2, false, false));
         typeMap.put("hw", hw);
@@ -120,7 +121,7 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("qp_nr")) {
-            return new LinkTableCellRenderer();
+            return new LinkTableCellRenderer(JLabel.RIGHT);
         } else {
             return super.getCellRenderer(columnName);
         }

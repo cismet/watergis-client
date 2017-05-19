@@ -58,6 +58,25 @@ public class VwAlkFlstRuleSet extends WatergisDefaultRuleSet {
     //~ Methods ----------------------------------------------------------------
 
     @Override
+    public Object afterEdit(final FeatureServiceFeature feature,
+            final String column,
+            final int row,
+            final Object oldValue,
+            final Object newValue) {
+        if (newValue instanceof Geometry) {
+            // the geometry has changed
+            final Geometry geom = ((Geometry)feature.getProperty("geom"));
+
+            if (geom != null) {
+                final Double flst_fl = Math.round(geom.getArea() * 10000) / 10000.0;
+                feature.getProperties().put("flst_fl", flst_fl);
+            }
+        }
+
+        return super.afterEdit(feature, column, row, oldValue, newValue);
+    }
+
+    @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("flst_fl") && !columnName.equals("geom") && !columnName.equals("id");
@@ -89,42 +108,17 @@ public class VwAlkFlstRuleSet extends WatergisDefaultRuleSet {
     public void beforeSave(final FeatureServiceFeature feature) {
         feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
         feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
-    }
-
-    @Override
-    public void afterSave(final TableModel model) {
-    }
-
-    @Override
-    public String[] getAdditionalFieldNames() {
-        return new String[] { "flst_fl" };
-    }
-
-    @Override
-    public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("flst_fl")) {
-            return -3;
-        } else {
-            return super.getIndexOfAdditionalFieldName(name);
-        }
-    }
-
-    @Override
-    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = Math.round(geom.getArea() * 10000) / 10000.0;
+            final Double flst_fl = Math.round(geom.getArea() * 10000) / 10000.0;
+            feature.getProperties().put("flst_fl", flst_fl);
         }
-
-        return value;
     }
 
     @Override
-    public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
+    public void afterSave(final TableModel model) {
     }
 
     @Override

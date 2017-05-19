@@ -24,13 +24,9 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -49,7 +45,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.arrayContains;
 import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRange;
@@ -156,6 +151,101 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                         true,
                         true)) {
             return oldValue;
+        }
+
+        if (column.equals("bbef") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
+
+            if (allowedMaterialVArray != null) {
+                if (!isValueEmpty(feature.getProperty("material"))
+                            && !arrayContains(
+                                allowedMaterialVArray,
+                                ((feature.getProperty("material") != null) ? feature.getProperty("material")
+                                        .toString() : null))) {
+                    showMessage("Wenn das Attribut bbef = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("material") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("bbef").toString());
+
+            if (allowedMaterialVArray != null) {
+                if (!arrayContains(allowedMaterialVArray, newValue.toString())) {
+                    showMessage("Wenn das Attribut bbef = "
+                                + newValue
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("ho_d_o") && (newValue != null) && isNumberOrNull(newValue)
+                    && (feature.getProperty("ho_d_u") != null)) {
+            if (((Number)newValue).doubleValue()
+                        <= ((Number)feature.getProperty("ho_d_u")).doubleValue()) {
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                return oldValue;
+            }
+        }
+
+        if (column.equals("ho_d_u") && (newValue != null) && isNumberOrNull(newValue)
+                    && (feature.getProperty("ho_d_o") != null)) {
+            if (((Number)feature.getProperty("ho_d_o")).doubleValue()
+                        <= ((Number)newValue).doubleValue()) {
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                return oldValue;
+            }
+        }
+
+        if (column.equals("bbef") && !isValueEmpty(newValue)) {
+            final Double from = (Double)feature.getProperty("ba_st_von");
+            final Double till = (Double)feature.getProperty("ba_st_bis");
+
+            if ((from != null) && (till != null)) {
+                if (isValueIn(feature.getProperty("bbef"), new String[] { "Rin" }, false)) {
+                    if ((Math.abs(till - from) > 5) && (Math.abs(till - from) <= 10)) {
+                        if (
+                            !showSecurityQuestion(
+                                        "Die Länge des Objektes mit der id "
+                                        + feature.getId()
+                                        + "liegt außerhalb des Standardbereichs (0 .. 5) --> verwenden ?")) {
+                            return false;
+                        }
+                    } else if (Math.abs(till - from) > 10) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Die Länge des Objektes mit der id "
+                                    + feature.getId()
+                                    + " darf nicht größer "
+                                    + 10
+                                    + " sein",
+                            "Ungültiger Wert",
+                            JOptionPane.ERROR_MESSAGE);
+
+                        return false;
+                    }
+                } else {
+                    if (Math.abs(till - from) < 0.5) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Die Länge des Objektes mit der id "
+                                    + feature.getId()
+                                    + " darf nicht kleiner "
+                                    + 0.5
+                                    + " sein",
+                            "Ungültiger Wert",
+                            JOptionPane.ERROR_MESSAGE);
+
+                        return false;
+                    }
+                }
+            }
         }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
@@ -339,8 +429,8 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                 final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("bbef").toString());
 
                 if (allowedMaterialVArray != null) {
-                    if (
-                        !arrayContains(
+                    if (!isValueEmpty(feature.getProperty("material"))
+                                && !arrayContains(
                                     allowedMaterialVArray,
                                     ((feature.getProperty("material") != null)
                                         ? feature.getProperty("material").toString() : null))) {

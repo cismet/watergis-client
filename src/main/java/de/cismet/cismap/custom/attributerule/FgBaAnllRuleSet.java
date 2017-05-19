@@ -120,6 +120,35 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
+        if (column.equals("ba_st_von") || (column.equals("ba_st_bis") && (newValue != null))) {
+            final Double from = (column.equals("ba_st_von") ? (Double)newValue
+                                                            : (Double)feature.getProperty("ba_st_von"));
+            final Double till = (column.equals("ba_st_von") ? (Double)feature.getProperty("ba_st_bis")
+                                                            : (Double)newValue);
+
+            if ((from != null) && (till != null)) {
+                final double length = Math.abs(till - from);
+                if ((feature.getProperty("anll") != null)
+                            && isValueIn(feature.getProperty("anll"), new String[] { "See", "Spei" }, false)) {
+                    if (!checkRange("länge", length, 20, 20000, 5, 50000, false, true, true)) {
+                        return false;
+                    }
+                } else if ((feature.getProperty("anll") != null)
+                            && isValueIn(feature.getProperty("anll"), new String[] { "Drte", "Faa", "Rb" }, false)) {
+                    if (!checkRange("länge", length, 10, 100, 5, 200, false, true, true)) {
+                        return false;
+                    }
+                } else if ((feature.getProperty("anll") != null)
+                            && isValueIn(
+                                feature.getProperty("anll"),
+                                new String[] { "Ds", "Sf", "Si", "Sleu", "Tosb", "WKA" },
+                                false)) {
+                    if (!checkRange("länge", length, 1, 20, 1, 200, false, true, true)) {
+                        return false;
+                    }
+                }
+            }
+        }
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
@@ -264,6 +293,32 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
                     final double length = round(geom.getLength());
 
                     if (!checkRange("laenge", length, 1, 50, 1, 200, true, true, false)) {
+                        return false;
+                    }
+                }
+            }
+
+            final Double from = (Double)feature.getProperty("ba_st_von");
+            final Double till = (Double)feature.getProperty("ba_st_bis");
+
+            if ((from != null) && (till != null)) {
+                final double length = Math.abs(till - from);
+                if ((feature.getProperty("anll") != null)
+                            && isValueIn(feature.getProperty("anll"), new String[] { "See", "Spei" }, false)) {
+                    if (!checkRange("länge", length, 20, 20000, 5, 50000, false, true, true)) {
+                        return false;
+                    }
+                } else if ((feature.getProperty("anll") != null)
+                            && isValueIn(feature.getProperty("anll"), new String[] { "Drte", "Faa", "Rb" }, false)) {
+                    if (!checkRange("länge", length, 10, 100, 5, 200, false, true, true)) {
+                        return false;
+                    }
+                } else if ((feature.getProperty("anll") != null)
+                            && isValueIn(
+                                feature.getProperty("anll"),
+                                new String[] { "Ds", "Sf", "Si", "Sleu", "Tosb", "WKA" },
+                                false)) {
+                    if (!checkRange("länge", length, 1, 20, 1, 200, false, true, true)) {
                         return false;
                     }
                 }

@@ -14,13 +14,16 @@ package de.cismet.cismap.custom.attributerule;
 import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
+import Sirius.server.newuser.User;
 
 import java.sql.Timestamp;
 
-import javax.swing.JLabel;
+import java.util.List;
+
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+
+import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -35,7 +38,6 @@ import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -69,15 +71,61 @@ public class WrWbuBenRuleSet extends WatergisDefaultRuleSet {
     //~ Methods ----------------------------------------------------------------
 
     @Override
+    public Object afterEdit(final FeatureServiceFeature feature,
+            final String column,
+            final int row,
+            final Object oldValue,
+            final Object newValue) {
+        if (column.equals("ba_cd")) {
+            final Object o = (Number)feature.getProperty("ba_st");
+            Double baSt;
+
+            if (o instanceof CidsBean) {
+                baSt = (Double)((CidsBean)o).getProperty("wert");
+            } else if (o == null) {
+                baSt = null;
+            } else {
+                baSt = ((Number)feature.getProperty("ba_st")).doubleValue();
+            }
+
+            refreshLaStation(
+                feature,
+                (String)newValue,
+                baSt,
+                "la_cd",
+                "la_st");
+        }
+
+        if (column.equals("ba_st")) {
+            refreshLaStation(
+                feature,
+                (String)feature.getProperty("ba_cd"),
+                ((Number)newValue).doubleValue(),
+                "la_cd",
+                "la_st");
+        }
+
+        return super.afterEdit(feature, column, row, oldValue, newValue);
+    }
+
+    @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("id");
+                    && !columnName.equals("geom") && !columnName.equals("id") && !columnName.equals("la_cd")
+                    && !columnName.equals("la_st");
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         if (columnName.equals("ba_cd")) {
-            return new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+            final RouteTableCellEditor editor = new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+            final String filterString = getRouteFilter();
+
+            if (filterString != null) {
+                editor.setRouteQuery(filterString);
+            }
+
+            return editor;
         } else if (columnName.equals("ba_st")) {
             return new StationTableCellEditor(columnName);
         } else {

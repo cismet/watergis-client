@@ -151,6 +151,46 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
+        if (column.equals("sz")) {
+            if ((newValue != null) && (feature.getProperty("az") != null)) {
+                if (((Number)newValue).doubleValue()
+                            <= ((Number)feature.getProperty("az")).doubleValue()) {
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("az")) {
+            if (((feature.getProperty("sz") != null) && (newValue != null))) {
+                if (((Number)feature.getProperty("sz")).doubleValue()
+                            <= ((Number)newValue).doubleValue()) {
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("ezg_fl")) {
+            if ((newValue != null) && (feature.getProperty("v_fl") != null)) {
+                if (((Number)newValue).doubleValue()
+                            < ((Number)feature.getProperty("v_fl")).doubleValue()) {
+                    showMessage("Das Attribut ezg_fl darf nicht kleiner als das Attribut v_fl sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("v_fl")) {
+            if ((feature.getProperty("ezg_fl") != null) && (newValue != null)) {
+                if (((Number)feature.getProperty("ezg_fl")).doubleValue()
+                            < ((Number)newValue).doubleValue()) {
+                    showMessage("Das Attribut ezg_fl darf nicht kleiner als das Attribut v_fl sein.");
+                    return oldValue;
+                }
+            }
+        }
+
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 

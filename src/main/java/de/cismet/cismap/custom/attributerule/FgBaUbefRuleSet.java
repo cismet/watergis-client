@@ -24,13 +24,9 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -49,7 +45,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.arrayContains;
 
@@ -149,6 +144,40 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
                         true,
                         true)) {
             return oldValue;
+        }
+
+        if (column.equals("ubef") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
+
+            if (allowedMaterialVArray != null) {
+                if (!isValueEmpty(feature.getProperty("material"))
+                            && !arrayContains(
+                                allowedMaterialVArray,
+                                ((feature.getProperty("material") != null) ? feature.getProperty("material")
+                                        .toString() : null))) {
+                    showMessage("Wenn das Attribut ubef = "
+                                + newValue
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("material") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("ubef").toString());
+
+            if (allowedMaterialVArray != null) {
+                if (!arrayContains(allowedMaterialVArray, (newValue.toString()))) {
+                    showMessage("Wenn das Attribut ubef = "
+                                + feature.getProperty("ubef").toString()
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
         }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
@@ -306,8 +335,8 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
                 final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("ubef").toString());
 
                 if (allowedMaterialVArray != null) {
-                    if (
-                        !arrayContains(
+                    if (!isValueEmpty(feature.getProperty("material"))
+                                && !arrayContains(
                                     allowedMaterialVArray,
                                     ((feature.getProperty("material") != null)
                                         ? feature.getProperty("material").toString() : null))) {

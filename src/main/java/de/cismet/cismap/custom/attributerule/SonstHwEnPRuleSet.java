@@ -57,7 +57,7 @@ public class SonstHwEnPRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
         typeMap.put("ww_gr", new WatergisDefaultRuleSet.Catalogue("k_ww_gr", false, true));
         typeMap.put("nr", new Numeric(16, 0, false, true));
-        typeMap.put("wann", new Varchar(16, false, true));
+        typeMap.put("wann", new Varchar(16, false, false));
         typeMap.put("wer", new Varchar(250, true, true));
         typeMap.put("firma", new Varchar(250, false, true));
         typeMap.put("vorwahl", new Varchar(10, false, true));
@@ -79,7 +79,10 @@ public class SonstHwEnPRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        if (columnName.equals("bearb_wann") || columnName.equals("bearb_wer") || columnName.equals("bearb_komm")) {
+        if (columnName.equals("ww_gr")) {
+            return AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren");
+        } else if (columnName.equals("bearb_wann") || columnName.equals("bearb_wer")
+                    || columnName.equals("bearb_komm")) {
             return SessionManager.getSession().getUser().getUserGroup().getName().equals("lung_edit1")
                         || SessionManager.getSession()
                         .getUser()
@@ -171,7 +174,6 @@ public class SonstHwEnPRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final Map properties = new HashMap();
-        properties.put("nr", "@id");
 //        properties.put("wann", new Timestamp(System.currentTimeMillis()));
         final SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         properties.put("wann", formatter.format(new Date()));

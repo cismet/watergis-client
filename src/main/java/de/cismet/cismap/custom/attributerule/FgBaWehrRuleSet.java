@@ -58,30 +58,30 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Map<String, String[]> ALLOWED_WEHR_V = new HashMap<String, String[]>();
-    private static final Map<String, String[]> ALLOWED_WEHR_AV = new HashMap<String, String[]>();
-    private static final Map<String, String[]> MATERIAL_V = new HashMap<String, String[]>();
+    private static final Map<String, String[]> ALLOWED_WEHR_WEHR_V = new HashMap<String, String[]>();
+    private static final Map<String, String[]> ALLOWED_WEHR_WEHR_AV = new HashMap<String, String[]>();
+    private static final Map<String, String[]> WEHR_V_MATERIAL = new HashMap<String, String[]>();
 
     static {
-        ALLOWED_WEHR_V.put("s-kbw", new String[] { "bo", "bo-j", "schü" });
-        ALLOWED_WEHR_V.put("s-sbw", new String[] { "bo", "bo-j", "schü" });
-        ALLOWED_WEHR_V.put("s-stw", new String[] { "bo", "bo-j", "schü" });
-        ALLOWED_WEHR_V.put("s-moe", new String[] { "bo", "bo-j", "schü" });
-        ALLOWED_WEHR_V.put("w-strei", new String[] { "schw" });
-        ALLOWED_WEHR_V.put("w-üfa", new String[] { "schw" });
-        ALLOWED_WEHR_V.put("kl", new String[] { "ki", "ki-fb", "ki-fb-schü", "ki-schü" });
-        ALLOWED_WEHR_V.put("na", new String[] { "na" });
-        ALLOWED_WEHR_V.put("seg", new String[] { "seg", "seg-fb" });
-        ALLOWED_WEHR_V.put("sek", new String[] { "sek" });
-        ALLOWED_WEHR_V.put("schl", new String[] { "schl" });
-        ALLOWED_WEHR_V.put("w-schü", new String[] { "schü", "schü-dop", "schü-dreh", "schü-haken", "schü-seg" });
-        ALLOWED_WEHR_V.put("tro", new String[] { "tro" });
-        ALLOWED_WEHR_V.put("wz", new String[] { "wz" });
-        ALLOWED_WEHR_AV.put("w-strei", new String[] { "ohne" });
-        ALLOWED_WEHR_AV.put("w-üfa", new String[] { "ohne" });
-        MATERIAL_V.put("bo", new String[] { "h", "k", "st" });
-        MATERIAL_V.put("bo-j", new String[] { "h", "k", "st" });
-        MATERIAL_V.put("schw", new String[] { "b", "k" });
+        ALLOWED_WEHR_WEHR_V.put("s-kbw", new String[] { "bo", "bo-j", "schü" });
+        ALLOWED_WEHR_WEHR_V.put("s-sbw", new String[] { "bo", "bo-j", "schü" });
+        ALLOWED_WEHR_WEHR_V.put("s-stw", new String[] { "bo", "bo-j", "schü" });
+        ALLOWED_WEHR_WEHR_V.put("s-moe", new String[] { "bo", "bo-j", "schü" });
+        ALLOWED_WEHR_WEHR_V.put("w-strei", new String[] { "schw" });
+        ALLOWED_WEHR_WEHR_V.put("w-üfa", new String[] { "schw" });
+        ALLOWED_WEHR_WEHR_V.put("kl", new String[] { "ki", "ki-fb", "ki-fb-schü", "ki-schü" });
+        ALLOWED_WEHR_WEHR_V.put("na", new String[] { "na" });
+        ALLOWED_WEHR_WEHR_V.put("seg", new String[] { "seg", "seg-fb" });
+        ALLOWED_WEHR_WEHR_V.put("sek", new String[] { "sek" });
+        ALLOWED_WEHR_WEHR_V.put("schl", new String[] { "schl" });
+        ALLOWED_WEHR_WEHR_V.put("w-schü", new String[] { "schü", "schü-dop", "schü-dreh", "schü-haken", "schü-seg" });
+        ALLOWED_WEHR_WEHR_V.put("tro", new String[] { "tro" });
+        ALLOWED_WEHR_WEHR_V.put("wz", new String[] { "wz" });
+        ALLOWED_WEHR_WEHR_AV.put("w-strei", new String[] { "ohne" });
+        ALLOWED_WEHR_WEHR_AV.put("w-üfa", new String[] { "ohne" });
+        WEHR_V_MATERIAL.put("bo", new String[] { "h", "k", "st" });
+        WEHR_V_MATERIAL.put("bo-j", new String[] { "h", "k", "st" });
+        WEHR_V_MATERIAL.put("schw", new String[] { "b", "k" });
     }
 
     //~ Instance initializers --------------------------------------------------
@@ -168,6 +168,194 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         }
         if (column.equals("az") && !checkRange(column, newValue, -6, 179, true, true, true)) {
             return oldValue;
+        }
+
+        if (column.equals("sz")) {
+            if ((newValue != null) && (feature.getProperty("az") != null)) {
+                if (((Number)newValue).doubleValue()
+                            <= ((Number)feature.getProperty("az")).doubleValue()) {
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("az")) {
+            if (((feature.getProperty("sz") != null) && (newValue != null))) {
+                if (((Number)feature.getProperty("sz")).doubleValue()
+                            <= ((Number)newValue).doubleValue()) {
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("sz")) {
+            if ((newValue != null) && (feature.getProperty("ho_so") != null)) {
+                if (((Number)newValue).doubleValue()
+                            <= ((Number)feature.getProperty("ho_so")).doubleValue()) {
+                    showMessage("Das Attribut sz muss größer als das Attribut ho_so sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("ho_so")) {
+            if (((feature.getProperty("sz") != null) && (newValue != null))) {
+                if (((Number)feature.getProperty("sz")).doubleValue()
+                            <= ((Number)newValue).doubleValue()) {
+                    showMessage("Das Attribut sz muss größer als das Attribut ho_so sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("az")) {
+            if ((newValue != null) && (feature.getProperty("ho_so") != null)) {
+                if (((Number)newValue).doubleValue()
+                            <= ((Number)feature.getProperty("ho_so")).doubleValue()) {
+                    showMessage("Das Attribut az muss größer als das Attribut ho_so sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("ho_so")) {
+            if (((feature.getProperty("az") != null) && (newValue != null))) {
+                if (((Number)feature.getProperty("az")).doubleValue()
+                            <= ((Number)newValue).doubleValue()) {
+                    showMessage("Das Attribut az muss größer als das Attribut ho_so sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("wehr") && (newValue != null)) {
+            final String[] allowedWehrVArray = ALLOWED_WEHR_WEHR_V.get(newValue.toString().toLowerCase());
+            final String[] allowedWehrAVArray = ALLOWED_WEHR_WEHR_AV.get(newValue.toString().toLowerCase());
+
+            if (allowedWehrVArray != null) {
+                if ((isValueEmpty(feature.getProperty("wehr_v")))
+                            || !arrayContains(
+                                allowedWehrVArray,
+                                feature.getProperty("wehr_v").toString().toLowerCase())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut wehr_v "
+                                + arrayToString(allowedWehrVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+
+            if (allowedWehrAVArray != null) {
+                if ((isValueEmpty(feature.getProperty("wehr_av")))
+                            || !arrayContains(
+                                allowedWehrAVArray,
+                                feature.getProperty("wehr_av").toString().toLowerCase())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut wehr_av "
+                                + arrayToString(allowedWehrAVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("wehr_v") && (newValue != null) && (feature.getProperty("wehr") != null)) {
+            final String[] allowedWehrVArray = ALLOWED_WEHR_WEHR_V.get(feature.getProperty("wehr").toString()
+                            .toLowerCase());
+
+            if (allowedWehrVArray != null) {
+                if ((isValueEmpty(newValue))
+                            || !arrayContains(
+                                allowedWehrVArray,
+                                newValue.toString().toLowerCase())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr = "
+                                + feature.getProperty("wehr").toString()
+                                + ", dann muss das Attribut wehr_v "
+                                + arrayToString(allowedWehrVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("wehr_av") && (newValue != null) && (feature.getProperty("wehr") != null)) {
+            final String[] allowedWehrAVArray = ALLOWED_WEHR_WEHR_AV.get(feature.getProperty("wehr").toString()
+                            .toLowerCase());
+
+            if (allowedWehrAVArray != null) {
+                if ((isValueEmpty(newValue))
+                            || !arrayContains(
+                                allowedWehrAVArray,
+                                newValue.toString().toLowerCase())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut wehr_av "
+                                + arrayToString(allowedWehrAVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("wehr_v") && (newValue != null) && (feature.getProperty("material_v") != null)) {
+            final String[] allowedMaterialVArray = WEHR_V_MATERIAL.get(newValue.toString().toLowerCase());
+
+            if (allowedMaterialVArray != null) {
+                if ((feature.getProperty("material_v") == null)
+                            || !arrayContains(
+                                allowedMaterialVArray,
+                                feature.getProperty("material_v").toString().toLowerCase())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr_v = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut material_v "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            } else {
+                if (feature.getProperty("material_v") != null) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr_v = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut material_v null sein");
+                }
+            }
+        }
+
+        if (column.equals("material_v") && (newValue != null) && (feature.getProperty("material_v") != null)) {
+            final String[] allowedMaterialVArray = WEHR_V_MATERIAL.get(feature.getProperty("wehr_v").toString()
+                            .toLowerCase());
+
+            if (allowedMaterialVArray != null) {
+                if ((newValue == null)
+                            || !arrayContains(
+                                allowedMaterialVArray,
+                                newValue.toString().toLowerCase())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr_v = "
+                                + feature.getProperty("wehr_v").toString()
+                                + ", dann muss das Attribut material_v "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            } else {
+                if (newValue != null) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr_v = "
+                                + feature.getProperty("wehr_v").toString()
+                                + ", dann muss das Attribut material_v null sein");
+                }
+            }
         }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
@@ -381,9 +569,9 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             }
 
             if (feature.getProperty("wehr") != null) {
-                final String[] allowedWehrVArray = ALLOWED_WEHR_V.get(feature.getProperty("wehr").toString()
+                final String[] allowedWehrVArray = ALLOWED_WEHR_WEHR_V.get(feature.getProperty("wehr").toString()
                                 .toLowerCase());
-                final String[] allowedWehrAVArray = ALLOWED_WEHR_AV.get(feature.getProperty("wehr").toString()
+                final String[] allowedWehrAVArray = ALLOWED_WEHR_WEHR_AV.get(feature.getProperty("wehr").toString()
                                 .toLowerCase());
 
                 if (allowedWehrVArray != null) {
@@ -418,14 +606,14 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             }
 
             if (feature.getProperty("wehr_v") != null) {
-                final String[] allowedMaterialVArray = ALLOWED_WEHR_V.get(feature.getProperty("wehr_v").toString()
+                final String[] allowedMaterialVArray = WEHR_V_MATERIAL.get(feature.getProperty("wehr_v").toString()
                                 .toLowerCase());
 
                 if (allowedMaterialVArray != null) {
                     if ((feature.getProperty("material_v") == null)
                                 || !arrayContains(
                                     allowedMaterialVArray,
-                                    feature.getProperty("wehr_v").toString().toLowerCase())) {
+                                    feature.getProperty("material_v").toString().toLowerCase())) {
                         JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                             "Wenn das Attribut wehr_v = "
                                     + feature.getProperty("wehr_v").toString()

@@ -78,7 +78,14 @@ public class FgBaFlRuleSet extends WatergisDefaultRuleSet {
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         if (columnName.equals("ba_cd")) {
-            return new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", true);
+            final RouteTableCellEditor editor = new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", true);
+            final String filterString = getRouteFilter();
+
+            if (filterString != null) {
+                editor.setRouteQuery(filterString);
+            }
+
+            return editor;
         } else if (columnName.equals("ba_st_von")) {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("ba_st_bis")) {

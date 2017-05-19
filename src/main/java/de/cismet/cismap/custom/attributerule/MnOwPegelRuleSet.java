@@ -104,6 +104,18 @@ public class MnOwPegelRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        if (column.equals("ms_nr") && (isValueEmpty(newValue)) && (isValueEmpty(feature.getProperty("ms_nr_wsa")))) {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                "Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.");
+            return oldValue;
+        }
+
+        if (column.equals("ms_nr_wsa") && (isValueEmpty(newValue)) && (isValueEmpty(feature.getProperty("ms_nr")))) {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                "Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.");
+            return oldValue;
+        }
+
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
@@ -119,7 +131,23 @@ public class MnOwPegelRuleSet extends WatergisDefaultRuleSet {
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         if (columnName.equals("ba_cd")) {
-            return new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+            final RouteTableCellEditor editor = new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+            final String filterString = getRouteFilter();
+
+            if (filterString != null) {
+                editor.setRouteQuery(filterString);
+            }
+
+            return editor;
+        } else if (columnName.equals("gwk_lawa")) {
+            final RouteTableCellEditor editor = new RouteTableCellEditor("dlm25w.fg_la", "la_st_wirkort", false);
+            final String filterString = getRouteFilter();
+
+            if (filterString != null) {
+                editor.setRouteQuery(filterString);
+            }
+
+            return editor;
         } else if (columnName.equals("ba_st")) {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("station")) {

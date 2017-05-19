@@ -192,19 +192,27 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
         checkRangeBetweenOrEqual("bl_re", feature.getProperty("bl_re"), 0, 30, true);
         checkRangeBetweenOrEqual("bl_li", feature.getProperty("bl_li"), 0, 30, true);
 
+        // Gefaelle berechnen
         if (column.equals("ho_a") || column.equals("ho_e") || column.equals("ba_st_bis")
                     || column.equals("ba_st_von")) {
-            if ((feature.getProperty("ho_a") != null) && isNumberOrNull(feature.getProperty("ho_a"))
-                        && (feature.getProperty("ho_e") != null) && isNumberOrNull(feature.getProperty("ho_e"))) {
-                final double laenge = toNumber(feature.getProperty("ba_st_bis")).doubleValue()
-                            - toNumber(feature.getProperty("ba_st_von")).doubleValue();
-                final double gefaelle = (toNumber(feature.getProperty("ho_e")).doubleValue()
-                                - toNumber(feature.getProperty("ho_a")).doubleValue()) / laenge * 1000;
+            final Object hoA = (column.equals("ho_a") ? newValue : feature.getProperty("ho_a"));
+            final Object hoE = (column.equals("ho_e") ? newValue : feature.getProperty("ho_e"));
+            final Object von = (column.equals("ho_a") ? newValue : feature.getProperty("ba_st_von"));
+            final Object bis = (column.equals("ho_a") ? newValue : feature.getProperty("ba_st_bis"));
+
+            if ((hoA != null) && isNumberOrNull(hoA) && (hoE != null) && isNumberOrNull(hoE)
+                        && (von != null) && isNumberOrNull(von)
+                        && (bis != null) && isNumberOrNull(bis)) {
+                final double laenge = toNumber(bis).doubleValue()
+                            - toNumber(von).doubleValue();
+                final double gefaelle = (toNumber(hoE).doubleValue()
+                                - toNumber(hoA).doubleValue()) / Math.abs(laenge) * 1000;
                 feature.setProperty("gefaelle", gefaelle);
+                if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), 0, 50, -10, 100, true)) {
+                    return oldValue;
+                }
             }
         }
-
-        checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), -10, 100, true);
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
@@ -437,6 +445,9 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                     final double bl = Math.sqrt(Math.pow(bv * bh, 2) + Math.pow(bh, 2));
 
                     feature.setProperty("bl_re", Math.round(bl * 100) / 100.0);
+                } else if ((toNumber(feature.getProperty("bv_re")).doubleValue() != 0.0)
+                            && (toNumber(feature.getProperty("bh_re")).doubleValue() != 0.0)) {
+                    feature.setProperty("bl_re", toNumber(feature.getProperty("bh_re")).doubleValue());
                 }
             }
 
@@ -451,6 +462,9 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                     final double bl = Math.sqrt(Math.pow(bv * bh, 2) + Math.pow(bh, 2));
 
                     feature.setProperty("bl_li", Math.round(bl * 100) / 100.0);
+                } else if ((toNumber(feature.getProperty("bv_li")).doubleValue() == 0.0)
+                            && (toNumber(feature.getProperty("bh_li")).doubleValue() == 0.0)) {
+                    feature.setProperty("bl_li", toNumber(feature.getProperty("bh_li")).doubleValue());
                 }
             }
         }

@@ -29,15 +29,19 @@ import java.net.URL;
 
 import java.sql.Timestamp;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import javax.swing.JLabel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+
+import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
@@ -49,6 +53,7 @@ import de.cismet.cismap.commons.gui.attributetable.DateCellEditor;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.piccolo.FeatureAnnotationSymbol;
 
+import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.commons.security.WebDavClient;
@@ -67,6 +72,8 @@ import de.cismet.watergis.gui.panels.Photo;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
+
+import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.showMessage;
 
 /**
  * DOCUMENT ME!
@@ -124,8 +131,8 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("upl_datum", new Varchar(10, false, false));
         typeMap.put("upl_zeit", new Varchar(8, false, false));
         typeMap.put("aufn_name", new Varchar(50, false, true));
-        typeMap.put("aufn_datum", new Varchar(10, false, true));
-        typeMap.put("aufn_zeit", new Varchar(8, false, true));
+        typeMap.put("aufn_datum", new DateType(false, true));
+        typeMap.put("aufn_zeit", new Time(false, true));
         typeMap.put("freigabe", new Catalogue("k_freigabe", true, true));
         typeMap.put("titel", new Varchar(250, false, true));
         typeMap.put("beschreib", new Varchar(250, false, true));
@@ -138,11 +145,15 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("ba_cd") && !columnName.equals("id")
-                    && !columnName.equals("foto")
-                    && !columnName.equals("foto_nr") && !columnName.equals("la_st") && !columnName.equals("la_cd")
-                    && !columnName.equals("ww_gr") && !columnName.startsWith("upl");
+        if (columnName.equals("ww_gr")) {
+            return AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren");
+        } else {
+            return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
+                        && !columnName.equals("geom") && !columnName.equals("id")
+                        && !columnName.equals("foto")
+                        && !columnName.equals("foto_nr") && !columnName.equals("la_st") && !columnName.equals("la_cd")
+                        && !columnName.startsWith("upl");
+        }
     }
 
     @Override
@@ -151,6 +162,43 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        if (column.equals("ba_cd")) {
+            final Object o = (Number)feature.getProperty("ba_st");
+            Double baSt;
+
+            if (o instanceof CidsBean) {
+                baSt = (Double)((CidsBean)o).getProperty("wert");
+            } else if (o == null) {
+                baSt = null;
+            } else {
+                baSt = ((Number)feature.getProperty("ba_st")).doubleValue();
+            }
+
+            refreshLaStation(
+                feature,
+                (String)newValue,
+                baSt,
+                "la_cd",
+                "la_st");
+        }
+
+        if (column.equals("ba_st")) {
+            refreshLaStation(
+                feature,
+                (String)feature.getProperty("ba_cd"),
+                ((Number)newValue).doubleValue(),
+                "la_cd",
+                "la_st");
+        }
+
+        if (column.equals("re") && !checkRange(column, newValue, 33000000, 33999999.99, false, true, true)) {
+            return oldValue;
+        }
+
+        if (column.equals("ho") && !checkRange(column, newValue, 5600000, 6399999.99, false, true, true)) {
+            return oldValue;
+        }
+
         if (column.equals("re") && (newValue instanceof Double)) {
             final Geometry g = (Geometry)feature.getGeometry();
             final Geometry newPoint = g.getFactory().createPoint(new Coordinate((Double)newValue, g.getCoordinate().y));
@@ -167,6 +215,24 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
+        if (column.equals("aufn_datum")) {
+            if ((newValue != null) && (newValue instanceof Date)) {
+                final Date d = (Date)newValue;
+
+                // d.year = year - 1900
+                if ((d.getYear() < 0) || d.after(new Date())) {
+                    showMessage("Es sind nur Datumseingaben zwischen dem 01.01.1900 und heute erlaubt");
+                    return oldValue;
+                }
+
+                if ((d.getYear() >= 0) && (d.getYear() < 50)) {
+                    if (!showSecurityQuestion("Wert außerhalb Standardbereich (01.01.1950 .. heute) --> verwenden ?")) {
+                        return oldValue;
+                    }
+                }
+            }
+        }
+
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
@@ -175,7 +241,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("foto")) {
             return new LinkTableCellRenderer();
         } else if (columnName.equals("foto_nr")) {
-            return new LinkTableCellRenderer();
+            return new LinkTableCellRenderer(JLabel.RIGHT);
         }
 
         return super.getCellRenderer(columnName);
@@ -183,7 +249,16 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("ww_gr")) {
+        if (columnName.equals("ba_cd")) {
+            final RouteTableCellEditor editor = new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+            final String filterString = getRouteFilter();
+
+            if (filterString != null) {
+                editor.setRouteQuery(filterString);
+            }
+
+            return editor;
+        } else if (columnName.equals("ww_gr")) {
             CidsLayerFeatureFilter filter = null;
 
             if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
@@ -199,13 +274,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsLayerFeatureFilter() {
-
-                        @Override
-                        public boolean accept(final CidsLayerFeature bean) {
-                            return bean != null;
-                        }
-                    };
+                filter = new WwGrAdminFilter();
             }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",
@@ -269,8 +338,6 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
         } else if (columnName.equals("ba_st")) {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("aufn_datum")) {
-            return new DateCellEditor();
-        } else if (columnName.equals("aufn_zeit")) {
             return new DateCellEditor();
         } else {
             return super.getCellEditor(columnName);
@@ -343,8 +410,8 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Map<String, Object> getDefaultValues() {
         final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGrList() != null) && !AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGrList().get(0));
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }

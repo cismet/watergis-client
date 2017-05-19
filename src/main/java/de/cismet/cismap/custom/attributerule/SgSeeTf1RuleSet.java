@@ -43,7 +43,7 @@ public class SgSeeTf1RuleSet extends WatergisDefaultRuleSet {
         typeMap.put("see_sp", new Varchar(8, true, true));
         typeMap.put("tiefe_von", new Numeric(5, 2, true, true));
         typeMap.put("tiefe_bis", new Numeric(5, 2, true, true));
-        typeMap.put("tiefe_c", new Varchar(5, false, true));
+        typeMap.put("tiefe_c", new Varchar(5, true, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
@@ -57,15 +57,6 @@ public class SgSeeTf1RuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         return super.getCellRenderer(columnName);
     }
@@ -73,11 +64,6 @@ public class SgSeeTf1RuleSet extends WatergisDefaultRuleSet {
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
         return null;
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
-        return true;
     }
 
     @Override

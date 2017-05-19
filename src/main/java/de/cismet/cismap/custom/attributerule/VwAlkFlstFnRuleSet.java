@@ -61,6 +61,53 @@ public class VwAlkFlstFnRuleSet extends WatergisDefaultRuleSet {
     //~ Methods ----------------------------------------------------------------
 
     @Override
+    public Object afterEdit(final FeatureServiceFeature feature,
+            final String column,
+            final int row,
+            final Object oldValue,
+            final Object newValue) {
+        if (newValue instanceof Geometry) {
+            final Geometry geom = ((Geometry)newValue);
+            Double fn_fl = null;
+
+            if (geom != null) {
+                fn_fl = geom.getArea();
+                feature.setProperty("fn_fl", Math.round(fn_fl * 10000) / 10000.0);
+                Double value = null;
+
+                final Double flst_fl = ((Double)feature.getProperty("flst_fl"));
+
+                if (flst_fl != null) {
+                    value = fn_fl * 100 / flst_fl;
+                }
+
+                feature.setProperty("fn_flst_an", round(value));
+            }
+        }
+
+        if (column.equals("flst_fl") && (newValue != null)) {
+            final Geometry geom = ((Geometry)feature.getProperty("geom"));
+            Double fn_fl = null;
+
+            if (geom != null) {
+                fn_fl = geom.getArea();
+                feature.setProperty("fn_fl", Math.round(fn_fl * 10000) / 10000.0);
+                Double value = null;
+
+                final Double flst_fl = ((Double)newValue);
+
+                if (flst_fl != null) {
+                    value = fn_fl * 100 / flst_fl;
+                }
+
+                feature.setProperty("fn_flst_an", round(value));
+            }
+        }
+
+        return super.afterEdit(feature, column, row, oldValue, newValue);
+    }
+
+    @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
                     && !columnName.equals("fn_fl") && !columnName.equals("fn_flst_an") && !columnName.equals("geom");
@@ -95,41 +142,13 @@ public class VwAlkFlstFnRuleSet extends WatergisDefaultRuleSet {
     public void beforeSave(final FeatureServiceFeature feature) {
         feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
         feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
-    }
-
-    @Override
-    public void afterSave(final TableModel model) {
-    }
-
-    @Override
-    public String[] getAdditionalFieldNames() {
-        return new String[] { "fn_fl", "fn_flst_an" };
-    }
-
-    @Override
-    public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("fn_fl")) {
-            return -3;
-        } else if (name.equals("fn_flst_an")) {
-            return -4;
-        } else {
-            return super.getIndexOfAdditionalFieldName(name);
-        }
-    }
-
-    @Override
-    public Object getAdditionalFieldValue(final String propertyName, final FeatureServiceFeature feature) {
-        Double fn_fl = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
+        Double fn_fl = null;
 
         if (geom != null) {
             fn_fl = geom.getArea();
-        }
-
-        if (propertyName.equals("fn_fl")) {
-            return Math.round(fn_fl * 10000) / 10000.0;
-        } else if (propertyName.equals("fn_flst_an")) {
+            feature.getProperties().put("fn_fl", Math.round(fn_fl * 10000) / 10000.0);
             Double value = null;
 
             final Double flst_fl = ((Double)feature.getProperty("flst_fl"));
@@ -138,15 +157,12 @@ public class VwAlkFlstFnRuleSet extends WatergisDefaultRuleSet {
                 value = fn_fl * 100 / flst_fl;
             }
 
-            return round(value);
+            feature.getProperties().put("fn_flst_an", round(value));
         }
-
-        return null;
     }
 
     @Override
-    public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
+    public void afterSave(final TableModel model) {
     }
 
     @Override

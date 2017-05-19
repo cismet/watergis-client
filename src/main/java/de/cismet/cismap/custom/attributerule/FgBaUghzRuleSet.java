@@ -78,6 +78,7 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+        minBaLength = 0.5;
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -120,6 +121,24 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
 
         if (column.equals("ho_d_u") && !checkRange(column, newValue, 0, 10, 0, 15, true, true, false)) {
             return oldValue;
+        }
+
+        if (column.equals("ho_d_o") && (newValue != null) && isNumberOrNull(newValue)
+                    && (feature.getProperty("ho_d_u") != null)) {
+            if (((Number)newValue).doubleValue()
+                        <= ((Number)feature.getProperty("ho_d_u")).doubleValue()) {
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                return oldValue;
+            }
+        }
+
+        if (column.equals("ho_d_u") && (newValue != null) && isNumberOrNull(newValue)
+                    && (feature.getProperty("ho_d_o") != null)) {
+            if (((Number)feature.getProperty("ho_d_o")).doubleValue()
+                        <= ((Number)newValue).doubleValue()) {
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                return oldValue;
+            }
         }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
