@@ -54,7 +54,7 @@ public class MenuBookMarkAction extends AbstractAction {
         this.bookmark = bookmark;
 
         putValue(NAME, bookmark.getName());
-        putValue(SHORT_DESCRIPTION, bookmark.getDescription());
+//        putValue(SHORT_DESCRIPTION, bookmark.getDescription());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-bookmarkfour.png"));
         putValue(SMALL_ICON, icon);

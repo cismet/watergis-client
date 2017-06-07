@@ -64,10 +64,10 @@ public class CreateGeoLinkAction extends AbstractAction {
                 CreateGeoLinkAction.class,
                 "CreateGeoLinkAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
-                KeyEvent.VK_C,
-                ActionEvent.CTRL_MASK
-                        + ActionEvent.ALT_MASK));
+//        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+//                KeyEvent.VK_C,
+//                ActionEvent.CTRL_MASK
+//                        + ActionEvent.ALT_MASK));
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-link.png"));
         putValue(SMALL_ICON, icon);

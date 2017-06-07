@@ -23,6 +23,8 @@ import javax.swing.KeyStroke;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.panels.Photo;
+
 /**
  * DOCUMENT ME!
  *
@@ -51,7 +53,7 @@ public class UploadAction extends AbstractAction {
                 "UploadAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-upload.png"));
+                    "/de/cismet/watergis/res/icons16/icon-uploadalt.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -66,6 +68,7 @@ public class UploadAction extends AbstractAction {
                 photoView.close();
             } else {
                 photoView.restore();
+                Photo.addPhotoServicesToTree();
             }
         }
     }

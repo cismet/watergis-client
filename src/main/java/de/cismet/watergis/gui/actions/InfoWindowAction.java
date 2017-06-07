@@ -26,6 +26,7 @@ import javax.swing.KeyStroke;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.featureinfopanel.FeatureInfoPanel;
+import de.cismet.cismap.commons.gui.featureinfopanel.FeatureInfoPanelListener;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -47,10 +48,12 @@ public class InfoWindowAction extends AbstractAction {
 
     private static final Logger LOG = Logger.getLogger(InfoWindowAction.class);
 
+    private static JDialog dialog = null;
+
     //~ Instance fields --------------------------------------------------------
 
-    private JDialog dialog = null;
     private FeatureInfoPanel featureInfoPanel;
+    private boolean dialogOnly = false;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -73,14 +76,38 @@ public class InfoWindowAction extends AbstractAction {
         putValue(SMALL_ICON, icon);
     }
 
+    /**
+     * Creates a new CloseAction object.
+     *
+     * @param  dialogOnly  DOCUMENT ME!
+     */
+    public InfoWindowAction(final boolean dialogOnly) {
+        this.dialogOnly = dialogOnly;
+        final String tooltip = org.openide.util.NbBundle.getMessage(
+                InfoWindowAction.class,
+                "InfoWindowAction.toolTipText");
+        putValue(SHORT_DESCRIPTION, tooltip);
+        final String text = org.openide.util.NbBundle.getMessage(InfoWindowAction.class, "InfoWindowAction.text");
+        putValue(NAME, text);
+        final String mnemonic = org.openide.util.NbBundle.getMessage(
+                InfoWindowAction.class,
+                "InfoWindowAction.mnemonic");
+        putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
+        final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
+                    "/de/cismet/watergis/res/icons16/icon-webpage.png"));
+        putValue(SMALL_ICON, icon);
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public void actionPerformed(final ActionEvent e) {
         initDialog();
 
-        AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.FEATURE_INFO_MULTI_GEOM);
-        putValue(SELECTED_KEY, Boolean.TRUE);
+        if (!dialogOnly) {
+            AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.FEATURE_INFO_MULTI_GEOM);
+            putValue(SELECTED_KEY, Boolean.TRUE);
+        }
         StaticSwingTools.showDialog(dialog);
 //        dialog.setVisible(true);
     }
@@ -107,6 +134,8 @@ public class InfoWindowAction extends AbstractAction {
                         if (featureInfoPanel.dispose()) {
                             dialog.setVisible(false);
                         }
+
+                        AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.ZOOM);
                     }
 
                     @Override
@@ -136,6 +165,17 @@ public class InfoWindowAction extends AbstractAction {
      */
     public void showAllFeature() {
         featureInfoPanel.showAllFeatures();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  listener  DOCUMENT ME!
+     */
+    public void addFeatureInfoPanelListener(final FeatureInfoPanelListener listener) {
+        if (featureInfoPanel != null) {
+            featureInfoPanel.addFeatureInfoPanelListeners(listener);
+        }
     }
 
     /**

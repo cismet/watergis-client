@@ -27,6 +27,7 @@ import javax.swing.KeyStroke;
 
 import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
+import de.cismet.cismap.commons.features.PureNewFeature;
 import de.cismet.cismap.commons.gui.MappingComponent;
 
 import de.cismet.cismap.custom.attributerule.MessageDialog;
@@ -71,7 +72,7 @@ public class FlipAction extends AbstractAction implements CleanUpAction {
                 "FlipAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/images/rotate.png"));
+                    "/de/cismet/watergis/res/icons16/icon-fliphorizontal.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -106,7 +107,8 @@ public class FlipAction extends AbstractAction implements CleanUpAction {
 
             final MessageDialog dialog = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
                     true,
-                    NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.geometryChanged"));
+                    NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.geometryChanged"),
+                    NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.geometryChanged.title"));
             dialog.setSize(200, 100);
             StaticSwingTools.showDialog(dialog);
         }
@@ -134,6 +136,6 @@ public class FlipAction extends AbstractAction implements CleanUpAction {
     @Override
     public void cleanUp() {
         ((DefaultFeatureCollection)(AppBroker.getInstance().getMappingComponent().getFeatureCollection()))
-                .removeFeaturesByInstance(Feature.class);
+                .removeFeaturesByInstance(PureNewFeature.class);
     }
 }

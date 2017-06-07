@@ -60,7 +60,7 @@ public class SelectAllDrawingsAction extends AbstractAction {
                 "SelectAllDrawingsAction.text");
         putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-newwindow.png"));
+                    "/de/cismet/watergis/res/icons16/icon-selection-rectangleselection.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -68,8 +68,6 @@ public class SelectAllDrawingsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        RemoveSelectionAllTopicsAction.removeSelectionInAllTopics();
-
         final MappingComponent mc = AppBroker.getInstance().getMappingComponent();
         final FeatureCollection fc = mc.getFeatureCollection();
         final List<Feature> toBeSelected = new ArrayList<Feature>();

@@ -57,7 +57,7 @@ public class ZoomModeAction extends AbstractAction {
                 "ZoomModeAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-zoom.png"));
+                    "/de/cismet/watergis/res/icons16/icon-zoom-in.png"));
         putValue(SMALL_ICON, icon);
     }
 

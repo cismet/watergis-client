@@ -71,7 +71,7 @@ public class CheckAction extends AbstractAction {
                 "CheckAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-circledelete.png"));
+                    "/de/cismet/watergis/res/icons16/icon-question-sign.png"));
         putValue(SMALL_ICON, icon);
     }
 

@@ -60,7 +60,7 @@ public class SelectionLocationAction extends AbstractAction {
                 "SelectionLocationAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-selectionadd.png"));
+                    "/de/cismet/watergis/res/icons16/icon-layerorderup.png"));
         putValue(SMALL_ICON, icon);
     }
 

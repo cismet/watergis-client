@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 
@@ -33,6 +34,10 @@ import de.cismet.watergis.gui.components.SnappingMode;
     position = 10
 )
 public class NoSnappingModeAction extends AbstractAction implements SnappingMode {
+
+    //~ Instance fields --------------------------------------------------------
+
+    private JButton button = null;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -61,11 +66,19 @@ public class NoSnappingModeAction extends AbstractAction implements SnappingMode
             final MappingComponent map = AppBroker.getInstance().getMappingComponent();
             map.setSnappingEnabled(false);
             map.setSnappingOnLineEnabled(false);
+            if (button != null) {
+                button.setIcon((ImageIcon)getValue(SMALL_ICON));
+            }
         }
     }
 
     @Override
     public boolean isEnabled() {
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
+    }
+
+    @Override
+    public void setParentButton(final JButton button) {
+        this.button = button;
     }
 }

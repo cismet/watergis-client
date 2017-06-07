@@ -57,7 +57,7 @@ public class PanModeAction extends AbstractAction {
                 "PanModeAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-move.png"));
+                    "/de/cismet/watergis/res/icons16/icon-handswipe.png"));
         putValue(SMALL_ICON, icon);
     }
 
