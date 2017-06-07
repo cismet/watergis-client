@@ -28,4 +28,9 @@ public class Dlm25wFgBaLeisPermissionProvider extends WatergisPermissionProvider
     protected CidsBean getWwGrBean() {
         return (CidsBean)cidsBean.getProperty("ww_gr");
     }
+
+    @Override
+    protected String getWwGrPropertyName() {
+        return "ww_gr";
+    }
 }

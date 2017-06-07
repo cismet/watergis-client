@@ -28,4 +28,9 @@ public class Dlm25wFgBakAePermissionProvider extends WatergisPermissionProvider 
     protected CidsBean getWwGrBean() {
         return (CidsBean)cidsBean.getProperty("bak_st.von.route.ww_gr");
     }
+
+    @Override
+    protected String getWwGrPropertyName() {
+        return "ww_gr";
+    }
 }
