@@ -144,7 +144,15 @@ public class FgBakGn2RuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("bak_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator creator = new StationLineCreator(
+                "bak_st",
+                routeMc,
+                "Basisgewässer/komplett (FG/k)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 }

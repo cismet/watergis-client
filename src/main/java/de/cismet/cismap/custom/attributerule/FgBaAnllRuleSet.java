@@ -238,7 +238,7 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
         for (final FeatureServiceFeature feature : features) {
             if (isValueEmpty(feature.getProperty("anll"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut anlp darf nicht leer sein");
+                    "Das Attribut anll darf nicht leer sein");
                 return false;
             }
 
@@ -373,8 +373,18 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("ba_st", routeMc, new LinearReferencingWatergisHelper(), 1, 50000);
+        final StationLineCreator creator = new StationLineCreator(
+                "ba_st",
+                routeMc,
+                "Basisgewässer (FG)",
+                new LinearReferencingWatergisHelper(),
+                1,
+                50000);
+        creator.setCheck(check);
+
+        return creator;
     }
 
     @Override

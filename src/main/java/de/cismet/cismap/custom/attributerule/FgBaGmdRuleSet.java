@@ -242,7 +242,15 @@ public class FgBaGmdRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("ba_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator creator = new StationLineCreator(
+                "ba_st",
+                routeMc,
+                "Basisgewässer (FG)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 }

@@ -208,6 +208,7 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
         final StationLineCreator creator = new StationLineCreator(
                 "ba_st",
                 routeMc,
+                "Basisgewässer (FG)",
                 new LinearReferencingWatergisHelper(),
                 0.5f,
                 100);

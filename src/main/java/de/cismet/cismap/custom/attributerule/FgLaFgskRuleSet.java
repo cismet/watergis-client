@@ -213,8 +213,16 @@ public class FgLaFgskRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("la_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator creator = new StationLineCreator(
+                "la_st",
+                routeMc,
+                "Basisgewässer/komplett (FG/k)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 
     @Override

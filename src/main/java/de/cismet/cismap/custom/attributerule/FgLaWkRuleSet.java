@@ -146,8 +146,16 @@ public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("la_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator creator = new StationLineCreator(
+                "la_st",
+                routeMc,
+                "LAWA-Gewässer (LAWA)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 
     @Override

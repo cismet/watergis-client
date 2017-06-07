@@ -141,7 +141,15 @@ public class FgLakAeRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_lak");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("lak_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator creator = new StationLineCreator(
+                "lak_st",
+                routeMc,
+                "LAWA-Gewässer/komplett (LAWA/k)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 }

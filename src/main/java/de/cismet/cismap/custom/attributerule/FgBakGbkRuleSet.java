@@ -179,7 +179,16 @@ public class FgBakGbkRuleSet extends WatergisDefaultRuleSet {
         final Map properties = new HashMap();
         properties.put("gbk_lawa", 0);
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("bak_st", routeMc, new LinearReferencingWatergisHelper(), 0.5f);
+        final StationLineCreator creator = new StationLineCreator(
+                "bak_st",
+                routeMc,
+                "Basisgewässer/komplett (FG/k)",
+                new LinearReferencingWatergisHelper(),
+                0.5f);
+        creator.setCheck(check);
+
+        return creator;
     }
 }
