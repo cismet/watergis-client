@@ -195,7 +195,7 @@ public class LawaCheckAction extends AbstractCheckAction {
                 "LawaCheckAction.text");
         putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-zoom.png"));
+                    "/de/cismet/watergis/res/icons16/icon-forkcms.png"));
         putValue(SMALL_ICON, icon);
     }
 

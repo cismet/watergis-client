@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.KeyStroke;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
@@ -36,6 +37,10 @@ public class SelectionModeAction extends AbstractAction {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(SelectionModeAction.class);
+
+    //~ Instance fields --------------------------------------------------------
+
+    private JButton button;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -57,7 +62,7 @@ public class SelectionModeAction extends AbstractAction {
                 "SelectionModeAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-selection-rectangleselection.png"));
+                    "/de/cismet/watergis/res/icons16/select.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -70,10 +75,23 @@ public class SelectionModeAction extends AbstractAction {
         }
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
         putValue(SELECTED_KEY, Boolean.TRUE);
+
+        if (button != null) {
+            button.setSelected(true);
+        }
     }
 
     @Override
     public boolean isEnabled() {
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  button  DOCUMENT ME!
+     */
+    public void setButton(final JButton button) {
+        this.button = button;
     }
 }

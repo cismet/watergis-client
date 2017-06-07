@@ -50,9 +50,9 @@ public class SaveProjectAction extends AbstractAction {
      * Creates a new SaveProjectAction object.
      */
     public SaveProjectAction() {
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
-                KeyEvent.VK_S,
-                ActionEvent.CTRL_MASK));
+//        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+//                KeyEvent.VK_S,
+//                ActionEvent.CTRL_MASK));
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 SaveProjectAction.class,
                 "SaveProjectAction.toolTipText");
@@ -98,6 +98,7 @@ public class SaveProjectAction extends AbstractAction {
             final ConfigurationManager configurationManager = AppBroker.getConfigManager();
             final String name = file.getAbsolutePath();
 
+            AppBroker.getInstance().getWatergisApp().setCurrentLayoutFile(name);
             configurationManager.writeConfiguration(name);
             AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);
 

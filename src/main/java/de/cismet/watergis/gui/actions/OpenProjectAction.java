@@ -48,9 +48,9 @@ public class OpenProjectAction extends AbstractAction {
      * Creates a new OpenProjectAction object.
      */
     public OpenProjectAction() {
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
-                KeyEvent.VK_O,
-                ActionEvent.CTRL_MASK));
+//        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+//                KeyEvent.VK_O,
+//                ActionEvent.CTRL_MASK));
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 OpenProjectAction.class,
                 "OpenProjectAction.toolTipText");
@@ -62,7 +62,7 @@ public class OpenProjectAction extends AbstractAction {
                 "OpenProjectAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-folder-open.png"));
+                    "/de/cismet/watergis/res/icons16/icon-importfile.png"));
         putValue(SMALL_ICON, icon);
     }
 

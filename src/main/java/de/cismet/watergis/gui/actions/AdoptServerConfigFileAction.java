@@ -40,6 +40,7 @@ public class AdoptServerConfigFileAction extends AbstractAction {
     //~ Instance fields --------------------------------------------------------
 
     String path;
+    String name;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -49,7 +50,18 @@ public class AdoptServerConfigFileAction extends AbstractAction {
      * @param  path  the path to the config file, which is in the classpath
      */
     public AdoptServerConfigFileAction(final String path) {
+        this(path, "");
+    }
+
+    /**
+     * Creates a new AdoptServerConfigFileAction object.
+     *
+     * @param  path  the path to the config file, which is in the classpath
+     * @param  name  DOCUMENT ME!
+     */
+    public AdoptServerConfigFileAction(final String path, final String name) {
         this.path = path;
+        this.name = name;
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -61,6 +73,7 @@ public class AdoptServerConfigFileAction extends AbstractAction {
             ((ActiveLayerModel)mappingComponent.getMappingModel()).removeAllLayers();
             AppBroker.getConfigManager().configureFromClasspath(path, null);
             AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
+            AppBroker.getInstance().getWatergisApp().setTitle("FIS Gewässer – Projekt: " + name);
         } catch (Throwable ex) {
             LOG.fatal("No ServerProfile", ex); // NOI18N
         }

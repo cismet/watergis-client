@@ -72,7 +72,7 @@ public class ReportAction extends AbstractAction {
                 "ReportAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-report.png"));
+                    "/de/cismet/watergis/res/icons16/icon-contact-businesscard.png"));
         putValue(SMALL_ICON, icon);
     }
 

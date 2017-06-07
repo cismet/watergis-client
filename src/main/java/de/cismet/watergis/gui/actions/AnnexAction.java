@@ -31,7 +31,11 @@ import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.util.SelectionManager;
 
+import de.cismet.cismap.custom.attributerule.ConfirmDialog;
+
+import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -77,9 +81,8 @@ public class AnnexAction extends ReleaseAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        final MappingComponent mc = CismapBroker.getInstance().getMappingComponent();
-        final SelectionListener sl = (SelectionListener)mc.getInputEventListener().get(MappingComponent.SELECT);
-        final CidsLayerFeature[] features = getRelevantFeatures(sl.getAllSelectedPFeatures(), sl, false);
+        final CidsLayerFeature[] features = getRelevantFeatures(SelectionManager.getInstance().getSelectedFeatures(),
+                false);
         featureCount = 0;
 
         if ((AppBroker.getInstance().getOwnWwGrList() == null) || AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
@@ -96,6 +99,18 @@ public class AnnexAction extends ReleaseAction {
 
         if ((features != null) && (features.length > 0)) {
             final CidsBean newWwGr = AppBroker.getInstance().getOwnWwGr();
+            final ConfirmDialog dialog = new ConfirmDialog(AppBroker.getInstance().getWatergisApp(),
+                    true,
+                    NbBundle.getMessage(ReleaseAction.class, "AnnexAction.done().title"),
+                    NbBundle.getMessage(ReleaseAction.class, "AnnexAction.done().message", features.length),
+                    NbBundle.getMessage(ReleaseAction.class, "AnnexAction.done().execute"),
+                    NbBundle.getMessage(ReleaseAction.class, "AnnexAction.done().cancel"));
+            dialog.setSize(350, 120);
+            StaticSwingTools.showDialog(dialog);
+
+            if (dialog.getButtonClicked() != 1) {
+                return;
+            }
 
             final WaitingDialogThread<TreeSet<AbstractFeatureService>> wdt =
                 new WaitingDialogThread<TreeSet<AbstractFeatureService>>(AppBroker.getInstance().getWatergisApp(),
@@ -123,7 +138,18 @@ public class AnnexAction extends ReleaseAction {
                                 }
                                 cidsBean.setProperty("ww_gr", newWwGr);
                                 cidsFeature.setProperty("ww_gr", newWwGr.getProperty("ww_gr"));
-                                cidsFeature.saveChanges();
+
+                                if ((cidsBean.getProperty("ba_cd") == null)
+                                            || !((String)cidsBean.getProperty("ba_cd")).startsWith(
+                                                (String)AppBroker.getInstance().getOwnWwGr().getProperty(
+                                                    "praefix"))) {
+                                    final String baCd = AppBroker.getInstance().getOwnWwGr().getProperty("praefix")
+                                                + ":"
+                                                + cidsBean.hashCode();
+                                    cidsFeature.setProperty("ba_cd", baCd);
+                                    cidsBean.setProperty("ba_cd", baCd);
+                                }
+                                cidsFeature.saveChangesWithoutReload();
                                 cidsBean.persist();
                                 ++featureCount;
                             } catch (Exception ex) {
@@ -158,11 +184,6 @@ public class AnnexAction extends ReleaseAction {
                             refreshServiceAttributeTables(services);
                             AppBroker.getInstance().getWatergisApp().initRouteCombo();
                             refreshServiceLayer(services);
-
-                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                                NbBundle.getMessage(AnnexAction.class, "AnnexAction.done().message", featureCount),
-                                NbBundle.getMessage(ReleaseAction.class, "AnnexAction.done().title"),
-                                JOptionPane.INFORMATION_MESSAGE);
                         } catch (Exception e) {
                             LOG.error("Error while annexing objects.", e);
                         }

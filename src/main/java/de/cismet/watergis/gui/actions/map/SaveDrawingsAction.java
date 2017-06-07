@@ -85,7 +85,7 @@ public class SaveDrawingsAction extends AbstractAction {
                 "SaveDrawingsAction.text");
         putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-savetodrive.png"));
+                    "/de/cismet/watergis/res/icons16/icon-save-floppy.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -102,6 +102,9 @@ public class SaveDrawingsAction extends AbstractAction {
                 AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
         if (file != null) {
+            if (file.exists()) {
+                file.delete();
+            }
             saveDrawing(file);
         }
     }
@@ -113,9 +116,15 @@ public class SaveDrawingsAction extends AbstractAction {
      */
     private void saveDrawing(final File file) {
         try {
-            final List<DrawingSLDStyledFeature> features = DrawingManager.getInstance().getAllFeatures();
             final List<DefaultFeatureServiceFeature> featureList = new ArrayList<DefaultFeatureServiceFeature>();
             final LayerProperties layerProps = new DefaultLayerProperties();
+            List<DrawingSLDStyledFeature> features = RemoveDrawingModeAction.getSelectedDrawings();
+
+            if (features == null) {
+                // no selected drawing, so save all
+                features = DrawingManager.getInstance().getAllFeatures();
+            }
+
             H2FeatureService service = new H2FeatureService(
                     "tmpDrawing",
                     H2FeatureServiceFactory.DB_NAME,

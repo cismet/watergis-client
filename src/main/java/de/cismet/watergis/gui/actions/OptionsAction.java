@@ -44,7 +44,7 @@ public class OptionsAction extends AbstractAction {
         final String mnemonic = org.openide.util.NbBundle.getMessage(OpenProjectAction.class, "OptionsAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-settingsandroid.png"));
+                    "/de/cismet/watergis/res/icons16/icon-settingsthree-gears.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -54,6 +54,7 @@ public class OptionsAction extends AbstractAction {
     public void actionPerformed(final ActionEvent e) {
         final JFrame main = (JFrame)AppBroker.getInstance().getComponent(ComponentName.MAIN);
         final OptionsDialog od = new OptionsDialog(main, true);
+        od.pack();
         od.setLocationRelativeTo(main);
         od.setVisible(true);
     }

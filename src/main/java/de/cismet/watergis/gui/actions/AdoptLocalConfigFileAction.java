@@ -54,9 +54,9 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 LocalConfigAction.class,
                 "LocalConfigAction.toolTipText");
-        putValue(SHORT_DESCRIPTION, tooltip);
+//        putValue(SHORT_DESCRIPTION, tooltip);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-explorerwindow.png"));
+                    "/de/cismet/watergis/res/icons16/icon-file.png"));
         putValue(SMALL_ICON, icon);
         this.file = file;
     }
@@ -73,6 +73,7 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
         final ConfigurationManager configurationManager = AppBroker.getConfigManager();
 
         mappingComponent.getRasterServiceLayer().removeAllChildren();
+        AppBroker.getInstance().getWatergisApp().setCurrentLayoutFile(filename);
         configurationManager.configure(filename);
 
         final String layoutFilepath = FilenameUtils.getFullPath(filename) + FilenameUtils.getBaseName(filename)
@@ -81,6 +82,13 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
 
         AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
         AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);
+        String projectName = file.getName();
+
+        if (projectName.contains(".")) {
+            projectName = projectName.substring(0, projectName.indexOf("."));
+        }
+
+        AppBroker.getInstance().getWatergisApp().setTitle("FIS Gewässer – Projekt: " + projectName);
     }
 
     /**

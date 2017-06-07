@@ -58,7 +58,7 @@ public class ZoomSelectedObjectsAction extends AbstractAction {
                 "ZoomSelectedObjectsAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-resize.png"));
+                    "/de/cismet/watergis/res/icons16/icon-selectionadd.png"));
         putValue(SMALL_ICON, icon);
     }
 

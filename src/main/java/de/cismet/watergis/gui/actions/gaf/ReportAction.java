@@ -80,7 +80,7 @@ public class ReportAction extends AbstractAction {
                 "ReportAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-report.png"));
+                    "/de/cismet/watergis/res/icons16/icon-contact-businesscard.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -156,7 +156,7 @@ public class ReportAction extends AbstractAction {
                             // create reports
                             for (final FeatureServiceFeature feature : features) {
                                 try {
-                                    if (Thread.interrupted()) {
+                                    if (Thread.interrupted() || canceled) {
                                         // interrupted does sometimes return false, altough the thread was cancelled.
                                         // Perhaps, the jasper report methods reset the interrupted state
                                         return false;

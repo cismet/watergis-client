@@ -22,6 +22,7 @@ import javax.swing.KeyStroke;
 
 import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
+import de.cismet.cismap.commons.features.PureNewFeature;
 import de.cismet.cismap.commons.gui.MappingComponent;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -82,6 +83,6 @@ public class MeasureAction extends AbstractAction implements CleanUpAction {
     @Override
     public void cleanUp() {
         ((DefaultFeatureCollection)(AppBroker.getInstance().getMappingComponent().getFeatureCollection()))
-                .removeFeaturesByInstance(Feature.class);
+                .removeFeaturesByInstance(PureNewFeature.class);
     }
 }

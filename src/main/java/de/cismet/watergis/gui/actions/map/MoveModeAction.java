@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -64,6 +65,13 @@ public class MoveModeAction extends AbstractAction {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Switch in Move Mode");
         }
+        if (AppBroker.getInstance().getLastActionMode() != AppBroker.getInstance().getSelectionMode()) {
+            if (AppBroker.getInstance().getSelectionMode() != null) {
+                AppBroker.getInstance().getSelectionMode().actionPerformed(null);
+            }
+        }
+        CismapBroker.getInstance().getMappingComponent().setHandleInteractionMode(MappingComponent.MOVE_HANDLE);
+//        AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.MOVE_POLYGON);
         putValue(SELECTED_KEY, Boolean.TRUE);
     }

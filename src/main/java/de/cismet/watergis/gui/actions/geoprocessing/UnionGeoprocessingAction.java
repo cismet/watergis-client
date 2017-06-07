@@ -81,7 +81,7 @@ public class UnionGeoprocessingAction extends AbstractGeoprocessingAction {
     @Override
     public final ImageIcon getSmallIcon() {
         return new javax.swing.ImageIcon(DissolveGeoprocessingAction.class.getResource(
-                    "/de/cismet/watergis/res/icons16/icon-shapes.png"));
+                    "/de/cismet/watergis/res/icons16/icon-addshape.png"));
     }
 
     @Override

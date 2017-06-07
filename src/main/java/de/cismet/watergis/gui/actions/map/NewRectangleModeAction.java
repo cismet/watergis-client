@@ -64,7 +64,7 @@ public class NewRectangleModeAction extends AbstractNewGeometryModeAction implem
             final MappingComponent map = AppBroker.getInstance().getMappingComponent();
             ((CreateNewGeometryListener)map.getInputListener(MappingComponent.NEW_POLYGON)).setMode(
                 CreateGeometryListenerInterface.RECTANGLE);
-            AppBroker.getInstance().switchMapMode(MappingComponent.NEW_POLYGON);
+//            AppBroker.getInstance().switchMapMode(MappingComponent.NEW_POLYGON);
         }
     }
 

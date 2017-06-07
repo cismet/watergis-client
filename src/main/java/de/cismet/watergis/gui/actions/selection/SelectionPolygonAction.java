@@ -59,7 +59,7 @@ public class SelectionPolygonAction extends AbstractAction implements SelectionM
                 "SelectionPolygonAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-selectionadd.png"));
+                    "/de/cismet/watergis/res/icons16/icon-polygonlasso.png"));
         putValue(SMALL_ICON, icon);
         AppBroker.getInstance().addSelecionModeListener(this);
     }
