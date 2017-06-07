@@ -92,13 +92,7 @@ public class SgSeeKlRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsLayerFeatureFilter() {
-
-                        @Override
-                        public boolean accept(final CidsLayerFeature bean) {
-                            return bean != null;
-                        }
-                    };
+                filter = new WwGrAdminFilter();
             }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",
@@ -135,12 +129,12 @@ public class SgSeeKlRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Integer value = null;
+        Long value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = (int)geom.getArea();
+            value = Math.round(geom.getArea());
         }
 
         return value;
@@ -148,7 +142,7 @@ public class SgSeeKlRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Integer.class;
+        return Long.class;
     }
 
     @Override
@@ -159,8 +153,8 @@ public class SgSeeKlRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Map<String, Object> getDefaultValues() {
         final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGrList() != null) && !AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGrList().get(0));
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }

@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -69,7 +70,7 @@ public class FgBaSchaRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("ho_so", new Numeric(6, 2, false, true));
         typeMap.put("ho_d_so_ok", new Numeric(4, 2, false, true));
@@ -126,15 +127,6 @@ public class FgBaSchaRuleSet extends WatergisDefaultRuleSet {
         }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
-    }
-
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
-        }
     }
 
     @Override
@@ -220,6 +212,7 @@ public class FgBaSchaRuleSet extends WatergisDefaultRuleSet {
                         String.valueOf(Types.VARCHAR),
                         true),
                     filter);
+            editor.setNullable(true);
 
             editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 

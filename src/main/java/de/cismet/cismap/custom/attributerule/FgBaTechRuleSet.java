@@ -22,15 +22,11 @@ import org.deegree.datatypes.Types;
 import java.sql.Timestamp;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -73,6 +69,7 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+        minBaLength = 0.5;
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -81,7 +78,8 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("laenge") && !columnName.equals("ba_cd")
-                    && !columnName.equals("geom") && !columnName.equals("obj_nr") && !columnName.equals("id");
+                    && !columnName.equals("geom") && !columnName.equals("obj_nr") && !columnName.equals("id")
+                    && !columnName.equals("ww_gr");
     }
 
     @Override
@@ -107,13 +105,7 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsLayerFeatureFilter() {
-
-                        @Override
-                        public boolean accept(final CidsLayerFeature bean) {
-                            return bean != null;
-                        }
-                    };
+                filter = new WwGrAdminFilter();
             }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",
@@ -210,14 +202,17 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
         final StationLineCreator creator = new StationLineCreator(
                 "ba_st",
                 routeMc,
+                "Basisgewässer (FG)",
                 new LinearReferencingWatergisHelper(),
                 0.5f);
 
         creator.setProperties(getDefaultValues());
+        creator.setCheck(check);
 
         return creator;
     }
@@ -225,8 +220,8 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Map<String, Object> getDefaultValues() {
         final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGrList() != null) && !AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGrList().get(0));
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }

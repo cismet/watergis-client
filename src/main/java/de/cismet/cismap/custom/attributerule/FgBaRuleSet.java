@@ -13,13 +13,23 @@ package de.cismet.cismap.custom.attributerule;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import java.util.List;
+import org.apache.log4j.Logger;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+
+import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.WaitingDialogThread;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
+
+import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.gui.dialog.GewaesserReportDialog;
+
+import de.cismet.watergis.reports.GewaesserReport;
 
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -30,6 +40,10 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  * @version  $Revision$, $Date$
  */
 public class FgBaRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(FgBaRuleSet.class);
 
     //~ Instance initializers --------------------------------------------------
 
@@ -108,5 +122,76 @@ public class FgBaRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
+    }
+
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("ba_cd")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                createGuReport(value.toString());
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  bacd  DOCUMENT ME!
+     */
+    private void createGuReport(final String bacd) {
+        createReport(bacd);
+//        final GewaesserReportAction action = new GewaesserReportAction();
+//        action.actionPerformed(null);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  bacd  DOCUMENT ME!
+     */
+    public static void createReport(final String bacd) {
+        try {
+            StaticSwingTools.showDialog(GewaesserReportDialog.getInstance());
+
+            if (!GewaesserReportDialog.getInstance().isCancelled()) {
+                final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
+                        StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
+                        true,
+                        // NbBundle.getMessage(SonstigeCheckAction.class,
+                        // "SonstigeCheckAction.actionPerformed().dialog"),
+                        "erstelle Auswertung",
+                        null,
+                        100,
+                        true) {
+
+                        @Override
+                        protected Boolean doInBackground() throws Exception {
+                            final GewaesserReport gr = new GewaesserReport();
+                            gr.createReport(
+                                bacd,
+                                DownloadManager.instance().getDestinationDirectory().getAbsolutePath());
+                            gr.cleanup();
+
+                            return true;
+                        }
+
+                        @Override
+                        protected void done() {
+                            try {
+                                get();
+                            } catch (Exception e) {
+                                LOG.error("Error while performing the gewaesser report.", e);
+                            }
+                        }
+                    };
+
+                wdt.start();
+            }
+        } catch (Exception ex) {
+            LOG.error("Error while creating gewaesser report", ex);
+        }
     }
 }

@@ -28,4 +28,9 @@ public class Dlm25wFgBaWehrPermissionProvider extends WatergisPermissionProvider
     protected CidsBean getWwGrBean() {
         return (CidsBean)cidsBean.getProperty("ba_st.route.ww_gr");
     }
+
+    @Override
+    protected String getWwGrPropertyName() {
+        return "ww_gr";
+    }
 }

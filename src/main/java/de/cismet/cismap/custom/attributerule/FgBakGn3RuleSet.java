@@ -55,7 +55,7 @@ public class FgBakGn3RuleSet extends WatergisDefaultRuleSet {
         typeMap.put("bak_st_von", new Numeric(10, 2, true, false));
         typeMap.put("bak_st_bis", new Numeric(10, 2, true, false));
         typeMap.put("gn3", new Varchar(50, true, true));
-        typeMap.put("laenge", new Numeric(12, 0, false, false));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
@@ -65,7 +65,7 @@ public class FgBakGn3RuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("ww_gr")
+                    && !columnName.equals("laenge") && !columnName.equals("geom")
                     && !columnName.equals("ba_cd");
     }
 
@@ -144,7 +144,15 @@ public class FgBakGn3RuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("bak_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator creator = new StationLineCreator(
+                "bak_st",
+                routeMc,
+                "Basisgewässer/komplett (FG/k)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 }

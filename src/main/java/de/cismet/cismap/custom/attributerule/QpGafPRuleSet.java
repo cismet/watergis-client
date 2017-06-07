@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -66,7 +67,7 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("upl_zeit", new Varchar(8, false, false));
         typeMap.put("aufn_name", new Varchar(50, false, false));
         typeMap.put("aufn_datum", new Varchar(10, false, false));
-        typeMap.put("aufn_zeit", new Varchar(8, false, false));
+        typeMap.put("aufn_zeit", new Time(false, false));
         typeMap.put("titel", new Varchar(250, false, false));
         typeMap.put("beschreib", new Varchar(250, false, false));
         typeMap.put("bemerkung", new Varchar(250, false, false));
@@ -92,7 +93,7 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("qp_nr")) {
-            return new LinkTableCellRenderer();
+            return new LinkTableCellRenderer(JLabel.RIGHT);
         } else {
             return super.getCellRenderer(columnName);
         }

@@ -40,7 +40,7 @@ public class SgSeeEffLbRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("wk_nr", new Varchar(10, true, true));
+        typeMap.put("see_sp", new Varchar(8, true, true));
         typeMap.put("distanz", new Numeric(10, 2, true, false));
         typeMap.put("winkel", new Numeric(5, 1, true, true));
         typeMap.put("typ", new Varchar(1, true, true));
@@ -63,7 +63,7 @@ public class SgSeeEffLbRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        return null;
+        return super.getCellEditor(columnName);
     }
 
     @Override

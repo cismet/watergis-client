@@ -110,12 +110,12 @@ public class VwAlkGmdRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Double value = null;
+        Long value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = geom.getArea();
+            value = Math.round(geom.getArea());
         }
 
         return value;
@@ -123,7 +123,7 @@ public class VwAlkGmdRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
+        return Long.class;
     }
 
     @Override

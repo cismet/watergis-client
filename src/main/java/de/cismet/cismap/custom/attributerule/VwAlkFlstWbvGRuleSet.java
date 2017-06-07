@@ -53,13 +53,69 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("gmd_name", new WatergisDefaultRuleSet.Varchar(50, true));
         typeMap.put("wbv", new Numeric(2, 0, true));
         typeMap.put("flst_fl", new WatergisDefaultRuleSet.Numeric(16, 4, true));
-        typeMap.put("fn_g_an", new Numeric(5, 2, false, false));
-        typeMap.put("fn_g_fl", new Numeric(16, 4, false, false));
+        typeMap.put("flst_g_an", new Numeric(5, 2, false, false));
+        typeMap.put("flst_g_fl", new Numeric(16, 4, false, false));
         typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
         typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    @Override
+    public Object afterEdit(final FeatureServiceFeature feature,
+            final String column,
+            final int row,
+            final Object oldValue,
+            final Object newValue) {
+        if (newValue instanceof Geometry) {
+            Double flst_g_fl = null;
+
+            final Geometry geom = ((Geometry)newValue);
+
+            if (geom != null) {
+                flst_g_fl = geom.getArea();
+                feature.getProperties().put("flst_g_fl", Math.round(flst_g_fl * 10000) / 10000.0);
+                Double value = null;
+
+                final Double flst_fl = ((Double)feature.getProperty("flst_fl"));
+
+                if (flst_fl != null) {
+                    value = flst_g_fl * 100 / flst_fl;
+                    feature.getProperties().put("flst_g_an", round(value));
+                } else {
+                    feature.getProperties().put("flst_g_an", null);
+                }
+            } else {
+                feature.getProperties().put("flst_g_fl", null);
+                feature.getProperties().put("flst_g_an", null);
+            }
+        }
+
+        if (column.equals("flst_fl")) {
+            Double flst_g_fl = null;
+
+            final Geometry geom = ((Geometry)feature.getProperty("geom"));
+
+            if (geom != null) {
+                flst_g_fl = geom.getArea();
+                feature.getProperties().put("flst_g_fl", Math.round(flst_g_fl * 10000) / 10000.0);
+                Double value = null;
+
+                final Double flst_fl = ((Double)newValue);
+
+                if (flst_fl != null) {
+                    value = flst_g_fl * 100 / flst_fl;
+                    feature.getProperties().put("flst_g_an", round(value));
+                } else {
+                    feature.getProperties().put("flst_g_an", null);
+                }
+            } else {
+                feature.getProperties().put("flst_g_fl", null);
+                feature.getProperties().put("flst_g_an", null);
+            }
+        }
+        return super.afterEdit(feature, column, row, oldValue, newValue);
+    }
 
     @Override
     public boolean isColumnEditable(final String columnName) {
@@ -93,58 +149,32 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
     public void beforeSave(final FeatureServiceFeature feature) {
         feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
         feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
-    }
 
-    @Override
-    public void afterSave(final TableModel model) {
-    }
-
-    @Override
-    public String[] getAdditionalFieldNames() {
-        return new String[] { "flst_g_an", "flst_g_fl" };
-    }
-
-    @Override
-    public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("flst_g_an")) {
-            return -4;
-        } else if (name.equals("flst_g_fl")) {
-            return -3;
-        } else {
-            return super.getIndexOfAdditionalFieldName(name);
-        }
-    }
-
-    @Override
-    public Object getAdditionalFieldValue(final String propertyName, final FeatureServiceFeature feature) {
         Double flst_g_fl = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
             flst_g_fl = geom.getArea();
-        }
-
-        if (propertyName.equals("flst_g_fl")) {
-            return flst_g_fl;
-        } else if (propertyName.equals("flst_g_an")) {
+            feature.getProperties().put("flst_g_fl", Math.round(flst_g_fl * 10000) / 10000.0);
             Double value = null;
 
             final Double flst_fl = ((Double)feature.getProperty("flst_fl"));
 
             if (flst_fl != null) {
                 value = flst_g_fl * 100 / flst_fl;
+                feature.getProperties().put("flst_g_an", round(value));
+            } else {
+                feature.getProperties().put("flst_g_an", null);
             }
-
-            return value;
+        } else {
+            feature.getProperties().put("flst_g_fl", null);
+            feature.getProperties().put("flst_g_an", null);
         }
-
-        return null;
     }
 
     @Override
-    public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
+    public void afterSave(final TableModel model) {
     }
 
     @Override

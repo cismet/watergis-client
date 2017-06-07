@@ -100,12 +100,12 @@ public class EzgMvDetailRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Integer value = null;
+        Long value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = (int)geom.getArea();
+            value = Math.round(geom.getArea());
         }
 
         return value;
@@ -113,7 +113,7 @@ public class EzgMvDetailRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Integer.class;
+        return Long.class;
     }
 
     @Override

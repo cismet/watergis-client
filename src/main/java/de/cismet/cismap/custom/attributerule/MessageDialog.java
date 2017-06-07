@@ -47,12 +47,26 @@ public class MessageDialog extends javax.swing.JDialog {
         lblText.setText(text);
     }
 
+    /**
+     * Creates new form MessageDialog.
+     *
+     * @param  parent  DOCUMENT ME!
+     * @param  modal   DOCUMENT ME!
+     * @param  text    DOCUMENT ME!
+     * @param  title   DOCUMENT ME!
+     */
+    public MessageDialog(final java.awt.Frame parent, final boolean modal, final String text, final String title) {
+        super(parent, modal);
+        setTitle(title);
+        initComponents();
+        lblText.setText(text);
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public void setVisible(final boolean b) {
         if (b) {
-            pack();
             final Timer t = new Timer(3000, new ActionListener() {
 
                         @Override

@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -60,8 +61,6 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
     //~ Instance initializers --------------------------------------------------
 
     {
-        final Numeric esw = new Numeric(1, 0, false, true);
-        esw.setRange(0.0, 1.0);
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
         typeMap.put("ba_cd", new Varchar(50, false, false));
@@ -73,8 +72,8 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
-        typeMap.put("esw", esw);
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
+        typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -121,16 +120,36 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        return super.afterEdit(feature, column, row, oldValue, newValue);
-    }
+        if (column.equals("ba_st_von") || (column.equals("ba_st_bis") && (newValue != null))) {
+            final Double from = (column.equals("ba_st_von") ? (Double)newValue
+                                                            : (Double)feature.getProperty("ba_st_von"));
+            final Double till = (column.equals("ba_st_von") ? (Double)feature.getProperty("ba_st_bis")
+                                                            : (Double)newValue);
 
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
+            if ((from != null) && (till != null)) {
+                final double length = Math.abs(till - from);
+                if ((feature.getProperty("anll") != null)
+                            && isValueIn(feature.getProperty("anll"), new String[] { "See", "Spei" }, false)) {
+                    if (!checkRange("länge", length, 20, 20000, 5, 50000, false, true, true)) {
+                        return false;
+                    }
+                } else if ((feature.getProperty("anll") != null)
+                            && isValueIn(feature.getProperty("anll"), new String[] { "Drte", "Faa", "Rb" }, false)) {
+                    if (!checkRange("länge", length, 10, 100, 5, 200, false, true, true)) {
+                        return false;
+                    }
+                } else if ((feature.getProperty("anll") != null)
+                            && isValueIn(
+                                feature.getProperty("anll"),
+                                new String[] { "Ds", "Sf", "Si", "Sleu", "Tosb", "WKA" },
+                                false)) {
+                    if (!checkRange("länge", length, 1, 20, 1, 200, false, true, true)) {
+                        return false;
+                    }
+                }
+            }
         }
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -219,7 +238,7 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
         for (final FeatureServiceFeature feature : features) {
             if (isValueEmpty(feature.getProperty("anll"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut anlp darf nicht leer sein");
+                    "Das Attribut anll darf nicht leer sein");
                 return false;
             }
 
@@ -278,6 +297,32 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
                     }
                 }
             }
+
+            final Double from = (Double)feature.getProperty("ba_st_von");
+            final Double till = (Double)feature.getProperty("ba_st_bis");
+
+            if ((from != null) && (till != null)) {
+                final double length = Math.abs(till - from);
+                if ((feature.getProperty("anll") != null)
+                            && isValueIn(feature.getProperty("anll"), new String[] { "See", "Spei" }, false)) {
+                    if (!checkRange("länge", length, 20, 20000, 5, 50000, false, true, true)) {
+                        return false;
+                    }
+                } else if ((feature.getProperty("anll") != null)
+                            && isValueIn(feature.getProperty("anll"), new String[] { "Drte", "Faa", "Rb" }, false)) {
+                    if (!checkRange("länge", length, 10, 100, 5, 200, false, true, true)) {
+                        return false;
+                    }
+                } else if ((feature.getProperty("anll") != null)
+                            && isValueIn(
+                                feature.getProperty("anll"),
+                                new String[] { "Ds", "Sf", "Si", "Sleu", "Tosb", "WKA" },
+                                false)) {
+                    if (!checkRange("länge", length, 1, 20, 1, 200, false, true, true)) {
+                        return false;
+                    }
+                }
+            }
         }
 
         return super.prepareForSave(features);
@@ -328,8 +373,18 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("ba_st", routeMc, new LinearReferencingWatergisHelper(), 1, 50000);
+        final StationLineCreator creator = new StationLineCreator(
+                "ba_st",
+                routeMc,
+                "Basisgewässer (FG)",
+                new LinearReferencingWatergisHelper(),
+                1,
+                50000);
+        creator.setCheck(check);
+
+        return creator;
     }
 
     @Override
