@@ -405,6 +405,6 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.sg_su");
 
-        return new StationLineCreator("sg_su_stat", routeMc, new LinearReferencingWatergisHelper());
+        return new StationLineCreator("sg_su_stat", routeMc, "Seeufer (SU)", new LinearReferencingWatergisHelper());
     }
 }

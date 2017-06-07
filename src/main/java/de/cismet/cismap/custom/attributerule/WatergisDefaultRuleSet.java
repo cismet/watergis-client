@@ -63,11 +63,13 @@ import de.cismet.cids.server.search.CidsServerSearch;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
+import de.cismet.cismap.cidslayer.StationCreationCheck;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
 import de.cismet.cismap.commons.gui.attributetable.LinkCellRenderer;
+import de.cismet.cismap.commons.gui.piccolo.PFeature;
 
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
@@ -178,7 +180,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      * @param  file  DOCUMENT ME!
      */
     protected void downloadDocumentFromWebDav(String path, String file) {
-        if (DownloadManagerDialog.getInstance().showAskingForUserTitleDialog(AppBroker.getInstance().getRootWindow())) {
+        if (!DownloadManagerDialog.getInstance().isAskForJobNameEnabled()
+                    || DownloadManagerDialog.getInstance().showAskingForUserTitleDialog(
+                        AppBroker.getInstance().getRootWindow())) {
             final String jobname = DownloadManagerDialog.getInstance().getJobName();
             String extension = null;
             String filename;
@@ -2741,6 +2745,124 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         @Override
         public boolean accept(final CidsLayerFeature bean) {
             return (bean != null) && (bean.getProperty("praefix") != null);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    protected static class OnOwnRouteStationCheck extends OnOtherRouteStationCheck {
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public boolean isRouteValid(final PFeature feature) {
+            if (feature.getFeature() instanceof FeatureServiceFeature) {
+                final User u = SessionManager.getSession().getUser();
+                if (u.getUserGroup().getName().equalsIgnoreCase("administratoren")
+                            || u.getUserGroup().getName().equalsIgnoreCase("admin_edit")) {
+                    return true;
+                }
+                final FeatureServiceFeature f = (FeatureServiceFeature)feature.getFeature();
+                final CidsBean wwGr = getWwGrBeanFromProperty(f);
+
+                if ((AppBroker.getInstance().getOwnWwGr() != null)
+                            && (AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr") != null)) {
+                    if ((wwGr != null) && wwGr.getProperty("owner").equals(u.getUserGroup().getName())) {
+                        return true;
+                    } else {
+                        return (wwGr != null) && wwGr.getProperty("ww_gr").equals(4000);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(StaticSwingTools.getParentFrame(
+                            AppBroker.getInstance().getWatergisApp()),
+                        "Sie müssen genau eine eigene Route wählen",
+                        "Fehler Thema-/Gewässerwahl",
+                        JOptionPane.WARNING_MESSAGE);
+                    return false;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    protected static class OnOtherRouteStationCheck implements StationCreationCheck {
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public boolean isRouteValid(final PFeature feature) {
+            if (feature.getFeature() instanceof FeatureServiceFeature) {
+                final User u = SessionManager.getSession().getUser();
+                if (u.getUserGroup().getName().equalsIgnoreCase("administratoren")
+                            || u.getUserGroup().getName().equalsIgnoreCase("admin_edit")) {
+                    return true;
+                }
+                final FeatureServiceFeature f = (FeatureServiceFeature)feature.getFeature();
+                final CidsBean wwGr = getWwGrBeanFromProperty(f);
+
+                if ((AppBroker.getInstance().getOwnWwGr() != null)
+                            && (AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr") != null)) {
+                    if ((wwGr != null) && wwGr.getProperty("owner").equals(u.getUserGroup().getName())) {
+                        return false;
+                    } else {
+                        return !((wwGr != null) && wwGr.getProperty("ww_gr").equals(4000));
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(StaticSwingTools.getParentFrame(
+                            AppBroker.getInstance().getWatergisApp()),
+                        "Sie müssen genau eine fremde Route wählen",
+                        "Fehler Thema-/Gewässerwahl",
+                        JOptionPane.WARNING_MESSAGE);
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   feature  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        protected CidsBean getWwGrBeanFromProperty(final FeatureServiceFeature feature) {
+            final Object wwGrObject = feature.getProperty("ww_gr");
+            final List<CidsBean> wwgrBeans = AppBroker.getInstance().getWwGrList();
+
+            if (wwGrObject == null) {
+                return null;
+            } else if (wwGrObject instanceof CidsBean) {
+                return (CidsBean)wwGrObject;
+            } else if (wwGrObject instanceof CidsLayerFeature) {
+                final CidsLayerFeature f = (CidsLayerFeature)wwGrObject;
+
+                for (final CidsBean bean : wwgrBeans) {
+                    if (bean.getProperty("id").equals(f.getId())) {
+                        return bean;
+                    }
+                }
+            } else {
+                final String wwGr = wwGrObject.toString();
+
+                for (final CidsBean bean : wwgrBeans) {
+                    if ((bean.getProperty("ww_gr") != null) && bean.getProperty("ww_gr").toString().equals(wwGr)) {
+                        return bean;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

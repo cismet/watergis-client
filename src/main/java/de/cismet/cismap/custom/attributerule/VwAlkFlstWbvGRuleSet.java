@@ -178,54 +178,6 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public String[] getAdditionalFieldNames() {
-        return new String[] { "flst_g_an", "flst_g_fl" };
-    }
-
-    @Override
-    public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("flst_g_an")) {
-            return -3;
-        } else if (name.equals("flst_g_fl")) {
-            return -4;
-        } else {
-            return super.getIndexOfAdditionalFieldName(name);
-        }
-    }
-
-    @Override
-    public Object getAdditionalFieldValue(final String propertyName, final FeatureServiceFeature feature) {
-        Double flst_g_fl = null;
-
-        final Geometry geom = ((Geometry)feature.getProperty("geom"));
-
-        if (geom != null) {
-            flst_g_fl = geom.getArea();
-        }
-
-        if (propertyName.equals("flst_g_fl")) {
-            return Math.round(flst_g_fl * 10000) / 10000.0;
-        } else if (propertyName.equals("flst_g_an")) {
-            Double value = null;
-
-            final Double flst_fl = ((Double)feature.getProperty("flst_fl"));
-
-            if (flst_fl != null) {
-                value = flst_g_fl * 100 / flst_fl;
-            }
-
-            return round(value);
-        }
-
-        return null;
-    }
-
-    @Override
-    public Class getAdditionalFieldClass(final int index) {
-        return Double.class;
-    }
-
-    @Override
     public FeatureCreator getFeatureCreator() {
         return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }

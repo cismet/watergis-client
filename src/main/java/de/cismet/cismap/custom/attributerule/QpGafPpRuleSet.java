@@ -104,7 +104,6 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("p_nr") && !columnName.equals("qp_nr")
-                    && !columnName.equals("hw") && !columnName.equals("rw")
                     && !columnName.equals("hyk")
                     && !columnName.equals("geom") && !columnName.equals("id");
     }
@@ -115,7 +114,24 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        return super.afterEdit(feature, column, row, oldValue, newValue);
+        final Object result = super.afterEdit(feature, column, row, oldValue, newValue);
+        if (column.equals("kz")) {
+            Object catObject = newValue;
+
+            if (catObject instanceof String) {
+                catObject = getCatalogueElement("dlm25w.k_qp_gaf_kz", "kz", (String)catObject);
+            }
+
+            if (catObject instanceof CidsLayerFeature) {
+                final Object hyk = ((CidsLayerFeature)catObject).getProperty("hyk");
+                feature.setProperty("hyk", ((hyk == null) ? "x" : hyk));
+            } else if (catObject instanceof CidsBean) {
+                final Object hyk = ((CidsBean)catObject).getProperty("hyk");
+                feature.setProperty("hyk", ((hyk == null) ? "x" : hyk));
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -186,24 +202,16 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
-            // set the hw and rw from the geometry
-            final Geometry g = feature.getGeometry();
-
-            if (g != null) {
-                feature.setProperty("rw", g.getCoordinate().x);
-                feature.setProperty("hw", g.getCoordinate().y);
-            }
-
             final Object kz = feature.getProperty("kz");
 
             if (kz instanceof FeatureServiceFeature) {
-                Object hyc = ((FeatureServiceFeature)kz).getProperty("hyc");
+                Object hyk = ((FeatureServiceFeature)kz).getProperty("hyk");
 
-                if (hyc == null) {
-                    hyc = "x";
+                if (hyk == null) {
+                    hyk = "x";
                 }
 
-                feature.setProperty("hyc", hyc);
+                feature.setProperty("hyk", hyk);
             }
 
             final Object rk = feature.getProperty("rk");
