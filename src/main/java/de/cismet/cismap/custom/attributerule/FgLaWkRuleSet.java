@@ -41,8 +41,6 @@ import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.download.WkFgDownload;
-
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -165,32 +163,8 @@ public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
             final int clickCount) {
         if (columnName.equals("wk_nr")) {
             if ((value instanceof String) && (clickCount == 1)) {
-                createWkFgReport((String)value);
+                downloadDocumentFromWebDav(WK_FG_WEBDAV_PATH, addExtension(value.toString().toUpperCase(), "pdf"));
             }
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  wkk  DOCUMENT ME!
-     */
-    private void createWkFgReport(final String wkk) {
-        if (DownloadManagerDialog.getInstance().showAskingForUserTitleDialog(AppBroker.getInstance().getRootWindow())) {
-            final String jobname = DownloadManagerDialog.getInstance().getJobName();
-            String dir;
-
-            if ((jobname != null) && !jobname.equals("")) {
-                final File path = new File(DownloadManager.instance().getDestinationDirectory().getAbsolutePath(),
-                        DownloadManagerDialog.getInstance().getJobName());
-                dir = path.getAbsolutePath();
-            } else {
-                dir = DownloadManager.instance().getDestinationDirectory().getAbsolutePath();
-            }
-
-            final WkFgDownload download = new WkFgDownload(dir, wkk);
-
-            DownloadManager.instance().add(download);
         }
     }
 }
