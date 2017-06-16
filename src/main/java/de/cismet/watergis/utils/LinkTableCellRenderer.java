@@ -31,6 +31,27 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class LinkTableCellRenderer extends DefaultTableCellRenderer {
 
+    //~ Instance fields --------------------------------------------------------
+
+    private int alignment = JLabel.LEFT;
+
+    //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new LinkTableCellRenderer object.
+     */
+    public LinkTableCellRenderer() {
+    }
+
+    /**
+     * Creates a new LinkTableCellRenderer object.
+     *
+     * @param  alignment  DOCUMENT ME!
+     */
+    public LinkTableCellRenderer(final int alignment) {
+        this.alignment = alignment;
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -48,6 +69,8 @@ public class LinkTableCellRenderer extends DefaultTableCellRenderer {
             final Map attributes = underlinedFont.getAttributes();
             attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
             ((JLabel)c).setFont(underlinedFont.deriveFont(attributes));
+
+            ((JLabel)c).setHorizontalAlignment(alignment);
         }
 
         return c;
