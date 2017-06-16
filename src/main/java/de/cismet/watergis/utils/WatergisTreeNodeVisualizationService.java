@@ -31,6 +31,8 @@ import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.featureinfopanel.FeatureInfoPanelEvent;
+import de.cismet.cismap.commons.gui.featureinfopanel.FeatureInfoPanelListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.GetFeatureInfoMultiGeomListener;
 import de.cismet.cismap.commons.interaction.events.GetFeatureInfoEvent;
 
@@ -50,11 +52,14 @@ import de.cismet.watergis.broker.AppBroker;
     supersedes = "de.cismet.cismap.navigatorplugin.DefaultMetaTreeNodeVisualizationServiceForNavigator",
     service = DefaultMetaTreeNodeVisualizationService.class
 )
-public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNodeVisualizationService {
+public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNodeVisualizationService,
+    FeatureInfoPanelListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(WatergisTreeNodeVisualizationService.class);
+
+    private static List<Feature> visualisedFeatures = new ArrayList<Feature>();
 
     //~ Methods ----------------------------------------------------------------
 
@@ -83,9 +88,11 @@ public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNode
             final CidsFeature feature = new CidsFeature(oNode.getMetaObject());
             final List<Feature> featureList = new ArrayList<Feature>();
             featureList.add(feature);
+            visualisedFeatures.add(feature);
             AppBroker.getInstance().getMappingComponent().addFeaturesToMap(new Feature[] { feature });
             AppBroker.getInstance().getMappingComponent().zoomToAFeatureCollection(featureList, false, false);
             AppBroker.getInstance().getInfoWindowAction().showDialog();
+            AppBroker.getInstance().getInfoWindowAction().addFeatureInfoPanelListener(this);
             AppBroker.getInstance().getInfoWindowAction().showAllFeature();
             addFeatureToFeatureInfoDialog(oNode);
         }
@@ -153,5 +160,25 @@ public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNode
         for (final DefaultMetaTreeNode tmp : c) {
             addVisualization(tmp);
         }
+    }
+
+    @Override
+    public void featureSaved(final FeatureInfoPanelEvent evt) {
+        AppBroker.getInstance().getMappingComponent().removeFeatures(visualisedFeatures);
+        visualisedFeatures.clear();
+    }
+
+    @Override
+    public void dispose(final FeatureInfoPanelEvent evt) {
+        AppBroker.getInstance().getMappingComponent().removeFeatures(visualisedFeatures);
+        visualisedFeatures.clear();
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    public static void removeVisualisedFeatures() {
+        AppBroker.getInstance().getMappingComponent().removeFeatures(visualisedFeatures);
+        visualisedFeatures.clear();
     }
 }

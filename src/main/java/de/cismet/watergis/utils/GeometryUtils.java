@@ -13,20 +13,36 @@ package de.cismet.watergis.utils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
+
+import org.apache.log4j.Logger;
+
+import org.openide.util.Exceptions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import de.cismet.cismap.commons.CrsTransformer;
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+
+import de.cismet.commons.concurrency.CismetExecutors;
 
 import de.cismet.math.geometry.StaticGeometryFunctions;
 
@@ -37,6 +53,10 @@ import de.cismet.math.geometry.StaticGeometryFunctions;
  * @version  $Revision$, $Date$
  */
 public class GeometryUtils {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(GeometryUtils.class);
 
     //~ Methods ----------------------------------------------------------------
 
@@ -61,11 +81,12 @@ public class GeometryUtils {
             return result;
         } else if (geom.getGeometryType().equalsIgnoreCase("POLYGON")
                     || geom.getGeometryType().equalsIgnoreCase("MULTIPOLYGON")) {
-            if (geom.getGeometryType().equalsIgnoreCase("MULTIPOLYGON")) {
-                return splitPolygon((Polygon)StaticGeometryFunctions.toSimpleGeometry(geom), splitLine);
-            } else {
-                return splitPolygon((Polygon)geom, splitLine);
-            }
+            return splitPolygon(geom, splitLine);
+//            if (geom.getGeometryType().equalsIgnoreCase("MULTIPOLYGON")) {
+//                return splitPolygon((Polygon)StaticGeometryFunctions.toSimpleGeometry(geom), splitLine);
+//            } else {
+//                return splitPolygon((Polygon)geom, splitLine);
+//            }
         } else {
             return null;
         }
@@ -79,7 +100,7 @@ public class GeometryUtils {
      *
      * @return  An array with the two resulted geometries
      */
-    public static Geometry[] splitPolygon(final Polygon sourceGeom, final LineString splitter) {
+    public static Geometry[] splitPolygon(final Geometry sourceGeom, final LineString splitter) {
         final Geometry geom = sourceGeom.getBoundary();
 
         final GeometryFactory geomFactory = sourceGeom.getFactory();
@@ -103,11 +124,52 @@ public class GeometryUtils {
             // checks if given polygon is contained inside source pg, otherwise exclude it
             final Polygon pg = (Polygon)iter.next();
             if (sourceGeom.contains(pg.getInteriorPoint())) {
-                polys.add(pg);
+                polys.add(pg.clone());
             }
         }
 
         return (Geometry[])polys.toArray(new Geometry[0]);
+    }
+
+    /**
+     * Unions the geometries of the given features.
+     *
+     * @param   sourceFeatures  the features the union
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static Geometry unionFeatureEnvelopes(final List<FeatureServiceFeature> sourceFeatures) {
+        boolean first = true;
+        int srid = -1;
+        final List<Geometry> geomList = new ArrayList<Geometry>();
+
+        for (final Feature f : sourceFeatures) {
+            Geometry g = f.getGeometry();
+
+            if (g != null) {
+                g = g.getEnvelope();
+
+                if (first) {
+                    srid = g.getSRID();
+                    first = false;
+                } else {
+                    if (g.getSRID() != srid) {
+                        g = CrsTransformer.transformToGivenCrs(g, CrsTransformer.createCrsFromSrid(srid));
+                    }
+                }
+
+                geomList.add(g);
+            }
+        }
+
+        final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), srid);
+        Geometry union = factory.buildGeometry(geomList);
+
+        if (union instanceof GeometryCollection) {
+            union = ((GeometryCollection)union).union();
+        }
+
+        return union;
     }
 
     /**
@@ -128,11 +190,21 @@ public class GeometryUtils {
             }
         }
 
-        return unionGeometries(geomList, 0, geomList.size() - 1);
+        if (geomList.size() == 1) {
+            return geomList.get(0);
+        }
+        if (geomList.isEmpty()) {
+            return null;
+        }
+
+        final long start = System.currentTimeMillis();
+        final Geometry g = unionGeometries2(geomList);
+        LOG.error("union2 time: " + (System.currentTimeMillis() - start));
+        return g;
     }
 
     /**
-     * An union method that is faster the the iterativ approach with the union() method.
+     * An union method that is faster as the iterativ approach with the union() method.
      *
      * @param   geom  the list with the geometries to union
      * @param   from  the index of the first element that should be used for the union operation
@@ -149,6 +221,65 @@ public class GeometryUtils {
 
             return g1.union(g2);
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geomList  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static Geometry unionGeometries2(final List<Geometry> geomList) {
+        if (geomList.isEmpty()) {
+            return null;
+        }
+        final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                geomList.get(0).getSRID());
+        Geometry geom = factory.buildGeometry(geomList);
+
+        if (geom instanceof GeometryCollection) {
+            geom = ((GeometryCollection)geom).union();
+        }
+        return geom;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geomList  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static Geometry unionPolygons(final List<Geometry> geomList) {
+        final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                geomList.get(0).getSRID());
+        final List<Polygon> pList = new ArrayList<Polygon>();
+
+        for (final Geometry g : geomList) {
+            if (g instanceof Polygon) {
+                if (g.isValid()) {
+                    pList.add((Polygon)g);
+                } else {
+                    LOG.error("is not valid: " + g);
+                }
+            } else if (g instanceof MultiPolygon) {
+                for (int i = 0; i < g.getNumGeometries(); ++i) {
+                    if (g.getGeometryN(i).isValid()) {
+                        pList.add((Polygon)g.getGeometryN(i));
+                    } else {
+                        LOG.error("is not valid: " + g.getGeometryN(i));
+                    }
+                }
+            } else {
+                LOG.error("Not a Polygon: " + g);
+            }
+        }
+
+        final GeometryCollection polygonCollection = factory.createGeometryCollection(pList.toArray(
+                    new Polygon[pList.size()]));
+
+        return polygonCollection.buffer(0);
     }
 
     /**
@@ -224,5 +355,132 @@ public class GeometryUtils {
         }
 
         return 0;
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private static class UnionHelper {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final int CORES = Runtime.getRuntime().availableProcessors();
+        private static final ExecutorService executor = CismetExecutors.newFixedThreadPool(CORES);
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   geomList  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         *
+         * @throws  InterruptedException  DOCUMENT ME!
+         */
+        public static Geometry union(final List<Geometry> geomList) throws InterruptedException {
+            final BlockingQueue<Geometry> resultQueue = new LinkedBlockingQueue<Geometry>();
+//            final List<Geometry> results = Collections.synchronizedList( new ArrayList<Geometry>() );
+            int countPerCore = geomList.size() / CORES;
+            int i = 0;
+            int n = 0;
+
+            if (countPerCore < 1) {
+                countPerCore = 1;
+            }
+
+            while (i < (geomList.size() - 1)) {
+                final List<Geometry> gl = new ArrayList<Geometry>();
+                ++n;
+
+                for (; (i < (n * countPerCore)) && (i < (geomList.size())); ++i) {
+                    gl.add(geomList.get(i));
+                }
+
+                executor.submit(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                final Geometry g = unionGeometries(gl, 0, gl.size() - 1);
+                                resultQueue.put(g);
+                            } catch (InterruptedException e) {
+                            } catch (Exception e) {
+                                LOG.error("Error while union geometries", e);
+                            }
+                        }
+                    });
+            }
+
+            if (geomList.isEmpty()) {
+                return null;
+            }
+            int resultCount = 0;
+            final Geometry lastResult = null;
+            Geometry resultGeom = null;
+            final List<Geometry> gList = new ArrayList<Geometry>();
+
+            do {
+                resultGeom = resultQueue.take();
+                gList.add(resultGeom);
+                ++resultCount;
+//
+//                if (lastResult != null) {
+//                    final Geometry g1 = lastResult;
+//                    final Geometry g2 = resultGeom;
+//                    ++n;
+//
+//                    executor.submit(new Runnable() {
+//
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                List<Geometry> g = new ArrayList<Geometry>();
+//                                g.add(g1);
+//                                g.add(g2);
+//                                resultQueue.put(unionGeometries(g, 0, g.size() - 1));
+//                            } catch (InterruptedException e) {
+//
+//                            } catch (Exception e) {
+//                                LOG.error("Error while union geometries", e);
+//                            }
+//                        }
+//                    });
+//
+//                    lastResult = null;
+//                } else {
+//                    lastResult = resultGeom;
+//                }
+            } while (resultCount != n);
+
+            return unionGeometries(gList, 0, geomList.size() - 1);
+        }
+
+        /**
+         * public static Geometry unionGeometries(final List<Geometry> geom, final int from, final int to) { if (to ==
+         * from) { return geom.get(from); } else { final Geometry g1 = unionGeometries(geom, from, from + ((to - from) /
+         * 2)); final Geometry g2 = unionGeometries(geom, from + ((to - from) / 2) + 1, to); return g1.union(g2); } }.
+         *
+         * @param   geomList  DOCUMENT ME!
+         * @param   from      DOCUMENT ME!
+         * @param   to        DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        public static Geometry unionGeometries(final List<Geometry> geomList, final int from, final int to) {
+            final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                    geomList.get(0).getSRID());
+            Geometry geom = factory.buildGeometry(geomList);
+
+            if (geom instanceof GeometryCollection) {
+                geom = ((GeometryCollection)geom).union();
+            }
+
+            return geom;
+        }
     }
 }
