@@ -16,8 +16,6 @@ import org.jdom.Element;
 import org.openide.util.Lookup;
 
 import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.event.ActionEvent;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -27,21 +25,16 @@ import java.util.Collection;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
-
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.NoWriteError;
 
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
 import de.cismet.tools.gui.JPopupMenuButton;
-
-import de.cismet.watergis.broker.AppBroker;
-
-import de.cismet.watergis.gui.components.location.SelectionMethodInterface;
 
 /**
  * DOCUMENT ME!
@@ -83,6 +76,7 @@ public class SnappingButton extends JPopupMenuButton implements PropertyChangeLi
             menuItems[i].setAction((AbstractAction)snappingMode);
             menuItemButtonGroup.add(menuItems[i]);
             popup.add(menuItems[i++]);
+            snappingMode.setParentButton(this);
         }
 
         menuItems[0].setSelected(true);

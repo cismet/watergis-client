@@ -133,11 +133,11 @@ public class SelectionButton extends JPopupMenuButton implements PropertyChangeL
             });
 
         rectangleMenu.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/rectangle.png")));
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-rectangle.png")));
         ellipseMenu.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/ellipse.png")));
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-lasso.png")));
         polygonMenu.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/polygon.png")));
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-polygonlasso.png")));
         rectangleMenu.setSelected(true);
         popup.add(rectangleMenu);
         popup.add(polygonMenu);
@@ -162,6 +162,15 @@ public class SelectionButton extends JPopupMenuButton implements PropertyChangeL
         rectangleMenu.setSelected(mode == RECTANGLE_MODE);
         ellipseMenu.setSelected(mode == ELLIPSE_MODE);
         polygonMenu.setSelected(mode == POLYGON_MODE);
+
+        if (mode == RECTANGLE_MODE) {
+            setIcon(rectangleMenu.getIcon());
+        } else if (mode == ELLIPSE_MODE) {
+            setIcon(ellipseMenu.getIcon());
+        } else if (mode == POLYGON_MODE) {
+            setIcon(polygonMenu.getIcon());
+        }
+        repaint();
 
         if (!internal) {
             AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
