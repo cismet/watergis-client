@@ -68,7 +68,6 @@ import de.cismet.cismap.cidslayer.StationCreationCheck;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
-import de.cismet.cismap.commons.gui.attributetable.LinkCellRenderer;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 
 import de.cismet.commons.security.WebDavClient;
@@ -105,6 +104,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     private static String WEB_DAV_PASSWORD = null;
     private static String WEB_DAV_USER = null;
     private static Boolean accessToProtectedWbbl = null;
+    protected static String WK_FG_WEBDAV_PATH = "http://fry.fis-wasser-mv.de/watergis/wk-reports/";
 
     private static int currentYear = 0;
 
