@@ -146,6 +146,7 @@ public class AppBroker implements Configurable {
     private Action lastActionMode;
     private Layer drawingStyleLayer;
     private List<CidsBean> ownWwGr = new ArrayList<CidsBean>();
+    private List<CidsBean> wwGr = new ArrayList<CidsBean>();
     private String[] validLawaCodes;
     private CidsBean niemandWwGr = null;
     private View photoView;
@@ -789,6 +790,24 @@ public class AppBroker implements Configurable {
      */
     public void setOwnWwGr(final List<CidsBean> ownWwGr) {
         this.ownWwGr = ownWwGr;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the ownWwGr
+     */
+    public List<CidsBean> getWwGrList() {
+        return wwGr;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  wwGr  the ownWwGr to set
+     */
+    public void setWwGr(final List<CidsBean> wwGr) {
+        this.wwGr = wwGr;
     }
 
     /**
