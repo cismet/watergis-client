@@ -144,6 +144,8 @@ public class GeometryOpButton extends JPopupMenuButton implements Configurable {
                 menu.setSelected(menu.getAction().equals(currentGeoprocessingAction));
             }
         }
+        setIcon(currentGeoprocessingAction.getSmallIcon());
+        repaint();
     }
 
     @Override

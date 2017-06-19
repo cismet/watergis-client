@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="fotodokumentation" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="de.cismet.cids.custom.reports.scriptlets.LoadFotoScriptlet" uuid="1cb30dc0-64c9-428a-a51d-db68baad0c62">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[id]]></fieldDescription>
+	</field>
+	<field name="av_user" class="java.lang.String">
+		<fieldDescription><![CDATA[av_user]]></fieldDescription>
+	</field>
+	<field name="fotos" class="java.util.Collection">
+		<fieldDescription><![CDATA[fotos]]></fieldDescription>
+	</field>
+	<field name="staeun" class="java.lang.String">
+		<fieldDescription><![CDATA[staeun]]></fieldDescription>
+	</field>
+	<field name="description" class="java.lang.String">
+		<fieldDescription><![CDATA[description]]></fieldDescription>
+	</field>
+	<field name="name" class="java.lang.String">
+		<fieldDescription><![CDATA[name]]></fieldDescription>
+	</field>
+	<field name="av_date" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[av_date]]></fieldDescription>
+	</field>
+	<field name="point" class="de.cismet.cids.dynamics.CidsBean">
+		<fieldDescription><![CDATA[point]]></fieldDescription>
+	</field>
+	<group name="Fotodokumentation" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{id}]]></groupExpression>
+		<groupHeader>
+			<band height="258">
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="20" y="0" width="555" height="40" isRemoveLineWhenBlank="true" uuid="a11f148d-4027-4d41-9efb-6c025aa3255e"/>
+					<textElement textAlignment="Justified" verticalAlignment="Bottom">
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement mode="Opaque" x="20" y="47" width="275" height="20" forecolor="#FFFFFF" backcolor="#00C000" uuid="d3b6e206-cee8-4693-864c-35b81c854aee"/>
+					<box leftPadding="5">
+						<topPen lineWidth="1.0" lineColor="#008000"/>
+						<leftPen lineWidth="1.0" lineColor="#008000"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="14"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="295" y="47" width="280" height="20" forecolor="#FFFFFF" backcolor="#00C000" uuid="0e059d4c-d85f-423f-8c14-9341207b4561"/>
+					<box leftPadding="5">
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#008000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#008000"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="14"/>
+					</textElement>
+					<text><![CDATA[Karte]]></text>
+				</staticText>
+				<image scaleImage="RetainShape">
+					<reportElement x="295" y="67" width="280" height="186" uuid="0b8b72ca-c0d9-4d59-9be4-423c7e04e553"/>
+					<box>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid"/>
+					</box>
+					<imageExpression><![CDATA[$P{REPORT_SCRIPTLET}.generateMap()]]></imageExpression>
+				</image>
+				<textField>
+					<reportElement x="20" y="67" width="275" height="62" uuid="613f4389-47f9-4f7b-84d2-26ca8af1a39a"/>
+					<box leftPadding="5">
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA["StALU: " + $F{staeun}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="20" y="129" width="275" height="62" uuid="b5ca475a-9672-45fd-8877-4807ad465589"/>
+					<box leftPadding="5">
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="12"/>
+					</textElement>
+				</textField>
+				<textField>
+					<reportElement x="20" y="192" width="275" height="61" uuid="d8c920d8-5645-409c-8a01-4e37aa765494"/>
+					<box leftPadding="5">
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Koordinaten: " + $F{point}.getProperty("geo_field").toString()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<background>
+		<band height="842" splitType="Prevent"/>
+	</background>
+	<title>
+		<band height="68">
+			<staticText>
+				<reportElement x="20" y="20" width="555" height="38" forecolor="#00C000" uuid="4b0796ab-146b-4fb4-8a83-0f03c57d1fb0"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font size="30" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Fotodokumentation]]></text>
+			</staticText>
+			<line>
+				<reportElement x="20" y="58" width="555" height="1" forecolor="#C0C0C0" uuid="8d6d8eb3-0be8-4a57-bb9d-2a2a462f0c3d"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<columnHeader>
+		<band/>
+	</columnHeader>
+	<detail>
+		<band height="156">
+			<subreport>
+				<reportElement x="20" y="0" width="555" height="156" uuid="ca6a363e-3d25-452c-b5f3-05b338d96612"/>
+				<dataSourceExpression><![CDATA[new JRBeanCollectionDataSource($F{fotos})]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/cids/custom/reports/fotodokumentation_fotos.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="40">
+			<textField>
+				<reportElement x="384" y="0" width="191" height="20" uuid="20a02d81-a295-4830-aab5-7bc0298934e5"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA["am " + $F{av_date}.toString()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="247" y="0" width="100" height="20" uuid="e2a2facc-d079-4023-ab7c-e122be612210"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{av_user}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="20" y="0" width="100" height="20" uuid="ad487a4d-649a-4697-af12-776125c521e5"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom"/>
+				<text><![CDATA[Letzte Änderung von]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

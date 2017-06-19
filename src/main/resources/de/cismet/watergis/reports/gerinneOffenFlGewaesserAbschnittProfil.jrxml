@@ -1,0 +1,1985 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="3410" pageHeight="595" orientation="Landscape" columnWidth="3370" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="de.cismet.cids.dynamics.CidsBean"/>
+	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<style name="detail_style" fill="Solid" vAlign="Middle" fontSize="6" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" isPdfEmbedded="true">
+		<box leftPadding="2">
+			<leftPen lineWidth="0.25"/>
+			<bottomPen lineWidth="0.25"/>
+			<rightPen lineWidth="0.25"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{summe}]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFC100" fill="Solid" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{zwischenSumme}]]></conditionExpression>
+			<style backcolor="#DBE5F1"/>
+		</conditionalStyle>
+	</style>
+	<style name="column_header_style" fill="Solid" vAlign="Middle" fontSize="6" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true">
+		<box leftPadding="2">
+			<pen lineWidth="0.0"/>
+			<topPen lineWidth="0.25"/>
+			<leftPen lineWidth="0.25"/>
+			<bottomPen lineWidth="0.25"/>
+			<rightPen lineWidth="0.25"/>
+		</box>
+	</style>
+	<style name="offen_a_style" fill="Solid" vAlign="Middle" fontSize="6" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" isPdfEmbedded="true">
+		<box leftPadding="2">
+			<leftPen lineWidth="0.25"/>
+			<bottomPen lineWidth="0.25"/>
+			<rightPen lineWidth="0.25"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{summe} && $F{prof_a} == 100]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFC100" fill="Solid" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{summe} && $F{prof_a} < 100]]></conditionExpression>
+			<style mode="Opaque" forecolor="#FF0000" backcolor="#FFC100" fill="Solid" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[!$F{summe} && $F{prof_a} < 100]]></conditionExpression>
+			<style forecolor="#FF0000" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{zwischenSumme} && $F{prof_a} == 100]]></conditionExpression>
+			<style mode="Opaque" backcolor="#DBE5F1" fill="Solid" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{zwischenSumme} && $F{prof_a} < 100]]></conditionExpression>
+			<style mode="Opaque" forecolor="#FF0000" backcolor="#DBE5F1" fill="Solid" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/jruiz/NetBeansProjects/svn/cids-custom-wrrl-db-mv/src/main/resources/de/cismet/cids/custom/reports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="gemeinden" class="java.lang.Integer"/>
+	<parameter name="datum" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="code" class="java.lang.String"/>
+	<field name="gew_l" class="java.lang.Double"/>
+	<field name="offene_a" class="java.lang.Double"/>
+	<field name="offene_l" class="java.lang.Double"/>
+	<field name="prof_a" class="java.lang.Double"/>
+	<field name="prof_l" class="java.lang.Double"/>
+	<field name="mw_a" class="java.lang.Double"/>
+	<field name="mw_l" class="java.lang.Double"/>
+	<field name="profTrap_a" class="java.lang.Integer"/>
+	<field name="profTrap_l" class="java.lang.Double"/>
+	<field name="profRe_a" class="java.lang.Integer"/>
+	<field name="profRe_l" class="java.lang.Double"/>
+	<field name="brSohleMin" class="java.lang.Double"/>
+	<field name="brSohleMit" class="java.lang.Double"/>
+	<field name="brSohleMax" class="java.lang.Double"/>
+	<field name="bvReMin" class="java.lang.Double"/>
+	<field name="bvReMit" class="java.lang.Double"/>
+	<field name="bvReMax" class="java.lang.Double"/>
+	<field name="bhReMin" class="java.lang.Double"/>
+	<field name="bhReMit" class="java.lang.Double"/>
+	<field name="bhReMax" class="java.lang.Double"/>
+	<field name="blReMin" class="java.lang.Double"/>
+	<field name="blReMit" class="java.lang.Double"/>
+	<field name="blReMax" class="java.lang.Double"/>
+	<field name="bvLiMin" class="java.lang.Double"/>
+	<field name="bvLiMit" class="java.lang.Double"/>
+	<field name="bvLiMax" class="java.lang.Double"/>
+	<field name="bhLiMin" class="java.lang.Double"/>
+	<field name="bhLiMit" class="java.lang.Double"/>
+	<field name="bhLiMax" class="java.lang.Double"/>
+	<field name="blLiMin" class="java.lang.Double"/>
+	<field name="blLiMit" class="java.lang.Double"/>
+	<field name="blLiMax" class="java.lang.Double"/>
+	<field name="flSohle" class="java.lang.Double"/>
+	<field name="flBoeRe" class="java.lang.Double"/>
+	<field name="flBoeLi" class="java.lang.Double"/>
+	<field name="flBoe" class="java.lang.Double"/>
+	<field name="flGer" class="java.lang.Double"/>
+	<field name="brGewMin" class="java.lang.Double"/>
+	<field name="brGewMit" class="java.lang.Double"/>
+	<field name="brGewMax" class="java.lang.Double"/>
+	<field name="flGew" class="java.lang.Double"/>
+	<field name="blNassReMin" class="java.lang.Double"/>
+	<field name="blNassReMit" class="java.lang.Double"/>
+	<field name="blNassReMax" class="java.lang.Double"/>
+	<field name="blTroReMin" class="java.lang.Double"/>
+	<field name="blTroReMit" class="java.lang.Double"/>
+	<field name="blTroReMax" class="java.lang.Double"/>
+	<field name="blNassLiMin" class="java.lang.Double"/>
+	<field name="blNassLiMit" class="java.lang.Double"/>
+	<field name="blNassLiMax" class="java.lang.Double"/>
+	<field name="blTroLiMin" class="java.lang.Double"/>
+	<field name="blTroLiMit" class="java.lang.Double"/>
+	<field name="blTroLiMax" class="java.lang.Double"/>
+	<field name="flBoeNassRe" class="java.lang.Double"/>
+	<field name="flBoeTroRe" class="java.lang.Double"/>
+	<field name="flBoeNassLi" class="java.lang.Double"/>
+	<field name="flBoeTroLi" class="java.lang.Double"/>
+	<field name="flBoeNass" class="java.lang.Double"/>
+	<field name="flBoeTro" class="java.lang.Double"/>
+	<field name="flNass" class="java.lang.Double"/>
+	<field name="summe" class="java.lang.Boolean"/>
+	<field name="flQsGerMin" class="java.lang.Double"/>
+	<field name="flQsGerMit" class="java.lang.Double"/>
+	<field name="flQsGerMax" class="java.lang.Double"/>
+	<field name="flQsGewMin" class="java.lang.Double"/>
+	<field name="flQsGewMit" class="java.lang.Double"/>
+	<field name="flQsGewMax" class="java.lang.Double"/>
+	<field name="laenge" class="java.lang.Double"/>
+	<field name="von" class="java.lang.String"/>
+	<field name="bis" class="java.lang.String"/>
+	<field name="zwischenSumme" class="java.lang.Boolean"/>
+	<field name="group" class="java.lang.String"/>
+	<variable name="df" class="java.text.DecimalFormat">
+		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
+	</variable>
+	<variable name="dfAnzahl" class="java.text.DecimalFormat">
+		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
+	</variable>
+	<group name="GewaesserGroup" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{group}]]></groupExpression>
+		<groupHeader>
+			<band height="70">
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="100" y="56" width="233" height="14" backcolor="#D8D8D8" uuid="b53dc880-2206-42a9-8e7e-19def3a4678c"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Name]]></text>
+				</staticText>
+				<textField>
+					<reportElement style="column_header_style" mode="Opaque" x="0" y="0" width="664" height="14" backcolor="#FDFD00" uuid="64c87194-d531-463b-9e7a-0122fa0241e5"/>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Statistik Gerinne (offen) / Gemeinden: Anzahl Gemeinden" + $P{gemeinden}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="0" y="56" width="100" height="14" backcolor="#D8D8D8" uuid="dc612570-0f2b-4713-ae26-3051f0dc3bf5"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Code]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="333" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="fb86c1fc-fc90-4e80-ad85-5993b0bec0f0"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Länge]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="0" y="28" width="382" height="28" backcolor="#BFBFBF" uuid="62270c9e-bf74-4347-abeb-35dda11df187"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Gewässer]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="520" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="c0fd1a37-2183-4ea6-b3a7-c502f8171eff"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[von Gewässer: davon offen]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="520" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="3a6a75b8-a41a-4b7a-a352-e51691e89002"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Länge]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="565" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="192d8a41-dc31-4529-8af0-20cfd1d27ab4"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Anteil]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="614" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="c4ac5291-8d16-4333-a361-9fa4d269e029"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Länge]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="659" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="4fe534bc-ee51-4f8f-943c-4c19668e265d"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Anteil]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="614" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="e5f0a477-5244-4f7f-8985-85e2f2dab90d"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[von offen: davon mit Profil]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="708" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="bf837177-6318-48f8-aa88-18e8647729f0"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Länge]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="753" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="54d18d21-5303-4b45-a07d-82377d862cd3"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Anteil]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="708" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="c579b362-05c8-46bd-8d46-b1ac5055bf36"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[von mit Profil: davon mit MW]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="802" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="0babe4df-b69b-43db-8a96-492e0e09617c"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Profile Trapez]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="847" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="1f958ae2-5372-4dce-bf66-a5267f0b130e"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Länge]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="802" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="9a5e24a4-64f2-481c-bf8c-f9a9fe8ee203"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Anzahl]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="896" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="8a1f1873-e430-488c-9e02-109bfaeabff4"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Profile Rechteck]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="896" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="fede0a22-18a2-4300-b67a-6dc11748f0c6"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Anzahl]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="941" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="e55247d8-8cfa-49b1-afe9-86446933cfff"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Länge]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="990" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="8e08870b-1478-42af-8f77-e23387c09451"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Br]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="664" y="0" width="2702" height="14" backcolor="#FDFD00" uuid="573b9ebc-cd73-41dc-9fd3-e09295e4db1b"/>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField>
+					<reportElement style="column_header_style" mode="Opaque" x="0" y="14" width="664" height="14" backcolor="#FDFD00" uuid="6e1e6f12-d779-4cbe-b54d-0fc8bb58da78"/>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Stand: " + $P{datum}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="664" y="14" width="2702" height="14" backcolor="#FDFD00" uuid="f419f239-c50e-405c-ab40-18cd9e124cb6"/>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="990" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="a9de27da-9546-4a46-83f4-f24b7554effc"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1028" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="4d4b72b5-ea55-457f-8513-b45d928f27f0"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1066" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="52165b5e-fa6b-498a-9526-12c075b7ba90"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="990" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="886dc18f-afac-4866-8cb5-4d06b099f612"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Sohle]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1104" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="01d3f7cf-4d93-4b47-85b4-5117f0cae9b4"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BV]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1218" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="2b2f11e1-e0ed-41ed-bb4a-410a691da90b"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BH]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1332" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="b945964e-6751-44fc-bbd7-c818acc9640b"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1446" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="7a1fde73-43ad-4c8e-ab41-7e4b8a135079"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BV]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1104" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="3de59d8d-1c50-43e4-801a-736d3fa9cd22"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[re]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1218" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="5c6793f0-177d-4dc4-9671-45bc098bec9f"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[re]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1332" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="266d8815-ca42-483c-a583-f9e8c7172d87"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[re]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1446" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="49231e5c-57a0-47b7-bd74-3ba8a289e389"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[li]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1142" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="47665118-f0fd-4852-b8a0-59df01eb7007"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1180" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="2c0ee1a8-d33b-4cb1-94df-ac0df2074753"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1104" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="19bd8389-d1d5-4b99-bd98-dcefadba25ed"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1256" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="ab02f065-3862-452d-9480-3748fcf428cf"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1294" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="60c3451f-992e-445d-8d13-8cbc18069c6d"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1218" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="b812f612-84a1-479a-a87b-a78ddb24072c"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1370" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="c4c74299-7556-454c-80d0-f7aa69f73863"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1408" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="023a661f-00bd-4a36-9149-dea746c9c846"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1332" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="0eb81c54-a795-4a1e-8488-b62f95095f98"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1484" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="5e67f8be-117a-436b-b490-56b168ea3a48"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1522" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="fde22067-309a-42b6-9925-d829b95d1bba"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1446" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="d7571159-1f72-4305-9623-a2900504d60d"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1674" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="c66b3dc2-0a67-4055-b5e2-f9640a63d2da"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1560" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="f37515c2-8e2c-43b4-83b6-ad5ec7d5a82f"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BH]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1560" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="b8b921a5-b4a7-402d-8388-ab9306f18c49"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[li]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1674" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="f6c69287-e5aa-424b-8dad-d6d5e7fb4243"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[li]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1560" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="6b307785-3c2b-4a06-9ef1-a4df9154c9e3"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1598" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="6f96d5c2-68e6-4262-9219-99434ea00dfa"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1636" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="c8fc87a2-8dca-45a9-abcc-f81d38e7c12b"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1674" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="ded3523e-ac9c-4e2f-834c-036aee84c124"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1712" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="05d02282-239a-464a-bf28-350f516c1c71"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1750" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="211a0ae4-2020-4140-989a-f49fcb02945d"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1788" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="08640db4-1928-44a8-8ac9-9a798b6fabd7"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1788" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="39ec5eab-6583-439e-a2e2-61fe89c6fac1"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Sohle]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1788" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="b15bf05d-c727-4517-8ba7-4e0c17cc6eb5"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1848" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="edab40fc-8696-4c40-b104-905a750b2c04"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1848" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="4b57d16c-0963-4346-b25d-d78eed26b7c1"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl Bö]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1848" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="91b95d9f-673a-41ea-875f-cdb4a3520a71"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[re]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1908" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="707beedc-eb5f-421b-8d89-336a02c3c81a"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl Bö]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1908" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="36691a99-af26-4ba0-be6d-612c19c45809"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1908" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="6a37eb11-bc95-442a-8a52-42cb27f9b7b8"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[li]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1968" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="d15f4998-a1ef-4f30-9c3f-91ff90f053e0"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1968" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="58e70ae9-3cab-414e-8fd2-2a9b0f21668b"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Bö]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2028" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="fec0bc05-bb9e-4cb1-81a3-f6aa2df14f86"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2028" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="93064fec-925b-4dfd-8782-559d8dcd27f5"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Ger]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="1968" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="af01ced9-7a71-4c5f-aac0-a335a340a43e"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2028" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="2c222956-f69d-419b-9764-156582d5d1c6"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2202" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="2d0e3bb2-cea8-465d-8bea-65e4f8791df0"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2202" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="e4ef1547-b601-4d0e-b661-1f33c1014b11"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Gew]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2240" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="eac17904-deb7-4e30-90ec-8b66380b747a"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2278" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="3ad8fcde-20a8-429d-b154-f80335e351c6"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2202" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="e2077d60-411d-41ea-8ab5-14d1cfce4bbd"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2316" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="4113d371-9341-4e36-bda5-285dedd98b2c"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[FL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2316" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="c7e2df3f-e9da-4f69-82ca-bb1389f917e3"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Solid"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Gew]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2316" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="51424d78-739f-4ae7-988d-96a6d617619b"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2490" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="564d8a8a-c15c-455e-8fdb-9b8154109cbe"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[nass re]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2490" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="2cc37c0a-23ff-4867-9d6a-9244bdd77665"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2566" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="8e47a78e-716e-4f27-ab69-e0484967ba9b"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2490" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="7e93e02d-800e-4d63-837a-e7cd64152cb0"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2528" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="1df900da-b6c6-4d09-b6a4-da1999961142"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2604" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="fac69aad-575a-4ad8-a00b-65713b9d41c4"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[tro re]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2604" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="ff82d4ca-8302-4b1f-896f-b4de98992770"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2718" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="e4ed639d-7d2a-49d3-805f-4905161869c9"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[nass li]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2718" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="e29fe1ce-3f0c-4383-b5c2-ef875de0f62e"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2832" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="557c0be5-6530-46aa-839c-1c3160832428"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[tro li]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2832" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="b67fa0dd-b292-4699-8fb1-50fb03dd408d"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[BL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2642" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="0d59be04-8c15-4fda-b8a3-e5ebdb1a0686"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2604" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="7941e2c4-843a-4eda-9f27-41f40dcc67fa"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2680" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="358cca24-c116-4424-a5c2-f998fcf1c7ea"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2756" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="ae0c56a6-e827-47f8-acab-841a6187a42e"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2718" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="1f280399-68f3-4170-bcbe-74e4581cd7a2"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2794" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="0e49a52e-0e66-4f42-b954-ab236e8573f4"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2870" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="e2b859fd-4f57-4e77-bdbb-250b58871ff9"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2832" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="3bb773a8-917c-4262-afc0-e20d4de24847"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2908" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="019b81a0-0392-4735-81cf-4833ee56ad8f"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2946" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="1d2fe5f3-5c16-45f6-b2c4-89c2dd63966b"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[nass re]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2946" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="779fed1f-f2ae-4a71-ba40-97038a4fd2d3"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl Bö]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2946" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="b7551374-bc98-44f3-8f1e-7b85225ef3d2"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3006" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="f739b7b0-45e1-4ed1-a991-9a84e963d5ac"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl Bö]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3006" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="9770860e-d0a1-4f2e-978e-61f2458b95f0"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[tro re]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3006" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="d0e721fe-0ca9-4cd0-a7d7-7fd40bd6d684"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3066" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="07602ab7-b98c-4039-8acd-1e02d8fab1b9"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl Bö]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3066" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="879947b5-83a6-49b3-b316-44bcba53390c"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[nass li]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3126" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="bea050f8-9e20-4546-8748-7761e8003210"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl Bö]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3126" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="5a8acf08-2dee-4008-9aba-2e2a08843ae8"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[tro li]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3066" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="4bc5953f-95bb-4df9-81a7-a8f8d229888d"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3126" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="640df243-8057-48bb-8e46-6bd63b3cb3dc"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3186" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="e81c6142-a38b-44fa-ad01-538f52472ecd"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl Bö]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3186" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="db00cb75-a309-4d34-8a41-71cdb04fa3b6"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[nass]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3246" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="e17e3dd2-0fdb-4bcb-b76e-6aefa8352603"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl Bö]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3246" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="bb526c7c-df22-469d-b75e-96425125a547"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[tro]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3306" y="28" width="60" height="14" backcolor="#BFBFBF" uuid="feb529d2-2a4c-4883-bb1e-de20f61f3c23"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3306" y="42" width="60" height="14" backcolor="#BFBFBF" uuid="09161223-9f64-4cf1-9577-7ed2d657f06e"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+						<rightPen lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[nass]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3186" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="5abf3975-8468-43bb-a165-c9985aa3f0d2"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3246" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="d1dc5bff-2862-410b-afb3-42f565551535"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3306" y="56" width="60" height="14" backcolor="#D8D8D8" uuid="59035cd9-0805-44fd-8e39-7bc2cc6af129"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2088" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="5c15883d-f4be-4afa-936a-562ecf1d4dc0"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl QS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2088" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="10d8cade-8974-4609-885b-2bf548fba3c3"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Ger]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2088" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="c7f70a49-88d4-4945-9097-4afa8d685e04"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2164" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="72a5716e-bbed-4b4d-b07c-fab5d96b3ce8"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2126" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="2d159909-2eab-48b1-aad0-6272a3f7e764"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2376" y="42" width="114" height="14" backcolor="#BFBFBF" uuid="56f78244-3862-4992-b2ba-b697e9d5110e"/>
+					<box leftPadding="2" rightPadding="2">
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Gew]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2376" y="28" width="114" height="14" backcolor="#BFBFBF" uuid="51a7c62f-0136-4796-8703-bf369ac2b271"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fl QS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2414" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="89909e76-dce7-41be-b4b6-d328bdf77423"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[mit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2452" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="9d833699-d2de-49e4-bead-87836f4c9de8"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[max]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2376" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="113c8370-3094-4304-a7ad-1fbb43138a18"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[min]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="382" y="28" width="138" height="28" backcolor="#BFBFBF" uuid="66ce93ff-8b1a-49d2-8416-ec97e696e3df"/>
+					<box leftPadding="2" rightPadding="2">
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Abschnitt]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="382" y="56" width="46" height="14" backcolor="#D8D8D8" uuid="9096c020-2b1c-4988-accf-40e8bc9ddcbd"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[von]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="428" y="56" width="46" height="14" backcolor="#D8D8D8" uuid="3e1d3232-b4b7-478e-9498-d18811ba2899"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[bis]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="474" y="56" width="46" height="14" backcolor="#D8D8D8" uuid="b94b0263-d74e-4ded-b99d-7a6da345b65b"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Länge]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band/>
+	</background>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<detail>
+		<band height="14">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="100" y="0" width="233" height="14" isPrintWhenDetailOverflows="true" uuid="94dd8453-052e-407d-92b0-a624d609e8ab"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="0" y="0" width="100" height="14" isPrintWhenDetailOverflows="true" uuid="dfba1877-83cc-4866-b7d9-d624b9b7dc82"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="333" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="5d6804cd-b110-4b5d-80bb-1c7153ae826a"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gew_l}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="520" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="c5168806-f72f-4275-9cbc-1feac2f320f6"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{offene_l}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="565" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="76b3ec43-5d95-4923-8df5-3677e27b3982"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{offene_a}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="614" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="1138e8c3-20ba-4c55-838a-2f7b30ca4427"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prof_l}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="offen_a_style" stretchType="RelativeToBandHeight" x="659" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="b6a8d37d-01ae-4bf8-8521-5f4aff7a2851"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prof_a}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="708" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="a362a032-d740-495f-9497-e4ecf5da1fd6"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{mw_a}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="753" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="98ce4c60-9330-4ee0-8380-fe84511db0c7"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{mw_l}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="802" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="49fbc5e4-283f-41be-9438-c70b3ad92899"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{profTrap_a}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="847" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="af12c3f7-a4fa-45e2-b96c-3de6776cd368"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{profTrap_l}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="896" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="3acf3169-9292-497c-8b96-64696625b6a7"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{profRe_a}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="941" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="5c8e8c8c-57e5-4e69-a21f-ea358067ee66"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{profRe_l}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="990" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="0750f431-a489-4f9e-bf0a-39fec3765e99"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{brSohleMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1028" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="4e9ed36d-d6d3-41ea-bd10-a509f456f1ce"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{brSohleMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1066" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="0cb4e220-6fe0-4616-9612-18244fe80a25"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{brSohleMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1142" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="8857e7e2-238c-4098-99ab-9bccb7d6f100"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bvReMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1104" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="2567813b-4f6d-473b-8c26-7dc750047b72"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bvReMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1180" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="2427f9bf-497c-4ef5-ac25-a972b55e50f4"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bvReMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1256" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="d77d74f1-202b-4be6-a892-daf6e60143d3"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bhReMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1218" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="419f073c-af4e-4395-b705-e07e9295cf22"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bhReMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1294" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="5e57783a-b279-4971-8c97-91d1d1aa42ae"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bhReMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1370" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="d2ce287e-1fee-41ea-a9eb-0ff9066b1459"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blReMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1332" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="d6e72234-0cc0-464b-b1fa-fd3e9fcea009"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blReMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1408" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="186efa28-0b2f-458b-9fe1-3fdea1050fde"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blReMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1484" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="5544183a-b331-4b13-992e-f7462229b2b4"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bvLiMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1446" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="dee0808f-845b-4d0e-8477-0507c9203075"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bvLiMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1522" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="a22cd1a6-3add-4347-aa61-ea09bde0fb91"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bvLiMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1560" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="00474f71-2d26-4e60-aa00-54dffc6cb662"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bhLiMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1636" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="4ed0975b-38e6-45a7-89f3-1959a7d2d47a"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bhLiMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1598" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="167a0737-06fb-4387-87da-ad598a8b8999"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bhLiMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1674" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="577d173e-78fa-4d15-ba61-6ef86c3c16d7"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blLiMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1750" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="b8abfc79-d620-4c96-b4a6-e5d183273154"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<rightPen lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blLiMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1712" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="3965420e-59ee-409d-8bd0-fc6cbb43b6a9"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blLiMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1788" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="d4877bbd-e8ce-49bd-99b4-8500097b8b41"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flSohle}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1848" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="32a1c0a7-2557-4b70-9541-d6858af3a33d"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flBoeRe}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1908" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="0082745b-89f4-4eb9-90b9-e0112265bd49"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flBoeLi}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1968" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="ee75eb17-895d-4b8f-a181-02eefab43880"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flBoe}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2028" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="84650878-a326-449f-b367-351c0b58e5d4"/>
+				<box leftPadding="2" rightPadding="2">
+					<rightPen lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flGer}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2278" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="6beb3d23-ae59-4d3b-b88a-3b22cf24fe7f"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{brGewMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2202" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="615dfc08-dc2e-487c-9e54-aaf2f04db726"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{brGewMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2240" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="a0cd6f85-9264-48e7-9812-6b6e7d63063f"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{brGewMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2316" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="958679fc-5bdf-4e89-b4aa-f1f55555aaf5"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flGew}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2566" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="54eefc27-e0f7-4e48-9514-de74f0fb2ebc"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blNassReMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2490" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="2e251df3-a0d8-48cc-bb2d-2883e6e48000"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blNassReMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2528" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="5ede2aab-b42c-40ae-ae3b-c53a25721d07"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blNassReMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2604" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="e20ccdf1-727e-4f81-bdbb-baec39476b08"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blTroReMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2680" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="e780a6c0-5dd3-452d-8d71-adca05fbd154"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blTroReMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2642" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="10a543f6-3de7-4ba6-a54b-6eee325304b0"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blTroReMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2718" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="a9cc32cb-ba7a-4577-b8e7-0e03a77f801f"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blNassLiMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2794" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="92aeab0f-5a6d-4695-a094-fa406cac00cd"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blNassLiMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2756" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="9d0074a6-989c-4b64-a614-b16d88d34738"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blNassLiMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2832" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="923d6e5f-fa3d-4c27-b466-af717951b343"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blTroLiMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2908" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="52b73868-e6a2-4187-86b6-d9f6bdd7a0e3"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blTroLiMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2870" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="92215749-77bf-440a-8211-5ff8cf503c4f"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blTroLiMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2946" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="2eca03d6-cc57-4c08-a4f7-a67a482ba3cd"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flBoeNassRe}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3006" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="020aaab4-da3d-4b34-bf7f-188012905bbd"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flBoeTroRe}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3066" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="5970d606-c71f-4c58-a56d-15cdce881088"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flBoeNassLi}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3126" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="7557d006-d9c7-49d1-9655-671cd0a3173f"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flBoeTroLi}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3186" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="a5c914ed-9143-412b-b961-598e5e59f3a7"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flBoeNass}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3246" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="e442a481-04c6-468b-b20f-25cf5a04d4df"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flBoeTro}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3306" y="0" width="60" height="14" isPrintWhenDetailOverflows="true" uuid="ab0a7a68-3d89-41e3-b38a-73a9f1ab8f70"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flNass}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2088" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="0e195b76-7662-4ae8-a3e9-9bd5e1a14cde"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flQsGerMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2126" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="00588eae-b585-4b62-9f08-1ef68a65de61"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flQsGerMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2164" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="050fef3d-e7ca-4fc4-a8e3-88488124c31f"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flQsGerMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2376" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="2bd8ba93-d3e3-4f40-aecb-5a85405ad285"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flQsGewMin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2414" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="27933a98-237d-46bb-a288-e2ebeb473703"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flQsGewMit}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2452" y="0" width="38" height="14" isPrintWhenDetailOverflows="true" uuid="d208fbe7-3a14-40c6-9893-dabc3c789430"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{flQsGewMax}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="428" y="0" width="46" height="14" isPrintWhenDetailOverflows="true" uuid="3036140b-4ced-47fe-b1d9-0a43fb50cff4"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bis}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="382" y="0" width="46" height="14" isPrintWhenDetailOverflows="true" uuid="dd088980-d471-4ddf-856a-418e513f5394"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{von}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="474" y="0" width="46" height="14" isPrintWhenDetailOverflows="true" uuid="ed868f17-f07b-44a1-a994-f0f8d8e0bd7a"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{laenge}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

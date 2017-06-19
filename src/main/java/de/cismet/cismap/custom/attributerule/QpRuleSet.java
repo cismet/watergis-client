@@ -126,12 +126,16 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("id")
-                    && !columnName.equals("ho") && !columnName.equals("re") && !columnName.equals("qp_nr")
-                    && !columnName.equals("la_st") && !columnName.equals("la_cd") && !columnName.equals("ww_gr")
-                    && !columnName.equals("upl_name") && !columnName.equals("upl_datum")
-                    && !columnName.equals("upl_zeit");
+        if (columnName.equals("ww_gr")) {
+            return AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren");
+        } else {
+            return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
+                        && !columnName.equals("geom") && !columnName.equals("id")
+                        && !columnName.equals("ho") && !columnName.equals("re") && !columnName.equals("qp_nr")
+                        && !columnName.equals("la_st") && !columnName.equals("la_cd")
+                        && !columnName.equals("upl_name") && !columnName.equals("upl_datum")
+                        && !columnName.equals("upl_zeit");
+        }
     }
 
     @Override

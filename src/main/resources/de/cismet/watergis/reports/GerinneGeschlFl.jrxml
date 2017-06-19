@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Fließgewässer" pageWidth="942" pageHeight="5950000" columnWidth="902" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="net.sf.jasperreports.engine.JRDefaultScriptlet" whenResourceMissingType="Empty" uuid="a242911c-ac82-40fb-91f8-0d675dafaa30">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="New Dataset 1" uuid="118ac2c0-79cc-4e72-98e2-c4e31c9320cf">
+		<field name="address" class="com.jaspersoft.ireport.examples.beans.AddressBean"/>
+	</subDataset>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dataSources" class="java.util.Map"/>
+	<parameter name="datum" class="java.lang.String"/>
+	<parameter name="spalte10" class="java.lang.Boolean"/>
+	<parameter name="spalte9" class="java.lang.Boolean"/>
+	<parameter name="spalte8" class="java.lang.Boolean"/>
+	<parameter name="spalte7" class="java.lang.Boolean"/>
+	<parameter name="spalte6" class="java.lang.Boolean"/>
+	<parameter name="spalte5" class="java.lang.Boolean"/>
+	<parameter name="spalte4" class="java.lang.Boolean"/>
+	<parameter name="spalte3" class="java.lang.Boolean"/>
+	<parameter name="spalte2" class="java.lang.Boolean"/>
+	<parameter name="spalte1" class="java.lang.Boolean"/>
+	<parameter name="dimension" class="java.lang.Boolean"/>
+	<parameter name="perGew" class="java.lang.Boolean"/>
+	<parameter name="perAbschn" class="java.lang.Boolean"/>
+	<parameter name="sumGu" class="java.lang.Boolean"/>
+	<parameter name="wdm" class="java.lang.Boolean"/>
+	<parameter name="spalte11" class="java.lang.Boolean"/>
+	<parameter name="ges" class="java.lang.Boolean"/>
+	<parameter name="gemKomp" class="java.lang.Boolean"/>
+	<parameter name="fachdata" class="java.lang.Boolean"/>
+	<parameter name="perObject" class="java.lang.Boolean"/>
+	<parameter name="withWdm" class="java.lang.Boolean"/>
+	<parameter name="tiefenklasse" class="java.lang.Boolean"/>
+	<field name="name" class="java.lang.String"/>
+	<detail>
+		<band height="300">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="902" height="30" uuid="c56c76b2-c5fa-4b14-a45a-202d6facc3e3">
+					<printWhenExpression><![CDATA[!$P{gemKomp}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="spalte9">
+					<subreportParameterExpression><![CDATA[$P{spalte9}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte11">
+					<subreportParameterExpression><![CDATA[$P{spalte11}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte10">
+					<subreportParameterExpression><![CDATA[$P{spalte10}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="withWdm">
+					<subreportParameterExpression><![CDATA[$P{withWdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perObject">
+					<subreportParameterExpression><![CDATA[$P{perObject}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gemKomp">
+					<subreportParameterExpression><![CDATA[$P{gemKomp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tiefenklasse">
+					<subreportParameterExpression><![CDATA[$P{tiefenklasse}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ges">
+					<subreportParameterExpression><![CDATA[$P{ges}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dimension">
+					<subreportParameterExpression><![CDATA[$P{dimension}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte4">
+					<subreportParameterExpression><![CDATA[$P{spalte4}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fachdata">
+					<subreportParameterExpression><![CDATA[$P{fachdata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte3">
+					<subreportParameterExpression><![CDATA[$P{spalte3}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte2">
+					<subreportParameterExpression><![CDATA[$P{spalte2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte1">
+					<subreportParameterExpression><![CDATA[$P{spalte1}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte8">
+					<subreportParameterExpression><![CDATA[$P{spalte8}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte7">
+					<subreportParameterExpression><![CDATA[$P{spalte7}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte6">
+					<subreportParameterExpression><![CDATA[$P{spalte6}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte5">
+					<subreportParameterExpression><![CDATA[$P{spalte5}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gemeinden")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/GerinneGeschlFl_gemeinden.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="902" height="30" uuid="d3144b07-a707-4536-a444-ca690a7e7f22">
+					<printWhenExpression><![CDATA[$P{gemKomp}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="spalte9">
+					<subreportParameterExpression><![CDATA[$P{spalte9}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte11">
+					<subreportParameterExpression><![CDATA[$P{spalte11}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte10">
+					<subreportParameterExpression><![CDATA[$P{spalte10}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="withWdm">
+					<subreportParameterExpression><![CDATA[$P{withWdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perObject">
+					<subreportParameterExpression><![CDATA[$P{perObject}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gemKomp">
+					<subreportParameterExpression><![CDATA[$P{gemKomp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tiefenklasse">
+					<subreportParameterExpression><![CDATA[$P{tiefenklasse}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ges">
+					<subreportParameterExpression><![CDATA[$P{ges}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dimension">
+					<subreportParameterExpression><![CDATA[$P{dimension}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte4">
+					<subreportParameterExpression><![CDATA[$P{spalte4}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fachdata">
+					<subreportParameterExpression><![CDATA[$P{fachdata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte3">
+					<subreportParameterExpression><![CDATA[$P{spalte3}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte2">
+					<subreportParameterExpression><![CDATA[$P{spalte2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte1">
+					<subreportParameterExpression><![CDATA[$P{spalte1}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte8">
+					<subreportParameterExpression><![CDATA[$P{spalte8}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte7">
+					<subreportParameterExpression><![CDATA[$P{spalte7}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte6">
+					<subreportParameterExpression><![CDATA[$P{spalte6}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte5">
+					<subreportParameterExpression><![CDATA[$P{spalte5}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gemeinden")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/GerinneGeschlFl_gemeindenKomp.jasper"]]></subreportExpression>
+			</subreport>
+			<break>
+				<reportElement positionType="Float" x="0" y="30" width="100" height="1" uuid="e4a59930-15e0-4eca-8539-e104d617c32b"/>
+			</break>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="31" width="902" height="30" uuid="095ed44d-ee16-460f-baa1-4bc88d7d9bf8">
+					<printWhenExpression><![CDATA[!$P{gemKomp}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="spalte9">
+					<subreportParameterExpression><![CDATA[$P{spalte9}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte11">
+					<subreportParameterExpression><![CDATA[$P{spalte11}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte10">
+					<subreportParameterExpression><![CDATA[$P{spalte10}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="withWdm">
+					<subreportParameterExpression><![CDATA[$P{withWdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perObject">
+					<subreportParameterExpression><![CDATA[$P{perObject}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gemKomp">
+					<subreportParameterExpression><![CDATA[$P{gemKomp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tiefenklasse">
+					<subreportParameterExpression><![CDATA[$P{tiefenklasse}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ges">
+					<subreportParameterExpression><![CDATA[$P{ges}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dimension">
+					<subreportParameterExpression><![CDATA[$P{dimension}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte4">
+					<subreportParameterExpression><![CDATA[$P{spalte4}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fachdata">
+					<subreportParameterExpression><![CDATA[$P{fachdata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte3">
+					<subreportParameterExpression><![CDATA[$P{spalte3}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte2">
+					<subreportParameterExpression><![CDATA[$P{spalte2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte1">
+					<subreportParameterExpression><![CDATA[$P{spalte1}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte8">
+					<subreportParameterExpression><![CDATA[$P{spalte8}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte7">
+					<subreportParameterExpression><![CDATA[$P{spalte7}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte6">
+					<subreportParameterExpression><![CDATA[$P{spalte6}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte5">
+					<subreportParameterExpression><![CDATA[$P{spalte5}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesser")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/GerinneGeschlFl_gewaesser.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="31" width="902" height="30" uuid="9ae2208d-3a42-4e0e-8417-111fec6c27de">
+					<printWhenExpression><![CDATA[$P{gemKomp}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="spalte9">
+					<subreportParameterExpression><![CDATA[$P{spalte9}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte11">
+					<subreportParameterExpression><![CDATA[$P{spalte11}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte10">
+					<subreportParameterExpression><![CDATA[$P{spalte10}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="withWdm">
+					<subreportParameterExpression><![CDATA[$P{withWdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perObject">
+					<subreportParameterExpression><![CDATA[$P{perObject}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gemKomp">
+					<subreportParameterExpression><![CDATA[$P{gemKomp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tiefenklasse">
+					<subreportParameterExpression><![CDATA[$P{tiefenklasse}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ges">
+					<subreportParameterExpression><![CDATA[$P{ges}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dimension">
+					<subreportParameterExpression><![CDATA[$P{dimension}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte4">
+					<subreportParameterExpression><![CDATA[$P{spalte4}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fachdata">
+					<subreportParameterExpression><![CDATA[$P{fachdata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte3">
+					<subreportParameterExpression><![CDATA[$P{spalte3}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte2">
+					<subreportParameterExpression><![CDATA[$P{spalte2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte1">
+					<subreportParameterExpression><![CDATA[$P{spalte1}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte8">
+					<subreportParameterExpression><![CDATA[$P{spalte8}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte7">
+					<subreportParameterExpression><![CDATA[$P{spalte7}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte6">
+					<subreportParameterExpression><![CDATA[$P{spalte6}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte5">
+					<subreportParameterExpression><![CDATA[$P{spalte5}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesser")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/GerinneGeschlFl_gewaesserKomp.jasper"]]></subreportExpression>
+			</subreport>
+			<break>
+				<reportElement positionType="Float" x="0" y="61" width="100" height="1" uuid="55c56f25-ffb8-434f-aceb-d2556dc5b92a"/>
+			</break>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="62" width="902" height="30" uuid="31b20fbc-5e12-4e24-942b-c0a468f45a74">
+					<printWhenExpression><![CDATA[$P{perObject}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="spalte9">
+					<subreportParameterExpression><![CDATA[$P{spalte9}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte11">
+					<subreportParameterExpression><![CDATA[$P{spalte11}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte10">
+					<subreportParameterExpression><![CDATA[$P{spalte10}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="withWdm">
+					<subreportParameterExpression><![CDATA[$P{withWdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perObject">
+					<subreportParameterExpression><![CDATA[$P{perObject}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gemKomp">
+					<subreportParameterExpression><![CDATA[$P{gemKomp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tiefenklasse">
+					<subreportParameterExpression><![CDATA[$P{tiefenklasse}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ges">
+					<subreportParameterExpression><![CDATA[$P{ges}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dimension">
+					<subreportParameterExpression><![CDATA[$P{dimension}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte4">
+					<subreportParameterExpression><![CDATA[$P{spalte4}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fachdata">
+					<subreportParameterExpression><![CDATA[$P{fachdata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte3">
+					<subreportParameterExpression><![CDATA[$P{spalte3}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte2">
+					<subreportParameterExpression><![CDATA[$P{spalte2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte1">
+					<subreportParameterExpression><![CDATA[$P{spalte1}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte8">
+					<subreportParameterExpression><![CDATA[$P{spalte8}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte7">
+					<subreportParameterExpression><![CDATA[$P{spalte7}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte6">
+					<subreportParameterExpression><![CDATA[$P{spalte6}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte5">
+					<subreportParameterExpression><![CDATA[$P{spalte5}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("objects")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/GerinneGeschlFl_gewaesser_objekt.jasper"]]></subreportExpression>
+			</subreport>
+			<break>
+				<reportElement positionType="Float" x="0" y="92" width="100" height="1" uuid="124b1d64-0b0a-443a-a0c8-ef9010b664f2"/>
+			</break>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="93" width="902" height="30" uuid="64dadea7-83b7-4438-9179-2c5fac46dc24">
+					<printWhenExpression><![CDATA[$P{sumGu} && !$P{gemKomp}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="spalte9">
+					<subreportParameterExpression><![CDATA[$P{spalte9}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte11">
+					<subreportParameterExpression><![CDATA[$P{spalte11}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte10">
+					<subreportParameterExpression><![CDATA[$P{spalte10}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="withWdm">
+					<subreportParameterExpression><![CDATA[$P{withWdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perObject">
+					<subreportParameterExpression><![CDATA[$P{perObject}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gemKomp">
+					<subreportParameterExpression><![CDATA[$P{gemKomp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tiefenklasse">
+					<subreportParameterExpression><![CDATA[$P{tiefenklasse}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ges">
+					<subreportParameterExpression><![CDATA[$P{ges}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dimension">
+					<subreportParameterExpression><![CDATA[$P{dimension}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte4">
+					<subreportParameterExpression><![CDATA[$P{spalte4}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fachdata">
+					<subreportParameterExpression><![CDATA[$P{fachdata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte3">
+					<subreportParameterExpression><![CDATA[$P{spalte3}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte2">
+					<subreportParameterExpression><![CDATA[$P{spalte2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte1">
+					<subreportParameterExpression><![CDATA[$P{spalte1}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte8">
+					<subreportParameterExpression><![CDATA[$P{spalte8}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte7">
+					<subreportParameterExpression><![CDATA[$P{spalte7}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte6">
+					<subreportParameterExpression><![CDATA[$P{spalte6}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte5">
+					<subreportParameterExpression><![CDATA[$P{spalte5}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gu")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/GerinneGeschlFl_gu.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="93" width="902" height="30" uuid="c05faeda-3373-4e16-95f5-f91c5f7d7189">
+					<printWhenExpression><![CDATA[$P{sumGu} && $P{gemKomp}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="spalte9">
+					<subreportParameterExpression><![CDATA[$P{spalte9}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte11">
+					<subreportParameterExpression><![CDATA[$P{spalte11}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte10">
+					<subreportParameterExpression><![CDATA[$P{spalte10}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="withWdm">
+					<subreportParameterExpression><![CDATA[$P{withWdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perObject">
+					<subreportParameterExpression><![CDATA[$P{perObject}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gemKomp">
+					<subreportParameterExpression><![CDATA[$P{gemKomp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tiefenklasse">
+					<subreportParameterExpression><![CDATA[$P{tiefenklasse}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ges">
+					<subreportParameterExpression><![CDATA[$P{ges}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dimension">
+					<subreportParameterExpression><![CDATA[$P{dimension}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte4">
+					<subreportParameterExpression><![CDATA[$P{spalte4}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="fachdata">
+					<subreportParameterExpression><![CDATA[$P{fachdata}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte3">
+					<subreportParameterExpression><![CDATA[$P{spalte3}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte2">
+					<subreportParameterExpression><![CDATA[$P{spalte2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte1">
+					<subreportParameterExpression><![CDATA[$P{spalte1}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte8">
+					<subreportParameterExpression><![CDATA[$P{spalte8}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte7">
+					<subreportParameterExpression><![CDATA[$P{spalte7}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte6">
+					<subreportParameterExpression><![CDATA[$P{spalte6}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="spalte5">
+					<subreportParameterExpression><![CDATA[$P{spalte5}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gu")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/GerinneGeschlFl_guKomp.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>
