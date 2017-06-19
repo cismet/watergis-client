@@ -98,9 +98,9 @@ public class DrawFeatureAction extends AbstractAction implements CommonFeatureAc
                     CismapBroker.getInstance().getMappingComponent()),
                 false);
         dialog.setFont(feature.getPrimaryAnnotationFont());
-        dialog.settext(feature.getText());
-        dialog.setAutoScaleEnabled(feature.isAutoscale());
-        dialog.setHaloEnabled(feature.getPrimaryAnnotationHalo() != null);
+//        dialog.settext(feature.getText());
+//        dialog.setAutoScaleEnabled(feature.isAutoscale());
+//        dialog.setHaloEnabled(feature.getPrimaryAnnotationHalo() != null);
         dialog.setRunWhenFinish(new Runnable() {
 
                 @Override
