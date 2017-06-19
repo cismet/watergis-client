@@ -58,12 +58,26 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  */
 public class FgBaExpRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
+        typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("ba_cd");
+                    && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("ba_cd")
+                    && !columnName.equals("ww_gr");
     }
 
     @Override
@@ -72,7 +86,7 @@ public class FgBaExpRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -102,13 +116,7 @@ public class FgBaExpRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsLayerFeatureFilter() {
-
-                        @Override
-                        public boolean accept(final CidsLayerFeature bean) {
-                            return bean != null;
-                        }
-                    };
+                filter = new WwGrAdminFilter();
             }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",
@@ -116,7 +124,7 @@ public class FgBaExpRuleSet extends WatergisDefaultRuleSet {
                         true),
                     filter);
         } else {
-            return null;
+            return super.getCellEditor(columnName);
         }
     }
 
@@ -186,9 +194,15 @@ public class FgBaExpRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final OnOtherRouteStationCheck check = new OnOtherRouteStationCheck();
 
-        final StationLineCreator c = new StationLineCreator("ba_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator c = new StationLineCreator(
+                "ba_st",
+                routeMc,
+                "Basisgewässer (FG)",
+                new LinearReferencingWatergisHelper());
         c.setProperties(getDefaultValues());
+        c.setCheck(check);
 
         return c;
     }
@@ -196,8 +210,8 @@ public class FgBaExpRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Map<String, Object> getDefaultValues() {
         final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGrList() != null) && !AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGrList().get(0));
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }

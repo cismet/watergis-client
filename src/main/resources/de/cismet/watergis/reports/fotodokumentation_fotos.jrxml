@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="fotodokumentation_fotos" pageWidth="555" pageHeight="802" columnWidth="141" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="de.cismet.cids.custom.reports.scriptlets.LoadFotoScriptlet" uuid="dd3f25a0-3253-4f3d-98c3-b5d30d882dac">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="description" class="java.lang.String">
+		<fieldDescription><![CDATA[description]]></fieldDescription>
+	</field>
+	<field name="name" class="java.lang.String">
+		<fieldDescription><![CDATA[name]]></fieldDescription>
+	</field>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[id]]></fieldDescription>
+	</field>
+	<field name="file" class="java.lang.String">
+		<fieldDescription><![CDATA[file]]></fieldDescription>
+	</field>
+	<field name="angle" class="java.lang.Integer">
+		<fieldDescription><![CDATA[angle]]></fieldDescription>
+	</field>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band/>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<columnHeader>
+		<band/>
+	</columnHeader>
+	<detail>
+		<band height="229">
+			<textField>
+				<reportElement x="0" y="31" width="275" height="31" uuid="7bde11ba-d2aa-48e2-b413-f6a2cbd99e23"/>
+				<box leftPadding="5" rightPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Bildname: " + $F{name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="11" width="275" height="20" forecolor="#FFFFFF" backcolor="#00C000" uuid="8e9a323a-0a37-430e-9bcb-ed355f4f5d6d"/>
+				<box leftPadding="5">
+					<topPen lineWidth="1.0" lineColor="#008000"/>
+					<leftPen lineWidth="1.0" lineColor="#008000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Beschreibung]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="275" y="11" width="280" height="20" forecolor="#FFFFFF" backcolor="#00C000" uuid="cdcb30a1-c752-4eab-9c47-415987020252"/>
+				<box leftPadding="5">
+					<topPen lineWidth="1.0" lineColor="#008000"/>
+					<rightPen lineWidth="1.0" lineColor="#008000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Foto]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="62" width="275" height="31" uuid="07842821-4798-4fd0-83f3-8d7ce1865cb8"/>
+				<box leftPadding="5" rightPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Winkel: " + $F{angle}.toString()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="93" width="275" height="124" uuid="debd8d40-2a72-4647-98e5-e6e5f0ae36e0"/>
+				<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Top">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<image vAlign="Middle">
+				<reportElement x="275" y="31" width="280" height="186" uuid="531fb491-bcc6-4d58-ba66-3691cf4a5721"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$P{REPORT_SCRIPTLET}.loadFoto()]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band/>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

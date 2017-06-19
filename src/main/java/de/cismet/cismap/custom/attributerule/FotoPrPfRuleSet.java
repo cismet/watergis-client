@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -93,7 +94,7 @@ public class FotoPrPfRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("foto")) {
             return new LinkTableCellRenderer();
         } else if (columnName.equals("foto_nr")) {
-            return new LinkTableCellRenderer();
+            return new LinkTableCellRenderer(JLabel.RIGHT);
         }
 
         return super.getCellRenderer(columnName);

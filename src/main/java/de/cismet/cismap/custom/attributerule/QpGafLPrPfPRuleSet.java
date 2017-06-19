@@ -66,7 +66,7 @@ public class QpGafLPrPfPRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("upl_zeit", new Varchar(8, false, false));
         typeMap.put("aufn_name", new Varchar(50, false, false));
         typeMap.put("aufn_datum", new Varchar(10, false, false));
-        typeMap.put("aufn_zeit", new Varchar(8, false, false));
+        typeMap.put("aufn_zeit", new Time(false, false));
         typeMap.put("freigabe", new Catalogue("k_freigabe", true, false));
         typeMap.put("titel", new Varchar(250, false, false));
         typeMap.put("beschreib", new Varchar(250, false, false));

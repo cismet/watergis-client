@@ -26,10 +26,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -48,7 +45,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.arrayContains;
 import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRange;
@@ -75,6 +71,34 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
         allowedMaterial.put("Pl", new String[] { "B" });
         allowedMaterial.put("Rin", new String[] { "B", "St-B", "Ste", "Ste-Fs", "Ste-Mw", "Ste-Wb" });
         allowedMaterial.put("Spreit", new String[] { "H" });
+        minBaLength = 0.5;
+    }
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
+        typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", true, true));
+        typeMap.put("bbef", new Catalogue("k_bbef", true, true, true));
+        typeMap.put("material", new Catalogue("k_material", false, true));
+        typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
+        typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
+        typeMap.put("esw", new BooleanAsInteger(false, true));
+        typeMap.put("bemerkung", new Varchar(250, false, true));
+        typeMap.put("br", new Numeric(4, 2, false, true));
+        typeMap.put("ho_d_o", new Numeric(4, 2, false, true));
+        typeMap.put("ho_d_u", new Numeric(4, 2, false, true));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -129,16 +153,102 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        return newValue;
-    }
+        if (column.equals("bbef") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
 
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
+            if (allowedMaterialVArray != null) {
+                if (!isValueEmpty(feature.getProperty("material"))
+                            && !arrayContains(
+                                allowedMaterialVArray,
+                                ((feature.getProperty("material") != null) ? feature.getProperty("material")
+                                        .toString() : null))) {
+                    showMessage("Wenn das Attribut bbef = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
         }
+
+        if (column.equals("material") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("bbef").toString());
+
+            if (allowedMaterialVArray != null) {
+                if (!arrayContains(allowedMaterialVArray, newValue.toString())) {
+                    showMessage("Wenn das Attribut bbef = "
+                                + newValue
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("ho_d_o") && (newValue != null) && isNumberOrNull(newValue)
+                    && (feature.getProperty("ho_d_u") != null)) {
+            if (((Number)newValue).doubleValue()
+                        <= ((Number)feature.getProperty("ho_d_u")).doubleValue()) {
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                return oldValue;
+            }
+        }
+
+        if (column.equals("ho_d_u") && (newValue != null) && isNumberOrNull(newValue)
+                    && (feature.getProperty("ho_d_o") != null)) {
+            if (((Number)feature.getProperty("ho_d_o")).doubleValue()
+                        <= ((Number)newValue).doubleValue()) {
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                return oldValue;
+            }
+        }
+
+        if (column.equals("bbef") && !isValueEmpty(newValue)) {
+            final Double from = (Double)feature.getProperty("ba_st_von");
+            final Double till = (Double)feature.getProperty("ba_st_bis");
+
+            if ((from != null) && (till != null)) {
+                if (isValueIn(feature.getProperty("bbef"), new String[] { "Rin" }, false)) {
+                    if ((Math.abs(till - from) > 5) && (Math.abs(till - from) <= 10)) {
+                        if (
+                            !showSecurityQuestion(
+                                        "Die Länge des Objektes mit der id "
+                                        + feature.getId()
+                                        + "liegt außerhalb des Standardbereichs (0 .. 5) --> verwenden ?")) {
+                            return false;
+                        }
+                    } else if (Math.abs(till - from) > 10) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Die Länge des Objektes mit der id "
+                                    + feature.getId()
+                                    + " darf nicht größer "
+                                    + 10
+                                    + " sein",
+                            "Ungültiger Wert",
+                            JOptionPane.ERROR_MESSAGE);
+
+                        return false;
+                    }
+                } else {
+                    if (Math.abs(till - from) < 0.5) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Die Länge des Objektes mit der id "
+                                    + feature.getId()
+                                    + " darf nicht kleiner "
+                                    + 0.5
+                                    + " sein",
+                            "Ungültiger Wert",
+                            JOptionPane.ERROR_MESSAGE);
+
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -236,8 +346,25 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                 });
 
             return editor;
+        } else if (columnName.equals("zust_kl")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return bean.getProperty("zust_kl") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
         } else {
-            return null;
+            return super.getCellEditor(columnName);
         }
     }
 
@@ -254,7 +381,15 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                     "Das Attribut bbef darf nicht leer sein");
                 return false;
             }
-            if (!checkRange("br", feature.getProperty("br"), 0, 10, true, false, true)) {
+            if (!checkRange("br", feature.getProperty("br"), 0, 15, 0, 30, true, false, true)) {
+                return false;
+            }
+
+            if (!checkRange("ho_d_o", feature.getProperty("ho_d_o"), 0, 10, 0, 15, true, false, true)) {
+                return false;
+            }
+
+            if (!checkRange("ho_d_u", feature.getProperty("ho_d_u"), 0, 10, 0, 15, true, true, false)) {
                 return false;
             }
 
@@ -294,8 +429,8 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                 final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("bbef").toString());
 
                 if (allowedMaterialVArray != null) {
-                    if (
-                        !arrayContains(
+                    if (!isValueEmpty(feature.getProperty("material"))
+                                && !arrayContains(
                                     allowedMaterialVArray,
                                     ((feature.getProperty("material") != null)
                                         ? feature.getProperty("material").toString() : null))) {
@@ -311,7 +446,7 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        return true;
+        return super.prepareForSave(features);
     }
 
     @Override
@@ -360,7 +495,17 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
 
-        return new StationLineCreator("ba_st", routeMc, new LinearReferencingWatergisHelper(), 0.5f);
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
+
+        final StationLineCreator creator = new StationLineCreator(
+                "ba_st",
+                routeMc,
+                "Basisgewässer (FG)",
+                new LinearReferencingWatergisHelper(),
+                0.5f);
+        creator.setCheck(check);
+
+        return creator;
     }
 
     @Override

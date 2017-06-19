@@ -40,7 +40,7 @@ public class CloseAction extends AbstractAction {
         final String mnemonic = org.openide.util.NbBundle.getMessage(CloseAction.class, "CloseAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-programclose.png"));
+                    "/de/cismet/watergis/res/icons16/icon-off.png"));
         putValue(SMALL_ICON, icon);
     }
 

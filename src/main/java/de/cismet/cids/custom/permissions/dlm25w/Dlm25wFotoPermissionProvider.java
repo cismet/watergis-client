@@ -15,7 +15,9 @@ package de.cismet.cids.custom.permissions.dlm25w;
 import Sirius.server.newuser.User;
 
 import de.cismet.cids.dynamics.AbstractCustomBeanPermissionProvider;
-import de.cismet.cids.dynamics.CidsBean;
+
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerPermissionProvider;
 
 /**
  * DOCUMENT ME!
@@ -23,7 +25,8 @@ import de.cismet.cids.dynamics.CidsBean;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class Dlm25wFotoPermissionProvider extends AbstractCustomBeanPermissionProvider {
+public class Dlm25wFotoPermissionProvider extends AbstractCustomBeanPermissionProvider
+        implements CidsLayerPermissionProvider {
 
     //~ Methods ----------------------------------------------------------------
 
@@ -38,5 +41,13 @@ public class Dlm25wFotoPermissionProvider extends AbstractCustomBeanPermissionPr
     @Override
     public boolean getCustomReadPermissionDecisionforUser(final User u) {
         return true;
+    }
+
+    @Override
+    public boolean getCustomCidsLayerWritePermissionDecisionforUser(final User u, final CidsLayerFeature feature) {
+        final String uplUser = (String)feature.getProperty("upl_name");
+
+        return u.getUserGroup().getName().equals("Administratoren") || u.getName()
+                    .equals(uplUser);
     }
 }

@@ -51,6 +51,19 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  */
 public class FgBakAeRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true));
+        typeMap.put("ba_cd", new Varchar(50, true));
+        typeMap.put("bak_st_von", new Numeric(10, 2, false, false));
+        typeMap.put("bak_st_bis", new Numeric(10, 2, false, false));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -66,7 +79,7 @@ public class FgBakAeRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
-        return newValue;
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -133,7 +146,15 @@ public class FgBakAeRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("bak_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator creator = new StationLineCreator(
+                "bak_st",
+                routeMc,
+                "Basisgewässer/komplett (FG/k)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 }

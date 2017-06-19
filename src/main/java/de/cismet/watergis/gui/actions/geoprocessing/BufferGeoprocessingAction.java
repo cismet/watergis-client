@@ -79,7 +79,7 @@ public class BufferGeoprocessingAction extends AbstractGeoprocessingAction {
     @Override
     public final ImageIcon getSmallIcon() {
         return new javax.swing.ImageIcon(BufferGeoprocessingAction.class.getResource(
-                    "/de/cismet/watergis/res/icons16/icon-resize.png"));
+                    "/de/cismet/watergis/res/icons16/icon-restore.png"));
     }
 
     @Override

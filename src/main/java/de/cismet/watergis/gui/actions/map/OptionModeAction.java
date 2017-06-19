@@ -62,7 +62,7 @@ public class OptionModeAction extends AbstractNewGeometryModeAction implements D
                 "OptionModeAction.text");
         putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-settingsandroid.png"));
+                    "/de/cismet/watergis/res/icons16/icon-settingsthree-gears.png"));
         putValue(SMALL_ICON, icon);
     }
 

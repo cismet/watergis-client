@@ -13,7 +13,10 @@
 package de.cismet.watergis.utils;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import com.vividsolutions.jts.io.WKBReader;
 
 import org.apache.log4j.Logger;
 
@@ -22,7 +25,6 @@ import org.openide.util.NbBundle;
 import java.awt.Component;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,7 +34,6 @@ import java.util.TreeMap;
 
 import javax.swing.JOptionPane;
 
-import de.cismet.cismap.cidslayer.CidsFeatureFactory;
 import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
@@ -42,16 +43,14 @@ import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
+import de.cismet.cismap.commons.featureservice.DefaultLayerProperties;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
 import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
-import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.capabilitywidget.CapabilityWidget;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.ZoomToLayerWorker;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.tools.FeatureTools;
 import de.cismet.cismap.commons.util.SelectionManager;
@@ -508,17 +507,18 @@ public class FeatureServiceHelper {
             final String tableName,
             final List<String> attributeOrder) throws Exception {
         if ((features == null) || features.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                c,
-                NbBundle.getMessage(
-                    FeatureServiceHelper.class,
-                    "FeatureServiceHelper.createNewService.noFeatures.message",
-                    tableName),
-                NbBundle.getMessage(
-                    FeatureServiceHelper.class,
-                    "FeatureServiceHelper.createNewService.noFeatures.title"),
-                JOptionPane.INFORMATION_MESSAGE);
-
+            if (c != null) {
+                JOptionPane.showMessageDialog(
+                    c,
+                    NbBundle.getMessage(
+                        FeatureServiceHelper.class,
+                        "FeatureServiceHelper.createNewService.noFeatures.message",
+                        tableName),
+                    NbBundle.getMessage(
+                        FeatureServiceHelper.class,
+                        "FeatureServiceHelper.createNewService.noFeatures.title"),
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
             return null;
         } else {
             final H2FeatureService internalService = new H2FeatureService(
@@ -535,6 +535,70 @@ public class FeatureServiceHelper {
             internalService.initAndWait();
 
             return internalService;
+        }
+    }
+
+    /**
+     * Creates a new H2FeatureService.
+     *
+     * @param   attributes                the attributes of the features
+     * @param   tableName                 the table name
+     * @param   featureServiceAttributes  the feature service attributes (describes the attributes)
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static H2FeatureService createNewService(final ArrayList<ArrayList> attributes,
+            final String tableName,
+            final List<FeatureServiceAttribute> featureServiceAttributes) throws Exception {
+        if (attributes.size() > 0) {
+            final List<FeatureServiceFeature> featureList = new ArrayList<FeatureServiceFeature>();
+            int id = 0;
+            final LayerProperties layerProperties = new DefaultLayerProperties();
+            boolean hasIdField = false;
+            // add a dummy service, that contains the feature service attributes
+            layerProperties.setFeatureService(new H2FeatureService("dummy", "dummy", null, featureServiceAttributes));
+
+            for (int i = 0; i < attributes.size(); i++) {
+                final Geometry g = null;
+                final HashMap<String, Object> properties = new HashMap<String, Object>(featureServiceAttributes.size());
+
+                for (int j = attributes.get(i).size() - 1; j >= 0; j--) {
+                    if (featureServiceAttributes.get(j).getName().equalsIgnoreCase("id")) {
+                        hasIdField = true;
+                    }
+                    properties.put(featureServiceAttributes.get(j).getName(), attributes.get(i).get(j));
+                }
+
+                if (!hasIdField) {
+                    properties.put("id", ++id);
+                }
+
+                final DefaultFeatureServiceFeature lastFeature = new DefaultFeatureServiceFeature(
+                        id,
+                        g,
+                        layerProperties);
+                lastFeature.setProperties(properties);
+                featureList.add(lastFeature);
+            }
+
+            H2FeatureService.removeTableIfExists(tableName + "_1");
+            final H2FeatureService internalService = new H2FeatureService(
+                    tableName,
+                    H2FeatureServiceFactory.DB_NAME,
+                    tableName
+                            + "_1",
+                    featureServiceAttributes,
+                    featureList);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("create the new data source");
+            }
+            internalService.initAndWait();
+
+            return internalService;
+        } else {
+            return null;
         }
     }
 

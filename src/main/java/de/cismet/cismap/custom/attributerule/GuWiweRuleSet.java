@@ -76,6 +76,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
     //~ Instance fields --------------------------------------------------------
 
     private final Logger LOG = Logger.getLogger(GuWiweRuleSet.class);
+    private double lastLength = -1;
 
     //~ Instance initializers --------------------------------------------------
 
@@ -88,7 +89,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br", new Numeric(4, 2, false, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
@@ -128,6 +129,52 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
 
         if (column.equals("br") && !checkRange(column, newValue, 0, 10, 0, 30, true, false, true)) {
             return oldValue;
+        }
+
+        if (newValue instanceof Geometry) {
+            final Geometry g = (Geometry)newValue;
+            if ((g.getLength() < 1) && (g.getLength() != lastLength)) {
+                showMessage("Die Länge der Geometry darf nicht kleiner als 1m sein.");
+
+                return oldValue;
+            }
+            lastLength = g.getLength();
+        }
+
+        if (column.equals("wiwe") && (newValue != null)) {
+            final String[] allowedMaterialArray = allowedMaterial.get(newValue.toString());
+
+            if (allowedMaterialArray != null) {
+                if ((isValueEmpty(feature.getProperty("material")))
+                            || !arrayContains(allowedMaterialArray,
+                                feature.getProperty("material").toString())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wiwe = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        if (column.equals("material") && (newValue != null)) {
+            final String[] allowedMaterialArray = allowedMaterial.get(feature.getProperty("wiwe").toString());
+
+            if (allowedMaterialArray != null) {
+                if ((isValueEmpty(newValue))
+                            || !arrayContains(allowedMaterialArray,
+                                newValue.toString())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wiwe = "
+                                + feature.getProperty("wiwe").toString()
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
         }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
@@ -219,11 +266,13 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
 
             return editor;
         } else if (columnName.equals("material")) {
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("wiwe");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         columnName,
                         String.valueOf(Types.VARCHAR),
-                        true));
+                        true),
+                    filter);
             editor.setNullable(true);
 
             editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {

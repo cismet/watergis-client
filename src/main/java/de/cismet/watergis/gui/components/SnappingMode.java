@@ -12,6 +12,8 @@
  */
 package de.cismet.watergis.gui.components;
 
+import javax.swing.JButton;
+
 /**
  * DOCUMENT ME!
  *
@@ -19,4 +21,13 @@ package de.cismet.watergis.gui.components;
  * @version  $Revision$, $Date$
  */
 public interface SnappingMode {
+
+    //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  button  DOCUMENT ME!
+     */
+    void setParentButton(JButton button);
 }

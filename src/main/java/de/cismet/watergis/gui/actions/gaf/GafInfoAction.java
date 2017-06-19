@@ -51,7 +51,7 @@ public class GafInfoAction extends AbstractAction {
                 "GafInfoAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-images-gallery.png"));
+                    "/de/cismet/watergis/res/icons16/icon-finance.png"));
         putValue(SMALL_ICON, icon);
     }
 

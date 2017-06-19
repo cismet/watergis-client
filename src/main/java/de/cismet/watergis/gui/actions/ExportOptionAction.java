@@ -52,7 +52,7 @@ public class ExportOptionAction extends AbstractAction {
     public ExportOptionAction() {
         super();
 
-        final URL icon = getClass().getResource("/de/cismet/watergis/res/icons16/icon-download-alt.png");
+        final URL icon = getClass().getResource("/de/cismet/watergis/res/icons16/icon-settingsthree-gears.png");
         String text = "Optionen";
         String tooltiptext = "Optionen";
         String mnemonic = "O";

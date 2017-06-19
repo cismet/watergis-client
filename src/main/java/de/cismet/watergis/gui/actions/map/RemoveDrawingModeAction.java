@@ -66,7 +66,7 @@ public class RemoveDrawingModeAction extends AbstractAction {
                 "RemoveDrawingModeAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/remove.png"));
+                    "/de/cismet/watergis/res/icons16/icon-selectionintersect.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -83,7 +83,7 @@ public class RemoveDrawingModeAction extends AbstractAction {
 //            new Class[] { DrawingSLDStyledFeature.class });
 //        putValue(SELECTED_KEY, Boolean.TRUE);
 
-        final List<Feature> selectedFeatures = getSelectedDrawings();
+        final List<DrawingSLDStyledFeature> selectedFeatures = getSelectedDrawings();
 
         for (final Feature f : selectedFeatures) {
             map.getFeatureCollection().removeFeature(f);
@@ -99,15 +99,15 @@ public class RemoveDrawingModeAction extends AbstractAction {
      *
      * @return  DOCUMENT ME!
      */
-    public static List<Feature> getSelectedDrawings() {
-        final List<Feature> drawings = new ArrayList<Feature>();
+    public static List<DrawingSLDStyledFeature> getSelectedDrawings() {
+        final List<DrawingSLDStyledFeature> drawings = new ArrayList<DrawingSLDStyledFeature>();
         final MappingComponent map = AppBroker.getInstance().getMappingComponent();
         final Collection<Feature> selectedFeatures = new ArrayList<Feature>(map.getFeatureCollection()
                         .getSelectedFeatures());
 
         for (final Feature f : selectedFeatures) {
             if (f instanceof DrawingSLDStyledFeature) {
-                drawings.add(f);
+                drawings.add((DrawingSLDStyledFeature)f);
             }
         }
 

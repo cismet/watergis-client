@@ -816,7 +816,7 @@ public class GafProf extends javax.swing.JPanel {
      *
      * @return  DOCUMENT ME!
      */
-    private static String removeIllegaleFileNameCharacters(String name) {
+    public static String removeIllegaleFileNameCharacters(String name) {
         name = name.replace("\\", "-");
         name = name.replace("/", "_");
         name = name.replace(":", "+");
@@ -927,7 +927,7 @@ public class GafProf extends javax.swing.JPanel {
     /**
      * DOCUMENT ME!
      */
-    private void addGafServicesToTree() {
+    public static void addGafServicesToTree() {
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                 "qp");
 
@@ -948,7 +948,7 @@ public class GafProf extends javax.swing.JPanel {
      *
      * @param  layerName  DOCUMENT ME!
      */
-    private void addLayerToTree(final String layerName) {
+    private static void addLayerToTree(final String layerName) {
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                 layerName);
 

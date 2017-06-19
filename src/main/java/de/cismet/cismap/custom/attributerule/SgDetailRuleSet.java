@@ -54,6 +54,7 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("see_typ", new Varchar(3, false, true));
         typeMap.put("see_art", new Varchar(3, false, true));
         typeMap.put("see_wrrl", new Numeric(1, 0, false, true));
+        typeMap.put("see_nhn", new Numeric(6, 2, false, true));
         typeMap.put("see_verm", new Numeric(1, 0, false, true));
         typeMap.put("verm_datum", new Varchar(10, false, true));
         typeMap.put("verm_nhn", new Numeric(6, 2, false, true));
@@ -122,12 +123,12 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Integer value = null;
+        Long value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = (int)geom.getArea();
+            value = Math.round(geom.getArea());
         }
 
         return value;
@@ -135,7 +136,7 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Integer.class;
+        return Long.class;
     }
 
     @Override

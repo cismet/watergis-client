@@ -66,7 +66,7 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("seetyp", new Numeric(2, 0, false, true));
         typeMap.put("trophie", new Varchar(13, false, true));
         typeMap.put("lb_nn", new Numeric(6, 2, false, true));
-        typeMap.put("vol_qout", new Numeric(8, 2, false, true));
+        typeMap.put("vol_quot", new Numeric(8, 2, false, true));
         typeMap.put("gew_reg", new Numeric(1, 0, false, true));
         typeMap.put("stauhoehe", new Numeric(6, 2, false, true));
         typeMap.put("lg_gew_reg", new Numeric(4, 0, false, true));
@@ -99,7 +99,7 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("uu_geh", new Numeric(3, 0, false, true));
         typeMap.put("uu_lw", new Numeric(3, 0, false, true));
         typeMap.put("uu_nw", new Numeric(3, 0, false, true));
-        typeMap.put("uu_mv_nw", new Numeric(3, 0, false, true));
+        typeMap.put("uu_mw_nw", new Numeric(3, 0, false, true));
         typeMap.put("uu_mw_lw", new Numeric(3, 0, false, true));
         typeMap.put("uu_s", new Numeric(3, 0, false, true));
         typeMap.put("uu_sb", new Varchar(51, false, true));
@@ -208,7 +208,7 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("fs_stege", new Varchar(16, false, true));
         typeMap.put("fs_s", new Varchar(10, false, true));
         typeMap.put("fs_sb", new Varchar(70, false, true));
-        typeMap.put("fs_nk", new Numeric(1, 0, false, true));
+        typeMap.put("fs_nk", new Varchar(10, false, true));
         typeMap.put("fs_nkb", new Varchar(10, false, true));
         typeMap.put("fb_totholz", new Varchar(15, false, true));
         typeMap.put("fb_rasen", new Varchar(18, false, true));
@@ -280,7 +280,7 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ufr5", new Numeric(1, 0, false, true));
         typeMap.put("ufr6", new Numeric(3, 0, false, true));
         typeMap.put("ufr7", new Numeric(3, 0, false, true));
-        typeMap.put("gwu1", new Numeric(1, 0, false, true));
+        typeMap.put("gwu1", new Varchar(32, false, true));
         typeMap.put("gwu2", new Varchar(67, false, true));
         typeMap.put("gwu3", new Numeric(3, 0, false, true));
         typeMap.put("gwu4", new Numeric(3, 0, false, true));
@@ -303,7 +303,7 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("id")
                     && !columnName.equals("see_gn") && !columnName.equals("see_gnsee_lawa")
-                    && !columnName.equals("see_sp");
+                    && !columnName.equals("see_sp") && !columnName.equals("su_cd") && !columnName.equals("see_lawa");
     }
 
     @Override
@@ -355,7 +355,7 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
                 if (bean != null) {
                     final String seeGn = (String)bean.getProperty("route.see_gn");
                     final String seeSp = (String)bean.getProperty("route.see_sp");
-                    final BigDecimal seeLawa = (BigDecimal)bean.getProperty("route.see_lawa");
+                    final String seeLawa = (String)bean.getProperty("route.see_lawa");
 
                     feature.setProperty("see_gn", seeGn);
                     feature.setProperty("see_sp", seeSp);
@@ -405,6 +405,6 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.sg_su");
 
-        return new StationLineCreator("sg_su_stat", routeMc, new LinearReferencingWatergisHelper());
+        return new StationLineCreator("sg_su_stat", routeMc, "Seeufer (SU)", new LinearReferencingWatergisHelper());
     }
 }

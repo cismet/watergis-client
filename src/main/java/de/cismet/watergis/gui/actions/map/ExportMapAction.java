@@ -56,9 +56,9 @@ public class ExportMapAction extends AbstractAction {
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(ExportMapAction.class, "ExportMapAction.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
-                KeyEvent.VK_C,
-                ActionEvent.CTRL_MASK));
+//        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+//                KeyEvent.VK_C,
+//                ActionEvent.CTRL_MASK));
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 ExportMapAction.class,
                 "ExportMapAction.toolTipText");
@@ -88,10 +88,11 @@ public class ExportMapAction extends AbstractAction {
 
                 @Override
                 protected void done() {
-                    clipboarder.dispose();
+//                    clipboarder.dispose();
                 }
             }.execute();
-        StaticSwingTools.showDialog(clipboarder);
+        // do not show the dialog. See Issue 395
+// StaticSwingTools.showDialog(clipboarder);
     }
 
     @Override

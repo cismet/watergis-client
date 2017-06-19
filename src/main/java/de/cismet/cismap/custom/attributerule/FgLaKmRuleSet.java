@@ -14,22 +14,34 @@ package de.cismet.cismap.custom.attributerule;
 import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
+import Sirius.server.newuser.User;
 
 import java.sql.Timestamp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cids.custom.watergis.server.search.AllRoutes;
+import de.cismet.cids.custom.watergis.server.search.CalculateFgLa;
+
+import de.cismet.cids.dynamics.CidsBean;
+
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cids.server.search.CidsServerSearch;
 
 import de.cismet.cismap.cidslayer.PointAndStationCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+
+import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
+import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -72,6 +84,35 @@ public class FgLaKmRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        if (column.equals("ba_cd")) {
+            final Object o = (Number)feature.getProperty("ba_st");
+            Double baSt;
+
+            if (o instanceof CidsBean) {
+                baSt = (Double)((CidsBean)o).getProperty("wert");
+            } else if (o == null) {
+                baSt = null;
+            } else {
+                baSt = ((Number)feature.getProperty("ba_st")).doubleValue();
+            }
+
+            refreshLaStation(
+                feature,
+                (String)newValue,
+                baSt,
+                "la_cd",
+                "la_st");
+        }
+
+        if (column.equals("ba_st")) {
+            refreshLaStation(
+                feature,
+                (String)feature.getProperty("ba_cd"),
+                ((Number)newValue).doubleValue(),
+                "la_cd",
+                "la_st");
+        }
+
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
@@ -82,6 +123,19 @@ public class FgLaKmRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
+        if (columnName.equals("ba_cd")) {
+            final RouteTableCellEditor editor = new RouteTableCellEditor("dlm25w.fg_ba", "ba_st", false);
+            final String filterString = getRouteFilter();
+
+            if (filterString != null) {
+                editor.setRouteQuery(filterString);
+            }
+
+            return editor;
+        } else if (columnName.equals("ba_st")) {
+            return new StationTableCellEditor(columnName);
+        }
+
         return null;
     }
 

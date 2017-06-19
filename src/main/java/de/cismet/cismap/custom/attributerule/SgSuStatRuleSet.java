@@ -46,7 +46,7 @@ public class SgSuStatRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("see_gn", new Varchar(50, false, false));
         typeMap.put("see_lawa", new Varchar(20, false, false));
         typeMap.put("see_sp", new Varchar(8, false, false));
-        typeMap.put("station_km", new Numeric(7, 1, false, false));
+        typeMap.put("station_km", new Numeric(7, 1, false, false, true));
         typeMap.put("station_c", new Varchar(9, false, false));
         typeMap.put("station_w", new Numeric(3, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));

@@ -1,0 +1,1200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Fließgewässer" pageWidth="842" pageHeight="595" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="net.sf.jasperreports.engine.JRDefaultScriptlet" whenResourceMissingType="Empty" uuid="a242911c-ac82-40fb-91f8-0d675dafaa30">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/jruiz/NetBeansProjects/svn/cids-custom-wrrl-db-mv/src/main/resources/de/cismet/cids/custom/reports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dataSources" class="java.util.Map"/>
+	<parameter name="ba_cd" class="java.lang.String"/>
+	<parameter name="map" class="java.awt.Image"/>
+	<parameter name="quelle" class="java.lang.Double"/>
+	<parameter name="muendung" class="java.lang.Double"/>
+	<parameter name="wbblPath" class="java.lang.String"/>
+	<parameter name="karte" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="verk" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="topo" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="gwk" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="gbk" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="wsg" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ueber" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ausbau" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ben" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pegel" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="gem" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="gb" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="sb" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="prof" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="sbef" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ubef" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="bbef" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="rl" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="d" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="due" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="scha" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="wehr" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="schoepf" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="anlp" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="anll" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="kr" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ea" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="deich" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ughz" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="foto" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="leis" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<parameter name="tech" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[false]]></defaultValueExpression>
+	</parameter>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band/>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<columnHeader>
+		<band/>
+	</columnHeader>
+	<detail>
+		<band height="551">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="1" width="802" height="15" uuid="c56c76b2-c5fa-4b14-a45a-202d6facc3e3"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("steckbrief")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_steckbrief.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="16" width="802" height="14" uuid="da5c11e9-d740-43d2-bdcf-b180c0268a3f">
+					<printWhenExpression><![CDATA[$P{karte}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("dummy")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_karte.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="30" width="802" height="15" uuid="d1f13ae7-62c7-4fbc-b8c7-56d97f25b8fd">
+					<printWhenExpression><![CDATA[$P{topo} || $P{verk} || $P{topo} || $P{gwk} || $P{gbk} || $P{wsg} || $P{ueber} || $P{ausbau} || $P{ben} || $P{pegel}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("dummy")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_u_basis.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="45" width="802" height="15" uuid="54d1cc0f-f3ba-414a-867c-df692f11d1f7">
+					<printWhenExpression><![CDATA[$P{verk}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("verkn")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_gewaesserverknuepfung.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="60" width="802" height="15" uuid="a60fd8cd-011d-40f7-99b0-f1be4c217d94">
+					<printWhenExpression><![CDATA[$P{gwk}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gwk")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_lawa_gewaesserkennzahlen.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="75" width="802" height="15" uuid="8c8d4db1-e4fc-4206-8a66-f62eab54ae8b">
+					<printWhenExpression><![CDATA[$P{gbk}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gbk")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_lawa_gebietskennzahlen.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="90" width="802" height="15" uuid="ddb94401-1873-402b-989a-c0541cc766c5">
+					<printWhenExpression><![CDATA[$P{topo}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("topo")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_lawa_topoGewaesser.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="105" width="802" height="15" uuid="a03b181e-eafa-4b93-8833-c2603f028358">
+					<printWhenExpression><![CDATA[$P{wsg}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("schutz")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_schutzgebiete.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="120" width="802" height="15" uuid="cbd9a451-c125-4325-b02a-162afb85ad44">
+					<printWhenExpression><![CDATA[$P{ueber}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("schutzUeber")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_schutzgebieteUeberschwemmung.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="135" width="802" height="15" uuid="be946522-2aed-4e14-852b-bfb8c9d65c3d">
+					<printWhenExpression><![CDATA[$P{ausbau}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("wr_aus")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_ausbau.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="150" width="802" height="15" uuid="54df00b9-1f7a-4c81-a199-9fe55699c625">
+					<printWhenExpression><![CDATA[$P{ben}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("wr_ben")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_benutzungen.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="165" width="802" height="15" uuid="adfe474e-bd5b-43dd-b17e-1c0797096dc1">
+					<printWhenExpression><![CDATA[$P{pegel}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("pegel")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_pegel.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="180" width="802" height="15" uuid="9c3c84e9-39af-4494-839f-6495f01d34a3">
+					<printWhenExpression><![CDATA[$P{gem} || $P{gb} || $P{sb}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("dummy")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_u_ver.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="195" width="802" height="15" uuid="7156e00d-7f85-4e62-977e-8251c27038d2">
+					<printWhenExpression><![CDATA[$P{gem}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gmd")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_gemeinden.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="210" width="802" height="15" uuid="dd5cd4a2-843b-4a05-8cf9-504932def871">
+					<printWhenExpression><![CDATA[$P{gb}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gb")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_gb.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="225" width="802" height="15" uuid="50ec4904-0aef-4072-a9bd-821f1418026d">
+					<printWhenExpression><![CDATA[$P{sb}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("sb")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_sb.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="240" width="802" height="15" uuid="dc0c1c2e-fc73-4cc8-b7d1-3c8e54432d84">
+					<printWhenExpression><![CDATA[$P{prof} || $P{sbef} || $P{bbef} || $P{ubef}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("dummy")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_u_aus.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="255" width="802" height="15" uuid="ab73bc49-b536-465e-8d41-5ad5e41f4e13">
+					<printWhenExpression><![CDATA[$P{prof}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("prof")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_profile.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="270" width="802" height="15" uuid="fc20963c-b283-42e8-83a9-58020665b1e2">
+					<printWhenExpression><![CDATA[$P{sbef}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("sbef")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_sbef.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="285" width="802" height="15" uuid="a7eada74-9b9a-4875-98a6-f0426c0ae44e">
+					<printWhenExpression><![CDATA[$P{ubef}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("ubef")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_ubef.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="300" width="802" height="15" uuid="789d4218-85fa-4780-b23b-79f29cde5af6">
+					<printWhenExpression><![CDATA[$P{bbef}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("bbef")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_bbef.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="315" width="802" height="15" uuid="42c87ef1-b189-4346-b598-ef484a5a83aa">
+					<printWhenExpression><![CDATA[$P{rl} || $P{d} ||$P{due} ||$P{scha} ||$P{wehr} ||$P{schoepf}
+||$P{anlp} ||$P{anll} ||$P{kr} ||$P{ea}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("dummy")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_u_bau.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="330" width="802" height="15" uuid="f2788b0c-fc02-4a12-acf7-03d1f25b6ea9">
+					<printWhenExpression><![CDATA[$P{rl}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("rl")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_rl.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="345" width="802" height="15" uuid="549860a8-5b0e-4c11-99f6-ada3cbdbf9dd">
+					<printWhenExpression><![CDATA[$P{d}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("d")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_d.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="360" width="802" height="15" uuid="a6ec85de-cf58-41ec-95ac-05e9eec3b0b5">
+					<printWhenExpression><![CDATA[$P{due}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("due")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_due.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="375" width="802" height="15" uuid="dbc61731-1df3-4498-bc3b-99172eb7711b">
+					<printWhenExpression><![CDATA[$P{scha}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("scha")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_scha.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="390" width="802" height="15" uuid="1e599179-48f7-4d0b-b645-8799fb1e047b">
+					<printWhenExpression><![CDATA[$P{wehr}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("wehr")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_wehr.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="405" width="802" height="15" uuid="78c7f60b-dde6-4af1-ba38-beabb081d68a">
+					<printWhenExpression><![CDATA[$P{schoepf}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("schw")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_schw.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="420" width="802" height="15" uuid="86e6a6b0-e963-4a2b-9ec9-40d13ad4e31d">
+					<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("anlp")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_anlp.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="435" width="802" height="15" uuid="3e5057ac-4d49-4269-942a-27c3c9a024d7">
+					<printWhenExpression><![CDATA[$P{anll}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("anll")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_anll.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="450" width="802" height="15" uuid="a872b55a-da5a-46bd-86c3-1b4d208e0b5c">
+					<printWhenExpression><![CDATA[$P{kr}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("kr")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_kr.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="465" width="802" height="15" uuid="6f217593-c825-4a25-9875-6b459e9aae7d">
+					<printWhenExpression><![CDATA[$P{ea}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("ea")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_ea.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="480" width="802" height="10" uuid="ef147cbf-8aec-4c2d-b862-3490f76188c4">
+					<printWhenExpression><![CDATA[$P{deich}||$P{ughz}||$P{foto}||$P{leis}||$P{tech}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("dummy")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_u_sonst.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="490" width="802" height="10" uuid="b85f162a-44c8-4cd1-b3f9-980b9f383691">
+					<printWhenExpression><![CDATA[$P{deich}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("deich")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_deich.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="500" width="802" height="10" uuid="36d2f70e-08d4-4447-844a-ee3b80fd5ca1">
+					<printWhenExpression><![CDATA[$P{ughz}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("ughz")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_ughz.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="510" width="802" height="10" uuid="0b6d4824-ff23-4052-907b-c320638bb536">
+					<printWhenExpression><![CDATA[$P{foto}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("foto")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_foto.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="520" width="802" height="10" uuid="213b582d-82a8-4ba5-b3ad-6217f4ad95ef">
+					<printWhenExpression><![CDATA[$P{leis}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("leis")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_leis.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="530" width="802" height="10" uuid="6b275f02-7975-4ba7-b8ff-f3d0c9b96743">
+					<printWhenExpression><![CDATA[$P{tech}]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="muendung">
+					<subreportParameterExpression><![CDATA[$P{muendung}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ba_cd">
+					<subreportParameterExpression><![CDATA[$P{ba_cd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="quelle">
+					<subreportParameterExpression><![CDATA[$P{quelle}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="map">
+					<subreportParameterExpression><![CDATA[$P{map}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wbblPath">
+					<subreportParameterExpression><![CDATA[$P{wbblPath}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("tech")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gewaesser_tech.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band/>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

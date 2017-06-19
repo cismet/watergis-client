@@ -23,10 +23,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -45,7 +42,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -58,8 +54,6 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
     //~ Instance initializers --------------------------------------------------
 
     {
-        final Numeric esw = new Numeric(1, 0, false, true);
-        esw.setRange(0.0, 1.0);
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
         typeMap.put("ba_cd", new Varchar(50, false, false));
@@ -71,8 +65,8 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
-        typeMap.put("esw", esw);
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
+        typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br", new Numeric(4, 2, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -123,16 +117,35 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        return super.afterEdit(feature, column, row, oldValue, newValue);
-    }
-
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
+        if (column.equals("l_oiu") && !isValueIn(newValue, new Object[] { "o" }, false)
+                    && !isValueIn(feature.getProperty("kr"), new Object[] { "Br" }, true)) {
+            showMessage("l_oiu muss o sein, wenn kr = Br");
+            return oldValue;
         }
+
+        if (column.equals("l_oiu") && !isValueIn(newValue, new Object[] { "u" }, false)
+                    && !isValueIn(feature.getProperty("kr"), new Object[] { "U" }, true)) {
+            showMessage("l_oiu muss u sein, wenn kr = U");
+            return oldValue;
+        }
+
+        if (column.equals("kr") && isValueIn(newValue, new Object[] { "Br" }, false)) {
+            final Object rl = feature.getProperty("l_oiu");
+
+            if (rl == null) {
+                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_loiu", "o"));
+            }
+        }
+
+        if (column.equals("kr") && isValueIn(newValue, new Object[] { "U" }, false)) {
+            final Object rl = feature.getProperty("l_oiu");
+
+            if (rl == null) {
+                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_loiu", "u"));
+            }
+        }
+
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override

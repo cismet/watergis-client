@@ -1,0 +1,828 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Fließgewässer" pageWidth="942" pageHeight="5950000" columnWidth="902" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="net.sf.jasperreports.engine.JRDefaultScriptlet" whenResourceMissingType="Empty" uuid="a242911c-ac82-40fb-91f8-0d675dafaa30">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="New Dataset 1" uuid="118ac2c0-79cc-4e72-98e2-c4e31c9320cf">
+		<field name="address" class="com.jaspersoft.ireport.examples.beans.AddressBean"/>
+	</subDataset>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/jruiz/NetBeansProjects/svn/cids-custom-wrrl-db-mv/src/main/resources/de/cismet/cids/custom/reports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dataSources" class="java.util.Map"/>
+	<parameter name="wasserschutz" class="java.lang.Boolean"/>
+	<parameter name="gemeinden" class="java.lang.Integer"/>
+	<parameter name="ueber" class="java.lang.Boolean"/>
+	<parameter name="ben" class="java.lang.Boolean"/>
+	<parameter name="aus" class="java.lang.Boolean"/>
+	<parameter name="pegel" class="java.lang.Boolean"/>
+	<parameter name="gb" class="java.lang.Boolean"/>
+	<parameter name="sb" class="java.lang.Boolean"/>
+	<parameter name="prof" class="java.lang.Boolean"/>
+	<parameter name="sbef" class="java.lang.Boolean"/>
+	<parameter name="ubef" class="java.lang.Boolean"/>
+	<parameter name="bbef" class="java.lang.Boolean"/>
+	<parameter name="rl" class="java.lang.Boolean"/>
+	<parameter name="d" class="java.lang.Boolean"/>
+	<parameter name="due" class="java.lang.Boolean"/>
+	<parameter name="scha" class="java.lang.Boolean"/>
+	<parameter name="wehr" class="java.lang.Boolean"/>
+	<parameter name="schw" class="java.lang.Boolean"/>
+	<parameter name="anlp" class="java.lang.Boolean"/>
+	<parameter name="anll" class="java.lang.Boolean"/>
+	<parameter name="kr" class="java.lang.Boolean"/>
+	<parameter name="ea" class="java.lang.Boolean"/>
+	<parameter name="deich" class="java.lang.Boolean"/>
+	<parameter name="ughz" class="java.lang.Boolean"/>
+	<parameter name="leis" class="java.lang.Boolean"/>
+	<parameter name="tech" class="java.lang.Boolean"/>
+	<parameter name="perGew" class="java.lang.Boolean"/>
+	<parameter name="perAbschn" class="java.lang.Boolean"/>
+	<parameter name="sumGu" class="java.lang.Boolean"/>
+	<parameter name="wdm" class="java.lang.Boolean"/>
+	<parameter name="datum" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<detail>
+		<band height="300">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="1" width="902" height="30" uuid="c56c76b2-c5fa-4b14-a45a-202d6facc3e3"/>
+				<subreportParameter name="gemeinden">
+					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="deich">
+					<subreportParameterExpression><![CDATA[$P{deich}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="rl">
+					<subreportParameterExpression><![CDATA[$P{rl}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="pegel">
+					<subreportParameterExpression><![CDATA[$P{pegel}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="schw">
+					<subreportParameterExpression><![CDATA[$P{schw}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ea">
+					<subreportParameterExpression><![CDATA[$P{ea}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gb">
+					<subreportParameterExpression><![CDATA[$P{gb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wasserschutz">
+					<subreportParameterExpression><![CDATA[$P{wasserschutz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="prof">
+					<subreportParameterExpression><![CDATA[$P{prof}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wehr">
+					<subreportParameterExpression><![CDATA[$P{wehr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ueber">
+					<subreportParameterExpression><![CDATA[$P{ueber}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ubef">
+					<subreportParameterExpression><![CDATA[$P{ubef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="scha">
+					<subreportParameterExpression><![CDATA[$P{scha}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="d">
+					<subreportParameterExpression><![CDATA[$P{d}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anlp">
+					<subreportParameterExpression><![CDATA[$P{anlp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sbef">
+					<subreportParameterExpression><![CDATA[$P{sbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="kr">
+					<subreportParameterExpression><![CDATA[$P{kr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ben">
+					<subreportParameterExpression><![CDATA[$P{ben}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tech">
+					<subreportParameterExpression><![CDATA[$P{tech}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ughz">
+					<subreportParameterExpression><![CDATA[$P{ughz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="bbef">
+					<subreportParameterExpression><![CDATA[$P{bbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sb">
+					<subreportParameterExpression><![CDATA[$P{sb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="aus">
+					<subreportParameterExpression><![CDATA[$P{aus}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="leis">
+					<subreportParameterExpression><![CDATA[$P{leis}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anll">
+					<subreportParameterExpression><![CDATA[$P{anll}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="due">
+					<subreportParameterExpression><![CDATA[$P{due}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gemeinden")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gemeinden_gemeinden.jasper"]]></subreportExpression>
+			</subreport>
+			<break>
+				<reportElement positionType="Float" x="0" y="32" width="100" height="1" uuid="d6bf3de6-a5f4-4a47-ab71-f50cfea91028">
+					<printWhenExpression><![CDATA[$P{perGew}]]></printWhenExpression>
+				</reportElement>
+			</break>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="32" width="902" height="30" uuid="201dbccc-62e2-41ac-8334-b5d0a7163546"/>
+				<subreportParameter name="gemeinden">
+					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="deich">
+					<subreportParameterExpression><![CDATA[$P{deich}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="rl">
+					<subreportParameterExpression><![CDATA[$P{rl}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="pegel">
+					<subreportParameterExpression><![CDATA[$P{pegel}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="schw">
+					<subreportParameterExpression><![CDATA[$P{schw}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ea">
+					<subreportParameterExpression><![CDATA[$P{ea}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gb">
+					<subreportParameterExpression><![CDATA[$P{gb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wasserschutz">
+					<subreportParameterExpression><![CDATA[$P{wasserschutz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="prof">
+					<subreportParameterExpression><![CDATA[$P{prof}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wehr">
+					<subreportParameterExpression><![CDATA[$P{wehr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ueber">
+					<subreportParameterExpression><![CDATA[$P{ueber}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ubef">
+					<subreportParameterExpression><![CDATA[$P{ubef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="scha">
+					<subreportParameterExpression><![CDATA[$P{scha}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="d">
+					<subreportParameterExpression><![CDATA[$P{d}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anlp">
+					<subreportParameterExpression><![CDATA[$P{anlp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sbef">
+					<subreportParameterExpression><![CDATA[$P{sbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="kr">
+					<subreportParameterExpression><![CDATA[$P{kr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ben">
+					<subreportParameterExpression><![CDATA[$P{ben}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tech">
+					<subreportParameterExpression><![CDATA[$P{tech}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ughz">
+					<subreportParameterExpression><![CDATA[$P{ughz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="bbef">
+					<subreportParameterExpression><![CDATA[$P{bbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sb">
+					<subreportParameterExpression><![CDATA[$P{sb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="aus">
+					<subreportParameterExpression><![CDATA[$P{aus}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="leis">
+					<subreportParameterExpression><![CDATA[$P{leis}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anll">
+					<subreportParameterExpression><![CDATA[$P{anll}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="due">
+					<subreportParameterExpression><![CDATA[$P{due}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesser")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gemeinden_gewaesser.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="62" width="902" height="30" uuid="2d341680-7a96-429f-872c-2353f5857c1f"/>
+				<subreportParameter name="gemeinden">
+					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="deich">
+					<subreportParameterExpression><![CDATA[$P{deich}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="rl">
+					<subreportParameterExpression><![CDATA[$P{rl}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="pegel">
+					<subreportParameterExpression><![CDATA[$P{pegel}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="schw">
+					<subreportParameterExpression><![CDATA[$P{schw}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ea">
+					<subreportParameterExpression><![CDATA[$P{ea}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gb">
+					<subreportParameterExpression><![CDATA[$P{gb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wasserschutz">
+					<subreportParameterExpression><![CDATA[$P{wasserschutz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="prof">
+					<subreportParameterExpression><![CDATA[$P{prof}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wehr">
+					<subreportParameterExpression><![CDATA[$P{wehr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ueber">
+					<subreportParameterExpression><![CDATA[$P{ueber}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ubef">
+					<subreportParameterExpression><![CDATA[$P{ubef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="scha">
+					<subreportParameterExpression><![CDATA[$P{scha}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="d">
+					<subreportParameterExpression><![CDATA[$P{d}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anlp">
+					<subreportParameterExpression><![CDATA[$P{anlp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sbef">
+					<subreportParameterExpression><![CDATA[$P{sbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="kr">
+					<subreportParameterExpression><![CDATA[$P{kr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ben">
+					<subreportParameterExpression><![CDATA[$P{ben}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tech">
+					<subreportParameterExpression><![CDATA[$P{tech}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ughz">
+					<subreportParameterExpression><![CDATA[$P{ughz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="bbef">
+					<subreportParameterExpression><![CDATA[$P{bbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sb">
+					<subreportParameterExpression><![CDATA[$P{sb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="aus">
+					<subreportParameterExpression><![CDATA[$P{aus}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="leis">
+					<subreportParameterExpression><![CDATA[$P{leis}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anll">
+					<subreportParameterExpression><![CDATA[$P{anll}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="due">
+					<subreportParameterExpression><![CDATA[$P{due}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesserAbschnitt")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gemeinden_gewaesserAbschnitt.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="92" width="902" height="30" uuid="70f7bbe1-40f3-45d0-b24a-cf39626f3075"/>
+				<subreportParameter name="gemeinden">
+					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="deich">
+					<subreportParameterExpression><![CDATA[$P{deich}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="rl">
+					<subreportParameterExpression><![CDATA[$P{rl}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="pegel">
+					<subreportParameterExpression><![CDATA[$P{pegel}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="schw">
+					<subreportParameterExpression><![CDATA[$P{schw}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ea">
+					<subreportParameterExpression><![CDATA[$P{ea}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gb">
+					<subreportParameterExpression><![CDATA[$P{gb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wasserschutz">
+					<subreportParameterExpression><![CDATA[$P{wasserschutz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="prof">
+					<subreportParameterExpression><![CDATA[$P{prof}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wehr">
+					<subreportParameterExpression><![CDATA[$P{wehr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ueber">
+					<subreportParameterExpression><![CDATA[$P{ueber}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ubef">
+					<subreportParameterExpression><![CDATA[$P{ubef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="scha">
+					<subreportParameterExpression><![CDATA[$P{scha}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="d">
+					<subreportParameterExpression><![CDATA[$P{d}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anlp">
+					<subreportParameterExpression><![CDATA[$P{anlp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sbef">
+					<subreportParameterExpression><![CDATA[$P{sbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="kr">
+					<subreportParameterExpression><![CDATA[$P{kr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ben">
+					<subreportParameterExpression><![CDATA[$P{ben}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tech">
+					<subreportParameterExpression><![CDATA[$P{tech}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ughz">
+					<subreportParameterExpression><![CDATA[$P{ughz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="bbef">
+					<subreportParameterExpression><![CDATA[$P{bbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sb">
+					<subreportParameterExpression><![CDATA[$P{sb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="aus">
+					<subreportParameterExpression><![CDATA[$P{aus}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="leis">
+					<subreportParameterExpression><![CDATA[$P{leis}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anll">
+					<subreportParameterExpression><![CDATA[$P{anll}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="due">
+					<subreportParameterExpression><![CDATA[$P{due}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesserGu")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gemeinden_gewaesserGu.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="122" width="902" height="30" uuid="2eafdfe4-4c95-4187-af28-58f11de01a85"/>
+				<subreportParameter name="gemeinden">
+					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="deich">
+					<subreportParameterExpression><![CDATA[$P{deich}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="rl">
+					<subreportParameterExpression><![CDATA[$P{rl}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="pegel">
+					<subreportParameterExpression><![CDATA[$P{pegel}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="schw">
+					<subreportParameterExpression><![CDATA[$P{schw}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ea">
+					<subreportParameterExpression><![CDATA[$P{ea}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gb">
+					<subreportParameterExpression><![CDATA[$P{gb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wasserschutz">
+					<subreportParameterExpression><![CDATA[$P{wasserschutz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="prof">
+					<subreportParameterExpression><![CDATA[$P{prof}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wehr">
+					<subreportParameterExpression><![CDATA[$P{wehr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ueber">
+					<subreportParameterExpression><![CDATA[$P{ueber}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ubef">
+					<subreportParameterExpression><![CDATA[$P{ubef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="scha">
+					<subreportParameterExpression><![CDATA[$P{scha}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="d">
+					<subreportParameterExpression><![CDATA[$P{d}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anlp">
+					<subreportParameterExpression><![CDATA[$P{anlp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sbef">
+					<subreportParameterExpression><![CDATA[$P{sbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="kr">
+					<subreportParameterExpression><![CDATA[$P{kr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ben">
+					<subreportParameterExpression><![CDATA[$P{ben}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tech">
+					<subreportParameterExpression><![CDATA[$P{tech}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ughz">
+					<subreportParameterExpression><![CDATA[$P{ughz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="bbef">
+					<subreportParameterExpression><![CDATA[$P{bbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sb">
+					<subreportParameterExpression><![CDATA[$P{sb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="aus">
+					<subreportParameterExpression><![CDATA[$P{aus}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="leis">
+					<subreportParameterExpression><![CDATA[$P{leis}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anll">
+					<subreportParameterExpression><![CDATA[$P{anll}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="due">
+					<subreportParameterExpression><![CDATA[$P{due}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesserGuAbschnitt")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gemeinden_gewaesserGuAbschnitt.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="152" width="902" height="30" uuid="3f921b1a-ee9f-43c3-aa0f-3e560dfda7c9"/>
+				<subreportParameter name="gemeinden">
+					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="deich">
+					<subreportParameterExpression><![CDATA[$P{deich}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="rl">
+					<subreportParameterExpression><![CDATA[$P{rl}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="pegel">
+					<subreportParameterExpression><![CDATA[$P{pegel}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="schw">
+					<subreportParameterExpression><![CDATA[$P{schw}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ea">
+					<subreportParameterExpression><![CDATA[$P{ea}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gb">
+					<subreportParameterExpression><![CDATA[$P{gb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wasserschutz">
+					<subreportParameterExpression><![CDATA[$P{wasserschutz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="prof">
+					<subreportParameterExpression><![CDATA[$P{prof}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wehr">
+					<subreportParameterExpression><![CDATA[$P{wehr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ueber">
+					<subreportParameterExpression><![CDATA[$P{ueber}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ubef">
+					<subreportParameterExpression><![CDATA[$P{ubef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="scha">
+					<subreportParameterExpression><![CDATA[$P{scha}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="d">
+					<subreportParameterExpression><![CDATA[$P{d}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anlp">
+					<subreportParameterExpression><![CDATA[$P{anlp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sbef">
+					<subreportParameterExpression><![CDATA[$P{sbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="kr">
+					<subreportParameterExpression><![CDATA[$P{kr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ben">
+					<subreportParameterExpression><![CDATA[$P{ben}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tech">
+					<subreportParameterExpression><![CDATA[$P{tech}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ughz">
+					<subreportParameterExpression><![CDATA[$P{ughz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="bbef">
+					<subreportParameterExpression><![CDATA[$P{bbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sb">
+					<subreportParameterExpression><![CDATA[$P{sb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="aus">
+					<subreportParameterExpression><![CDATA[$P{aus}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="leis">
+					<subreportParameterExpression><![CDATA[$P{leis}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anll">
+					<subreportParameterExpression><![CDATA[$P{anll}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="due">
+					<subreportParameterExpression><![CDATA[$P{due}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gemeinden")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gemeinden_gu.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="182" width="902" height="30" uuid="b3d1871a-76ea-4ecc-b2ed-4222d07c7ec7"/>
+				<subreportParameter name="gemeinden">
+					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="deich">
+					<subreportParameterExpression><![CDATA[$P{deich}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="rl">
+					<subreportParameterExpression><![CDATA[$P{rl}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="pegel">
+					<subreportParameterExpression><![CDATA[$P{pegel}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="schw">
+					<subreportParameterExpression><![CDATA[$P{schw}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ea">
+					<subreportParameterExpression><![CDATA[$P{ea}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="gb">
+					<subreportParameterExpression><![CDATA[$P{gb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wasserschutz">
+					<subreportParameterExpression><![CDATA[$P{wasserschutz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="prof">
+					<subreportParameterExpression><![CDATA[$P{prof}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sumGu">
+					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wehr">
+					<subreportParameterExpression><![CDATA[$P{wehr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ueber">
+					<subreportParameterExpression><![CDATA[$P{ueber}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ubef">
+					<subreportParameterExpression><![CDATA[$P{ubef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="scha">
+					<subreportParameterExpression><![CDATA[$P{scha}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="d">
+					<subreportParameterExpression><![CDATA[$P{d}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anlp">
+					<subreportParameterExpression><![CDATA[$P{anlp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sbef">
+					<subreportParameterExpression><![CDATA[$P{sbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="kr">
+					<subreportParameterExpression><![CDATA[$P{kr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ben">
+					<subreportParameterExpression><![CDATA[$P{ben}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="tech">
+					<subreportParameterExpression><![CDATA[$P{tech}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ughz">
+					<subreportParameterExpression><![CDATA[$P{ughz}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="bbef">
+					<subreportParameterExpression><![CDATA[$P{bbef}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sb">
+					<subreportParameterExpression><![CDATA[$P{sb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="aus">
+					<subreportParameterExpression><![CDATA[$P{aus}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="leis">
+					<subreportParameterExpression><![CDATA[$P{leis}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="anll">
+					<subreportParameterExpression><![CDATA[$P{anll}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="due">
+					<subreportParameterExpression><![CDATA[$P{due}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="perAbschn">
+					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="wdm">
+					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gemeinden")]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/reports/gemeinden_GuWidmung.jasper"]]></subreportExpression>
+			</subreport>
+			<break>
+				<reportElement positionType="Float" x="0" y="259" width="100" height="1" uuid="0357c766-ed0b-43b1-b09a-85727129f1e1">
+					<printWhenExpression><![CDATA[$P{perGew} && !$P{perAbschn} && $P{sumGu}]]></printWhenExpression>
+				</reportElement>
+			</break>
+			<break>
+				<reportElement positionType="Float" x="0" y="274" width="100" height="1" uuid="caa6dda5-c422-4361-a18a-2522a4621a7e">
+					<printWhenExpression><![CDATA[$P{sumGu} && !$P{wdm}]]></printWhenExpression>
+				</reportElement>
+			</break>
+			<break>
+				<reportElement positionType="Float" x="0" y="275" width="100" height="1" uuid="12db6a51-e53a-46b8-97e3-829d7d3c95ad">
+					<printWhenExpression><![CDATA[$P{sumGu} && $P{wdm}]]></printWhenExpression>
+				</reportElement>
+			</break>
+			<break>
+				<reportElement positionType="Float" x="0" y="276" width="100" height="1" uuid="f6118576-82ad-4360-9c0b-454c14a65d9f">
+					<printWhenExpression><![CDATA[$P{sumGu} && $P{wdm}]]></printWhenExpression>
+				</reportElement>
+			</break>
+			<break>
+				<reportElement positionType="Float" x="0" y="289" width="100" height="1" uuid="e4a59930-15e0-4eca-8539-e104d617c32b">
+					<printWhenExpression><![CDATA[$P{sumGu} && !$P{wdm}]]></printWhenExpression>
+				</reportElement>
+			</break>
+		</band>
+	</detail>
+</jasperReport>

@@ -93,9 +93,9 @@ public class MeasureButton extends JPopupMenuButton implements PropertyChangeLis
             });
 
         lineMenu.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/polyline.png")));
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-ruler.png")));
         polygonMenu.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/polygon.png")));
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-canvasrulers.png")));
         polygonMenu.setSelected(true);
         popup.add(lineMenu);
         popup.add(polygonMenu);
@@ -116,6 +116,13 @@ public class MeasureButton extends JPopupMenuButton implements PropertyChangeLis
         this.mode = mode;
         lineMenu.setSelected(mode == LINE_MODE);
         polygonMenu.setSelected(mode == POLYGON_MODE);
+
+        if (mode == LINE_MODE) {
+            setIcon(lineMenu.getIcon());
+        } else if (mode == POLYGON_MODE) {
+            setIcon(polygonMenu.getIcon());
+        }
+        repaint();
 
         if (!internal) {
             AppBroker.getInstance().getMappingComponent().setInteractionMode(AppBroker.MEASURE_MODE);

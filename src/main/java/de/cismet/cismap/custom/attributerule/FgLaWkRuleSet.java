@@ -23,9 +23,6 @@ import java.io.File;
 
 import java.sql.Timestamp;
 
-import java.util.List;
-
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -79,7 +76,7 @@ public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("laenge") && !columnName.equals("geom")
-                    && !columnName.equals("la_cd") && !columnName.equals("id");
+                    && !columnName.equals("la_cd") && !columnName.equals("id") && !columnName.equals("laenge_wk");
     }
 
     @Override
@@ -147,7 +144,27 @@ public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("la_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator creator = new StationLineCreator(
+                "la_st",
+                routeMc,
+                "LAWA-Gewässer (LAWA)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
+    }
+
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("wk_nr")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                downloadDocumentFromWebDav(WK_FG_WEBDAV_PATH, addExtension(value.toString().toUpperCase(), "pdf"));
+            }
+        }
     }
 }

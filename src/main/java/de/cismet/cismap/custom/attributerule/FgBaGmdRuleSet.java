@@ -57,6 +57,24 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  */
 public class FgBaGmdRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st_von", new Numeric(10, 2, false, false));
+        typeMap.put("ba_st_bis", new Numeric(10, 2, false, false));
+        typeMap.put("nr_re", new Numeric(8, 0, false, false));
+        typeMap.put("name_re", new Varchar(50, false, false));
+        typeMap.put("nr_li", new Numeric(8, 0, false, false));
+        typeMap.put("name_li", new Varchar(50, false, false));
+        typeMap.put("st_rl", new Numeric(1, 0, false, false));
+        typeMap.put("laenge", new Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -224,7 +242,15 @@ public class FgBaGmdRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("ba_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationLineCreator creator = new StationLineCreator(
+                "ba_st",
+                routeMc,
+                "Basisgewässer (FG)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 }

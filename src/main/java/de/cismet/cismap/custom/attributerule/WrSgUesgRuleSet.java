@@ -20,6 +20,7 @@ import java.net.URL;
 
 import java.sql.Timestamp;
 
+import javax.swing.JLabel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -73,7 +74,7 @@ public class WrSgUesgRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("info") || columnName.equals("recht") || columnName.equals("wbbl")) {
+        if (columnName.equals("info") || columnName.equals("recht")) {
             return new LinkTableCellRenderer();
         } else {
             return super.getCellRenderer(columnName);

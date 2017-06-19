@@ -26,10 +26,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -48,7 +45,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.arrayContains;
 
@@ -73,13 +69,12 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         allowedMaterial.put("SP", new String[] { "Ste", "Ste-Fs", "Ste-Wb" });
         allowedMaterial.put("Spw", new String[] { "H", "K", "St", "St-B", "Ste-Gab" });
         allowedMaterial.put("Wistü", new String[] { "B", "K", "St", "St-B" });
+        minBaLength = 0.5;
     }
 
     //~ Instance initializers --------------------------------------------------
 
     {
-        final Numeric esw = new Numeric(1, 0, false, true);
-        esw.setRange(0.0, 1.0);
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
         typeMap.put("ba_cd", new Varchar(50, false, false));
@@ -93,8 +88,8 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true));
-        typeMap.put("esw", esw);
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
+        typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br", new Numeric(4, 2, false, true));
         typeMap.put("ho_d_o", new Numeric(4, 2, false, true));
@@ -151,16 +146,41 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        return super.afterEdit(feature, column, row, oldValue, newValue);
-    }
+        if (column.equals("ubef") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
 
-    @Override
-    public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("wbbl")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
+            if (allowedMaterialVArray != null) {
+                if (!isValueEmpty(feature.getProperty("material"))
+                            && !arrayContains(
+                                allowedMaterialVArray,
+                                ((feature.getProperty("material") != null) ? feature.getProperty("material")
+                                        .toString() : null))) {
+                    showMessage("Wenn das Attribut ubef = "
+                                + newValue
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
         }
+
+        if (column.equals("material") && !isValueEmpty(newValue)) {
+            final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("ubef").toString());
+
+            if (allowedMaterialVArray != null) {
+                if (!arrayContains(allowedMaterialVArray, (newValue.toString()))) {
+                    showMessage("Wenn das Attribut ubef = "
+                                + feature.getProperty("ubef").toString()
+                                + ", dann muss das Attribut material "
+                                + arrayToString(allowedMaterialVArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            }
+        }
+
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -315,8 +335,8 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
                 final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("ubef").toString());
 
                 if (allowedMaterialVArray != null) {
-                    if (
-                        !arrayContains(
+                    if (!isValueEmpty(feature.getProperty("material"))
+                                && !arrayContains(
                                     allowedMaterialVArray,
                                     ((feature.getProperty("material") != null)
                                         ? feature.getProperty("material").toString() : null))) {
@@ -380,8 +400,17 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationLineCreator("ba_st", routeMc, new LinearReferencingWatergisHelper(), 0.5f);
+        final StationLineCreator creator = new StationLineCreator(
+                "ba_st",
+                routeMc,
+                "Basisgewässer (FG)",
+                new LinearReferencingWatergisHelper(),
+                0.5f);
+        creator.setCheck(check);
+
+        return creator;
     }
 
     @Override

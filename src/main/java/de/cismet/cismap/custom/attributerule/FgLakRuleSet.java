@@ -11,6 +11,8 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import java.util.List;
 
 import javax.swing.table.TableCellEditor;
@@ -83,5 +85,37 @@ public class FgLakRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
+    }
+
+    @Override
+    public String[] getAdditionalFieldNames() {
+        return new String[] { "laenge" };
+    }
+
+    @Override
+    public int getIndexOfAdditionalFieldName(final String name) {
+        if (name.equals("laenge")) {
+            return -4;
+        } else {
+            return super.getIndexOfAdditionalFieldName(name);
+        }
+    }
+
+    @Override
+    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
+        Double value = null;
+
+        final Geometry geom = ((Geometry)feature.getProperty("geom"));
+
+        if (geom != null) {
+            value = round(geom.getLength());
+        }
+
+        return value;
+    }
+
+    @Override
+    public Class getAdditionalFieldClass(final int index) {
+        return Double.class;
     }
 }

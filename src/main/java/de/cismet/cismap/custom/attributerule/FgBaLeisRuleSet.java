@@ -61,8 +61,6 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
     //~ Instance initializers --------------------------------------------------
 
     {
-        final Numeric esw = new Numeric(1, 0, false, true);
-        esw.setRange(0.0, 1.0);
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, false));
         typeMap.put("ba_cd", new Varchar(50, false, false));
@@ -72,11 +70,12 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_rl", new Catalogue("k_l_rl", true, true));
         typeMap.put("leis", new Catalogue("k_leis", true, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
-        typeMap.put("esw", esw);
+        typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+        minBaLength = 0.5;
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -85,7 +84,8 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("laenge") && !columnName.equals("ba_cd")
-                    && !columnName.equals("geom") && !columnName.equals("obj_nr") && !columnName.equals("id");
+                    && !columnName.equals("geom") && !columnName.equals("obj_nr") && !columnName.equals("id")
+                    && !columnName.equals("ww_gr");
     }
 
     @Override
@@ -111,13 +111,7 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
                         }
                     };
             } else {
-                filter = new CidsLayerFeatureFilter() {
-
-                        @Override
-                        public boolean accept(final CidsLayerFeature bean) {
-                            return bean != null;
-                        }
-                    };
+                filter = new WwGrAdminFilter();
             }
             return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
                         "ww_gr",
@@ -190,6 +184,11 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return super.prepareForSave(features);
+    }
+
+    @Override
     public void beforeSave(final FeatureServiceFeature feature) {
         feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
         feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
@@ -234,13 +233,16 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
         final StationLineCreator creator = new StationLineCreator(
                 "ba_st",
                 routeMc,
+                "Basisgewässer (FG)",
                 new LinearReferencingWatergisHelper(),
                 0.5f);
         creator.setProperties(getDefaultValues());
+        creator.setCheck(check);
 
         return creator;
     }
@@ -248,8 +250,8 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Map<String, Object> getDefaultValues() {
         final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGrList() != null) && !AppBroker.getInstance().getOwnWwGrList().isEmpty()) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGrList().get(0));
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }
