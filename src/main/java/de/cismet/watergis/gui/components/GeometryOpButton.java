@@ -14,14 +14,15 @@ package de.cismet.watergis.gui.components;
 import org.jdom.Element;
 
 import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -34,9 +35,10 @@ import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.NoWriteError;
 
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
-import de.cismet.tools.gui.JPopupMenuButton;
 
 import de.cismet.watergis.gui.actions.geoprocessing.AbstractGeoprocessingAction;
+
+import de.cismet.watergis.utils.JPopupMenuButton;
 
 /**
  * DOCUMENT ME!
@@ -64,6 +66,9 @@ public class GeometryOpButton extends JPopupMenuButton implements Configurable {
      */
     public GeometryOpButton() {
         setModel(new JToggleButton.ToggleButtonModel());
+//        setToolTipText(NbBundle.getMessage(
+//                GeometryOpButton.class,
+//                "GeometryOpButton.GeometryOpButton().setToolTipText"));
 
         geoprocessingActions.addAll(Lookup.getDefault().lookupAll(AbstractGeoprocessingAction.class));
         Collections.sort(geoprocessingActions, new Comparator<AbstractGeoprocessingAction>() {
@@ -138,6 +143,7 @@ public class GeometryOpButton extends JPopupMenuButton implements Configurable {
      */
     public void setCurrentGeoprocessingAction(final AbstractGeoprocessingAction currentGeoprocessingAction) {
         this.currentGeoprocessingAction = currentGeoprocessingAction;
+//        setAction(currentGeoprocessingAction);
         for (final Component component : popup.getComponents()) {
             if (component instanceof HighlightingRadioButtonMenuItem) {
                 final HighlightingRadioButtonMenuItem menu = (HighlightingRadioButtonMenuItem)component;

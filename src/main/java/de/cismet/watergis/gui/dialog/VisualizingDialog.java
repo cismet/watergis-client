@@ -193,21 +193,21 @@ public class VisualizingDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void jbOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbOkActionPerformed
+    private void jbOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_jbOkActionPerformed
         canceled = false;
         stylePanel.updateStyles();
         setVisible(false);
-    }//GEN-LAST:event_jbOkActionPerformed
+    }                                                                        //GEN-LAST:event_jbOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void jbCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCancelActionPerformed
+    private void jbCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_jbCancelActionPerformed
         canceled = true;
         setVisible(false);
-    }//GEN-LAST:event_jbCancelActionPerformed
+    }                                                                            //GEN-LAST:event_jbCancelActionPerformed
 
     /**
      * DOCUMENT ME!
