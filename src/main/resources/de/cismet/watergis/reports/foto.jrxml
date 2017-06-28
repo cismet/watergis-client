@@ -226,11 +226,11 @@
 	<parameter name="upl_datum" class="java.lang.String"/>
 	<parameter name="bild_id" class="java.lang.String"/>
 	<parameter name="pos" class="java.lang.String"/>
-	<parameter name="winkel" class="java.lang.Double"/>
+	<parameter name="winkel" class="java.lang.String"/>
 	<parameter name="basis" class="java.lang.String"/>
 	<parameter name="lawa" class="java.lang.String"/>
-	<parameter name="basis_stat" class="java.lang.Double"/>
-	<parameter name="lawa_stat" class="java.lang.Double"/>
+	<parameter name="basis_stat" class="java.lang.String"/>
+	<parameter name="lawa_stat" class="java.lang.String"/>
 	<parameter name="re_li" class="java.lang.String"/>
 	<parameter name="status" class="java.lang.String"/>
 	<parameter name="aufn_nutzer" class="java.lang.String"/>
@@ -253,9 +253,9 @@
 				<text><![CDATA[Fotosteckbrief: ]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="106" y="0" width="274" height="14" uuid="ac689263-3215-4831-a3ea-86ba4afdfa6e"/>
+				<reportElement x="106" y="0" width="696" height="14" uuid="ac689263-3215-4831-a3ea-86ba4afdfa6e"/>
 				<textElement>
-					<font fontName="arial" size="12" isBold="true"/>
+					<font fontName="arial" size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{foto}]]></textFieldExpression>
 			</textField>
