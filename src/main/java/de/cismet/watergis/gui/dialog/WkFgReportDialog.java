@@ -253,7 +253,6 @@ public class WkFgReportDialog extends javax.swing.JDialog {
                 WkFgReportDialog.class,
                 "WkFgReportDialog.txtFile.text",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

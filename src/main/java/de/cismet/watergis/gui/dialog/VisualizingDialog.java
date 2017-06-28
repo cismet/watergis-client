@@ -41,6 +41,8 @@ import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 
+import de.cismet.cismap.commons.styling.CustomSLDParser;
+
 import de.cismet.jump.sld.editor.CidsRenderingStylePanel;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -264,7 +266,7 @@ public class VisualizingDialog extends javax.swing.JDialog {
         final XMLInputFactory factory = XMLInputFactory.newInstance();
 
         try {
-            styles = SLDParser.getStyles(factory.createXMLStreamReader(input));
+            styles = CustomSLDParser.getStyles(factory.createXMLStreamReader(input));
         } catch (Exception ex) {
             LOG.error("Fehler in der SLD", ex);
         }

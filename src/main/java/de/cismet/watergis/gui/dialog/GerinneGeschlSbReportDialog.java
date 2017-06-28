@@ -347,7 +347,6 @@ public class GerinneGeschlSbReportDialog extends javax.swing.JDialog {
                 GerinneGeschlSbReportDialog.class,
                 "GerinneGeschlSbReportDialog.txtFile.text",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

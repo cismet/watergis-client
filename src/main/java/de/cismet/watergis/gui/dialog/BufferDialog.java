@@ -322,10 +322,8 @@ public class BufferDialog extends javax.swing.JDialog {
         rbFixBuffer.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             rbFixBuffer,
-            org.openide.util.NbBundle.getMessage(
-                BufferDialog.class,
-                "BufferDialog.rbFixBuffer.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.rbFixBuffer.text", new Object[] {
+                })); // NOI18N
         rbFixBuffer.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -336,7 +334,6 @@ public class BufferDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(rbFixBuffer, gridBagConstraints);
@@ -358,7 +355,6 @@ public class BufferDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(rbFieldBuffer, gridBagConstraints);
@@ -366,9 +362,8 @@ public class BufferDialog extends javax.swing.JDialog {
         txtBuffer.setMinimumSize(new java.awt.Dimension(200, 27));
         txtBuffer.setPreferredSize(new java.awt.Dimension(200, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
@@ -379,9 +374,8 @@ public class BufferDialog extends javax.swing.JDialog {
         cbField.setMinimumSize(new java.awt.Dimension(200, 27));
         cbField.setPreferredSize(new java.awt.Dimension(200, 27));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
@@ -398,7 +392,8 @@ public class BufferDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(ckbMergeBuffer, gridBagConstraints);
 
@@ -458,10 +453,8 @@ public class BufferDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbSelected,
-            org.openide.util.NbBundle.getMessage(
-                BufferDialog.class,
-                "BufferDialog.ckbSelected.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.ckbSelected.text", new Object[] {
+                })); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -542,13 +535,13 @@ public class BufferDialog extends javax.swing.JDialog {
                     final LayerProperties serviceLayerProperties = featureList.get(0).getLayerProperties();
                     final LayerProperties newLayerProperties = serviceLayerProperties.clone();
                     int count = 0;
-                    final int percentageToBuffer = (ckbMergeBuffer.isSelected() ? 80 : 40);
+                    final int percentageToBuffer = ((!ckbMergeBuffer.isSelected()) ? 80 : 40);
                     String distanceAttribute = "";
 
                     newLayerProperties.setFeatureService((AbstractFeatureService)
                         serviceLayerProperties.getFeatureService().clone());
 
-                    if (ckbMergeBuffer.isSelected()) {
+                    if (!ckbMergeBuffer.isSelected()) {
                         newLayerProperties.getFeatureService()
                                 .setFeatureServiceAttributes(FeatureServiceHelper.cloneFeatureServiceAttributes(
                                         serviceLayerProperties.getFeatureService().getFeatureServiceAttributes()));
@@ -626,7 +619,7 @@ public class BufferDialog extends javax.swing.JDialog {
                     }
 
                     // merge geometries of required
-                    if (!ckbMergeBuffer.isSelected()) {
+                    if (ckbMergeBuffer.isSelected()) {
                         final List<FeatureServiceFeature> bufferedFeatures = new ArrayList<FeatureServiceFeature>(
                                 resultedFeatures);
                         resultedFeatures.clear();

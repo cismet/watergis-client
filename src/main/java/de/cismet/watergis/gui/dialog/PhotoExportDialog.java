@@ -236,7 +236,6 @@ public class PhotoExportDialog extends javax.swing.JDialog {
                 PhotoExportDialog.class,
                 "PhotoExportDialog.txtFile.text_1",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

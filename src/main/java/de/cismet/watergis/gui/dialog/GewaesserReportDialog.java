@@ -354,7 +354,6 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
                 GewaesserReportDialog.class,
                 "GewaesserReportDialog.txtFile.text",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

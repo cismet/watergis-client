@@ -292,7 +292,6 @@ public class GerinneOGemeindeReportDialog extends javax.swing.JDialog {
                 GerinneOGemeindeReportDialog.class,
                 "GerinneOGemeindeReportDialog.txtFile.text",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

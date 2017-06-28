@@ -275,7 +275,6 @@ public class GerinneOSbReportDialog extends javax.swing.JDialog {
                 GerinneOSbReportDialog.class,
                 "GerinneOSbReportDialog.txtFile.text",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
