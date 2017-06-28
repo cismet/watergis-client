@@ -29,7 +29,7 @@ public class SimpleFeatureMerger implements FeatureMerger {
     //~ Methods ----------------------------------------------------------------
 
     @Override
-    public Feature merge(final Feature masterFeature, final Feature childFeature) {
+    public Feature merge(final Feature masterFeature, final Feature childFeature) throws MergeException {
         final Geometry g = masterFeature.getGeometry();
         Geometry mergedGeom = g.union(childFeature.getGeometry());
 

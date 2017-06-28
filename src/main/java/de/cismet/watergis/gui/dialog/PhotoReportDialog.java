@@ -224,11 +224,11 @@ public class PhotoReportDialog extends javax.swing.JDialog {
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
+        txtFile.setEditable(false);
         txtFile.setText(org.openide.util.NbBundle.getMessage(
                 PhotoReportDialog.class,
                 "PhotoReportDialog.txtFile.text_1",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

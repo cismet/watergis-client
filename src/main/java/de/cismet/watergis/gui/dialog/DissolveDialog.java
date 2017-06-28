@@ -98,7 +98,7 @@ public class DissolveDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
 
-        txtTable.setText("Dissolve");
+        txtTable.setText("Verschmelzen");
 
         CismapBroker.getInstance()
                 .getMappingComponent()
@@ -406,7 +406,7 @@ public class DissolveDialog extends javax.swing.JDialog {
         final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
                         .getInstance().getWatergisApp(),
                 true,
-                "Dissolve                                            ",
+                "Verschmelzen                                            ",
                 null,
                 100,
                 true) {

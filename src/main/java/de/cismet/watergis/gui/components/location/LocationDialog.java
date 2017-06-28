@@ -601,7 +601,10 @@ public class LocationDialog extends javax.swing.JDialog {
                 distance = Double.parseDouble(doubleAsString);
             }
         } catch (NumberFormatException e) {
-            LOG.error("Wrong number format.", e);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Wrong number format.", e);
+            }
+            txtDistance.setText("0");
         }
 
         for (final Object o : servicesFromTree) {
@@ -886,11 +889,6 @@ public class LocationDialog extends javax.swing.JDialog {
             final List<FeatureServiceFeature> resultFeatureList = new ArrayList<FeatureServiceFeature>();
 
             if (source != null) {
-                Geometry simplifiedGeometry = source;
-
-                if (!chUseSelectedFeatures.isSelected()) {
-                    simplifiedGeometry = TopologyPreservingSimplifier.simplify(source, 30);
-                }
                 Geometry bufferedGeometry = source.getEnvelope();
 
                 if (distance > 0) {
@@ -911,7 +909,7 @@ public class LocationDialog extends javax.swing.JDialog {
                         }
                         final FeatureServiceFeature feature = (FeatureServiceFeature)featureObject;
                         if (spatMethod.featureGeometryFulfilsRequirements(
-                                        simplifiedGeometry,
+                                        source,
                                         feature.getGeometry(),
                                         distance)) {
                             resultFeatureList.add(feature);

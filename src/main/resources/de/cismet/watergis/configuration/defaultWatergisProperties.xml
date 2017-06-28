@@ -2,7 +2,16 @@
 
 
 <watergis>
-    <cismapOverviewComponentPreferences srs="EPSG:35833">
+    <downloads>
+      <parallelDownloads>5</parallelDownloads>
+      <dialog>
+        <askForTitle>false</askForTitle>
+        <openAutomatically>false</openAutomatically>
+        <closeAutomatically>true</closeAutomatically>
+        <userTitle />
+      </dialog>
+    </downloads>
+    <cismapOverviewComponentPreferences srs="EPSG:5650" substitutionAttribute="watergis.overview">
         <overviewExtent>
             <BoundingBox x1="33206890.6290955" y1="5890624.1889224" x2="33460856.7310355" y2="6060840.0968643"/>
         </overviewExtent>
@@ -23,7 +32,7 @@
         <httpInterfacePort>9097</httpInterfacePort>
     </ports>
 
-    <cismapCapabilitiesPreferences substitutionAttribute="watergis.caps">
+    <cismapCapabilitiesPreferences searchPanelActivated="true" substitutionAttribute="watergis.caps">
         <capabilities type="OGC-WMS"><![CDATA[http://www.geodaten-mv.de/dienste/webatlasde_wms?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilities>
         <!--<capabilitiesList titlestring="KategorieName" type="MENU">-->
         <capabilitiesList titlestring="Topo MV - Web"  type="OGC-WMS"><![CDATA[http://www.geodaten-mv.de/dienste/gdimv_topomv?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS]]></capabilitiesList>
@@ -54,7 +63,7 @@
         <defaultCrs geometrySridAlias="0"/>
         <printing>
             <scale selected="false" denominator="0">frei</scale>
-            <scale selected="false" denominator="-1">Benutzerdefiniert</scale>
+            <scale selected="false" denominator="-1">benutzerdefiniert</scale>
             <scale selected="true" denominator="100">1:100</scale>
             <scale selected="true" denominator="500">1:500</scale>
             <scale selected="false" denominator="1000">1:1000</scale>
@@ -72,13 +81,14 @@
             <resolution selected="false" dpi="150">150 dpi</resolution>
             <resolution selected="false" dpi="200">200 dpi</resolution>
             <resolution selected="true" dpi="300">300 dpi</resolution>
+            <resolution selected="false" dpi="600">600 dpi</resolution>
             <template selected="true" title="Standard DIN-A4 hochkant" file="/de/cismet/watergis/printing/A4H.jasper" className="de.cismet.watergis.printing.WatergisA4H" mapPlaceholder="map" mapWidth="508" mapHeight="699" scaleDenominatorPlaceholder="scale" />
             <template selected="true" title="Standard DIN-A4 quer" file="/de/cismet/watergis/printing/A4Q.jasper" className="de.cismet.watergis.printing.WatergisA4Q" mapPlaceholder="map" mapWidth="751" mapHeight="483" scaleDenominatorPlaceholder="scale" />
             <template selected="true" title="Standard DIN-A3 hochkant" file="/de/cismet/watergis/printing/A3H.jasper" className="de.cismet.watergis.printing.WatergisA3H" mapPlaceholder="map" mapWidth="751" mapHeight="1049" scaleDenominatorPlaceholder="scale" />
             <template selected="true" title="Standard DIN-A3 quer" file="/de/cismet/watergis/printing/A3Q.jasper" className="de.cismet.watergis.printing.WatergisA3Q" mapPlaceholder="map" mapWidth="1104" mapHeight="699" scaleDenominatorPlaceholder="scale" />
-            <action selected="false" id="print">Drucken</action>
-            <action selected="false" id="printpreview">Druckvorschau</action>
-            <action selected="true" id="pdf">PDF anzeigen</action>
+            <!--action selected="false" id="print">Drucken</action>
+            <action selected="false" id="printpreview">Druckvorschau</action-->
+            <action selected="true" id="pdf">PDF speichern und anzeigen</action>
         </printing>
     </cismapMappingPreferences>
     <!--TODO Verbessern anständiges Format erstellen-->
@@ -1194,21 +1204,30 @@
       </FeatureServices>
     </ExportAction>
     <serverProfiles>
-        <profile id="dgk"
-                 sorter="100"
-                 name="Digitale Topographische Karte"
-                 path="/de/cismet/watergis/serverprofiles/dgkpublic.xml"
+        <profile id="tk"
+                 sorter="010"
+                 name="Karte: TK / DOP / GU"
+                 path="/de/cismet/watergis/serverprofiles/TK DOP - GU.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"/>
-        <profile id="aerial"
+        <profile id="pfl1"
                  sorter="020"
-                 name="Luftbildkarte"
-                 descr="Satellitenbild"
-                 path="/de/cismet/watergis/serverprofiles/aerialpublic.xml"
+                 name="Pflege: Gewässer"
+                 path="/de/cismet/watergis/serverprofiles/Pflege 1 - Gewässer.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"/>
-        <profile id="city"
+        <profile id="pfl2"
                  sorter="030"
-                 name="Neubrandenburg"
-                 path="/de/cismet/watergis/serverprofiles/citymappublic.xml"
+                 name="Pflege: GU-Themen"
+                 path="/de/cismet/watergis/serverprofiles/Pflege 2 - Themen GU.xml"
+                 icon="/de/cismet/watergis/serverprofiles/default.png"/>
+        <profile id="aus1"
+                 sorter="040"
+                 name="Auswertung: DGM / FS"
+                 path="/de/cismet/watergis/serverprofiles/Auswertung 1 - DGM FS.xml"
+                 icon="/de/cismet/watergis/serverprofiles/default.png"/>
+        <profile id="aus2"
+                 sorter="050"
+                 name="Auswertung: MN / SG / WR."
+                 path="/de/cismet/watergis/serverprofiles/Auswertung 2 - MN SG WR.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"/>
     </serverProfiles>
 </watergis>

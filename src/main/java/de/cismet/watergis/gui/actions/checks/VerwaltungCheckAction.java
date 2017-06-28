@@ -33,6 +33,7 @@ import de.cismet.cids.custom.watergis.server.search.BakWithIncompleteGmdCoverage
 import de.cismet.cids.custom.watergis.server.search.BakWithIncompleteSbCoverage;
 import de.cismet.cids.custom.watergis.server.search.DeleteInvalidFgBaExp;
 import de.cismet.cids.custom.watergis.server.search.FgBakCount;
+import de.cismet.cids.custom.watergis.server.search.MergeBaExp;
 import de.cismet.cids.custom.watergis.server.search.MergeBaSb;
 import de.cismet.cids.custom.watergis.server.search.OverlappedGb;
 import de.cismet.cids.custom.watergis.server.search.OverlappedGmd;
@@ -211,7 +212,9 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_linie linie on (ba_st = linie.id) "
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id) "
                             + "join dlm25w.fg_ba ba on (von.route = ba.id) "
-                            + "where (%1$s is null or ba.id = any(%1$s)) and (k.id is null and t.sb is not null);";
+                            + "join dlm25w.k_ww_gr sbgr on (k.ww_gr = sbgr.id) "
+                            + "join dlm25w.k_ww_gr bagr on (ba.ww_gr = bagr.id)"
+                            + "where (%1$s is null or ba.id = any(%1$s)) and (k.id is null and t.sb is not null) or sbgr.owner <> bagr.owner;";
             } else {
                 QUERY_SB_CATALOGUE = "select distinct " + FG_BA_SB.getID() + ", t." + FG_BA_SB.getPrimaryKey()
                             + " from " + FG_BA_SB.getTableName() + " t \n"
@@ -221,9 +224,11 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (von.route = ba.id) "
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id) "
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
+                            + "join dlm25w.k_ww_gr sbgr on (k.ww_gr = sbgr.id) "
+                            + "join dlm25w.k_ww_gr bagr on (ba.ww_gr = bagr.id)"
                             + "where (%1$s is null or ba.id = any(%1$s)) and (k.id is null and t.sb is not null) and gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or sbgr.owner <> bagr.owner";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -280,7 +285,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 14;
+        return 15;
     }
 
     @Override
@@ -402,8 +407,10 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                                 showService(result.getIncompleteGmd(),
                                     "Prüfungen->Verwaltung->GMD");
                             }
+                            refreshTree();
+                            refreshMap();
                         } catch (Exception e) {
-                            LOG.error("Error while performing the lawa connection analyse.", e);
+                            LOG.error("Error while performing the verwaltung analyse.", e);
                             successful = false;
                         }
                     }
@@ -457,15 +464,14 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         }
 
         // start auto correction
-        // fg_ba_gb and fg_ba_gmd will be filled automatically and should not be changed
-// final CidsServerSearch mergeGb = new MergeBaGb(user);
-// SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGb);
         final CidsServerSearch mergeSb = new MergeBaSb(user);
         SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeSb);
         increaseProgress(wd, 1);
 
-//                    final CidsServerSearch mergeGmd = new MergeBaGmd(user);
-//                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGmd);
+        final CidsServerSearch mergeExp = new MergeBaExp(user);
+        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeExp);
+        increaseProgress(wd, 1);
+
         final CidsServerSearch deletBaExp = new DeleteInvalidFgBaExp(user);
         SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), deletBaExp);
         increaseProgress(wd, 1);
@@ -478,9 +484,9 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                 String.valueOf(Types.INTEGER),
                 true);
         baGmdServiceAttributeDefinition.add(serviceAttribute);
-        serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
-        baGmdServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        baGmdServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
         baGmdServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
         baGmdServiceAttributeDefinition.add(serviceAttribute);
@@ -488,10 +494,10 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         baGmdServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("ba_st_bis", String.valueOf(Types.DOUBLE), true);
         baGmdServiceAttributeDefinition.add(serviceAttribute);
-        serviceAttribute = new FeatureServiceAttribute("gmd_nr_re", String.valueOf(Types.VARCHAR), true);
-        baGmdServiceAttributeDefinition.add(serviceAttribute);
-        serviceAttribute = new FeatureServiceAttribute("gmd_nr_li", String.valueOf(Types.VARCHAR), true);
-        baGmdServiceAttributeDefinition.add(serviceAttribute);
+//        serviceAttribute = new FeatureServiceAttribute("gmd_nr_re", String.valueOf(Types.VARCHAR), true);
+//        baGmdServiceAttributeDefinition.add(serviceAttribute);
+//        serviceAttribute = new FeatureServiceAttribute("gmd_nr_li", String.valueOf(Types.VARCHAR), true);
+//        baGmdServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
         baGmdServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
@@ -512,17 +518,15 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                 String.valueOf(Types.INTEGER),
                 true);
         baGbServiceAttributeDefinition.add(serviceAttribute);
-        serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
-        baGbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        baGbServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
         baGbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
         baGbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("ba_st_von", String.valueOf(Types.DOUBLE), true);
         baGbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("ba_st_bis", String.valueOf(Types.DOUBLE), true);
-        baGbServiceAttributeDefinition.add(serviceAttribute);
-        serviceAttribute = new FeatureServiceAttribute("gb", String.valueOf(Types.VARCHAR), true);
         baGbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
         baGbServiceAttributeDefinition.add(serviceAttribute);
@@ -544,17 +548,15 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                 String.valueOf(Types.INTEGER),
                 true);
         baSbServiceAttributeDefinition.add(serviceAttribute);
-        serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
-        baSbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        baSbServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
         baSbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
         baSbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("ba_st_von", String.valueOf(Types.DOUBLE), true);
         baSbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("ba_st_bis", String.valueOf(Types.DOUBLE), true);
-        baSbServiceAttributeDefinition.add(serviceAttribute);
-        serviceAttribute = new FeatureServiceAttribute("sb", String.valueOf(Types.VARCHAR), true);
         baSbServiceAttributeDefinition.add(serviceAttribute);
         serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
         baSbServiceAttributeDefinition.add(serviceAttribute);

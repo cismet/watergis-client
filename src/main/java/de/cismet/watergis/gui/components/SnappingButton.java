@@ -25,7 +25,6 @@ import java.util.Collection;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
@@ -34,7 +33,8 @@ import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.NoWriteError;
 
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
-import de.cismet.tools.gui.JPopupMenuButton;
+
+import de.cismet.watergis.utils.JPopupMenuButton;
 
 /**
  * DOCUMENT ME!

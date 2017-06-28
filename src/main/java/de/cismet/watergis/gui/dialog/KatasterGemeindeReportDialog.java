@@ -956,7 +956,6 @@ public class KatasterGemeindeReportDialog extends javax.swing.JDialog {
                 KatasterGemeindeReportDialog.class,
                 "KatasterGemeindeReportDialog.txtFile.text",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

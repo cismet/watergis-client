@@ -97,6 +97,7 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.features.ModifiableFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
@@ -136,7 +137,16 @@ public class GafProf extends javax.swing.JPanel {
     private static int idCounter = -1;
     private static final String FILE_PROTOCOL_PREFIX = "file://";
     private static final Logger LOG = Logger.getLogger(GafProf.class);
+    private static final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
     public static CidsLayerFeature selectedFeature = null;
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
+
+    static {
+        final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        DECIMAL_FORMAT.setDecimalFormatSymbols(symbols);
+        DECIMAL_FORMAT.setGroupingUsed(false);
+    }
 
     //~ Instance fields --------------------------------------------------------
 
@@ -180,10 +190,13 @@ public class GafProf extends javax.swing.JPanel {
                     final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
                             "qp");
 
-                    if (tbLocate.isSelected()) {
+                    if (tbLocate.isSelected() || !GafProf.this.isDisplayable()) {
                         return;
                     }
-
+                    if (!isShowing()) {
+                        // do not load an object into the editor, if the editor is not showing
+                        return;
+                    }
                     if ((features != null) && !features.isEmpty()) {
                         Collections.sort(features, PhotoOptionsDialog.getInstance().getSorter());
                         if ((selectedFeature == null) || !features.get(0).equals(selectedFeature)) {
@@ -222,7 +235,7 @@ public class GafProf extends javax.swing.JPanel {
                                 if ((files != null) && (files.size() > 0)) {
                                     editor.showEditor(true, true);
                                     addGafServicesToTree();
-                                    CismetThreadPool.execute(new GafUploadWorker(files));
+                                    new GafUploadWorker(files).start();
                                 }
                                 e.dropComplete(true);
                                 return;
@@ -259,7 +272,7 @@ public class GafProf extends javax.swing.JPanel {
                                 if (fileList.size() > 0) {
                                     editor.showEditor(true, true);
                                     addGafServicesToTree();
-                                    CismetThreadPool.execute(new GafUploadWorker(fileList));
+                                    new GafUploadWorker(fileList).start();
                                     e.dropComplete(true);
                                     return;
                                 }
@@ -332,13 +345,13 @@ public class GafProf extends javax.swing.JPanel {
         jToolBar1.setRollover(true);
 
         butPrintPreview.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-preview.png")));     // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-searchdocument.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butPrintPreview,
-            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butPrintPreview.text")); // NOI18N
+            org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butPrintPreview.text"));    // NOI18N
         butPrintPreview.setToolTipText(org.openide.util.NbBundle.getMessage(
                 GafProf.class,
-                "GafProf.butPrintPreview.toolTipText"));                                          // NOI18N
+                "GafProf.butPrintPreview.toolTipText"));                                             // NOI18N
         butPrintPreview.setFocusable(false);
         butPrintPreview.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butPrintPreview.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -442,7 +455,7 @@ public class GafProf extends javax.swing.JPanel {
         jToolBar1.add(tbProcessing);
 
         butZoomToProfile.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-resize.png")));       // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionadd.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butZoomToProfile,
             org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butZoomToProfile.text")); // NOI18N
@@ -462,7 +475,7 @@ public class GafProf extends javax.swing.JPanel {
         jToolBar1.add(butZoomToProfile);
 
         butBack.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/cismap/commons/gui/attributetable/res/icon-thissideup.png")));   // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-fullscreen.png")));                    // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butBack,
             org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butBack.text"));                           // NOI18N
@@ -480,7 +493,7 @@ public class GafProf extends javax.swing.JPanel {
         jToolBar1.add(butBack);
 
         butDelete.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-remove-sign.png")));                       // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-circledelete.png")));                      // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butDelete,
             org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butDelete.text"));                             // NOI18N
@@ -498,7 +511,7 @@ public class GafProf extends javax.swing.JPanel {
         jToolBar1.add(butDelete);
 
         butSave.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-save-floppy.png")));                   // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-editalt.png")));                       // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butSave,
             org.openide.util.NbBundle.getMessage(GafProf.class, "GafProf.butSave.text"));                           // NOI18N
@@ -871,25 +884,31 @@ public class GafProf extends javax.swing.JPanel {
 
         map.put("punkt", feature.getGeometry());
         map.put("upl_nutzer", feature.getProperty("upl_name"));
-        map.put("upl_datum", obj2Time(feature.getProperty("upl_zeit")));
+        map.put(
+            "upl_datum",
+            dateTime2String(feature.getProperty("upl_datum"), (String)feature.getProperty("upl_zeit")));
         map.put("qp_nr", objectToString(feature.getProperty("qp_nr")));
-        map.put("pos", format.format(feature.getProperty("re")) + ", " + format.format(feature.getProperty("ho")));
+        map.put("pos", format.format(feature.getProperty("re")) + "  " + format.format(feature.getProperty("ho")));
         map.put("lawa", objectToString(feature.getProperty("la_cd")));
-        map.put("lawa_stat", feature.getProperty("la_st"));
+        map.put(
+            "lawa_stat",
+            ((feature.getProperty("la_st") == null) ? "" : DECIMAL_FORMAT.format(feature.getProperty("la_st"))));
         map.put("dhhn", "ja");
         map.put("status", objectToString(feature.getProperty("l_st")));
         map.put("aufn_nutzer", feature.getProperty("aufn_name"));
-        map.put("aufn_datum", obj2Time(feature.getProperty("aufn_zeit")));
+        map.put(
+            "aufn_datum",
+            dateTime2String(feature.getProperty("auf_datum"), (String)feature.getProperty("aufn_zeit")));
         map.put("titel", feature.getProperty("titel"));
         map.put("beschreibung", feature.getProperty("beschreib"));
         map.put("bemerkung", feature.getProperty("bemerkung"));
 
         if (basisStat != null) {
             map.put("basis", feature.getProperty("route.ba_cd"));
-            map.put("basis_stat", basisStat.getProperty("wert"));
+            map.put("basis_stat", DECIMAL_FORMAT.format(basisStat.getProperty("wert")));
         } else {
             map.put("basis", "");
-            map.put("basis_stat", 0.0);
+            map.put("basis_stat", "");
         }
         if (freigabe != null) {
             map.put("freigabe", freigabe.toString());
@@ -906,17 +925,28 @@ public class GafProf extends javax.swing.JPanel {
     /**
      * DOCUMENT ME!
      *
-     * @param   o  DOCUMENT ME!
+     * @param   date  o DOCUMENT ME!
+     * @param   time  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private static String obj2Time(final Object o) {
-        if (o == null) {
+    private static String dateTime2String(final Object date, final String time) {
+        if ((date == null) && (time == null)) {
             return "";
+        } else if (date == null) {
+            return time;
+        } else if (time == null) {
+            try {
+                final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                return format.format(date);
+            } catch (IllegalArgumentException e) {
+                LOG.error("Not a date", e);
+                return "";
+            }
         } else {
             try {
-                final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-                return format.format(o);
+                final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                return format.format(date) + " " + time;
             } catch (IllegalArgumentException e) {
                 LOG.error("Not a date", e);
                 return "";
@@ -936,11 +966,30 @@ public class GafProf extends javax.swing.JPanel {
                         AppBroker.DOMAIN_NAME,
                         "dlm25w.qp"));
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(layer);
+            AttributeTableFactory.getInstance().switchProcessingMode(layer);
+        } else {
+            if (!SelectionManager.getInstance().getEditableServices().contains(services.get(0))) {
+                AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
+            }
         }
 
         addLayerToTree("qp_gaf_p");
         addLayerToTree("qp_gaf_l");
         addLayerToTree("qp_gaf_l_pr_pf");
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    public static void closeEditMode() {
+        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "qp");
+
+        if (!(services == null) || services.isEmpty()) {
+            if (SelectionManager.getInstance().getEditableServices().contains(services.get(0))) {
+                AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
+            }
+        }
     }
 
     /**
@@ -1054,7 +1103,7 @@ public class GafProf extends javax.swing.JPanel {
             if (ruleSet != null) {
                 ruleSet.beforeSave(feature);
             }
-            feature.saveChanges();
+            feature.saveChangesWithoutReload();
             reloadGafProfileServices();
         } catch (Exception e) {
             LOG.error("Eror while saving feature", e);
@@ -1082,7 +1131,7 @@ public class GafProf extends javax.swing.JPanel {
         if (mappingComponent != null) {
             final XBoundingBox bbox = new XBoundingBox(feature.getGeometry());
             bbox.increase(10);
-            final BoundingBox scaledBBox = mappingComponent.getScaledBoundingBox(500, bbox);
+            final BoundingBox scaledBBox = mappingComponent.getScaledBoundingBox(1000, bbox);
             mappingComponent.gotoBoundingBoxWithHistory(scaledBBox);
         } else {
             LOG.error("MappingComponent is not set");
@@ -1161,7 +1210,7 @@ public class GafProf extends javax.swing.JPanel {
                 if (ruleSet != null) {
                     ruleSet.beforeSave(feature);
                 }
-                feature.saveChanges();
+                feature.saveChangesWithoutReload();
                 layerFeature.setEditable(false);
                 reloadGafProfileServices();
             } catch (Exception e) {
@@ -1202,7 +1251,7 @@ public class GafProf extends javax.swing.JPanel {
                                 selectedF.setProperty("freigabe", feature.getBean().getProperty("freigabe"));
 
                                 if (selectedF instanceof ModifiableFeature) {
-                                    ((ModifiableFeature)selectedF).saveChanges();
+                                    ((ModifiableFeature)selectedF).saveChangesWithoutReload();
                                 }
                             }
                         }
@@ -1211,7 +1260,7 @@ public class GafProf extends javax.swing.JPanel {
                     if (ruleSet != null) {
                         ruleSet.beforeSave(feature);
                     }
-                    feature.saveChanges();
+                    feature.saveChangesWithoutReload();
 
                     return null;
                 }
@@ -1388,7 +1437,7 @@ public class GafProf extends javax.swing.JPanel {
      *
      * @version  $Revision$, $Date$
      */
-    final class GafUploadWorker extends SwingWorker<List<CidsLayerFeature>, Void> {
+    final class GafUploadWorker extends WaitingDialogThread<List<CidsLayerFeature>> {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -1402,6 +1451,7 @@ public class GafProf extends javax.swing.JPanel {
          * @param  profs  fotos DOCUMENT ME!
          */
         public GafUploadWorker(final Collection<File> profs) {
+            super(StaticSwingTools.getParentFrame(GafProf.this), true, "Importiere Profil", null, 50);
             this.profs = profs;
         }
 
@@ -1497,18 +1547,19 @@ public class GafProf extends javax.swing.JPanel {
                 final String[] errors = reader.checkFile();
 
                 if (errors.length > 0) {
-                    CheckAction.handleErrors(errors);
+                    CheckAction.handleErrors(errors, gafFile);
                     return null;
                 }
 
                 final String[] hints = reader.checkFileForHints();
 
                 if (hints.length > 0) {
-                    CheckAction.handleHints(hints);
+                    CheckAction.handleHints(hints, gafFile);
                 }
 
                 if (!dhhn92Check) {
                     StaticSwingTools.showDialog(GafImportDialog.getInstance());
+                    GafImportDialog.getInstance().setAlwaysOnTop(true);
                     dhhn92Check = true;
 
                     dhhn92 = !GafImportDialog.getInstance().isCancelled();
@@ -1536,7 +1587,7 @@ public class GafProf extends javax.swing.JPanel {
 
                     newGafBean.setProperty("id", id);
                     newGafBean.setProperty("upl_datum", new java.sql.Date(currentTime.getTime()));
-                    newGafBean.setProperty("upl_zeit", new java.sql.Timestamp(currentTime.getTime()));
+                    newGafBean.setProperty("upl_zeit", timeFormatter.format(currentTime.getTime()));
                     newGafBean.setProperty("upl_name", userName);
                     newGafBean.setProperty("qp_nr", getNextProfileNumber());
                     newGafBean.setProperty("ww_gr", AppBroker.getInstance().getOwnWwGr());
@@ -1584,8 +1635,8 @@ public class GafProf extends javax.swing.JPanel {
                             final Station laStat = getNextFgLaStat(stat.getPoint());
 
                             if (laStat != null) {
-                                newGafBean.setProperty("la_cd", laStat.getLaCd());
-                                newGafBean.setProperty("la_st", laStat.getStat());
+                                feature.setProperty("la_cd", laStat.getLaCd());
+                                feature.setProperty("la_st", laStat.getStat());
                             }
                         }
                     } else {
@@ -1673,14 +1724,11 @@ public class GafProf extends javax.swing.JPanel {
                     SelectionManager.getInstance().removeSelectedFeatures(features);
                     SelectionManager.getInstance().addSelectedFeatures(newFeatures);
                     newFeatures.addAll(newFeatures);
-                    // todo: prüfen, ob noch nicht gespeicherte Fotos existieren
-// setEditorFeature(newFeatures.get(0));
+
                     reloadGafProfileServices();
                 }
-            } catch (InterruptedException ex) {
+            } catch (Exception ex) {
                 LOG.warn(ex, ex);
-            } catch (ExecutionException ex) {
-                LOG.error(ex, ex);
             } finally {
                 if (editor.getCidsLayerFeature() == null) {
                     editor.showEditor(false, false);

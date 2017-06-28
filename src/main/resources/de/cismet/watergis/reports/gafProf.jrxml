@@ -228,8 +228,8 @@
 	<parameter name="pos" class="java.lang.String"/>
 	<parameter name="basis" class="java.lang.String"/>
 	<parameter name="lawa" class="java.lang.String"/>
-	<parameter name="basis_stat" class="java.lang.Double"/>
-	<parameter name="lawa_stat" class="java.lang.Double"/>
+	<parameter name="basis_stat" class="java.lang.String"/>
+	<parameter name="lawa_stat" class="java.lang.String"/>
 	<parameter name="dhhn" class="java.lang.String"/>
 	<parameter name="status" class="java.lang.String"/>
 	<parameter name="aufn_nutzer" class="java.lang.String"/>
@@ -337,7 +337,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[Gewässerbezug | Lagestatus | Lage re/li | Lage Status:]]></text>
+				<text><![CDATA[Gewässerbezug | Lagestatus | Höhenbezug | Lage Status:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="11" y="131" width="64" height="14" uuid="37a1ce05-95c9-432e-ad42-621ea9901349"/>

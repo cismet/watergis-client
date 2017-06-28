@@ -31,7 +31,7 @@
         <Component class="javax.swing.JButton" name="butPrintPreview">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-preview.png"/>
+              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-searchdocument.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/panels/Bundle.properties" key="Photo.butPrintPreview.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -155,7 +155,7 @@
         <Component class="javax.swing.JButton" name="butZoomToPhoto">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-resize.png"/>
+              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-selectionadd.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/panels/Bundle.properties" key="Photo.butZoomToPhoto.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -174,7 +174,7 @@
         <Component class="javax.swing.JButton" name="butBack">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/cismet/cismap/commons/gui/attributetable/res/icon-thissideup.png"/>
+              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-fullscreen.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/panels/Bundle.properties" key="Photo.butBack.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -193,7 +193,7 @@
         <Component class="javax.swing.JButton" name="butDelete">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-remove-sign.png"/>
+              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-circledelete.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/panels/Bundle.properties" key="Photo.butDelete.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -212,7 +212,7 @@
         <Component class="javax.swing.JButton" name="butSave">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-save-floppy.png"/>
+              <Image iconType="3" name="/de/cismet/watergis/res/icons16/icon-editalt.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/panels/Bundle.properties" key="Photo.butSave.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>

@@ -32,7 +32,10 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-@ServiceProvider(service = OptionsPanelController.class)
+@ServiceProvider(
+    service = OptionsPanelController.class,
+    supersedes = { "de.cismet.cids.custom.wrrl_db_mv.util.WrrlMapOptionsPanel" }
+)
 public class WatergisOptionsPanel extends AbstractOptionsPanel implements OptionsPanelController {
 
     //~ Static fields/initializers ---------------------------------------------

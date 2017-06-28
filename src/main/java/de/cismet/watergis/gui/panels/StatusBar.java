@@ -15,6 +15,8 @@ import Sirius.navigator.DefaultNavigatorExceptionHandler;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 import org.apache.log4j.Logger;
 
@@ -22,30 +24,22 @@ import org.openide.util.NbBundle;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-
-import de.cismet.cismap.cidslayer.CidsLayer;
-import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.Crs;
 import de.cismet.cismap.commons.ServiceLayer;
-import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
-import de.cismet.cismap.commons.features.XStyledFeature;
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.statusbar.ServicesBusyPanel;
 import de.cismet.cismap.commons.gui.statusbar.ServicesErrorPanel;
 import de.cismet.cismap.commons.gui.statusbar.ServicesRetrievedPanel;
@@ -54,8 +48,8 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.StatusListener;
 import de.cismet.cismap.commons.interaction.events.ActiveLayerEvent;
 import de.cismet.cismap.commons.interaction.events.StatusEvent;
-
-import de.cismet.tools.gui.Static2DTools;
+import de.cismet.cismap.commons.retrieval.RepaintEvent;
+import de.cismet.cismap.commons.retrieval.RepaintListener;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -67,19 +61,18 @@ import de.cismet.watergis.broker.AppBroker;
  */
 public class StatusBar extends javax.swing.JPanel implements StatusListener,
     FeatureCollectionListener,
-    ActiveLayerListener {
+    ActiveLayerListener,
+    RepaintListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger log = Logger.getLogger(StatusBar.class);
+    private static final Logger LOG = Logger.getLogger(StatusBar.class);
     private static final int K_DIVISOR = 1000;
     private static final int K_SQUARE_DIVISOR = K_DIVISOR * K_DIVISOR;
 
     //~ Instance fields --------------------------------------------------------
 
-    private int servicesCounter = 0;
-    private int servicesErroneousCounter = 0;
-    private Collection<ServiceLayer> services = new HashSet<ServiceLayer>();
+    private Map<ServiceLayer, Integer> services = new HashMap<ServiceLayer, Integer>();
     private Collection<ServiceLayer> erroneousServices = new HashSet<ServiceLayer>();
     private JPanel servicesBusyPanel = new ServicesBusyPanel();
     private JPanel servicesRetrievedPanel = new ServicesRetrievedPanel();
@@ -112,6 +105,7 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
         lblCoordinates.setText(""); // NOI18N
         try {
             AppBroker.getInstance().getMappingComponent().getFeatureCollection().addFeatureCollectionListener(this);
+            AppBroker.getInstance().getMappingComponent().addRepaintListener(this);
         } catch (NullPointerException e) {
         }
         DefaultNavigatorExceptionHandler.getInstance().addListener(exceptionNotificationStatusPanel);
@@ -257,11 +251,170 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
      */
     @Override
     public void statusValueChanged(final StatusEvent e) {
+        if (!EventQueue.isDispatchThread()) {
+            LOG.warn("status bar event invocation not in edt. This can lead to an error. Event = " + e.getName(),
+                new Exception());
+
+            EventQueue.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        statusValueChanged(e);
+                    }
+                });
+
+            return;
+        }
+
+        if (e.getName().equals(StatusEvent.MAPPING_MODE)) {
+            // do nothing
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_STARTED)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Entered RETRIEVAL_STARTED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
+            }
+
+            if (e.getValue() instanceof ServiceLayer) {
+                final ServiceLayer service = (ServiceLayer)e.getValue();
+                if (erroneousServices.contains(service)) {
+                    erroneousServices.remove(service);
+                }
+                addService(service);
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RETRIEVAL_STARTED (" + e.getValue() + ", " + System.currentTimeMillis()
+                            + ") - services started: " + services.size() + ", erroneous services: "
+                            + erroneousServices.size());
+            }
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED)) {
+            // use repaintComplete instead
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Entered RETRIEVAL_ABORTED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
+            }
+
+            if (e.getValue() instanceof ServiceLayer) {
+                final ServiceLayer service = (ServiceLayer)e.getValue();
+                removeService(service);
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RETRIEVAL_ABORTED (" + e.getValue() + ", " + System.currentTimeMillis()
+                            + ") - services started: " + services.size() + ", erroneous services: "
+                            + erroneousServices.size());
+            }
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_ERROR)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Entered RETRIEVAL_ERROR: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
+            }
+
+            if (e.getValue() instanceof ServiceLayer) {
+                final ServiceLayer service = (ServiceLayer)e.getValue();
+                removeService(service);
+                erroneousServices.add(service);
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RETRIEVAL_ERROR (" + e.getValue() + ", " + System.currentTimeMillis()
+                            + ") - services started: " + services.size() + ", erroneous services: "
+                            + erroneousServices.size());
+            }
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_REMOVED)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Entered RETRIEVAL_REMOVED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
+            }
+
+            if (e.getValue() instanceof ServiceLayer) {
+                final ServiceLayer service = (ServiceLayer)e.getValue();
+                removeService(service);
+                if (erroneousServices.contains(service)) {
+                    erroneousServices.remove(service);
+                }
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RETRIEVAL_REMOVED (" + e.getValue() + ", " + System.currentTimeMillis()
+                            + ") - services started: " + services.size() + ", erroneous services: "
+                            + erroneousServices.size());
+            }
+        } else if (e.getName().equals(StatusEvent.RETRIEVAL_RESET)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Entered RETRIEVAL_RESET: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
+            }
+
+            services.clear();
+            erroneousServices.clear();
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("RETRIEVAL_RESET (" + e.getValue() + ", " + System.currentTimeMillis()
+                            + ") - services started: " + services.size() + ", erroneous services: "
+                            + erroneousServices.size());
+            }
+        }
+
+        refreshControls(e);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  service  DOCUMENT ME!
+     */
+    private void addService(final ServiceLayer service) {
+        Integer count = services.get(service);
+
+        if (count == null) {
+            services.put(service, 1);
+        } else {
+            services.put(service, ++count);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  service  DOCUMENT ME!
+     */
+    private void removeService(final ServiceLayer service) {
+        Integer count = services.get(service);
+
+        if (count != null) {
+            if (count < 2) {
+                services.remove(service);
+            } else {
+                services.put(service, --count);
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  e  DOCUMENT ME!
+     */
+    private void refreshControls(final StatusEvent e) {
         final Runnable modifyControls = new Runnable() {
 
                 @Override
                 public void run() {
-                    if (e.getName().equals(StatusEvent.COORDINATE_STRING)) {
+                    if (e == null) {
+                        if (services.isEmpty()) {
+                            pnlServicesStatus.removeAll();
+                            if (erroneousServices.isEmpty()) {
+                                pnlServicesStatus.add(servicesRetrievedPanel, BorderLayout.CENTER);
+                            } else {
+                                pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
+                            }
+                            pnlServicesStatus.revalidate();
+                            pnlServicesStatus.repaint();
+                        } else if ((!erroneousServices.isEmpty()) && (pnlServicesStatus.getComponentCount() > 0)
+                                    && !pnlServicesStatus.getComponent(0).equals(servicesErrorPanel)) {
+                            pnlServicesStatus.removeAll();
+                            pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
+                            pnlServicesStatus.revalidate();
+                            pnlServicesStatus.repaint();
+                        }
+                    } else if (e.getName().equals(StatusEvent.COORDINATE_STRING)) {
                         final Coordinate c = (Coordinate)e.getValue();
                         lblCoordinates.setText(MappingComponent.getCoordinateString(c.x, c.y));
                     } else if (e.getName().equals(StatusEvent.MEASUREMENT_INFOS)) {
@@ -282,18 +435,28 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
                             pnlServicesStatus.revalidate();
                             pnlServicesStatus.repaint();
                         }
-                    } else if (e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED)
-                                || e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)
+                    } else if ( // e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED) || //use the repaintComplete
+
+                                // event
+                                e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)
                                 || e.getName().equals(StatusEvent.RETRIEVAL_REMOVED)) {
-                        if (servicesCounter == 0) {
+                        if (services.isEmpty()) {
                             pnlServicesStatus.removeAll();
-                            if (servicesErroneousCounter == 0) {
+                            if (erroneousServices.isEmpty()) {
                                 pnlServicesStatus.add(servicesRetrievedPanel, BorderLayout.CENTER);
                             } else {
                                 pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
                             }
                             pnlServicesStatus.revalidate();
                             pnlServicesStatus.repaint();
+                        } else {
+                            if ((pnlServicesStatus.getComponentCount() > 0)
+                                        && !pnlServicesStatus.getComponent(0).equals(servicesBusyPanel)) {
+                                pnlServicesStatus.removeAll();
+                                pnlServicesStatus.add(servicesBusyPanel, BorderLayout.CENTER);
+                                pnlServicesStatus.revalidate();
+                                pnlServicesStatus.repaint();
+                            }
                         }
                     } else if (e.getName().equals(StatusEvent.RETRIEVAL_ERROR)) {
                         if ((pnlServicesStatus.getComponentCount() > 0)
@@ -310,137 +473,6 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
                     }
                 }
             };
-
-        if (e.getName().equals(StatusEvent.MAPPING_MODE)) {
-            // do nothing
-        } else if (e.getName().equals(StatusEvent.RETRIEVAL_STARTED)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Entered RETRIEVAL_STARTED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                if (erroneousServices.contains(service)) {
-                    erroneousServices.remove(service);
-                    servicesErroneousCounter--;
-                }
-                if (!services.contains(service)) {
-                    services.add(service);
-                    servicesCounter++;
-                }
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("RETRIEVAL_STARTED (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + servicesCounter + ", erroneous services: "
-                            + servicesErroneousCounter);
-            }
-        } else if (e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Entered RETRIEVAL_COMPLETED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                if (services.contains(service)) {
-                    services.remove(service);
-                    servicesCounter--;
-                }
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("RETRIEVAL_COMPLETED (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + servicesCounter + ", erroneous services: "
-                            + servicesErroneousCounter);
-            }
-        } else if (e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Entered RETRIEVAL_ABORTED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                if (services.contains(service)) {
-                    services.remove(service);
-                    servicesCounter--;
-                }
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("RETRIEVAL_ABORTED (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + servicesCounter + ", erroneous services: "
-                            + servicesErroneousCounter);
-            }
-        } else if (e.getName().equals(StatusEvent.RETRIEVAL_ERROR)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Entered RETRIEVAL_ERROR: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                if (services.contains(service)) {
-                    services.remove(service);
-                    servicesCounter--;
-                    erroneousServices.add(service);
-                    servicesErroneousCounter++;
-                }
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("RETRIEVAL_ERROR (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + servicesCounter + ", erroneous services: "
-                            + servicesErroneousCounter);
-            }
-        } else if (e.getName().equals(StatusEvent.RETRIEVAL_REMOVED)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Entered RETRIEVAL_REMOVED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                if (services.contains(service)) {
-                    services.remove(service);
-                    servicesCounter--;
-                }
-                if (erroneousServices.contains(service)) {
-                    erroneousServices.remove(service);
-                    servicesErroneousCounter--;
-                }
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("RETRIEVAL_REMOVED (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + servicesCounter + ", erroneous services: "
-                            + servicesErroneousCounter);
-            }
-        } else if (e.getName().equals(StatusEvent.RETRIEVAL_RESET)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Entered RETRIEVAL_RESET: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                if (services.contains(service)) {
-                    services.remove(service);
-                    servicesCounter--;
-                }
-                if (erroneousServices.contains(service)) {
-                    erroneousServices.remove(service);
-                    servicesErroneousCounter--;
-                }
-            }
-
-            services.clear();
-            erroneousServices.clear();
-            servicesCounter = 0;
-            servicesErroneousCounter = 0;
-
-            if (log.isDebugEnabled()) {
-                log.debug("RETRIEVAL_RESET (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + servicesCounter + ", erroneous services: "
-                            + servicesErroneousCounter);
-            }
-        }
 
         if (EventQueue.isDispatchThread()) {
             modifyControls.run();
@@ -472,19 +504,31 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
 
         if (geom.getArea() == 0) {
             final int segments = geom.getNumGeometries() * (geom.getNumPoints() - 1);
+            double lastSegmentLength = 0;
+
+            if (geom.getNumPoints() > 1) {
+                final Coordinate start = geom.getCoordinates()[geom.getNumPoints() - 2];
+                final Coordinate end = geom.getCoordinates()[geom.getNumPoints() - 1];
+                final GeometryFactory fg = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
+                final Geometry lastSegment = fg.createLineString(new Coordinate[] { start, end });
+                lastSegmentLength = lastSegment.getLength();
+            }
 
             if (length < 10000) {
                 lblMeasuring.setText(NbBundle.getMessage(
                         StatusBar.class,
                         "StatusBar.lblMeasuring.text.length.m",
                         segments,
+                        roundTo2Decimals(lastSegmentLength),
                         roundTo2Decimals(length)));
             } else {
                 length /= K_DIVISOR;
+                lastSegmentLength /= K_DIVISOR;
                 lblMeasuring.setText(NbBundle.getMessage(
                         StatusBar.class,
                         "StatusBar.lblMeasuring.text.length.km",
                         segments,
+                        roundTo2Decimals(lastSegmentLength),
                         roundTo2Decimals(length)));
             }
         } else {
@@ -567,6 +611,9 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
      */
     @Override
     public void layerRemoved(final ActiveLayerEvent e) {
+        if (!EventQueue.isDispatchThread()) {
+            LOG.warn("status bar event invocation not in edt. This can lead to an error.", new Exception());
+        }
         if (e.getLayer() instanceof ServiceLayer) {
             statusValueChanged(new StatusEvent(StatusEvent.RETRIEVAL_REMOVED, (ServiceLayer)e.getLayer()));
         }
@@ -625,5 +672,57 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
     @Override
     public void layerSelectionChanged(final ActiveLayerEvent e) {
         // NOP
+    }
+
+    @Override
+    public void repaintStart(final RepaintEvent e) {
+    }
+
+    @Override
+    public void repaintComplete(final RepaintEvent e) {
+        if (!EventQueue.isDispatchThread()) {
+            LOG.warn("status bar event invocation not in edt. This can lead to an error.", new Exception());
+        }
+        // the reapintComplete event should be used instead of the RETRIEVAL_COMPLETED event
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Entered repaint complete: " + e.getRetrievalEvent().getRetrievalService() + " ("
+                        + System.currentTimeMillis() + ")");
+        }
+
+        if (e.getRetrievalEvent().getRetrievalService() instanceof ServiceLayer) {
+            final ServiceLayer service = (ServiceLayer)e.getRetrievalEvent().getRetrievalService();
+            removeService(service);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("RETRIEVAL_COMPLETED (" + e.getRetrievalEvent().getRetrievalService() + ", "
+                        + System.currentTimeMillis()
+                        + ") - services started: " + services.size() + ", erroneous services: "
+                        + erroneousServices.size());
+        }
+
+        refreshControls(null);
+    }
+
+    @Override
+    public void repaintError(final RepaintEvent e) {
+        if (!EventQueue.isDispatchThread()) {
+            LOG.warn("status bar event invocation not in edt. This can lead to an error.", new Exception());
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Entered RETRIEVAL_ERROR: " + e.getRetrievalEvent().getRetrievalService() + " ("
+                        + System.currentTimeMillis() + ")");
+        }
+
+//        if (e.getRetrievalEvent().isInitialisationEvent()) {
+//            return;
+//        }
+        if (e.getRetrievalEvent().getRetrievalService() instanceof ServiceLayer) {
+            final ServiceLayer service = (ServiceLayer)e.getRetrievalEvent().getRetrievalService();
+            removeService(service);
+            erroneousServices.add(service);
+        }
+
+        refreshControls(null);
     }
 }

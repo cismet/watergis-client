@@ -115,7 +115,6 @@
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="GerinneOFlaechenReportDialog.txtFile.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
-            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">

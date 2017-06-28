@@ -148,32 +148,28 @@ public class CustomGafCatalogueReader {
             }
         }
 
-        if (hasCustomCatalogue) {
-            int number = 1000;
-            for (final BkObject obj : objectSet) {
-                final String[] contentFields = new String[5];
-                Integer bkNumber = obj.getBk();
+        int number = 1000;
+        for (final BkObject obj : objectSet) {
+            final String[] contentFields = new String[5];
+            Integer bkNumber = obj.getBk();
 
-                if (bkNumber == null) {
-                    bkNumber = ++number;
-                }
-                contentFields[BK_FIELDS.BK.ordinal()] = bkNumber.toString();
-                contentFields[BK_FIELDS.NAME.ordinal()] = obj.getName();
-                contentFields[BK_FIELDS.AX.ordinal()] = obj.getAx().toString();
-                contentFields[BK_FIELDS.AY.ordinal()] = obj.getAy().toString();
-                contentFields[BK_FIELDS.DP.ordinal()] = obj.getDp().toString();
-                catalogue.content.add(contentFields);
+            if (bkNumber == null) {
+                bkNumber = ++number;
             }
-            for (int i = 0; i < 5; ++i) {
-                catalogue.columnIndex[i] = i;
-            }
-
-            catalogue.type = FILE_TYPE.BK;
-
-            return catalogue;
-        } else {
-            return null;
+            contentFields[BK_FIELDS.BK.ordinal()] = bkNumber.toString();
+            contentFields[BK_FIELDS.NAME.ordinal()] = obj.getName();
+            contentFields[BK_FIELDS.AX.ordinal()] = obj.getAx().toString();
+            contentFields[BK_FIELDS.AY.ordinal()] = obj.getAy().toString();
+            contentFields[BK_FIELDS.DP.ordinal()] = obj.getDp().toString();
+            catalogue.content.add(contentFields);
         }
+        for (int i = 0; i < 5; ++i) {
+            catalogue.columnIndex[i] = i;
+        }
+
+        catalogue.type = FILE_TYPE.BK;
+
+        return catalogue;
     }
 
     /**
@@ -207,32 +203,28 @@ public class CustomGafCatalogueReader {
             }
         }
 
-        if (hasCustomCatalogue) {
-            int number = 1000;
-            for (final RkObject obj : objectSet) {
-                final String[] contentFields = new String[4];
-                Integer rkNumber = obj.getRk();
+        int number = 1000;
+        for (final RkObject obj : objectSet) {
+            final String[] contentFields = new String[4];
+            Integer rkNumber = obj.getRk();
 
-                if (rkNumber == null) {
-                    rkNumber = ++number;
-                }
-                contentFields[RK_FIELDS.RK.ordinal()] = rkNumber.toString();
-                contentFields[RK_FIELDS.NAME.ordinal()] = obj.getName();
-                contentFields[RK_FIELDS.K.ordinal()] = obj.getK().toString();
-                contentFields[RK_FIELDS.KST.ordinal()] = obj.getKst().toString();
-
-                catalogue.content.add(contentFields);
+            if (rkNumber == null) {
+                rkNumber = ++number;
             }
-            for (int i = 0; i < 4; ++i) {
-                catalogue.columnIndex[i] = i;
-            }
+            contentFields[RK_FIELDS.RK.ordinal()] = rkNumber.toString();
+            contentFields[RK_FIELDS.NAME.ordinal()] = obj.getName();
+            contentFields[RK_FIELDS.K.ordinal()] = obj.getK().toString();
+            contentFields[RK_FIELDS.KST.ordinal()] = obj.getKst().toString();
 
-            catalogue.type = FILE_TYPE.RK;
-
-            return catalogue;
-        } else {
-            return null;
+            catalogue.content.add(contentFields);
         }
+        for (int i = 0; i < 4; ++i) {
+            catalogue.columnIndex[i] = i;
+        }
+
+        catalogue.type = FILE_TYPE.RK;
+
+        return catalogue;
     }
 
     /**
@@ -269,7 +261,7 @@ public class CustomGafCatalogueReader {
             reader = new BufferedReader(new FileReader(catalogueFile));
             final String headerLine = reader.readLine();
             final List<String> headers = new ArrayList<String>();
-            StringTokenizer st = new StringTokenizer(headerLine, "\t");
+            StringTokenizer st = new StringTokenizer(headerLine, "\t;");
             int index = 0;
 
             determineFileType(headerLine);
@@ -306,7 +298,7 @@ public class CustomGafCatalogueReader {
                     // end of file. The last line contains a single character
                     break;
                 }
-                st = new StringTokenizer(line, "\t");
+                st = new StringTokenizer(line, "\t;");
                 final List<String> contFields = new ArrayList<String>();
 
                 while (st.hasMoreTokens()) {

@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.actions.merge;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+
 import de.cismet.cismap.commons.features.Feature;
 
 /**
@@ -31,6 +33,10 @@ public class FeatureMergerFactory {
      * @return  DOCUMENT ME!
      */
     public FeatureMerger getFeatureMergerForFeature(final Feature f) {
-        return new SimpleFeatureMerger();
+        if (f instanceof CidsLayerFeature) {
+            return new CidsLayerFeatureMerger();
+        } else {
+            return new SimpleFeatureMerger();
+        }
     }
 }

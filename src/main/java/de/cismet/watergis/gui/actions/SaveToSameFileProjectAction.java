@@ -111,8 +111,8 @@ public class SaveToSameFileProjectAction extends AbstractAction {
             configurationManager.writeConfiguration(name);
             AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);
 
-//            final String layoutPath = FilenameUtils.getFullPath(name) + FilenameUtils.getBaseName(name) + ".layout";
-//            AppBroker.getInstance().getWatergisApp().saveLayout(layoutPath);
+            final String layoutPath = FilenameUtils.getFullPath(name) + FilenameUtils.getBaseName(name) + ".layout";
+            AppBroker.getInstance().getWatergisApp().saveLayout(layoutPath);
         } else {
             final ConfigurationManager configurationManager = AppBroker.getConfigManager();
             configurationManager.writeConfiguration();

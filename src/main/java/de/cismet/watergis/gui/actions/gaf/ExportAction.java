@@ -146,9 +146,9 @@ public class ExportAction extends AbstractAction {
                                     features.size()));
 
                             final File tmpShapeDir = new File(tmpBaseDir, "Shapes");
-                            final File tmpReportBasisDir = new File(tmpBaseDir, "Steckbriefe");
-                            final File tmpReportLawaDir = new File(tmpBaseDir, "Steckbriefe");
-                            final File tmpReportWithoutDir = new File(tmpBaseDir, "Steckbriefe");
+                            final File tmpReportBasisDir = new File(tmpBaseDir, "Steckbriefe_Basis");
+                            final File tmpReportLawaDir = new File(tmpBaseDir, "Steckbriefe_LAWA");
+                            final File tmpReportWithoutDir = new File(tmpBaseDir, "Steckbriefe_ohne");
                             final File tmpBasisDir = new File(tmpBaseDir, "GAF_Basis");
                             final File tmpLawaDir = new File(tmpBaseDir, "GAF_LAWA");
                             final File tmpWithoutDir = new File(tmpBaseDir, "GAF_ohne");
@@ -323,7 +323,7 @@ public class ExportAction extends AbstractAction {
 
                                     if (bkCatalogueContent != null) {
                                         destFile = new File(gafFileName.substring(0, gafFileName.length() - 4)
-                                                        + "_bk.txt");
+                                                        + "_bk.csv");
                                         destFile.getParentFile().mkdirs();
                                         br = new BufferedWriter(new FileWriter(destFile));
                                         br.write(bkCatalogueContent);
@@ -334,7 +334,10 @@ public class ExportAction extends AbstractAction {
                                     final String rkCatalogueContent = reader.createCustomRkCatalogueFile();
                                     if (rkCatalogueContent != null) {
                                         destFile = new File(gafFileName.substring(0, gafFileName.length() - 4)
-                                                        + "_rk.txt");
+                                                        + "_rk.csv");
+                                        if (destFile.exists()) {
+                                            System.out.println("gibt es schon");
+                                        }
                                         destFile.getParentFile().mkdirs();
                                         br = new BufferedWriter(new FileWriter(destFile));
                                         br.write(rkCatalogueContent);
@@ -356,7 +359,7 @@ public class ExportAction extends AbstractAction {
                                         features.size()));
                                 // create qp prj and meta document
                                 File shapeFile = new File(tmpShapeDir, "qp");
-                                createShapeAndMetaDoc(features, shapeFile.getAbsolutePath());
+                                createShapeAndMetaDoc(features, shapeFile.getAbsolutePath(), true);
 
                                 // create qp_gaf_p prj and meta document
                                 final TreeSet<Integer> qpNrSet = new TreeSet<Integer>();
@@ -388,7 +391,7 @@ public class ExportAction extends AbstractAction {
                                                 0,
                                                 null);
                                 shapeFile = new File(tmpShapeDir, "qp_gaf_p");
-                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath());
+                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath(), true);
 
                                 // create qp_gaf_l prj and meta document
                                 layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
@@ -406,7 +409,25 @@ public class ExportAction extends AbstractAction {
                                                     null);
 
                                 shapeFile = new File(tmpShapeDir, "qp_gaf_l");
-                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath());
+                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath(), true);
+
+                                // create qp_gaf_l_pr_pf prj and meta document
+                                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                                            AppBroker.DOMAIN_NAME,
+                                            "dlm25w.qp_gaf_l_pr_pf"));
+                                layer.initAndWait();
+
+                                serviceFeatures = layer.getFeatureFactory()
+                                            .createFeatures(
+                                                    qpNrQuery,
+                                                    null,
+                                                    null,
+                                                    0,
+                                                    0,
+                                                    null);
+
+                                shapeFile = new File(tmpShapeDir, "qp_gaf_l_pr_pf");
+                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath(), true);
 
                                 // create k_qp_gaf_kz prj and meta document
                                 layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
@@ -422,7 +443,7 @@ public class ExportAction extends AbstractAction {
                                                     null);
 
                                 shapeFile = new File(tmpShapeDir, "k_qp_gaf_kz");
-                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath());
+                                createDBF(serviceFeatures, shapeFile.getAbsolutePath());
 
                                 // create k_qp_gaf_rk prj and meta document
                                 layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
@@ -438,7 +459,7 @@ public class ExportAction extends AbstractAction {
                                                     null);
 
                                 shapeFile = new File(tmpShapeDir, "k_qp_gaf_rk");
-                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath());
+                                createDBF(serviceFeatures, shapeFile.getAbsolutePath());
 
                                 // create k_qp_gaf_bk prj and meta document
                                 layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
@@ -454,7 +475,7 @@ public class ExportAction extends AbstractAction {
                                                     null);
 
                                 shapeFile = new File(tmpShapeDir, "k_qp_gaf_bk");
-                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath());
+                                createDBF(serviceFeatures, shapeFile.getAbsolutePath());
                             }
 
                             if (Thread.interrupted()) {
@@ -517,11 +538,13 @@ public class ExportAction extends AbstractAction {
      *
      * @param   features        DOCUMENT ME!
      * @param   outputFileStem  DOCUMENT ME!
+     * @param   createPrj       DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private void createShapeAndMetaDoc(final List<FeatureServiceFeature> features, final String outputFileStem)
-            throws Exception {
+    private void createShapeAndMetaDoc(final List<FeatureServiceFeature> features,
+            final String outputFileStem,
+            final boolean createPrj) throws Exception {
         final List<String[]> attribList = new ArrayList<String[]>();
         final CidsLayer service = (CidsLayer)features.get(0).getLayerProperties().getFeatureService();
 
@@ -546,15 +569,38 @@ public class ExportAction extends AbstractAction {
         final ShapeFileWriter writer = new ShapeFileWriter(shape);
         writer.write();
 
-        // create prj
-        final BufferedWriter bw = new BufferedWriter(new FileWriter(
-                    outputFileStem
-                            + ".prj"));
-        bw.write(PRJ_CONTENT);
-        bw.close();
-
+        if (createPrj) {
+            // create prj
+            final BufferedWriter bw = new BufferedWriter(new FileWriter(
+                        outputFileStem
+                                + ".prj"));
+            bw.write(PRJ_CONTENT);
+            bw.close();
+        }
         // create meta document
         downloadMetaDocument(service, outputFileStem);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   features        DOCUMENT ME!
+     * @param   outputFileStem  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private void createDBF(final List<FeatureServiceFeature> features, final String outputFileStem) throws Exception {
+        createShapeAndMetaDoc(features, outputFileStem, false);
+        File file = new File(outputFileStem + ".shp");
+
+        if (file.exists()) {
+            file.delete();
+        }
+        file = new File(outputFileStem + ".shx");
+
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     /**
@@ -563,7 +609,7 @@ public class ExportAction extends AbstractAction {
      * @param  service         DOCUMENT ME!
      * @param  outputFileStem  DOCUMENT ME!
      */
-    private void downloadMetaDocument(final CidsLayer service, final String outputFileStem) {
+    public static void downloadMetaDocument(final CidsLayer service, final String outputFileStem) {
         if (service instanceof CidsLayer) {
             final CidsLayer cl = (CidsLayer)service;
             final String link = cl.getMetaDocumentLink();

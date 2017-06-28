@@ -317,10 +317,11 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
                     @Override
                     public void run() {
-                        cbbFlaeche.setModel(
-                            new DefaultComboBoxModel(
+                        final DefaultComboBoxModel model = new DefaultComboBoxModel(
                                 FeatureServiceHelper.getServices(new String[] { "Polygon", "MultiPolygon" }).toArray(
-                                    new AbstractFeatureService[0])));
+                                    new AbstractFeatureService[0]));
+                        model.insertElementAt(null, 0);
+                        cbbFlaeche.setModel(model);
                         cbbFlaeche.setSelectedItem(null);
                     }
                 });
@@ -573,11 +574,12 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 FgGerogaRsDialog.class,
                 "FgGerogaRsDialog.jLabel13.text",
                 new Object[] {})); // NOI18N
+        jLabel13.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
         jPanel4.add(jLabel13, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -698,11 +700,12 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 FgGerogaRsDialog.class,
                 "FgGerogaRsDialog.jLabel14.text",
                 new Object[] {})); // NOI18N
+        jLabel14.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
         jPanel5.add(jLabel14, gridBagConstraints);
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
@@ -982,11 +985,12 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 FgGerogaRsDialog.class,
                 "FgGerogaRsDialog.jLabel15.text",
                 new Object[] {})); // NOI18N
+        jLabel15.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
         jPanel6.add(jLabel15, gridBagConstraints);
 
         jPanel7.setLayout(new java.awt.GridBagLayout());
@@ -1086,6 +1090,10 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             org.openide.util.NbBundle.getMessage(
                 FgGerogaRsDialog.class,
                 "FgGerogaRsDialog.ckbPerArea.text",
+                new Object[] {})); // NOI18N
+        ckbPerArea.setActionCommand(org.openide.util.NbBundle.getMessage(
+                FgGerogaRsDialog.class,
+                "FgGerogaRsDialog.ckbPerArea.actionCommand",
                 new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

@@ -15,6 +15,8 @@ package de.cismet.watergis.gui.dialog;
 import com.vividsolutions.jts.geom.Geometry;
 
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import java.util.Comparator;
 
@@ -115,6 +117,13 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
     private PhotoOptionsDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        addWindowListener(new WindowAdapter() {
+
+                @Override
+                public void windowClosed(final WindowEvent e) {
+                    butCancelActionPerformed(null);
+                }
+            });
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -709,7 +718,7 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
     private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         automatic = cbAutomatic.isSelected();
         try {
-            distance = Double.parseDouble(txtDistance.getText());
+            distance = Double.parseDouble(txtDistance.getText().replace(',', '.'));
         } catch (NumberFormatException e) {
             // nothing to do. The value in the text field will just be ignored
         }

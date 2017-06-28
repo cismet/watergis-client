@@ -23,6 +23,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import org.apache.log4j.Logger;
 
 import org.jdesktop.beansbinding.Converter;
+import org.jdesktop.beansbinding.Validator;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -39,6 +40,7 @@ import java.beans.PropertyChangeListener;
 import java.lang.ref.SoftReference;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
@@ -62,6 +64,7 @@ import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
+import de.cismet.cismap.linearreferencing.RouteCombo;
 import de.cismet.cismap.linearreferencing.TableStationEditor;
 
 import de.cismet.commons.concurrency.CismetConcurrency;
@@ -96,6 +99,9 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
             }
         };
 
+    private static final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy");
+
     //~ Instance fields --------------------------------------------------------
 
     private CidsBean cidsBean;
@@ -111,6 +117,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
     private de.cismet.cids.editors.DefaultBindableReferenceCombo cbFreigabe;
     private de.cismet.cids.editors.DefaultBindableReferenceCombo cbLRl;
     private de.cismet.cids.editors.DefaultBindableReferenceCombo cbLst;
+    private de.cismet.cids.editors.DefaultBindableDateChooser dateChooser;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -118,6 +125,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -154,14 +162,15 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
     private javax.swing.JPanel panBesch;
     private javax.swing.JPanel panGewaesserBezug;
     private javax.swing.JPanel panImage;
+    private javax.swing.JPanel panRouteCombo;
     private javax.swing.JPanel panStatEdit;
     private javax.swing.JPanel panUpload;
     private javax.swing.JPanel panVerortung;
     private javax.swing.JTextArea taBemerkung;
     private javax.swing.JTextArea taBemerkung1;
     private javax.swing.JTextArea taBeschreibung;
-    private de.cismet.cids.editors.DefaultBindableTimestampChooser tcAufnZeit;
     private javax.swing.JTextField txtAufn;
+    private javax.swing.JTextField txtAufn1;
     private javax.swing.JTextField txtHo;
     private javax.swing.JTextField txtRe;
     private javax.swing.JTextField txtWinklel;
@@ -175,6 +184,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
      */
     public PhotoEditor() {
         initComponents();
+        labBaCdVal.setVisible(false);
     }
 
     /**
@@ -187,14 +197,6 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         this.webDavDirectory = webDavDirectory;
         this.webDavClient = webDavClient;
         initComponents();
-
-        final ModelLoader lrlLoader = new ModelLoader("k_l_rl", cbLRl, "foto");
-        final ModelLoader lstLoader = new ModelLoader("k_l_st", cbLst, "nicht_qp");
-        final ModelLoader freigabeLoader = new ModelLoader("k_freigabe", cbFreigabe, "foto");
-
-        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(lrlLoader);
-        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(lstLoader);
-        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(freigabeLoader);
 
         lblBusy.setBusy(false);
 
@@ -277,14 +279,17 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         labStatLaVal = new javax.swing.JLabel();
         panStatEdit = new TableStationEditor("dlm25w.fg_ba");
         jLabel3 = new javax.swing.JLabel();
+        panRouteCombo = new RouteCombo("dlm25w.fg_ba", null);
         panAufn = new javax.swing.JPanel();
         labAufnName = new javax.swing.JLabel();
         labAufnDatum = new javax.swing.JLabel();
         txtAufn = new javax.swing.JTextField();
         labFreigabe = new javax.swing.JLabel();
         cbFreigabe = new de.cismet.cids.editors.DefaultBindableReferenceCombo();
-        tcAufnZeit = new de.cismet.cids.editors.DefaultBindableTimestampChooser();
         jLabel4 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        txtAufn1 = new javax.swing.JTextField();
+        dateChooser = new de.cismet.cids.editors.DefaultBindableDateChooser();
         panBesch = new javax.swing.JPanel();
         labTitle = new javax.swing.JLabel();
         labBemerkung = new javax.swing.JLabel();
@@ -341,6 +346,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 0);
@@ -457,16 +463,13 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         txtRe.setMinimumSize(new java.awt.Dimension(250, 25));
         txtRe.setPreferredSize(new java.awt.Dimension(100, 25));
+        txtRe.addFocusListener(new java.awt.event.FocusAdapter() {
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.geom.geo_field}"),
-                txtRe,
-                org.jdesktop.beansbinding.BeanProperty.create("text"));
-        binding.setConverter(new CoordinateConverter(true));
-        bindingGroup.addBinding(binding);
-
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtReFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -476,16 +479,13 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         txtHo.setMinimumSize(new java.awt.Dimension(250, 25));
         txtHo.setPreferredSize(new java.awt.Dimension(100, 25));
+        txtHo.addFocusListener(new java.awt.event.FocusAdapter() {
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.geom.geo_field}"),
-                txtHo,
-                org.jdesktop.beansbinding.BeanProperty.create("text"));
-        binding.setConverter(new CoordinateConverter(false));
-        bindingGroup.addBinding(binding);
-
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtHoFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -575,8 +575,8 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
                 org.jdesktop.beansbinding.ELProperty.create("${cidsBean.ba_st.route.ba_cd}"),
                 labBaCdVal,
                 org.jdesktop.beansbinding.BeanProperty.create("text"));
-        binding.setSourceNullValue(null);
-        binding.setSourceUnreadableValue(null);
+        binding.setSourceNullValue("");
+        binding.setSourceUnreadableValue("null");
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -701,6 +701,12 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 7, 10, 0);
         panGewaesserBezug.add(jLabel3, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        panGewaesserBezug.add(panRouteCombo, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -787,25 +793,6 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panAufn.add(cbFreigabe, gridBagConstraints);
 
-        tcAufnZeit.setPreferredSize(new java.awt.Dimension(210, 25));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.aufn_zeit}"),
-                tcAufnZeit,
-                org.jdesktop.beansbinding.BeanProperty.create("timestamp"));
-        binding.setConverter(tcAufnZeit.getConverter());
-        bindingGroup.addBinding(binding);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        panAufn.add(tcAufnZeit, gridBagConstraints);
-
         jLabel4.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel4,
@@ -817,6 +804,52 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 7, 10, 0);
         panAufn.add(jLabel4, gridBagConstraints);
+
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        txtAufn1.setMinimumSize(new java.awt.Dimension(85, 25));
+        txtAufn1.setPreferredSize(new java.awt.Dimension(85, 25));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.aufn_zeit}"),
+                txtAufn1,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding.setValidator(new TimeValidator());
+        bindingGroup.addBinding(binding);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+        jPanel4.add(txtAufn1, gridBagConstraints);
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.aufn_datum}"),
+                dateChooser,
+                org.jdesktop.beansbinding.BeanProperty.create("date"));
+        binding.setConverter(dateChooser.getConverter());
+        bindingGroup.addBinding(binding);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        jPanel4.add(dateChooser, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        panAufn.add(jPanel4, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -991,6 +1024,88 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
     } // </editor-fold>//GEN-END:initComponents
 
     /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtReFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtReFocusLost
+        try {
+            final double coord = Double.parseDouble(txtRe.getText().replace(',', '.'));
+            final CidsBean bean = (CidsBean)cidsBean.getProperty("geom");
+            final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                    CismapBroker.getInstance().getDefaultCrsAlias());
+
+            if (bean != null) {
+                final Geometry geom = (Geometry)bean.getProperty("geo_field");
+
+                final double y = geom.getCoordinate().y;
+                final Geometry point = factory.createPoint(new Coordinate(coord, y));
+
+                try {
+                    bean.setProperty("geo_field", point);
+                    feature.setGeometry(point);
+                } catch (Exception ex) {
+                    LOG.warn("Cannot create coordinate");
+                }
+            } else {
+                final Double other = getDouble(txtHo.getText());
+
+                final CidsBean geomBean = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+                final Geometry point = factory.createPoint(new Coordinate(coord, other));
+
+                geomBean.setProperty("geo_field", point);
+                cidsBean.setProperty("geom", geomBean);
+                feature.setGeometry(point);
+            }
+        } catch (NumberFormatException e) {
+            LOG.warn("NumberFormatException", e);
+        } catch (Exception e) {
+            LOG.error("Error in rh/ho converter", e);
+        }
+    } //GEN-LAST:event_txtReFocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtHoFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtHoFocusLost
+        try {
+            final double coord = Double.parseDouble(txtHo.getText().replace(',', '.'));
+            final CidsBean bean = (CidsBean)cidsBean.getProperty("geom");
+            final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                    CismapBroker.getInstance().getDefaultCrsAlias());
+
+            if (bean != null) {
+                final Geometry geom = (Geometry)bean.getProperty("geo_field");
+
+                final double x = geom.getCoordinate().x;
+                final Geometry point = factory.createPoint(new Coordinate(x, coord));
+
+                try {
+                    bean.setProperty("geo_field", point);
+                    feature.setGeometry(point);
+                } catch (Exception ex) {
+                    LOG.warn("Cannot create coordinate");
+                }
+            } else {
+                final Double other = getDouble(txtRe.getText());
+
+                final CidsBean geomBean = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+                final Geometry point = factory.createPoint(new Coordinate(other, coord));
+
+                geomBean.setProperty("geo_field", point);
+                cidsBean.setProperty("geom", geomBean);
+                feature.setGeometry(point);
+            }
+        } catch (NumberFormatException e) {
+            LOG.warn("NumberFormatException", e);
+        } catch (Exception e) {
+            LOG.error("Error in rh/ho converter", e);
+        }
+    } //GEN-LAST:event_txtHoFocusLost
+
+    /**
      * Set the cids layer feature. This method should be used instead of the setCidsBean method
      *
      * @param  feature  The feature that should be shown in the editor
@@ -1019,6 +1134,19 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
     }
 
     /**
+     * DOCUMENT ME!
+     *
+     * @param   text  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  NumberFormatException  DOCUMENT ME!
+     */
+    private Double getDouble(final String text) throws NumberFormatException {
+        return Double.parseDouble(text);
+    }
+
+    /**
      * Determine the currently shown feature.
      *
      * @return  The feature that is currently shown in the editor
@@ -1041,10 +1169,26 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         this.cidsBean = cidsBean;
 
         if (cidsBean != null) {
+            cbLRl.setFakeModel(true);
+            cbLst.setFakeModel(true);
+            cbFreigabe.setFakeModel(true);
             DefaultCustomObjectEditor.setMetaClassInformationToMetaClassStoreComponentsInBindingGroup(
                 bindingGroup,
                 this.cidsBean);
             bindingGroup.bind();
+            cbLRl.setFakeModel(false);
+            cbLst.setFakeModel(false);
+            cbFreigabe.setFakeModel(false);
+
+            final ModelLoader lrlLoader = new ModelLoader("k_l_rl", cbLRl, "foto");
+            final ModelLoader lstLoader = new ModelLoader("k_l_st", cbLst, "nicht_qp");
+            final ModelLoader freigabeLoader = new ModelLoader("k_freigabe", cbFreigabe, "foto");
+
+            ((RouteCombo)panRouteCombo).fillRoutesCombo(feature.getProperty("ba_st"));
+
+            CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(lrlLoader);
+            CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(lstLoader);
+            CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(freigabeLoader);
             labFotoVal.setText(getPropString("foto"));
             labUplNameVal.setText(getPropString("upl_name"));
             labLaCdVal.setText(getPropString("la_cd"));
@@ -1057,18 +1201,51 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
             if (baSt != null) {
                 ((TableStationEditor)panStatEdit).setCidsBean(baSt);
             }
-            final Date date = (Date)cidsBean.getProperty("upl_zeit");
 
-            if (date != null) {
-                final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+            final Date uplDate = (Date)cidsBean.getProperty("upl_datum");
+            final String uplTime = (String)cidsBean.getProperty("upl_zeit");
 
-                labUplDatumVal.setText(format.format(date));
+            if ((uplTime != null) && (uplDate != null)) {
+                labUplDatumVal.setText(dateFormatter.format(uplDate) + " " + uplTime);
             }
+
+            txtRe.setText(getPointValue(true));
+            txtHo.setText(getPointValue(false));
+
             loadFoto();
             showEditor(true, false);
             setReadOnly(!hasWriteAccess());
         } else {
             showEditor(false, false);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   rw  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String getPointValue(final boolean rw) {
+        final Object geo = cidsBean.getProperty("geom.geo_field");
+
+        if (geo instanceof Point) {
+            final Point point = (Point)geo;
+            final DecimalFormat format = new DecimalFormat("0.00");
+            final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
+            symbols.setDecimalSeparator(',');
+            symbols.setGroupingSeparator('.');
+            format.setGroupingUsed(true);
+            format.setDecimalFormatSymbols(symbols);
+
+            if (rw) {
+                return format.format(point.getX());
+            } else {
+                return format.format(point.getY());
+            }
+        } else {
+            return "";
         }
     }
 
@@ -1092,7 +1269,8 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
             RendererTools.makeReadOnly(txtHo);
             RendererTools.makeReadOnly(txtRe);
             RendererTools.makeReadOnly(txtWinklel);
-            tcAufnZeit.setEnabled(false);
+            dateChooser.setEnabled(false);
+            txtAufn1.setEnabled(false);
             RendererTools.makeReadOnly(taBemerkung);
             RendererTools.makeReadOnly(taBemerkung1);
             RendererTools.makeReadOnly(taBeschreibung);
@@ -1105,7 +1283,8 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
             RendererTools.makeWritable(txtHo);
             RendererTools.makeWritable(txtRe);
             RendererTools.makeWritable(txtWinklel);
-            tcAufnZeit.setEnabled(true);
+            dateChooser.setEnabled(true);
+            txtAufn1.setEnabled(true);
             RendererTools.makeWritable(taBemerkung);
             RendererTools.makeWritable(taBemerkung1);
             RendererTools.makeWritable(taBeschreibung);
@@ -1369,7 +1548,32 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
      *
      * @version  $Revision$, $Date$
      */
-    class CoordinateConverter extends Converter<Geometry, String> {
+    private class TimeValidator extends Validator<String> {
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public Validator.Result validate(final String t) {
+            if ((t == null) || t.isEmpty()) {
+                return null;
+            }
+
+            try {
+                timeFormatter.parse(t);
+            } catch (ParseException ex) {
+                return new Validator.Result(null, "Dies ist kein gültiges Datum");
+            }
+
+            return null;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class CoordinateConverter extends Converter<Geometry, String> {
 
         //~ Instance fields ----------------------------------------------------
 

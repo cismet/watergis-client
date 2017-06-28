@@ -281,7 +281,6 @@ public class GerinneOGewaesserReportDialog extends javax.swing.JDialog {
                 GerinneOGewaesserReportDialog.class,
                 "GerinneOGewaesserReportDialog.txtFile.text",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

@@ -508,7 +508,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                         columnName,
                         String.valueOf(Types.VARCHAR),
                         true));
-            editor.setNullable(true);
+            editor.setNullable(false);
 
             editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 

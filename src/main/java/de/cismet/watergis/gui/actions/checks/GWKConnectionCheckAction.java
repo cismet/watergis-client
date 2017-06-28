@@ -154,11 +154,16 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                         new ArrayList<FeatureServiceAttribute>();
 
                     FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
-                            "la_cd",
-                            String.valueOf(Types.VARCHAR),
+                            "id",
+                            String.valueOf(Types.INTEGER),
                             true);
                     serviceAttributeDefinition.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+                    serviceAttributeDefinition.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute(
+                            "la_cd",
+                            String.valueOf(Types.VARCHAR),
+                            true);
                     serviceAttributeDefinition.add(serviceAttribute);
 
                     // start checks
@@ -283,6 +288,8 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                         if (result.getConnectionService() != null) {
                             showService(result.getConnectionService(), "Prüfungen->LAWA-Routen");
                         }
+                        refreshTree();
+                        refreshMap();
                     } catch (Exception e) {
                         LOG.error("Error while performing the lawa connection analyse.", e);
                         successful = false;

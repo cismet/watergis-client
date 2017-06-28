@@ -24,7 +24,6 @@ import javax.swing.KeyStroke;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.panels.GafProf;
-import de.cismet.watergis.gui.panels.GafProfEditor;
 
 /**
  * DOCUMENT ME!
@@ -66,6 +65,7 @@ public class UploadAction extends AbstractAction {
 
         if (gafView != null) {
             if (gafView.isClosable()) {
+                GafProf.closeEditMode();
                 gafView.close();
             } else {
                 gafView.restore();

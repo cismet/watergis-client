@@ -17,6 +17,8 @@ import Sirius.navigator.connection.SessionManager;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.newuser.User;
 
+import org.deegree.datatypes.Types;
+
 import org.openide.util.NbBundle;
 
 import java.util.ArrayList;
@@ -31,11 +33,14 @@ import de.cismet.cids.custom.watergis.server.search.MergeBaFoto;
 import de.cismet.cids.custom.watergis.server.search.MergeBaLeis;
 import de.cismet.cids.custom.watergis.server.search.MergeBaTech;
 import de.cismet.cids.custom.watergis.server.search.MergeBaUghz;
+import de.cismet.cids.custom.watergis.server.search.OverlappedGmd;
+import de.cismet.cids.custom.watergis.server.search.OverlappedTech;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 
 import de.cismet.tools.gui.StaticSwingTools;
@@ -87,12 +92,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
     private static String QUERY_TECH_ATTR;
     private static String QUERY_FOTO_ATTR;
     private static String QUERY_UGHZ_ATTR;
-    private static String QUERY_UGHZ_GESCHL;
     private static String QUERY_LEIS_GESCHL;
     private static String QUERY_DEICH_GESCHL;
-    private static String QUERY_OVERLAPPED_WIWE;
-    private static String QUERY_OVERLAPPED_TECH;
-    private static String QUERY_OVERLAPPED_DEICH;
     private static String QUERY_TECH_D;
     private static String QUERY_TECH_V;
     private static String QUERY_TECH_OFF;
@@ -100,10 +101,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
     private static final String CHECK_SONSTIGES_TECH_TECH__LUECKE = "Prüfungen->Sonstiges->Tech->Tech: Lücke";
     private static final String CHECK_SONSTIGES_TECH_TECH__UEBERLAPPUNG =
         "Prüfungen->Sonstiges->Tech->Tech: Überlappung";
-    private static final String CHECK_SONSTIGES_WIWE_WIWE__UEBERLAPPUNG =
-        "Prüfungen->Sonstiges->Wiwe->Wiwe: Überlappung";
-    private static final String CHECK_SONSTIGES_UGHZ_UGHZ_AUF_GESCHLOSSE =
-        "Prüfungen->Sonstiges->Ughz->Ughz: auf geschlossenem Gerinne";
     private static final String CHECK_SONSTIGES_UGHZ_UGHZ__ATTRIBUTE = "Prüfungen->Sonstiges->Ughz->Ughz: Attribute";
     private static final String CHECK_SONSTIGES_FOTO_FOTO__ATTRIBUTE = "Prüfungen->Sonstiges->Foto->Foto: Attribute";
     private static final String CHECK_SONSTIGES_TECH_TECH_FALSCH_AUF_GES =
@@ -125,13 +122,11 @@ public class SonstigeCheckAction extends AbstractCheckAction {
     private static final String CHECK_SONSTIGES_DEICH_DEICH__ATTRIBUTE =
         "Prüfungen->Sonstiges->Deich->Deich: Attribute";
     private static final String CHECK_SONSTIGES_DEICH_DEICH__LUECKE = "Prüfungen->Sonstiges->Deich->Deich: Lücke";
-    private static final String CHECK_SONSTIGES_DEICH_DEICH__UEBERLAPPUNG =
-        "Prüfungen->Sonstiges->Deich->Deich: Überlappung";
+//    private static final String CHECK_SONSTIGES_DEICH_DEICH__UEBERLAPPUNG =
+//        "Prüfungen->Sonstiges->Deich->Deich: Überlappung";
     private static final String[] ALL_CHECKS = new String[] {
             CHECK_SONSTIGES_TECH_TECH__LUECKE,
             CHECK_SONSTIGES_TECH_TECH__UEBERLAPPUNG,
-            CHECK_SONSTIGES_WIWE_WIWE__UEBERLAPPUNG,
-            CHECK_SONSTIGES_UGHZ_UGHZ_AUF_GESCHLOSSE,
             CHECK_SONSTIGES_UGHZ_UGHZ__ATTRIBUTE,
             CHECK_SONSTIGES_FOTO_FOTO__ATTRIBUTE,
             CHECK_SONSTIGES_TECH_TECH_FALSCH_AUF_GES,
@@ -145,8 +140,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             CHECK_SONSTIGES_WIWE_WIWE__ATTRIBUTE,
             CHECK_SONSTIGES_DEICH_DEICH_KREUZT_OFFEN,
             CHECK_SONSTIGES_DEICH_DEICH__ATTRIBUTE,
-            CHECK_SONSTIGES_DEICH_DEICH__LUECKE,
-            CHECK_SONSTIGES_DEICH_DEICH__UEBERLAPPUNG
+            CHECK_SONSTIGES_DEICH_DEICH__LUECKE
+//            ,CHECK_SONSTIGES_DEICH_DEICH__UEBERLAPPUNG
         };
 
     static {
@@ -216,6 +211,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "or ((ho_k_f is not null and ho_k_pn is not null) and ho_k_pn <= ho_k_f)\n"
                             + "or ((ho_k_pn is not null and ho_bhw_pn is not null) and ho_k_pn <= ho_bhw_pn)\n"
                             + "or ((ho_bhw_pn is not null and ho_mw_pn is not null) and ho_bhw_pn <= ho_mw_pn)\n"
+                            // + "or (d.esw is not null and (d.esw < 0 or d.esw > 1)) "
                             + "or ((ho_k_pn is not null and ho_mw_pn is not null) and ho_k_pn <= ho_mw_pn))";
             } else {
                 QUERY_DEICH_ATTR = "select " + FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey()
@@ -239,6 +235,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "or ((ho_k_f is not null and ho_k_pn is not null) and ho_k_pn <= ho_k_f)\n"
                             + "or ((ho_k_pn is not null and ho_bhw_pn is not null) and ho_k_pn <= ho_bhw_pn)\n"
                             + "or ((ho_bhw_pn is not null and ho_mw_pn is not null) and ho_bhw_pn <= ho_mw_pn)\n"
+                            // + "or (d.esw is not null and (d.esw < 0 or d.esw > 1)) "
                             + "or ((ho_k_pn is not null and ho_mw_pn is not null) and ho_k_pn <= ho_mw_pn)) and gr.owner = '"
                             + user.getUserGroup().getName() + "'";
             }
@@ -259,8 +256,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             } else {
                 QUERY_DEICH_GESCHL = "select " + FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey()
                             + "	from dlm25w.fg_ba_deich d\n"
-                            + "join geom g on (d.geom = g.id),\n"
-                            + "join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)"
+                            + "join geom g on (d.geom = g.id)\n"
+                            + "join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id),"
                             + "(select (dlm25w.fast_union(\n"
                             + "'select geo_field from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)\n"
                             + "union\n"
@@ -268,7 +265,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "union\n"
                             + "select geo_field from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)'\n"
                             + ")) as geo_field) as geschl_gerinne\n"
-                            + "where _st_intersects(g.geo_field, geschl_gerinne.geo_field)  and gr.owner = '"
+                            + "where _st_intersects(g.geo_field, geschl_gerinne.geo_field) and gr.owner = '"
                             + user.getUserGroup().getName() + "'";
             }
 
@@ -345,7 +342,10 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
                             + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
                             + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (leis is null or obj_nr is null or abs(von.wert - bis.wert) < 0.5)";
+                            + "where (%1$s is null or von.route = any(%1$s)) and ("
+                            + "(leis is null or obj_nr is null or l_rl is null or abs(von.wert - bis.wert) < 0.5)"
+                            + " or (l.esw is not null and (l.esw < 0 or l.esw > 1)) "
+                            + ")";
             } else {
                 QUERY_LEIS_ATTR = "select " + FG_BA_LEIS.getID() + ", l." + FG_BA_LEIS.getPrimaryKey()
                             + " from dlm25w.fg_ba_leis l\n"
@@ -355,7 +355,10 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
                             + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "	join dlm25w.k_ww_gr gr on (l.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (leis is null or obj_nr is null or abs(von.wert - bis.wert) < 0.5) and gr.owner = '"
+                            + "where (%1$s is null or von.route = any(%1$s)) and ("
+                            + "(leis is null or obj_nr is null or l_rl is null or abs(von.wert - bis.wert) < 0.5) "
+                            + " or (l.esw is not null and (l.esw < 0 or l.esw > 1)) "
+                            + ") and gr.owner = '"
                             + user.getUserGroup().getName() + "'";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -598,7 +601,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
                             + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "	join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (obj_nr is null or winkel < 0 or winkel > 360 or foto is null \n"
+                            + "where (%1$s is null or von.route = any(%1$s)) and (foto_nr is null or winkel < 0 or winkel > 360 or foto is null \n"
                             + "or freigabe is null or upl_name is null or upl_datum is null or upl_zeit is null or (aufn_datum is not null and ( date_part('year', aufn_datum) < 1900 or date_part('year', aufn_datum) > date_part('year', now()) ) ))  and gr.owner = '"
                             + user.getUserGroup().getName() + "'";
             }
@@ -619,6 +622,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "or (ho_d_o is not null and (ho_d_o < 0 or ho_d_o > 15))\n"
                             + "or (ho_d_u is not null and (ho_d_u < 0 or ho_d_u > 15))\n"
                             + "or abs(von.wert - bis.wert) < 0.5\n"
+                            + " or (u.esw is not null and (u.esw < 0 or u.esw > 1)) "
                             + "or (ho_d_o is not null and ho_d_u is not null and ho_d_o <= ho_d_u))";
             } else {
                 QUERY_UGHZ_ATTR = "select " + FG_BA_UGHZ.getID() + ", u." + FG_BA_UGHZ.getPrimaryKey()
@@ -635,122 +639,10 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "or (ho_d_o is not null and (ho_d_o < 0 or ho_d_o > 15))\n"
                             + "or (ho_d_u is not null and (ho_d_u < 0 or ho_d_u > 15))\n"
                             + "or abs(von.wert - bis.wert) < 0.5\n"
+                            + " or (u.esw is not null and (u.esw < 0 or u.esw > 1)) "
                             + "or (ho_d_o is not null and ho_d_u is not null and ho_d_o <= ho_d_u)) and gr.owner = '"
                             + user.getUserGroup().getName() + "'";
             }
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_UGHZ_GESCHL = "select distinct " + FG_BA_UGHZ.getID() + ", u." + FG_BA_UGHZ.getPrimaryKey()
-                            + " from dlm25w.fg_ba_ughz u\n"
-                            + "join dlm25w.fg_ba_linie linie on (u.ba_st = linie.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
-                            + "(exists (select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
-                            + ")\n"
-                            + "or\n"
-                            + "exists (select 1 from dlm25w.fg_ba_d d join dlm25w.fg_ba_linie l on (d.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
-                            + ")\n"
-                            + "or\n"
-                            + "exists (select 1 from dlm25w.fg_ba_due due join dlm25w.fg_ba_linie l on (due.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
-                            + "))";
-            } else {
-                QUERY_UGHZ_GESCHL = "select " + FG_BA_UGHZ.getID() + ", u." + FG_BA_UGHZ.getPrimaryKey()
-                            + " from dlm25w.fg_ba_ughz u\n"
-                            + "join dlm25w.fg_ba_linie linie on (u.ba_st = linie.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
-                            + "(exists (select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
-                            + ")\n"
-                            + "or\n"
-                            + "exists (select 1 from dlm25w.fg_ba_d d join dlm25w.fg_ba_linie l on (d.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
-                            + ")\n"
-                            + "or\n"
-                            + "exists (select 1 from dlm25w.fg_ba_due due join dlm25w.fg_ba_linie l on (due.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
-                            + ")) and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
-            }
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_OVERLAPPED_WIWE = "select distinct " + GU_WIWE.getID() + ", w1." + GU_WIWE.getPrimaryKey()
-                            + " from \n"
-                            + "(select w.id, geo_field\n"
-                            + "from dlm25w.gu_wiwe w\n"
-                            + "join geom g on (w.geom = g.id)) as w1,\n"
-                            + "(select w.id, geo_field\n"
-                            + "from dlm25w.gu_wiwe w\n"
-                            + "join geom g on (w.geom = g.id)) as w2\n"
-                            + "where w1.id <> w2.id and st_intersects(w1.geo_field, w2.geo_field)";
-            } else {
-                QUERY_OVERLAPPED_WIWE = "select distinct " + GU_WIWE.getID() + ", w1." + GU_WIWE.getPrimaryKey()
-                            + " from \n"
-                            + "(select w.id, geo_field\n"
-                            + "from dlm25w.gu_wiwe w\n"
-                            + "join geom g on (w.geom = g.id)\n"
-                            + "join dlm25w.k_ww_gr gr on (w.ww_gr = gr.id)\n"
-                            + "where gr.owner = '"
-                            + user.getUserGroup().getName() + "') as w1,\n"
-                            + "(select w.id, geo_field\n"
-                            + "from dlm25w.gu_wiwe w\n"
-                            + "join geom g on (w.geom = g.id)\n"
-                            + "join dlm25w.k_ww_gr gr on (w.ww_gr = gr.id)\n"
-                            + "where gr.owner = '"
-                            + user.getUserGroup().getName() + "') as w2\n"
-                            + "where w1.id <> w2.id and st_intersects(w1.geo_field, w2.geo_field)";
-            }
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_OVERLAPPED_TECH = "select distinct " + FG_BA_TECH.getID() + ", t1." + FG_BA_TECH.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_tech t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_tech t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            } else {
-                QUERY_OVERLAPPED_TECH = "select distinct " + FG_BA_TECH.getID() + ", t1." + FG_BA_TECH.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_tech t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_tech t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -791,49 +683,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + user.getUserGroup().getName() + "'"
                             + "                            	) as t2\n"
                             + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and ((least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > -0.5 and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) < 0)";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_OVERLAPPED_DEICH = "select distinct " + FG_BA_DEICH.getID() + ", t1."
-                            + FG_BA_DEICH.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_deich t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_tech t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            } else {
-                QUERY_OVERLAPPED_DEICH = "select distinct " + FG_BA_DEICH.getID() + ", t1."
-                            + FG_BA_DEICH.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_deich t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_tech t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
             }
         }
     }
@@ -866,7 +715,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 23;
+        return 20;
     }
 
     @Override
@@ -883,7 +732,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                     addService(result, cr.getAttributesTech());
                     addService(result, cr.getGapTech());
                     addService(result, cr.getGerinneLeis());
-                    addService(result, cr.getGerinneUghz());
                     addService(result, cr.getOverlappedTech());
                     addService(result, cr.getdTech());
                     addService(result, cr.getvTech());
@@ -936,16 +784,11 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                                         result.getGapDeichErrors(),
                                         result.getGapWiweErrors(),
                                         result.getGapTechErrors(),
-                                        result.getOverlappedDeichErrors(),
-                                        result.getOverlappedWiweErrors(),
                                         result.getOverlappedTechErrors(),
                                         result.getGapDeichErrors()
-                                                + result.getGerinneDeichErrors()
-                                                + result.getOverlappedDeichErrors(),
+                                                + result.getGerinneDeichErrors(),
                                         result.getGapWiweErrors()
-                                                + result.getGerinneWiweErrors()
-                                                + result.getOverlappedWiweErrors(),
-                                        result.getGerinneUghzErrors(),
+                                                + result.getGerinneWiweErrors(),
                                         result.getGerinneLeisErrors(),
                                         result.getGapTechErrors()
                                                 + result.getOverlappedTechErrors()
@@ -989,17 +832,11 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             if (result.getAttributesFoto() != null) {
                                 showService(result.getAttributesFoto());
                             }
-                            if (result.getGerinneUghz() != null) {
-                                showService(result.getGerinneUghz());
-                            }
                             if (result.getAttributesUghz() != null) {
                                 showService(result.getAttributesUghz());
                             }
                             if (result.getGerinneWiwe() != null) {
                                 showService(result.getGerinneWiwe());
-                            }
-                            if (result.getOverlappedWiwe() != null) {
-                                showService(result.getOverlappedWiwe());
                             }
                             if (result.getGapWiwe() != null) {
                                 showService(result.getGapWiwe());
@@ -1010,15 +847,14 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             if (result.getGerinneDeich() != null) {
                                 showService(result.getGerinneDeich());
                             }
-                            if (result.getOverlappedDeich() != null) {
-                                showService(result.getOverlappedDeich());
-                            }
                             if (result.getGapDeich() != null) {
                                 showService(result.getGapDeich());
                             }
                             if (result.getAttributesDeich() != null) {
                                 showService(result.getAttributesDeich());
                             }
+                            refreshTree();
+                            refreshMap();
                         } catch (Exception e) {
                             LOG.error("Error while performing the sonstige analyse.", e);
                             successful = false;
@@ -1091,14 +927,36 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeLeis);
         increaseProgress(wd, 1);
 
+        final List<FeatureServiceAttribute> serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
+
+        FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
+                "id",
+                String.valueOf(Types.INTEGER),
+                true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_st_von", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_st_bis", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+//        serviceAttribute = new FeatureServiceAttribute("gmd_nr_re", String.valueOf(Types.VARCHAR), true);
+//        baGmdServiceAttributeDefinition.add(serviceAttribute);
+//        serviceAttribute = new FeatureServiceAttribute("gmd_nr_li", String.valueOf(Types.VARCHAR), true);
+//        baGmdServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+
         // start checks
         if (!isExport) {
-            result.setOverlappedDeich(analyseByQuery(
-                    FG_BA_DEICH,
-                    String.format(QUERY_OVERLAPPED_DEICH, SQLFormatter.createSqlArrayString(selectedIds)),
-                    CHECK_SONSTIGES_DEICH_DEICH__UEBERLAPPUNG));
-            increaseProgress(wd, 1);
-
             result.setGapDeich(analyseByQuery(
                     FG_BA_DEICH,
                     String.format(QUERY_DEICH_HOLE, SQLFormatter.createSqlArrayString(selectedIds)),
@@ -1187,22 +1045,10 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                 CHECK_SONSTIGES_UGHZ_UGHZ__ATTRIBUTE));
         increaseProgress(wd, 1);
 
-        result.setGerinneUghz(analyseByQuery(
-                FG_BA_UGHZ,
-                String.format(QUERY_UGHZ_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_SONSTIGES_UGHZ_UGHZ_AUF_GESCHLOSSE));
-        increaseProgress(wd, 1);
-
-        result.setOverlappedWiwe(analyseByQuery(
-                GU_WIWE,
-                String.format(QUERY_OVERLAPPED_WIWE, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_SONSTIGES_WIWE_WIWE__UEBERLAPPUNG));
-        increaseProgress(wd, 1);
-
-        result.setOverlappedTech(analyseByQuery(
-                FG_BA_TECH,
-                String.format(QUERY_OVERLAPPED_TECH, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_SONSTIGES_TECH_TECH__UEBERLAPPUNG));
+        result.setOverlappedTech(analyseByCustomSearch(
+                new OverlappedTech(user, selectedIds),
+                CHECK_SONSTIGES_TECH_TECH__UEBERLAPPUNG,
+                serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setGapTech(analyseByQuery(
@@ -1266,11 +1112,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             successful = false;
         }
 
-        if (result.getGerinneUghz() != null) {
-            result.setGerinneUghzErrors(result.getGerinneUghz().getFeatureCount(null));
-            successful = false;
-        }
-
         if (result.getGerinneWiwe() != null) {
             result.setGerinneWiweErrors(result.getGerinneWiwe().getFeatureCount(null));
             successful = false;
@@ -1286,18 +1127,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             successful = false;
         }
 
-        if (result.getOverlappedDeich() != null) {
-            result.setOverlappedDeichErrors(result.getOverlappedDeich().getFeatureCount(null));
-            successful = false;
-        }
-
         if (result.getOverlappedTech() != null) {
             result.setOverlappedTechErrors(result.getOverlappedTech().getFeatureCount(null));
-            successful = false;
-        }
-
-        if (result.getOverlappedWiwe() != null) {
-            result.setOverlappedWiweErrors(result.getOverlappedWiwe().getFeatureCount(null));
             successful = false;
         }
 
@@ -1334,14 +1165,12 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         private int bakCount;
         private int attributesDeichErrors;
         private int gapDeichErrors;
-        private int overlappedDeichErrors;
+//        private int overlappedDeichErrors;
         private int gerinneDeichErrors;
         private int attributesWiweErrors;
         private int gapWiweErrors;
-        private int overlappedWiweErrors;
         private int gerinneWiweErrors;
         private int attributesUghzErrors;
-        private int gerinneUghzErrors;
         private int attributesFotoErrors;
         private int attributesLeisErrors;
         private int gerinneLeisErrors;
@@ -1355,14 +1184,12 @@ public class SonstigeCheckAction extends AbstractCheckAction {
 
         private H2FeatureService attributesDeich;
         private H2FeatureService gapDeich;
-        private H2FeatureService overlappedDeich;
+//        private H2FeatureService overlappedDeich;
         private H2FeatureService gerinneDeich;
         private H2FeatureService attributesWiwe;
         private H2FeatureService gapWiwe;
-        private H2FeatureService overlappedWiwe;
         private H2FeatureService gerinneWiwe;
         private H2FeatureService attributesUghz;
-        private H2FeatureService gerinneUghz;
         private H2FeatureService attributesFoto;
         private H2FeatureService attributesLeis;
         private H2FeatureService gerinneLeis;
@@ -1410,24 +1237,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
          */
         public void setGapDeichErrors(final int gapDeichErrors) {
             this.gapDeichErrors = gapDeichErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the overlappedDeichErrors
-         */
-        public int getOverlappedDeichErrors() {
-            return overlappedDeichErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  overlappedDeichErrors  the overlappedDeichErrors to set
-         */
-        public void setOverlappedDeichErrors(final int overlappedDeichErrors) {
-            this.overlappedDeichErrors = overlappedDeichErrors;
         }
 
         /**
@@ -1487,24 +1296,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         /**
          * DOCUMENT ME!
          *
-         * @return  the overlappedWiweErrors
-         */
-        public int getOverlappedWiweErrors() {
-            return overlappedWiweErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  overlappedWiweErrors  the overlappedWiweErrors to set
-         */
-        public void setOverlappedWiweErrors(final int overlappedWiweErrors) {
-            this.overlappedWiweErrors = overlappedWiweErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
          * @return  the gerinneWiweErrors
          */
         public int getGerinneWiweErrors() {
@@ -1536,24 +1327,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
          */
         public void setAttributesUghzErrors(final int attributesUghzErrors) {
             this.attributesUghzErrors = attributesUghzErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the gerinneUghzErrors
-         */
-        public int getGerinneUghzErrors() {
-            return gerinneUghzErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  gerinneUghzErrors  the gerinneUghzErrors to set
-         */
-        public void setGerinneUghzErrors(final int gerinneUghzErrors) {
-            this.gerinneUghzErrors = gerinneUghzErrors;
         }
 
         /**
@@ -1775,24 +1548,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         /**
          * DOCUMENT ME!
          *
-         * @return  the overlappedDeich
-         */
-        public H2FeatureService getOverlappedDeich() {
-            return overlappedDeich;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  overlappedDeich  the overlappedDeich to set
-         */
-        public void setOverlappedDeich(final H2FeatureService overlappedDeich) {
-            this.overlappedDeich = overlappedDeich;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
          * @return  the gerinneDeich
          */
         public H2FeatureService getGerinneDeich() {
@@ -1847,24 +1602,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         /**
          * DOCUMENT ME!
          *
-         * @return  the overlappedWiwe
-         */
-        public H2FeatureService getOverlappedWiwe() {
-            return overlappedWiwe;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  overlappedWiwe  the overlappedWiwe to set
-         */
-        public void setOverlappedWiwe(final H2FeatureService overlappedWiwe) {
-            this.overlappedWiwe = overlappedWiwe;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
          * @return  the gerinneWiwe
          */
         public H2FeatureService getGerinneWiwe() {
@@ -1896,24 +1633,6 @@ public class SonstigeCheckAction extends AbstractCheckAction {
          */
         public void setAttributesUghz(final H2FeatureService attributesUghz) {
             this.attributesUghz = attributesUghz;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the gerinneUghz
-         */
-        public H2FeatureService getGerinneUghz() {
-            return gerinneUghz;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  gerinneUghz  the gerinneUghz to set
-         */
-        public void setGerinneUghz(final H2FeatureService gerinneUghz) {
-            this.gerinneUghz = gerinneUghz;
         }
 
         /**

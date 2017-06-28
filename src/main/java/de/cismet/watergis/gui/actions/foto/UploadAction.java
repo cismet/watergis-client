@@ -65,6 +65,7 @@ public class UploadAction extends AbstractAction {
 
         if (photoView != null) {
             if (photoView.isClosable()) {
+                Photo.closeEditMode();
                 photoView.close();
             } else {
                 photoView.restore();

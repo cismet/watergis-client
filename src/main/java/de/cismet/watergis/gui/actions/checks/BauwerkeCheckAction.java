@@ -17,6 +17,8 @@ import Sirius.navigator.connection.SessionManager;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.newuser.User;
 
+import org.deegree.datatypes.Types;
+
 import org.openide.util.NbBundle;
 
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import de.cismet.cids.custom.helper.SQLFormatter;
+import de.cismet.cids.custom.watergis.server.search.DWithHole;
+import de.cismet.cids.custom.watergis.server.search.DueWithHole;
 import de.cismet.cids.custom.watergis.server.search.FgBakCount;
 import de.cismet.cids.custom.watergis.server.search.MergeBaAnll;
 import de.cismet.cids.custom.watergis.server.search.MergeBaAnlp;
@@ -37,18 +41,26 @@ import de.cismet.cids.custom.watergis.server.search.MergeBaRl;
 import de.cismet.cids.custom.watergis.server.search.MergeBaScha;
 import de.cismet.cids.custom.watergis.server.search.MergeBaSchw;
 import de.cismet.cids.custom.watergis.server.search.MergeBaWehr;
+import de.cismet.cids.custom.watergis.server.search.OverlappedDWithRDDue;
+import de.cismet.cids.custom.watergis.server.search.OverlappedDueWithRDDue;
+import de.cismet.cids.custom.watergis.server.search.OverlappedRlWithRDDue;
+import de.cismet.cids.custom.watergis.server.search.OverlappedUbefWithR;
+import de.cismet.cids.custom.watergis.server.search.RlWithHole;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
+import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitDialog;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
+import de.cismet.watergis.broker.ComponentName;
 
 import static javax.swing.Action.NAME;
 import static javax.swing.Action.SHORT_DESCRIPTION;
@@ -99,12 +111,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BA_SCHW = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_ba_schw");
-    private static String QUERY_RL_HOLE;
-    private static String QUERY_D_HOLE;
-    private static String QUERY_DUE_HOLE;
-    private static String QUERY_RL_OVERLAPS;
-    private static String QUERY_D_OVERLAPS;
-    private static String QUERY_DUE_OVERLAPS;
     private static String QUERY_DUE_ATTR;
     private static String QUERY_D_ATTR;
     private static String QUERY_RL_ATTR;
@@ -160,15 +166,15 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         "Prüfungen->Bauwerke->Scha->Scha: doppelt/zu nah";
     private static final String CHECKS_BAUWERKE_DUE_DUE__UEBERLAPPUNG = "Prüfungen->Bauwerke->Due->Due: Überlappung";
     private static final String CHECKS_BAUWERKE_DD__UEBERLAPPUNG = "Prüfungen->Bauwerke->D->D: Überlappung";
-    private static final String CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG = "Prüfungen->Bauwerke->Rl->Rl: Überlappung";
+    private static final String CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG = "Prüfungen->Bauwerke->RL->RL: Überlappung";
     private static final String CHECKS_BAUWERKE_DUE_DUE__LUECKE = "Prüfungen->Bauwerke->Due->Due: Lücke";
     private static final String CHECKS_BAUWERKE_DD__LUECKE = "Prüfungen->Bauwerke->D->D: Lücke";
-    private static final String CHECKS_BAUWERKE_RL_RL__LUECKE = "Prüfungen->Bauwerke->Rl->Rl: Lücke";
+    private static final String CHECKS_BAUWERKE_RL_RL__LUECKE = "Prüfungen->Bauwerke->RL->RL: Lücke";
     private static final String CHECKS_BAUWERKE_DD__ATTRIBUTE = "Prüfungen->Bauwerke->D->D: Attribute";
     private static final String CHECKS_BAUWERKE_WEHR_WEHR__ATTRIBUTE = "Prüfungen->Bauwerke->Wehr->Wehr: Attribute";
     private static final String CHECKS_BAUWERKE_SCHW_SCHW__ATTRIBUTE = "Prüfungen->Bauwerke->Schw->Schw: Attribute";
     private static final String CHECKS_BAUWERKE_SCHA_SCHA__ATTRIBUTE = "Prüfungen->Bauwerke->Scha->Scha: Attribute";
-    private static final String CHECKS_BAUWERKE_RL_RL__ATTRIBUTE = "Prüfungen->Bauwerke->Rl->Rl: Attribute";
+    private static final String CHECKS_BAUWERKE_RL_RL__ATTRIBUTE = "Prüfungen->Bauwerke->RL->RL: Attribute";
     private static final String CHECKS_BAUWERKE_KR_KR__ATTRIBUTE = "Prüfungen->Bauwerke->Kr->Kr: Attribute";
     private static final String CHECKS_BAUWERKE_EA_EA__ATTRIBUTE = "Prüfungen->Bauwerke->Ea->Ea: Attribute";
     private static final String CHECKS_BAUWERKE_DUE_DUE__ATTRIBUTE = "Prüfungen->Bauwerke->Dü->Dü: Attribute";
@@ -221,49 +227,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_RL_HOLE = "select " + FG_BA_RL.getID() + ", d1." + FG_BA_RL.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_rl d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_rl d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "	) as d2\n"
-                            + "where d1.id <> d2.id and d1.route = d2.route and abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) > 0 and  abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) < 0.5;";
-            } else {
-                QUERY_RL_HOLE = "select " + FG_BA_RL.getID() + ", d1." + FG_BA_RL.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_rl d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + " join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + " left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
-                            + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_rl d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + " join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + " left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
-                            + "	) as d2\n"
-                            + "where d1.id <> d2.id and d1.route = d2.route and abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) > 0 and  abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) < 0.5;";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_RL_ATTR = "select " + FG_BA_RL.getID() + ", rl." + FG_BA_RL.getPrimaryKey()
                             + " from dlm25w.fg_ba_rl rl\n"
                             + "join dlm25w.fg_ba_linie linie on (rl.ba_st = linie.id)\n"
@@ -317,49 +280,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (p.profil = 'tr' and (br_dm_li = br_tr_o_li))) and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName()
                             + "'";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_D_HOLE = "select " + FG_BA_D.getID() + ", d1." + FG_BA_D.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_d d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_d d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "	) as d2\n"
-                            + "where d1.id <> d2.id and d1.route = d2.route and abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) > 0 and  abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) < 0.5;";
-            } else {
-                QUERY_D_HOLE = "select " + FG_BA_D.getID() + ", d1." + FG_BA_D.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_d d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + " join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + " left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
-                            + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_d d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + " join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + " left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
-                            + "	) as d2\n"
-                            + "where d1.id <> d2.id and d1.route = d2.route and abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) > 0 and  abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) < 0.5;";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -419,49 +339,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (p.profil = 'tr' and (br_dm_li = br_tr_o_li))) and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName()
                             + "'";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_DUE_HOLE = "select " + FG_BA_DUE.getID() + ", d1." + FG_BA_DUE.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_due d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_due d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "	) as d2\n"
-                            + "where d1.id <> d2.id and d1.route = d2.route and abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) > 0 and  abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) < 0.5;";
-            } else {
-                QUERY_DUE_HOLE = "select " + FG_BA_DUE.getID() + ", d1." + FG_BA_DUE.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_due d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + " join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + " left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
-                            + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_due d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + " join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + " left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
-                            + "	) as d2\n"
-                            + "where d1.id <> d2.id and d1.route = d2.route and abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) > 0 and  abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) < 0.5;";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -544,6 +421,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (an.anll in ('See', 'Spei') and (abs(von.wert - bis.wert) < 5 or abs(von.wert - bis.wert) > 50000 ))\n"
                             + "or (an.anll in ('Drte', 'Faa', 'Rb') and (abs(von.wert - bis.wert) < 5 or abs(von.wert - bis.wert) > 200))\n"
                             + "or (an.anll in ('Ds', 'Sf', 'Si', 'Sleu','Tosb','WKA') and (abs(von.wert - bis.wert) < 1 or abs(von.wert - bis.wert) > 200))\n"
+                            + "or (a.esw is not null and (a.esw < 0 or a.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s));";
             } else {
                 QUERY_ANLL_ATTR = "select " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
@@ -561,6 +439,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (an.anll in ('See', 'Spei') and (abs(von.wert - bis.wert) < 5 or abs(von.wert - bis.wert) > 50000 ))\n"
                             + "or (an.anll in ('Drte', 'Faa', 'Rb') and (abs(von.wert - bis.wert) < 5 or abs(von.wert - bis.wert) > 200))\n"
                             + "or (an.anll in ('Ds', 'Sf', 'Si', 'Sleu','Tosb','WKA') and (abs(von.wert - bis.wert) < 1 or abs(von.wert - bis.wert) > 200))\n"
+                            + "or (a.esw is not null and (a.esw < 0 or a.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName()
                             + "'";
@@ -584,6 +463,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (an.anlp in ('Albw', 'Elbw', 'Fu', 'Rsk', 'Schi', 'Slu', 'Stt') and (rl.l_rl <> 'mi'))\n"
                             + "or (an.anlp in ('P', 'P-Gr', 'P-Steg', 'P-Gr-Steg', 'P-Lat', 'Sta') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li')))\n"
                             + "or (an.anlp in ('Steg', 'Vt', 'Wes') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'bs')))\n"
+                            + "or (a.esw is not null and (a.esw < 0 or a.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s));";
             } else {
                 QUERY_ANLP_ATTR = "select " + FG_BA_ANLP.getID() + ", a." + FG_BA_ANLP.getPrimaryKey()
@@ -602,6 +482,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (an.anlp in ('Albw', 'Elbw', 'Fu', 'Rsk', 'Schi', 'Slu', 'Stt') and (rl.l_rl <> 'mi'))\n"
                             + "or (an.anlp in ('P', 'P-Gr', 'P-Steg', 'P-Gr-Steg', 'P-Lat', 'Sta') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li')))\n"
                             + "or (an.anlp in ('Steg', 'Vt', 'Wes') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'bs')))\n"
+                            + "or (a.esw is not null and (a.esw < 0 or a.esw > 1)) "
                             + ") and gr.owner = '"
                             + user.getUserGroup().getName()
                             + "'";
@@ -623,6 +504,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (br is not null and (br <= 0 or br > 100))\n"
                             + "or (k.kr in ('Br') and (oi.l_oiu <> 'o' ))\n"
                             + "or (k.kr in ('U') and (oi.l_oiu <> 'u' ))\n"
+                            + "or (kr.esw is not null and (kr.esw < 0 or kr.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s));";
             } else {
                 QUERY_KR_ATTR = "select " + FG_BA_KR.getID() + ", kr." + FG_BA_KR.getPrimaryKey()
@@ -639,6 +521,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (br is not null and (br <= 0 or br > 100))\n"
                             + "or (k.kr in ('Br') and (oi.l_oiu <> 'o' ))\n"
                             + "or (k.kr in ('U') and (oi.l_oiu <> 'u' ))\n"
+                            + "or (kr.esw is not null and (kr.esw < 0 or kr.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName()
                             + "'";
@@ -658,6 +541,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (br is not null and (br <= 0 or br > 30))\n"
                             + "or (ho_ea  is not null and (ho_ea < -6 or ho_ea > 179))\n"
                             + "or (ho_d_ea is not null and (ho_d_ea < 0 or ho_d_ea > 15))\n"
+                            + "or (ea.esw is not null and (ea.esw < 0 or ea.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s));";
             } else {
                 QUERY_EA_ATTR = "select " + FG_BA_EA.getID() + ", ea." + FG_BA_EA.getPrimaryKey()
@@ -672,6 +556,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (br is not null and (br <= 0 or br > 30))\n"
                             + "or (ho_ea  is not null and (ho_ea < -6 or ho_ea > 179))\n"
                             + "or (ho_d_ea is not null and (ho_d_ea < 0 or ho_d_ea > 15))\n"
+                            + "or (ea.esw is not null and (ea.esw < 0 or ea.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName()
                             + "'";
@@ -745,6 +630,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (wv.wehr_v in ('Bo','Bo-J') and m.material not in ('H','K','St'))\n"
                             + "or (wv.wehr_v in ('Schw') and m.material not in ('B','K'))\n"
                             + "or (wv.wehr_v not in ('Bo', 'Bo-J', 'Schw') and m.material is not null)\n"
+                            + "or (wehr.esw is not null and (wehr.esw < 0 or wehr.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s));";
             } else {
                 QUERY_WEHR_ATTR = "select " + FG_BA_WEHR.getID() + ", wehr." + FG_BA_WEHR.getPrimaryKey()
@@ -782,6 +668,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (wv.wehr_v in ('Bo','Bo-J') and m.material not in ('H','K','St'))\n"
                             + "or (wv.wehr_v in ('Schw') and m.material not in ('B','K'))\n"
                             + "or (wv.wehr_v not in ('Bo', 'Bo-J', 'Schw') and m.material is not null)\n"
+                            + "or (wehr.esw is not null and (wehr.esw < 0 or wehr.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName()
                             + "'";
@@ -807,6 +694,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (pu_foel  is not null and (pu_foel <= 0 or pu_foel > 100))\n"
                             + "or (sz is not null and az is not null and (sz <= az))\n"
                             + "or (ezg_fl is not null and v_fl is not null and (ezg_fl < v_fl))\n"
+                            + "or (schw.esw is not null and (schw.esw < 0 or schw.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s));";
             } else {
                 QUERY_SCHW_ATTR = "select " + FG_BA_SCHW.getID() + ", schw." + FG_BA_SCHW.getPrimaryKey()
@@ -827,156 +715,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (pu_foel  is not null and (pu_foel <= 0 or pu_foel > 100))\n"
                             + "or (sz is not null and az is not null and (sz <= az))\n"
                             + "or (ezg_fl is not null and v_fl is not null and (ezg_fl < v_fl))\n"
+                            + "or (schw.esw is not null and (schw.esw < 0 or schw.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName()
                             + "'";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_RL_OVERLAPS = "select distinct " + FG_BA_RL.getID() + ", t1." + FG_BA_RL.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_rl t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_rl t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            } else {
-                QUERY_RL_OVERLAPS = "select distinct " + FG_BA_RL.getID() + ", t1." + FG_BA_RL.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_rl t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_rl t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_D_OVERLAPS = "select distinct " + FG_BA_D.getID() + ", t1." + FG_BA_D.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_d t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_d t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            } else {
-                QUERY_D_OVERLAPS = "select distinct " + FG_BA_D.getID() + ", t1." + FG_BA_D.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_d t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_d t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_DUE_OVERLAPS = "select distinct " + FG_BA_DUE.getID() + ", t1." + FG_BA_DUE.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_due t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_due t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            } else {
-                QUERY_DUE_OVERLAPS = "select distinct " + FG_BA_DUE.getID() + ", t1." + FG_BA_DUE.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_due t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_due t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -1903,9 +1645,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             if (result.getRlAttr() != null) {
                                 showService(result.getRlAttr());
                             }
-//                            if (result.getWehrGeschlossen() != null) {
-//                                showService(result.getWehrGeschlossen());
-//                            }
+                            refreshTree();
+                            refreshMap();
                         } catch (Exception e) {
                             LOG.error("Error while performing the bauwerke analyse.", e);
                             successful = false;
@@ -2001,6 +1742,29 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeEa);
         increaseProgress(wd, 1);
 
+        final List<FeatureServiceAttribute> serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
+        FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
+                "id",
+                String.valueOf(Types.INTEGER),
+                true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_st_von", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_st_bis", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+
         // todo korrigiere berechnete Attribute
 
         // start checks
@@ -2064,39 +1828,40 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 CHECKS_BAUWERKE_DD__ATTRIBUTE));
         increaseProgress(wd, 1);
 
-        result.setRlHole(analyseByQuery(
-                FG_BA_RL,
-                String.format(QUERY_RL_HOLE, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECKS_BAUWERKE_RL_RL__LUECKE));
+        result.setRlHole(analyseByCustomSearch(
+                new RlWithHole(user, selectedIds),
+                CHECKS_BAUWERKE_RL_RL__LUECKE,
+                serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setdHole(analyseByQuery(
-                FG_BA_D,
-                String.format(QUERY_D_HOLE, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECKS_BAUWERKE_DD__LUECKE));
+        result.setdHole(analyseByCustomSearch(
+                new DWithHole(user, selectedIds),
+                CHECKS_BAUWERKE_DD__LUECKE,
+                serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setDueHole(analyseByQuery(
-                FG_BA_DUE,
-                String.format(QUERY_DUE_HOLE, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECKS_BAUWERKE_DUE_DUE__LUECKE));
+        result.setDueHole(analyseByCustomSearch(
+                new DueWithHole(user, selectedIds),
+                CHECKS_BAUWERKE_DUE_DUE__LUECKE,
+                serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setRlOverlapps(analyseByQuery(
-                FG_BA_RL,
-                String.format(QUERY_RL_OVERLAPS, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG));
+        result.setRlOverlapps(analyseByCustomSearch(
+                new OverlappedRlWithRDDue(user, selectedIds),
+                CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG,
+                serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setdOverlapps(analyseByQuery(
-                FG_BA_D,
-                String.format(QUERY_D_OVERLAPS, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECKS_BAUWERKE_DD__UEBERLAPPUNG));
+        result.setdOverlapps(analyseByCustomSearch(
+                new OverlappedDWithRDDue(user, selectedIds),
+                CHECKS_BAUWERKE_DD__UEBERLAPPUNG,
+                serviceAttributeDefinition));
+        increaseProgress(wd, 1);
 
-        result.setDueOverlapps(analyseByQuery(
-                FG_BA_DUE,
-                String.format(QUERY_DUE_OVERLAPS, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECKS_BAUWERKE_DUE_DUE__UEBERLAPPUNG));
+        result.setDueOverlapps(analyseByCustomSearch(
+                new OverlappedDueWithRDDue(user, selectedIds),
+                CHECKS_BAUWERKE_DUE_DUE__UEBERLAPPUNG,
+                serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setSchaDistance(analyseByQuery(

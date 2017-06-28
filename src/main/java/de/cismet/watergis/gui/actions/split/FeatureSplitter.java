@@ -34,5 +34,5 @@ public interface FeatureSplitter {
      *
      * @return  DOCUMENT ME!
      */
-    Feature split(Feature masterFeature, LineString splitLine);
+    Feature[] split(Feature masterFeature, LineString splitLine);
 }

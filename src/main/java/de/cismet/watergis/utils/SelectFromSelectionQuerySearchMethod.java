@@ -16,14 +16,11 @@ import java.util.List;
 
 import de.cismet.cids.search.QuerySearch;
 import de.cismet.cids.search.QuerySearchMethod;
-import de.cismet.cids.search.SearchQuerySearchMethod;
 
-import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.factory.AbstractFeatureFactory;
 import de.cismet.cismap.commons.featureservice.factory.FeatureFactory;
-import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.commons.concurrency.CismetExecutors;
