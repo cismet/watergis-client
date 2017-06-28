@@ -12,6 +12,7 @@
 package de.cismet.watergis.gui.actions;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 
 import org.apache.log4j.Logger;
 
@@ -30,11 +31,9 @@ import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.features.ModifiableFeature;
-import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
-import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.math.geometry.StaticGeometryFunctions;
 
@@ -44,6 +43,7 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.merge.FeatureMerger;
 import de.cismet.watergis.gui.actions.merge.FeatureMergerFactory;
+import de.cismet.watergis.gui.actions.merge.MergeException;
 import de.cismet.watergis.gui.components.AttributeTableDialog;
 
 /**
@@ -102,16 +102,29 @@ public class MergeAction extends AbstractAction {
             final FeatureMerger merger = (new FeatureMergerFactory()).getFeatureMergerForFeature(resultedFeature);
             final String geometryType = resultedFeature.getGeometry().getGeometryType();
 
-            for (final Feature f : allValidFeatures) {
-                resultedFeature = merger.merge(resultedFeature, f);
+            try {
+                for (final Feature f : allValidFeatures) {
+                    resultedFeature = merger.merge(resultedFeature, f);
 
-                if (resultedFeature == null) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        NbBundle.getMessage(MergeAction.class, "MergeAction.actionPerformed.mergeFailed"),
-                        NbBundle.getMessage(MergeAction.class, "MergeAction.actionPerformed.mergeFailed.title"),
-                        JOptionPane.ERROR_MESSAGE);
-                    break;
+                    if (resultedFeature == null) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            NbBundle.getMessage(MergeAction.class, "MergeAction.actionPerformed.mergeFailed"),
+                            NbBundle.getMessage(MergeAction.class, "MergeAction.actionPerformed.mergeFailed.title"),
+                            JOptionPane.ERROR_MESSAGE);
+                        break;
+                    }
                 }
+            } catch (MergeException ex) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Fehler",
+                    ex.getMessage(),
+                    JOptionPane.ERROR_MESSAGE);
+
+                if (resultedFeature instanceof ModifiableFeature) {
+                    ((ModifiableFeature)resultedFeature).undoAll();
+                }
+
+                return;
             }
 
             if (resultedFeature != null) {
@@ -136,14 +149,28 @@ public class MergeAction extends AbstractAction {
                                             .getAttributeTableRuleSet();
 
                                 ruleSet.beforeSave(dfsf);
+                                final List<FeatureServiceFeature> list = new ArrayList<FeatureServiceFeature>();
+                                list.add(dfsf);
+
+                                if (!ruleSet.prepareForSave(list)) {
+                                    return;
+                                }
                             }
                         }
 
-                        serviceFeature.saveChanges();
+                        serviceFeature.saveChangesWithoutReload();
 
                         for (final Feature f : allValidFeatures) {
                             if (f instanceof ModifiableFeature) {
-                                ((ModifiableFeature)f).delete();
+                                final AttributeTable table = AppBroker.getInstance()
+                                            .getWatergisApp()
+                                            .getAttributeTableByFeature((FeatureServiceFeature)f);
+
+                                if (table != null) {
+                                    table.removeFeature((FeatureServiceFeature)f);
+                                } else {
+                                    ((ModifiableFeature)f).delete();
+                                }
                             }
                         }
                     } catch (Exception ex) {
@@ -178,16 +205,14 @@ public class MergeAction extends AbstractAction {
      * @return  DOCUMENT ME!
      */
     private List<FeatureServiceFeature> determineAllValidFeature() {
-        final MappingComponent mc = CismapBroker.getInstance().getMappingComponent();
-        final SelectionListener sl = (SelectionListener)mc.getInputEventListener().get(MappingComponent.SELECT);
-        final List<PFeature> features = sl.getAllSelectedPFeatures();
+        final List<Feature> features = SelectionManager.getInstance().getSelectedFeatures();
         final List<FeatureServiceFeature> allValidFeatures = new ArrayList<FeatureServiceFeature>();
         FeatureServiceFeature type = null;
 
-        for (final PFeature f : features) {
+        for (final Feature f : features) {
             if (type == null) {
-                if (f.getFeature() instanceof FeatureServiceFeature) {
-                    type = (FeatureServiceFeature)f.getFeature();
+                if (f instanceof FeatureServiceFeature) {
+                    type = (FeatureServiceFeature)f;
                     allValidFeatures.add(type);
                 } else {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -201,8 +226,8 @@ public class MergeAction extends AbstractAction {
                     break;
                 }
             } else {
-                if (f.getFeature() instanceof FeatureServiceFeature) {
-                    final FeatureServiceFeature toCheck = (FeatureServiceFeature)f.getFeature();
+                if (f instanceof FeatureServiceFeature) {
+                    final FeatureServiceFeature toCheck = (FeatureServiceFeature)f;
                     if (type.getLayerProperties().getFeatureService().equals(
                                     toCheck.getLayerProperties().getFeatureService())) {
                         allValidFeatures.add(toCheck);
@@ -232,6 +257,30 @@ public class MergeAction extends AbstractAction {
         }
 
         if ((allValidFeatures.size() == features.size()) && (allValidFeatures.size() > 0)) {
+            final AttributeTable table = AppBroker.getInstance()
+                        .getWatergisApp()
+                        .getAttributeTableByFeature(allValidFeatures.get(0));
+
+            if (allValidFeatures.get(0).getGeometry() instanceof Point) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    NbBundle.getMessage(
+                        MergeAction.class,
+                        "MergeAction.determineAllValidFeature.pointFeaturesFound.message"),
+                    NbBundle.getMessage(
+                        MergeAction.class,
+                        "MergeAction.determineAllValidFeature.pointFeaturesFound.title"),
+                    JOptionPane.ERROR_MESSAGE);
+
+                return null;
+            }
+
+            if (table != null) {
+                final List<FeatureServiceFeature> selectedFeatures = table.getSelectedFeatures();
+
+                if (selectedFeatures.equals(allValidFeatures)) {
+                    return selectedFeatures;
+                }
+            }
             return allValidFeatures;
         } else {
             if (features.isEmpty()) {

@@ -71,7 +71,6 @@ public class GafExportDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JLabel labAusgabe;
     private javax.swing.JLabel labBezug;
-    private javax.swing.JLabel labContent;
     private javax.swing.JTextField txtFile;
     // End of variables declaration//GEN-END:variables
 
@@ -172,7 +171,6 @@ public class GafExportDialog extends javax.swing.JDialog {
                 new java.awt.Dimension(200, 32767));
         ckbGafSelection = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
-        labContent = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         labBezug = new javax.swing.JLabel();
         ckBasis = new javax.swing.JCheckBox();
@@ -255,7 +253,6 @@ public class GafExportDialog extends javax.swing.JDialog {
                 GafExportDialog.class,
                 "GafExportDialog.txtFile.text_1",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -318,20 +315,6 @@ public class GafExportDialog extends javax.swing.JDialog {
         getContentPane().add(ckbGafSelection, gridBagConstraints);
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
-
-        org.openide.awt.Mnemonics.setLocalizedText(
-            labContent,
-            org.openide.util.NbBundle.getMessage(
-                GafExportDialog.class,
-                "GafExportDialog.labContent.text",
-                new Object[] {})); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-        jPanel2.add(labContent, gridBagConstraints);
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
@@ -436,10 +419,8 @@ public class GafExportDialog extends javax.swing.JDialog {
         ckGaf.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckGaf,
-            org.openide.util.NbBundle.getMessage(
-                GafExportDialog.class,
-                "GafExportDialog.ckGaf.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(GafExportDialog.class, "GafExportDialog.ckGaf.text", new Object[] {
+                })); // NOI18N
         ckGaf.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override

@@ -98,6 +98,7 @@ public class QuerySearchDialog extends javax.swing.JDialog {
         choosenLayer = sourceLayer.toArray(new AbstractFeatureService[sourceLayer.size()]);
 
         initComponents();
+        querySearch1.enableLineWrap(true);
     }
 
     //~ Methods ----------------------------------------------------------------

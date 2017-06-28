@@ -13,6 +13,9 @@ package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import java.sql.Timestamp;
 
 import java.util.List;
@@ -28,6 +31,8 @@ import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCrea
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -64,7 +69,7 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("so4_mw", new Numeric(12, 6, false, true));
         typeMap.put("so4_max", new Numeric(12, 6, false, true));
         typeMap.put("ue_sw_psm", new BooleanAsInteger(true, true));
-        typeMap.put("chart_s", new Varchar(250, false, false));
+        typeMap.put("chart_s1", new Varchar(250, false, false));
         typeMap.put("chart_m1", new Varchar(250, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
@@ -89,7 +94,11 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return super.getCellRenderer(columnName);
+        if (columnName.equals("chart_s1") || columnName.equals("chart_m1")) {
+            return new LinkTableCellRenderer();
+        } else {
+            return super.getCellRenderer(columnName);
+        }
     }
 
     @Override
@@ -281,5 +290,27 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POINT);
+    }
+
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("chart_s1") || columnName.equals("chart_m1")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                try {
+                    final URL u = new URL((String)value.toString());
+
+                    try {
+                        de.cismet.tools.BrowserLauncher.openURL(u.toString());
+                    } catch (Exception ex) {
+//                        LOG.error("Cannot open the url:" + u, ex);
+                    }
+                } catch (MalformedURLException ex) {
+                    // nothing to do
+                }
+            }
+        }
     }
 }

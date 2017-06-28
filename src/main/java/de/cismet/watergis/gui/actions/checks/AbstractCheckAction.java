@@ -61,6 +61,7 @@ import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.capabilitywidget.CapabilityWidget;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.LayerCollection;
+import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.rasterservice.MapService;
 import de.cismet.cismap.commons.util.SelectionManager;
@@ -516,15 +517,87 @@ public abstract class AbstractCheckAction extends AbstractAction {
         final TreeMap<Integer, MapService> map = model.getRasterServices();
 
         if (map != null) {
+            final List<LayerCollection> collectionsToRemove = new ArrayList<LayerCollection>();
             for (final MapService service : map.values()) {
                 if (service instanceof H2FeatureService) {
                     final H2FeatureService h2Service = (H2FeatureService)service;
                     if (h2Service.getTableName().equals(tableNames)) {
+                        final TreeMap<Integer, Object> serviceMap = ((ActiveLayerModel)model)
+                                    .getMapServicesAndCollections();
+
+                        for (final Integer key : serviceMap.keySet()) {
+                            final Object l = serviceMap.get(key);
+                            if (l instanceof LayerCollection) {
+                                final LayerCollection coll = getCollectionWithService((LayerCollection)l, h2Service);
+
+                                if (coll != null) {
+                                    collectionsToRemove.add(coll);
+                                }
+                            }
+                        }
                         model.removeLayer(h2Service);
                         AttributeTableFactory.getInstance().closeAttributeTable(h2Service);
                     }
                 }
             }
+
+            for (int i = 0; i < collectionsToRemove.size(); ++i) {
+                final LayerCollection col = collectionsToRemove.get(i);
+
+                final TreeMap<Integer, Object> serviceMap = ((ActiveLayerModel)model).getMapServicesAndCollections();
+
+                for (final Integer key : serviceMap.keySet()) {
+                    final Object l = serviceMap.get(key);
+                    if (l instanceof LayerCollection) {
+                        final LayerCollection coll = getCollectionWithService((LayerCollection)l, col);
+
+                        if (coll != null) {
+                            collectionsToRemove.add(coll);
+                        }
+                    }
+                }
+
+                ((ActiveLayerModel)model).removeLayerCollection(col);
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   collection  DOCUMENT ME!
+     * @param   h2Service   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private LayerCollection getCollectionWithService(final LayerCollection collection, final Object h2Service) {
+        if (collection.contains(h2Service) && (collection.size() == 1)) {
+            return collection;
+        } else {
+            for (final Object subLayer : collection) {
+                if (subLayer instanceof LayerCollection) {
+                    return getCollectionWithService((LayerCollection)subLayer, h2Service);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * refreshs the LayertreeWidget.
+     */
+    protected void refreshTree() {
+        final ThemeLayerWidget tree = (ThemeLayerWidget)AppBroker.getInstance().getComponent(ComponentName.TREE);
+        tree.updateTree();
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    protected void refreshMap() {
+        if (AppBroker.getInstance().getMappingComponent() != null) {
+            AppBroker.getInstance().getMappingComponent().refresh();
         }
     }
 

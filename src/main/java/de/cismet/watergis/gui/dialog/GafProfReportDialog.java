@@ -241,7 +241,6 @@ public class GafProfReportDialog extends javax.swing.JDialog {
                 GafProfReportDialog.class,
                 "GafProfReportDialog.txtFile.text_1",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

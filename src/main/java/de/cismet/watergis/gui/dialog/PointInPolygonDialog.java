@@ -180,7 +180,7 @@ public class PointInPolygonDialog extends javax.swing.JDialog {
         cbGeoMethod.setModel(new DefaultComboBoxModel(
                 ssmList.toArray(new SpatialSelectionMethodInterface[ssmList.size()])));
 
-        txtTable.setText("PunktAufPolygon");
+        txtTable.setText("PunktInPolygon");
         CismapBroker.getInstance()
                 .getMappingComponent()
                 .getFeatureCollection()
@@ -208,22 +208,25 @@ public class PointInPolygonDialog extends javax.swing.JDialog {
 
                                     @Override
                                     public void run() {
-                                        final AbstractFeatureService service = (AbstractFeatureService)
-                                            cbTheme.getSelectedItem();
-                                        selectedThemeFeatureCount = refreshSelectedFeatureCount(
-                                                false,
-                                                ckbSelected,
-                                                service,
-                                                selectedThemeFeatureCount,
-                                                labSelected);
-                                        final AbstractFeatureService targetService = (AbstractFeatureService)
-                                            cbTargetTheme.getSelectedItem();
-                                        selectedTargetThemeFeatureCount = refreshSelectedFeatureCount(
-                                                false,
-                                                ckbSelectedTarget,
-                                                targetService,
-                                                selectedTargetThemeFeatureCount,
-                                                labSelectedTarget);
+                                        final Object o = cbTheme.getSelectedItem();
+
+                                        if (o instanceof AbstractFeatureService) {
+                                            final AbstractFeatureService service = (AbstractFeatureService)o;
+                                            selectedThemeFeatureCount = refreshSelectedFeatureCount(
+                                                    false,
+                                                    ckbSelected,
+                                                    service,
+                                                    selectedThemeFeatureCount,
+                                                    labSelected);
+                                            final AbstractFeatureService targetService = (AbstractFeatureService)
+                                                cbTargetTheme.getSelectedItem();
+                                            selectedTargetThemeFeatureCount = refreshSelectedFeatureCount(
+                                                    false,
+                                                    ckbSelectedTarget,
+                                                    targetService,
+                                                    selectedTargetThemeFeatureCount,
+                                                    labSelectedTarget);
+                                        }
                                     }
                                 });
                         }
@@ -768,6 +771,10 @@ public class PointInPolygonDialog extends javax.swing.JDialog {
                     for (final FeatureServiceFeature f : featureList) {
                         Geometry searchGeom = f.getGeometry();
                         ++count;
+
+                        if (buffer < 0.01) {
+                            buffer = 0.01;
+                        }
 
                         if ((buffer != 0) && (searchGeom != null)) {
                             searchGeom = searchGeom.buffer(buffer);

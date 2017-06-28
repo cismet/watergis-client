@@ -942,7 +942,6 @@ public class KatasterSbReportDialog extends javax.swing.JDialog {
                 KatasterSbReportDialog.class,
                 "KatasterSbReportDialog.txtFile.text_1",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

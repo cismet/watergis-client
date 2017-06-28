@@ -120,7 +120,7 @@ public class SaveDrawingsAction extends AbstractAction {
             final LayerProperties layerProps = new DefaultLayerProperties();
             List<DrawingSLDStyledFeature> features = RemoveDrawingModeAction.getSelectedDrawings();
 
-            if (features == null) {
+            if ((features == null) || features.isEmpty()) {
                 // no selected drawing, so save all
                 features = DrawingManager.getInstance().getAllFeatures();
             }

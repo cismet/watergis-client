@@ -44,6 +44,7 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -225,6 +226,10 @@ public class ExportAction extends AbstractAction {
                                                     + ".prj"));
                                 bw.write(PRJ_CONTENT);
                                 bw.close();
+
+                                de.cismet.watergis.gui.actions.gaf.ExportAction.downloadMetaDocument((CidsLayer)
+                                    features.get(0).getLayerProperties().getFeatureService(),
+                                    shapeFile.getAbsolutePath());
                             }
 
                             if (Thread.interrupted()) {

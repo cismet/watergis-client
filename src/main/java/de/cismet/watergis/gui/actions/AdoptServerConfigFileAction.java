@@ -74,6 +74,11 @@ public class AdoptServerConfigFileAction extends AbstractAction {
             AppBroker.getConfigManager().configureFromClasspath(path, null);
             AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
             AppBroker.getInstance().getWatergisApp().setTitle("FIS Gewässer – Projekt: " + name);
+            final String fileName = path.substring(path.lastIndexOf("/") + 1);
+            AppBroker.getInstance()
+                    .getWatergisApp()
+                    .setCurrentLayoutFile(AppBroker.getInstance().getWatergisApp().getDIRECTORYPATH_WATERGIS()
+                        + System.getProperty("file.separator") + fileName);
         } catch (Throwable ex) {
             LOG.fatal("No ServerProfile", ex); // NOI18N
         }

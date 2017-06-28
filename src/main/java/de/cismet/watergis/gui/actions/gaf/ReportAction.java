@@ -329,20 +329,20 @@ public class ReportAction extends AbstractAction {
      */
     private static void createReport(final CidsLayerFeature feature, final Integer qpId, final File file)
             throws Exception {
-        if (file.exists()) {
-            final int ans = JOptionPane.showConfirmDialog(
-                    AppBroker.getInstance().getWatergisApp(),
-                    NbBundle.getMessage(
-                        DeleteAction.class,
-                        "ReportAction.createReport().text",
-                        file.getAbsolutePath()),
-                    NbBundle.getMessage(DeleteAction.class, "ReportAction.createReport().title"),
-                    JOptionPane.YES_NO_OPTION);
-
-            if (ans != JOptionPane.YES_OPTION) {
-                return;
-            }
-        }
+//        if (file.exists()) {
+//            final int ans = JOptionPane.showConfirmDialog(
+//                    AppBroker.getInstance().getWatergisApp(),
+//                    NbBundle.getMessage(
+//                        DeleteAction.class,
+//                        "ReportAction.createReport().text",
+//                        file.getAbsolutePath()),
+//                    NbBundle.getMessage(DeleteAction.class, "ReportAction.createReport().title"),
+//                    JOptionPane.YES_NO_OPTION);
+//
+//            if (ans != JOptionPane.YES_OPTION) {
+//                return;
+//            }
+//        }
 
         CidsLayerFeature qpFeature = feature;
 

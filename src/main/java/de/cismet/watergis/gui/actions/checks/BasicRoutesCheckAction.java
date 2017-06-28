@@ -30,6 +30,7 @@ import de.cismet.cids.custom.watergis.server.search.FgBakCount;
 import de.cismet.cids.custom.watergis.server.search.FgBakIdsByFgBaIds;
 import de.cismet.cids.custom.watergis.server.search.MergeBakAe;
 import de.cismet.cids.custom.watergis.server.search.RemoveDuplicatedNodesFromFgBak;
+import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -153,13 +154,13 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_PREFIX = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
-                            + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':')";
+                            + "left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (bak.ww_gr is null or substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':'))";
             } else {
                 QUERY_PREFIX = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
-                            + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':') "
+                            + "left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (bak.ww_gr is null or  substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':')) "
                             + "and gr.owner = '" + user.getUserGroup().getName() + "'";
             }
 
@@ -176,7 +177,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.k_ww_gr gr on (substr(ba_cd, 1, length(gr.praefix) + 1) = (gr.praefix || ':'))\n"
                             + "left join dlm25w.k_ww_gr gr1 on (bak.ww_gr = gr1.id)\n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and (gr1.praefix is null or substr(ba_cd, 1, length(gr1.praefix) + 1) <>  (gr1.praefix || ':'))"
-                            + "and gr.owner = '" + user.getUserGroup().getName() + "'";
+                            + "and gr1.owner = '" + user.getUserGroup().getName() + "'";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -188,8 +189,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak_punkt bis on (linie.bis = bis.id)\n"
                             + "join dlm25w.fg_bak bak on (von.route = bak.id) \n"
                             + "join geom on (bak.geom = geom.id) \n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and (von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
-                            + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1);";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and ((von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
+                            + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1));";
             } else {
                 QUERY_AE = "select " + BAK_AE_MC.getID() + ", ae." + BAK_AE_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak_ae ae \n"
@@ -197,9 +198,11 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak_punkt von on (linie.von = von.id)\n"
                             + "join dlm25w.fg_bak_punkt bis on (linie.bis = bis.id)\n"
                             + "join dlm25w.fg_bak bak on (von.route = bak.id) \n"
+                            + "left join dlm25w.k_ww_gr gr1 on (bak.ww_gr = gr1.id)\n"
                             + "join geom on (bak.geom = geom.id) \n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and (von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
-                            + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1);";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and ((von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
+                            + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1)) "
+                            + "and gr1.owner = '" + user.getUserGroup().getName() + "';";
             }
         }
     }
@@ -326,6 +329,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             if (result.getShortService() != null) {
                                 showService(result.getShortService(), "Prüfungen->Basisrouten");
                             }
+                            refreshTree();
+                            refreshMap();
                         } catch (Exception e) {
                             LOG.error("Error while performing the route analyse.", e);
                             successful = false;
@@ -447,11 +452,14 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
             }
         }
 
-        final ArrayList<ArrayList> problemCountList = null;
-//                    final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager
-//                                .getProxy()
-//                                .customServerSearch(SessionManager.getSession().getUser(),
-//                                        new RouteProblemsCount(owner, selectedIds));
+        String owner = "null";
+        if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")) {
+            owner = "'" + AppBroker.getInstance().getOwner() + "'";
+        }
+
+        final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(SessionManager.getSession().getUser(),
+                            new RouteProblemsCount(owner, selectedIds));
 
         if ((problemCountList != null) && !problemCountList.isEmpty()) {
             final ArrayList innerList = problemCountList.get(0);

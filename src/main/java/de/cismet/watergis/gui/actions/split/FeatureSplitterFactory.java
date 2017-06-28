@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.actions.split;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+
 import de.cismet.cismap.commons.features.Feature;
 
 /**
@@ -31,6 +33,10 @@ public class FeatureSplitterFactory {
      * @return  DOCUMENT ME!
      */
     public FeatureSplitter getFeatureMergerForFeature(final Feature f) {
-        return new SimpleFeatureSplitter();
+        if (f instanceof CidsLayerFeature) {
+            return new CidsLayerFeatureSplitter();
+        } else {
+            return new SimpleFeatureSplitter();
+        }
     }
 }

@@ -177,7 +177,6 @@ public class GafCheckDialog extends javax.swing.JDialog {
                 GafCheckDialog.class,
                 "GafCheckDialog.txtGafFile.text_1",
                 new Object[] {})); // NOI18N
-        txtGafFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -226,7 +225,6 @@ public class GafCheckDialog extends javax.swing.JDialog {
                 GafCheckDialog.class,
                 "GafCheckDialog.txtRkFile.text",
                 new Object[] {})); // NOI18N
-        txtRkFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -270,7 +268,6 @@ public class GafCheckDialog extends javax.swing.JDialog {
                 GafCheckDialog.class,
                 "GafCheckDialog.txtBkFile.text",
                 new Object[] {})); // NOI18N
-        txtBkFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -365,7 +362,7 @@ public class GafCheckDialog extends javax.swing.JDialog {
         final File file = StaticSwingTools.chooseFile(
                 lastPath,
                 false,
-                null,
+                new String[] { "csv" },
                 org.openide.util.NbBundle.getMessage(
                     GafCheckDialog.class,
                     "GafCheckReportDialog.butFileActionPerformed().getDescription()"),
@@ -388,7 +385,7 @@ public class GafCheckDialog extends javax.swing.JDialog {
         final File file = StaticSwingTools.chooseFile(
                 lastPath,
                 false,
-                null,
+                new String[] { "csv" },
                 org.openide.util.NbBundle.getMessage(
                     GafCheckDialog.class,
                     "GafCheckReportDialog.butFileActionPerformed().getDescription()"),

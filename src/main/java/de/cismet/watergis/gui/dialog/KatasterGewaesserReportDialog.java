@@ -946,7 +946,6 @@ public class KatasterGewaesserReportDialog extends javax.swing.JDialog {
                 KatasterGewaesserReportDialog.class,
                 "KatasterGewaesserReportDialog.txtFile.text",
                 new Object[] {})); // NOI18N
-        txtFile.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

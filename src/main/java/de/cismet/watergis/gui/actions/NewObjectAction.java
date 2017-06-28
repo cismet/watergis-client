@@ -11,6 +11,9 @@
  */
 package de.cismet.watergis.gui.actions;
 
+import org.openide.util.NbBundle;
+
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 
 import java.util.Timer;
@@ -19,10 +22,14 @@ import java.util.TreeMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.features.ModifiableFeature;
+import de.cismet.cismap.commons.features.PermissionProvider;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
+import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreatedEvent;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreatedListener;
@@ -83,7 +90,30 @@ public class NewObjectAction extends AbstractAction {
                         // reload layer
                         final LayerProperties props = feature.getLayerProperties();
                         if (feature.getProperty("id") != null) {
-                            feature.setId((Integer)feature.getProperty("id"));
+                            feature.setId(((Number)feature.getProperty("id")).intValue());
+
+                            if (feature instanceof PermissionProvider) {
+                                final PermissionProvider permissionprovider = (PermissionProvider)feature;
+                                if (!permissionprovider.hasWritePermissions()) {
+                                    if (feature instanceof ModifiableFeature) {
+                                        try {
+                                            JOptionPane.showMessageDialog(
+                                                AppBroker.getInstance().getWatergisApp(),
+                                                NbBundle.getMessage(
+                                                    NewObjectAction.class,
+                                                    "NewObjectAction.actionPerformed().featureCreated().message"),
+                                                NbBundle.getMessage(
+                                                    NewObjectAction.class,
+                                                    "NewObjectAction.actionPerformed().featureCreated().title"),
+                                                JOptionPane.ERROR_MESSAGE);
+                                            ((ModifiableFeature)feature).delete();
+                                        } catch (Exception e) {
+//                                            LOG.error("Cannot delete feature", e);
+                                        }
+                                    }
+                                    return;
+                                }
+                            }
                         }
 
                         if (props != null) {
@@ -133,6 +163,16 @@ public class NewObjectAction extends AbstractAction {
                                                     mapService.retrieve(true);
                                                 }
                                             }
+//                                            AppBroker.getInstance().switchMapMode(MappingComponent.SELECT);
+//                                            EventQueue.invokeLater(new Runnable() {
+//
+//                                                    @Override
+//                                                    public void run() {
+//                                                        AppBroker.getInstance()
+//                                                                .getMappingComponent()
+//                                                                .setInteractionMode(MappingComponent.ZOOM);
+//                                                    }
+//                                                });
                                         }
                                     }, 1000);
                             }
@@ -165,14 +205,15 @@ public class NewObjectAction extends AbstractAction {
                     new Object[] { " ", "" });
             putValue(SHORT_DESCRIPTION, tooltip);
         } else {
-            final String type = "("
-                        + service.getLayerProperties().getAttributeTableRuleSet().getFeatureCreator().getTypeName()
-                        + ")";
+            final String type = "";
+//            final String type = "("
+//                        + service.getLayerProperties().getAttributeTableRuleSet().getFeatureCreator().getTypeName()
+//                        + ")";
 
             final String tooltip = org.openide.util.NbBundle.getMessage(
                     NewObjectAction.class,
                     "NewObjectAction.cmdNewObject.toolTipText",
-                    new Object[] { " " + service.getName() + " ", type });
+                    new Object[] { ": " + service.getName() + " ", type });
             putValue(SHORT_DESCRIPTION, tooltip);
         }
     }

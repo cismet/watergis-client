@@ -183,9 +183,12 @@ public class GafReader {
                 final String queryBk = "select " + bkMc.getID() + ", " + bkMc.getPrimaryKey() + " from "
                             + bkMc.getTableName(); // NOI18N
 
-                final MetaObject[] moRk = MetaObjectCache.getInstance().getMetaObjectsByQuery(queryRk);
-                final MetaObject[] moBk = MetaObjectCache.getInstance().getMetaObjectsByQuery(queryBk);
-                final MetaObject[] moKz = MetaObjectCache.getInstance().getMetaObjectsByQuery(queryKz);
+                final MetaObject[] moRk = MetaObjectCache.getInstance()
+                            .getMetaObjectsByQuery(queryRk, AppBroker.DOMAIN_NAME);
+                final MetaObject[] moBk = MetaObjectCache.getInstance()
+                            .getMetaObjectsByQuery(queryBk, AppBroker.DOMAIN_NAME);
+                final MetaObject[] moKz = MetaObjectCache.getInstance()
+                            .getMetaObjectsByQuery(queryKz, AppBroker.DOMAIN_NAME);
 
                 if (moRk != null) {
                     for (final MetaObject mo : moRk) {
@@ -281,7 +284,7 @@ public class GafReader {
 
             while (st.hasMoreTokens()) {
                 final String token = st.nextToken();
-                headers.add(token);
+                headers.add(token.toUpperCase());
 
                 try {
                     final GAF_FIELDS field = GAF_FIELDS.valueOf(token.toUpperCase());
@@ -296,10 +299,12 @@ public class GafReader {
             String line;
 
             while ((line = reader.readLine()) != null) {
-                if (line.length() == 1) {
+                if (line.length() <= 1) {
                     // end of file. The last line contains a single character
                     break;
                 }
+                line = line.replace(',', '.');
+                line = line.toUpperCase();
                 st = new StringTokenizer(line, " \t");
                 final List<String> contFields = new ArrayList<String>();
 
@@ -923,6 +928,47 @@ public class GafReader {
      * DOCUMENT ME!
      *
      * @param   profile  DOCUMENT ME!
+     * @param   kz       kzStart DOCUMENT ME!
+     *
+     * @return  the geometry of the normal profil
+     */
+    private String[] getLineOfFirstKz(final Double profile, final String kz) {
+        final ArrayList<String[]> profContent = profiles.get(profile);
+
+        for (final String[] line : profContent) {
+            if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(kz)) {
+                return line;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   profile  DOCUMENT ME!
+     * @param   kz       kzStart DOCUMENT ME!
+     *
+     * @return  the geometry of the normal profil
+     */
+    private int getLineNumberOfFirstKz(final Double profile, final String kz) {
+        int lineNumber = 1;
+
+        for (final String[] line : content) {
+            ++lineNumber;
+            if ((getStationNumber(line) == profile) && line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(kz)) {
+                return lineNumber;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   profile  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
@@ -1274,6 +1320,8 @@ public class GafReader {
         }
 
         errorList.addAll(Arrays.asList(checkNP()));
+//        errorList.addAll(Arrays.asList(checkMGHint()));
+//        errorList.addAll(Arrays.asList(checkOGHint()));
         errorList.addAll(Arrays.asList(checkNPPAPE()));
         errorList.addAll(Arrays.asList(checkNPLogik()));
         errorList.addAll(Arrays.asList(checkSOAOE()));
@@ -1359,25 +1407,25 @@ public class GafReader {
      * @return  DOCUMENT ME!
      */
     public String[] checkFileForHints() {
-        final List<String> hints = new ArrayList<String>();
-
-        String hint = checkOGHint();
-
-        if (hint != null) {
-            hints.add(hint);
-        }
-
-        hint = checkMGHint();
-
-        if (hint != null) {
-            hints.add(hint);
-        }
-
-        if (!hints.isEmpty()) {
-            return hints.toArray(new String[hints.size()]);
-        } else {
-            return new String[0];
-        }
+//        final List<String> hints = new ArrayList<String>();
+//
+//        String hint = checkOGHint();
+//
+//        if (hint != null) {
+//            hints.add(hint);
+//        }
+//
+//        hint = checkMGHint();
+//
+//        if (hint != null) {
+//            hints.add(hint);
+//        }
+//
+//        if (!hints.isEmpty()) {
+//            return hints.toArray(new String[hints.size()]);
+//        } else {
+        return new String[0];
+//        }
     }
 
     /**
@@ -1386,26 +1434,36 @@ public class GafReader {
      *
      * @return  DOCUMENT ME!
      */
-    private String checkOGHint() {
+    private GafErrorContainer[] checkOGHint() {
+        final List<GafErrorContainer> errors = new ArrayList<GafErrorContainer>();
+        String[] fileRow = null;
+        int lineNumber = -1;
+
         for (final Double profileId : profiles.keySet()) {
             LineString line = getLineBetween(profileId, "LU", "Ru");
+            fileRow = getLineOfFirstKz(profileId, "Ru");
+            lineNumber = getLineNumberOfFirstKz(profileId, "Ru");
 
             if (line == null) {
                 line = getLineBetween(profileId, "LBOK", "RBOK");
+                fileRow = getLineOfFirstKz(profileId, "RBOK");
+                lineNumber = getLineNumberOfFirstKz(profileId, "RBOK");
             }
             if (line == null) {
                 line = getLineBetween(profileId, "PA", "PE");
+                fileRow = getLineOfFirstKz(profileId, "PE");
+                lineNumber = getLineNumberOfFirstKz(profileId, "PE");
             }
 
             if (line != null) {
                 if (getIntersectionPointCount(line) == 0) {
-                    return
-                        "Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
+                    errors.add(new GafErrorContainer(getStationNumber(fileRow), lineNumber, "OG"));
+//                    return "Normalprofil kreuzt kein Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
                 }
             }
         }
 
-        return null;
+        return errors.toArray(new GafErrorContainer[errors.size()]);
     }
 
     /**
@@ -1414,26 +1472,36 @@ public class GafReader {
      *
      * @return  DOCUMENT ME!
      */
-    private String checkMGHint() {
+    private GafErrorContainer[] checkMGHint() {
+        final List<GafErrorContainer> errors = new ArrayList<GafErrorContainer>();
+        String[] fileRow = null;
+        int lineNumber = -1;
+
         for (final Double profileId : profiles.keySet()) {
             LineString line = getLineBetween(profileId, "LU", "Ru");
+            fileRow = getLineOfFirstKz(profileId, "Ru");
+            lineNumber = getLineNumberOfFirstKz(profileId, "Ru");
 
             if (line == null) {
                 line = getLineBetween(profileId, "LBOK", "RBOK");
+                fileRow = getLineOfFirstKz(profileId, "RBOK");
+                lineNumber = getLineNumberOfFirstKz(profileId, "RBOK");
             }
             if (line == null) {
                 line = getLineBetween(profileId, "PA", "PE");
+                fileRow = getLineOfFirstKz(profileId, "PE");
+                lineNumber = getLineNumberOfFirstKz(profileId, "PE");
             }
 
             if (line != null) {
                 if (getIntersectionPointCount(line) > 1) {
-                    return
-                        "Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
+                    errors.add(new GafErrorContainer(getStationNumber(fileRow), lineNumber, "MG"));
+//                    return "Normalprofil kreuzt mehrere Gewässer zwischen LU und RU bzw. wenn diese nicht definiert, zwischen LBOK und RBOK bzw. wenn diese nicht definiert, zwischen PA und PE";
                 }
             }
         }
 
-        return null;
+        return errors.toArray(new GafErrorContainer[errors.size()]);
     }
 
     /**
@@ -1447,7 +1515,7 @@ public class GafReader {
         try {
             final User user = SessionManager.getSession().getUser();
             final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
-                        .customServerSearch(user, new GafPosition(geom, 1000));
+                        .customServerSearch(user, new GafPosition(geom, 3));
 
             if ((attributes != null) && !attributes.isEmpty()) {
                 return attributes.size();

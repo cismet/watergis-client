@@ -15,6 +15,8 @@ package de.cismet.watergis.gui.dialog;
 import com.vividsolutions.jts.geom.Geometry;
 
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import java.util.Comparator;
 
@@ -107,6 +109,14 @@ public class GafOptionsDialog extends javax.swing.JDialog {
     private GafOptionsDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+
+        addWindowListener(new WindowAdapter() {
+
+                @Override
+                public void windowClosed(final WindowEvent e) {
+                    butCancelActionPerformed(null);
+                }
+            });
     }
 
     //~ Methods ----------------------------------------------------------------

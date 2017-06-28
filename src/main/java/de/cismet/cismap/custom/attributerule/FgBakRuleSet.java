@@ -284,30 +284,30 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
-        final Timer t = new Timer("reload");
-
-        t.schedule(new TimerTask() {
-
-                @Override
-                public void run() {
-                    final TreeMap<Integer, MapService> services = AppBroker.getInstance()
-                                .getMappingComponent()
-                                .getMappingModel()
-                                .getRasterServices();
-
-                    for (final MapService mapService : services.values()) {
-                        if (mapService instanceof CidsLayer) {
-                            final CidsLayer layer = (CidsLayer)mapService;
-
-                            if ((layer.getLayerProperties() == null)
-                                        || (layer.getLayerProperties().getAttributeTableRuleSet() == null)
-                                        || !layer.getLayerProperties().getAttributeTableRuleSet().equals(this)) {
-                                layer.retrieve(true);
-                            }
-                        }
-                    }
-                }
-            }, 1000);
+//        final Timer t = new Timer("reload");
+//
+//        t.schedule(new TimerTask() {
+//
+//                @Override
+//                public void run() {
+//                    final TreeMap<Integer, MapService> services = AppBroker.getInstance()
+//                                .getMappingComponent()
+//                                .getMappingModel()
+//                                .getRasterServices();
+//
+//                    for (final MapService mapService : services.values()) {
+//                        if (mapService instanceof CidsLayer) {
+//                            final CidsLayer layer = (CidsLayer)mapService;
+//
+//                            if ((layer.getLayerProperties() == null)
+//                                        || (layer.getLayerProperties().getAttributeTableRuleSet() == null)
+//                                        || !layer.getLayerProperties().getAttributeTableRuleSet().equals(this)) {
+//                                layer.retrieve(true);
+//                            }
+//                        }
+//                    }
+//                }
+//            }, 1000);
     }
 
     @Override

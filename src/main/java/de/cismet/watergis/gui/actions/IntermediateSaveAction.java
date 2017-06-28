@@ -24,6 +24,7 @@ import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.rasterservice.MapService;
 
@@ -84,11 +85,19 @@ public class IntermediateSaveAction extends AbstractAction {
                             final AbstractFeatureService service = (AbstractFeatureService)mapService;
 
                             if (watergis.isProcessingModeActive(service)) {
-                                watergis.switchProcessingMode(service, true);
-                                watergis.switchProcessingMode(service, true);
+                                final AttributeTable table = watergis.getAttributeTableByFeatureService(service);
+                                if (table != null) {
+                                    table.saveChangedRows(true, false);
+                                }
+//                                watergis.switchProcessingMode(service, true);
+//                                watergis.switchProcessingMode(service, true);
                             }
                         }
                     }
+
+//                    if (AppBroker.getInstance().getMappingComponent() != null) {
+//                        AppBroker.getInstance().getMappingComponent().refresh();
+//                    }
                 }
             };
 

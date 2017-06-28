@@ -402,11 +402,21 @@ public class DrawingManager implements FeatureCollectionListener {
             if (sld == null) {
                 sld = VisualizingDialog.exportSLD(VisualizingDialog.getInstance().getStyleLayer(),
                         feature.getGeometry().getGeometryType());
+                feature.setSld(sld);
             }
 
             ps = cw.prepareStatement(ADD_FEATURE);
             ps.setString(1, feature.getGeometry().toText());
-            ps.setString(2, feature.getGeometryType().name());
+            String type = feature.getGeometryType().name();
+
+            if (type.equalsIgnoreCase("TEXT") && (feature.getPrimaryAnnotationFont() != null)) {
+                type = type
+                            + "("
+                            + fontToString(feature.getPrimaryAnnotationFont())
+                            + ")";
+            }
+
+            ps.setString(2, type);
             ps.setString(
                 3,
                 ((feature.getGeometryType().equals(AbstractNewFeature.geomTypes.TEXT)) ? (feature.getName()) : null));
@@ -449,6 +459,38 @@ public class DrawingManager implements FeatureCollectionListener {
     }
 
     /**
+     * DOCUMENT ME!
+     *
+     * @param   font  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String fontToString(final Font font) {
+        String style = "PLAIN";
+
+        switch (font.getStyle()) {
+            case Font.BOLD: {
+                style = "BOLD";
+                break;
+            }
+            case Font.ITALIC: {
+                style = "ITALIC";
+                break;
+            }
+            case (Font.BOLD | Font.ITALIC): {
+                style = "BOLDITALIC";
+                break;
+            }
+        }
+
+        return font.getName()
+                    + "-"
+                    + style
+                    + "-"
+                    + font.getSize();
+    }
+
+    /**
      * Remove the given feature.
      *
      * @param  feature  the feature to remove
@@ -463,7 +505,7 @@ public class DrawingManager implements FeatureCollectionListener {
     /**
      * save the given features.
      *
-     * @param  feature  the feature to save. It should be already conteined in the database
+     * @param  feature  the feature to save. It should be already contained in the database
      */
     private void changeFeature(final DrawingSLDStyledFeature feature) {
         ConnectionWrapper cw = null;
@@ -473,7 +515,16 @@ public class DrawingManager implements FeatureCollectionListener {
             cw = H2FeatureServiceFactory.getDBConnection(null);
             ps = cw.prepareStatement(CHANGE_FEATURE);
             ps.setString(1, feature.getGeometry().toString());
-            ps.setString(2, feature.getGeometryType().name());
+            String type = feature.getGeometryType().name();
+
+            if (type.equalsIgnoreCase("TEXT") && (feature.getPrimaryAnnotationFont() != null)) {
+                type = type
+                            + "("
+                            + fontToString(feature.getPrimaryAnnotationFont())
+                            + ")";
+            }
+
+            ps.setString(2, type);
             ps.setString(
                 3,
                 ((feature.getGeometryType().equals(AbstractNewFeature.geomTypes.TEXT)) ? (feature.getText()) : null));
@@ -639,7 +690,7 @@ public class DrawingManager implements FeatureCollectionListener {
             while (rs.next()) {
                 final int id = rs.getInt(1);
                 final Geometry geom = (Geometry)rs.getObject(2);
-                final String type = rs.getString(3);
+                String type = rs.getString(3);
                 final String text = rs.getString(4);
                 final boolean autoscale = rs.getBoolean(5);
                 final boolean halo = rs.getBoolean(6);
@@ -648,6 +699,12 @@ public class DrawingManager implements FeatureCollectionListener {
                 geom.setSRID(CrsTransformer.extractSridFromCrs(CismapBroker.getInstance().getDefaultCrs()));
                 final DrawingSLDStyledFeature feature = new DrawingSLDStyledFeature();
                 feature.setGeometry(geom);
+                String font = null;
+
+                if (type.contains("(")) {
+                    font = type.substring(type.indexOf("(") + 1, type.length() - 1);
+                    type = type.substring(0, type.indexOf("("));
+                }
 
                 feature.setId(id);
                 if (AbstractNewFeature.geomTypes.valueOf(type).equals(AbstractNewFeature.geomTypes.TEXT)) {
@@ -661,7 +718,14 @@ public class DrawingManager implements FeatureCollectionListener {
                     if (halo) {
                         feature.setPrimaryAnnotationHalo(Color.WHITE);
                     }
-                    feature.setPrimaryAnnotationFont(new Font("sansserif", Font.PLAIN, fontsize));
+
+                    if (font != null) {
+                        final Font f = Font.decode(font);
+
+                        feature.setPrimaryAnnotationFont(f);
+                    } else {
+                        feature.setPrimaryAnnotationFont(new Font("sansserif", Font.PLAIN, fontsize));
+                    }
                 }
                 feature.setSLDStyles(
                     AppBroker.getInstance().getDrawingStylesBySld(sld).get("default"));

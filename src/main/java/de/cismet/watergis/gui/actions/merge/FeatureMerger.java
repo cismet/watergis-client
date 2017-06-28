@@ -30,6 +30,8 @@ public interface FeatureMerger {
      * @param   childFeature   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
+     *
+     * @throws  MergeException  DOCUMENT ME!
      */
-    Feature merge(Feature masterFeature, Feature childFeature);
+    Feature merge(Feature masterFeature, Feature childFeature) throws MergeException;
 }

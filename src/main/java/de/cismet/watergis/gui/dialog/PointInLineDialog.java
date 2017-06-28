@@ -766,6 +766,10 @@ public class PointInLineDialog extends javax.swing.JDialog {
                         Geometry searchGeom = f.getGeometry();
                         ++count;
 
+                        if (buffer < 0.01) {
+                            buffer = 0.01;
+                        }
+
                         if ((buffer != 0) && (searchGeom != null)) {
                             searchGeom = searchGeom.buffer(buffer);
                         }

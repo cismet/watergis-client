@@ -753,13 +753,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         initDefaultPanels();
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
+        retrievePermissionbeans();
         initRouteCombo();
         initInfoNode();
         initAttributeTable();
         configureFileMenu();
         initLog4JQuickConfig();
         initBookmarkManager();
-        retrievePermissionbeans();
         retrieveValidLawaCodes();
         AppBroker.getInstance().setInfoWindowAction(infoWindowAction);
         if (!EventQueue.isDispatchThread()) {
@@ -1264,7 +1264,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  e  DOCUMENT ME!
      */
-    private void topicTreeSelectionChanged(final TreeSelectionEvent e) {
+    public void topicTreeSelectionChanged(final TreeSelectionEvent e) {
 //        final TreePath tp = e.getNewLeadSelectionPath();
         final TreePath tp = pTopicTree.getLeadSelectionPath();
         tbtNewObject.setEnabled(false);
@@ -1344,7 +1344,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         if (newName.indexOf(" ") != -1) {
                             newName = newName.substring(newName.indexOf(" ") + 1);
                         }
-                        view = new View(name, null, table);
+                        view = new View(newName, null, table);
                         addAttributeTableWindowListener(view, table);
                         viewMap.addView(id, view);
                         attributeTableMap.put(id, view);
@@ -1704,11 +1704,33 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     if (routeMc != null) {
                         CidsServerSearch search;
 
-                        if (AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")) {
+                        if (AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("lung_edit1")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("lung")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("lv_wbv")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("lu")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_hro")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_lro")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_lup")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_mse")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_nwm")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_sn")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_vg")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_vr")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("anonymous")) {
                             search = new RouteEnvelopes(null);
                         } else {
-                            search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
-                                            + AppBroker.getInstance().getOwner() + "'");
+                            final String praefixGroup = ((AppBroker.getInstance().getOwnWwGr() != null)
+                                    ? (String)AppBroker.getInstance().getOwnWwGr().getProperty("praefixgroup") : null);
+
+                            if (praefixGroup != null) {
+                                search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
+                                                + AppBroker.getInstance().getOwner()
+                                                + "' or dlm25wPk_ww_gr1.praefixgroup = '" + praefixGroup + "'");
+                            } else {
+                                search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
+                                                + AppBroker.getInstance().getOwner() + "'");
+                            }
                         }
 
                         final List<RouteElement> beans = new ArrayList<RouteElement>();
@@ -1727,17 +1749,17 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                                     final Geometry g = wkbReader.read((byte[])f.get(0));
                                     g.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
 
-                                    if ((AppBroker.getInstance().getOwnWwGr() != null)
-                                                && !AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals(
-                                                    4000)) {
-                                        String name = (String)f.get(1);
-                                        if (name.indexOf(":") != -1) {
-                                            name = name.substring(name.indexOf(":") + 1);
-                                        }
-                                        beans.add(new RouteElement((Integer)f.get(2), name, g));
-                                    } else {
-                                        beans.add(new RouteElement((Integer)f.get(2), (String)f.get(1), g));
-                                    }
+//                                    if ((AppBroker.getInstance().getOwnWwGr() != null)
+//                                                && !AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals(
+//                                                    4000)) {
+//                                        String name = (String)f.get(1);
+//                                        if (name.indexOf(":") != -1) {
+//                                            name = name.substring(name.indexOf(":") + 1);
+//                                        }
+//                                        beans.add(new RouteElement((Integer)f.get(2), name, g));
+//                                    } else {
+                                    beans.add(new RouteElement((Integer)f.get(2), (String)f.get(1), g));
+//                                    }
                                 }
                             }
                         }
@@ -2721,6 +2743,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         cmdGeometryOpMode.setIcon(new javax.swing.ImageIcon(
                 getClass().getResource("/de/cismet/watergis/res/icons16/icon-wizard.png"))); // NOI18N
+        cmdGeometryOpMode.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.cmdGeometryOpMode.toolTipText",
+                new Object[] {}));                                                           // NOI18N
         cmdGeometryOpMode.setFocusable(false);
         cmdGeometryOpMode.setHideActionText(true);
         cmdGeometryOpMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -3366,6 +3392,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         menStatistik.add(menGewaesser2);
 
+        menReport.add(menStatistik);
+
         org.openide.awt.Mnemonics.setLocalizedText(
             menGewaesser3,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menGewaesser3.text")); // NOI18N
@@ -3379,9 +3407,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 new Object[] {})); // NOI18N
         menGewaesser3.add(mniGewaesserRep3);
 
-        menStatistik.add(menGewaesser3);
-
-        menReport.add(menStatistik);
+        menReport.add(menGewaesser3);
 
         jMenuBar1.add(menReport);
 
@@ -5103,6 +5129,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 }
 
                 AttributeTable.copySelectedFeaturesToClipboard(featureServiceFeatures);
+                topicTreeSelectionChanged(null);
             }
         }
 

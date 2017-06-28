@@ -101,7 +101,12 @@ public class FeatureServiceHelper {
             }
 
             if (!distanceField.equals("")) {
-                final double distance = primaryFeature.getGeometry().distance(secondaryFeature.getGeometry());
+                double distance = primaryFeature.getGeometry().distance(secondaryFeature.getGeometry());
+
+                if (distance < 0.01) {
+                    // see issue 401
+                    distance = 0.0;
+                }
                 feature.addProperty(distanceField, distance);
             }
         }

@@ -22,11 +22,7 @@ import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import de.cismet.cids.dynamics.CidsBean;
-
-import de.cismet.commons.converter.ConversionException;
 
 /**
  * DOCUMENT ME!
