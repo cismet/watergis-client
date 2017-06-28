@@ -17,6 +17,8 @@ import Sirius.navigator.connection.SessionManager;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.newuser.User;
 
+import org.deegree.datatypes.Types;
+
 import org.openide.util.NbBundle;
 
 import java.util.ArrayList;
@@ -26,16 +28,25 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import de.cismet.cids.custom.helper.SQLFormatter;
+import de.cismet.cids.custom.watergis.server.search.BaWithIncompleteProfCoverage;
 import de.cismet.cids.custom.watergis.server.search.FgBakCount;
 import de.cismet.cids.custom.watergis.server.search.MergeBaBbef;
 import de.cismet.cids.custom.watergis.server.search.MergeBaProf;
 import de.cismet.cids.custom.watergis.server.search.MergeBaSbef;
 import de.cismet.cids.custom.watergis.server.search.MergeBaUbef;
+import de.cismet.cids.custom.watergis.server.search.OverlappedBBefWithProf;
+import de.cismet.cids.custom.watergis.server.search.OverlappedBBefWithR;
+import de.cismet.cids.custom.watergis.server.search.OverlappedProf;
+import de.cismet.cids.custom.watergis.server.search.OverlappedProfWithR;
+import de.cismet.cids.custom.watergis.server.search.OverlappedSBefWithProf;
+import de.cismet.cids.custom.watergis.server.search.OverlappedSBefWithR;
+import de.cismet.cids.custom.watergis.server.search.OverlappedUbefWithR;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 
 import de.cismet.tools.gui.StaticSwingTools;
@@ -70,14 +81,6 @@ public class AusbauCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BA_PROF = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_ba_prof");
-    private static String QUERY_PROF_GESCHL;
-    private static String QUERY_SBEF_GESCHL;
-    private static String QUERY_BBEF_GESCHL;
-    private static String QUERY_UBEF_GESCHL;
-    private static String QUERY_PROF_OVERLAPS;
-    private static String QUERY_PROF_HOLE;
-    private static String QUERY_SBEF_OVERLAPS;
-    private static String QUERY_BBEF_OVERLAPS;
     private static String QUERY_PROF_ATTR;
     private static String QUERY_SBEF_ATTR;
     private static String QUERY_UBEF_ATTR;
@@ -95,7 +98,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
     private static final String CHECK_AUSBAU_PROFPROF__UEBERLAPPUNG_MIT_R =
         "Prüfungen->Ausbau->PROF->PROF: Überlappung mit RL/D/Dü";
     private static final String CHECK_AUSBAU_PROFPROF__UEBERLAPPUNG__THEMA =
-        "Prüfungen->Ausbau->PROF->PROF: Überlappung Thema";
+        "Prüfungen->Ausbau->PROF->PROF: Überlappung im Thema";
     private static final String CHECK_AUSBAU_PROFPROF__LUECKE_IM__THEMA =
         "Prüfungen->Ausbau->PROF->PROF: Lücke im Thema";
     private static final String CHECK_AUSBAU_UBEFUBEF__ATTRIBUTE = "Prüfungen->Ausbau->UBEF->UBEF: Attribute";
@@ -120,372 +123,6 @@ public class AusbauCheckAction extends AbstractCheckAction {
     static {
         if ((FG_BA_SBEF != null) && (FG_BA_UBEF != null) && (FG_BA_BBEF != null) && (FG_BA_PROF != null)) {
             final User user = SessionManager.getSession().getUser();
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_UBEF_GESCHL = "select distinct " + FG_BA_UBEF.getID() + ", a." + FG_BA_UBEF.getPrimaryKey()
-                            + " from dlm25w.fg_ba_ubef a\n"
-                            + "join dlm25w.fg_ba_linie l on (a.ba_st = l.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (l.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (l.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
-                            + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or\n"
-                            + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or \n"
-                            + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + ")";
-            } else {
-                QUERY_UBEF_GESCHL = "select distinct " + FG_BA_UBEF.getID() + ", a." + FG_BA_UBEF.getPrimaryKey()
-                            + " from dlm25w.fg_ba_ubef a\n"
-                            + "join dlm25w.fg_ba_linie l on (a.ba_st = l.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (l.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (l.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (gr.owner = '"
-                            + user.getUserGroup().getName()
-                            + "') and \n"
-                            + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or\n"
-                            + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or \n"
-                            + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + ")";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_SBEF_GESCHL = "select distinct " + FG_BA_SBEF.getID() + ", a." + FG_BA_SBEF.getPrimaryKey()
-                            + " from dlm25w.fg_ba_sbef a\n"
-                            + "join dlm25w.fg_ba_linie l on (a.ba_st = l.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (l.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (l.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
-                            + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or\n"
-                            + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or \n"
-                            + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + ")";
-            } else {
-                QUERY_SBEF_GESCHL = "select distinct " + FG_BA_SBEF.getID() + ", a." + FG_BA_SBEF.getPrimaryKey()
-                            + " from dlm25w.fg_ba_sbef a\n"
-                            + "join dlm25w.fg_ba_linie l on (a.ba_st = l.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (l.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (l.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName()
-                            + "' and \n"
-                            + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or\n"
-                            + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or \n"
-                            + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + ")";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_BBEF_GESCHL = "select distinct " + FG_BA_BBEF.getID() + ", a." + FG_BA_BBEF.getPrimaryKey()
-                            + " from dlm25w.fg_ba_bbef a\n"
-                            + "join dlm25w.fg_ba_linie l on (a.ba_st = l.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (l.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (l.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
-                            + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or\n"
-                            + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or \n"
-                            + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + ")";
-            } else {
-                QUERY_BBEF_GESCHL = "select distinct " + FG_BA_BBEF.getID() + ", a." + FG_BA_BBEF.getPrimaryKey()
-                            + " from dlm25w.fg_ba_bbef a\n"
-                            + "join dlm25w.fg_ba_linie l on (a.ba_st = l.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (l.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (l.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName()
-                            + "' and \n"
-                            + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or\n"
-                            + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or \n"
-                            + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + ")";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_PROF_GESCHL = "select distinct " + FG_BA_PROF.getID() + ", a." + FG_BA_PROF.getPrimaryKey()
-                            + " from dlm25w.fg_ba_prof a\n"
-                            + "join dlm25w.fg_ba_linie l on (a.ba_st = l.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (l.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (l.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
-                            + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or\n"
-                            + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or \n"
-                            + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + ")";
-            } else {
-                QUERY_PROF_GESCHL = "select distinct " + FG_BA_PROF.getID() + ", a." + FG_BA_PROF.getPrimaryKey()
-                            + " from dlm25w.fg_ba_prof a\n"
-                            + "join dlm25w.fg_ba_linie l on (a.ba_st = l.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (l.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (l.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName()
-                            + "' and \n"
-                            + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or\n"
-                            + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + "or \n"
-                            + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and (least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))) > 0.5)\n"
-                            + ")";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_PROF_OVERLAPS = "select distinct " + FG_BA_PROF.getID() + ", t1." + FG_BA_PROF.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_prof t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_prof t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            } else {
-                QUERY_PROF_OVERLAPS = "select distinct " + FG_BA_PROF.getID() + ", t1." + FG_BA_PROF.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_prof t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
-                            + "                            	dlm25w.fg_ba_prof t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_PROF_HOLE = "select " + FG_BA_PROF.getID() + ", d1." + FG_BA_PROF.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_prof d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s))"
-                            + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_prof d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s))"
-                            + "	) as d2\n"
-                            + "where d1.id <> d2.id and d1.route = d2.route and abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) > 0 and  abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) < 0.5;";
-            } else {
-                QUERY_PROF_HOLE = "select " + FG_BA_PROF.getID() + ", d1." + FG_BA_PROF.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_prof d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + " join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + " left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
-                            + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
-                            + "	dlm25w.fg_ba_prof d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + " join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + " left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
-                            + "	) as d2\n"
-                            + "where d1.route = d2.route and abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) > 0 and  abs(least(d2.von, d2.bis) - greatest(d1.von, d1.bis)) < 0.5;";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_SBEF_OVERLAPS = "select distinct " + FG_BA_SBEF.getID() + ", t2." + FG_BA_SBEF.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id, t.br from \n"
-                            + "                            	dlm25w.fg_ba_prof t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id, t.br from \n"
-                            + "                            	dlm25w.fg_ba_sbef t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.br < t2.br and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            } else {
-                QUERY_SBEF_OVERLAPS = "select distinct " + FG_BA_SBEF.getID() + ", t2." + FG_BA_SBEF.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id, t.br from \n"
-                            + "                            	dlm25w.fg_ba_prof t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id, t.br from \n"
-                            + "                            	dlm25w.fg_ba_sbef t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.br < t2.br and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_BBEF_OVERLAPS = "select distinct " + FG_BA_BBEF.getID() + ", t2." + FG_BA_BBEF.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id, t.bl_re, t.bl_li from \n"
-                            + "                            	dlm25w.fg_ba_prof t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id, t.br, rl.l_rl from \n"
-                            + "                            	dlm25w.fg_ba_bbef t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_l_rl rl on (rl.id = t.l_rl)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s))  and ((t2.l_rl = 'li' and t2.br < t1.bl_li) or (t2.l_rl = 're' and t2.br < t1.bl_re)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            } else {
-                QUERY_BBEF_OVERLAPS = "select distinct " + FG_BA_BBEF.getID() + ", t2." + FG_BA_BBEF.getPrimaryKey()
-                            + " from (select von.wert as von, bis.wert as bis, von.route, t.id, t.bl_re, t.bl_li from \n"
-                            + "                            	dlm25w.fg_ba_prof t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t1,\n"
-                            + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id, t.br, rl.l_rl from \n"
-                            + "                            	dlm25w.fg_ba_bbef t\n"
-                            + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                                 join dlm25w.fg_ba ba on (ba.id = von.route)\n"
-                            + "                                 join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "                                 left join dlm25w.k_l_rl rl on (rl.id = t.l_rl)\n"
-                            + "                                 left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + "                            	) as t2\n"
-                            + "                            where (%1$s is null or t1.route = any(%1$s)) and ((t2.l_rl = 'li' and t2.br < t1.bl_li) or (t2.l_rl = 're' and t2.br < t1.bl_re)) and t1.id <> t2.id and t1.route = t2.route and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > 0.5";
-            }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -593,6 +230,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.ubef = 'SP' and km.material not in ('Ste', 'Ste-Fs', 'Ste-Wb'))\n"
                             + "or (kbef.ubef = 'Spw' and km.material not in ('H', 'K', 'St', 'St-B', 'Ste-Gab'))\n"
                             + "or (kbef.ubef = 'Wistü' and km.material not in ('B', 'K', 'St', 'St-B'))\n"
+                            + "or (bef.esw is not null and (bef.esw < 0 or bef.esw > 1)) "
                             + ")";
             } else {
                 QUERY_UBEF_ATTR = "select distinct " + FG_BA_UBEF.getID() + ", bef." + FG_BA_UBEF.getPrimaryKey()
@@ -625,6 +263,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.ubef = 'SP' and km.material not in ('Ste', 'Ste-Fs', 'Ste-Wb'))\n"
                             + "or (kbef.ubef = 'Spw' and km.material not in ('H', 'K', 'St', 'St-B', 'Ste-Gab'))\n"
                             + "or (kbef.ubef = 'Wistü' and km.material not in ('B', 'K', 'St', 'St-B'))\n"
+                            + "or (bef.esw is not null and (bef.esw < 0 or bef.esw > 1)) "
                             + ") and gr.owner = '"
                             + user.getUserGroup().getName() + "';";
             }
@@ -663,6 +302,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.sbef = 'Stöste' and km.material not in ('Ste', 'Ste-Fs', 'Ste-Wb'))\n"
                             + "or (kbef.sbef in ('Sw-Gru', 'Sw-So', 'Sw-Stü') and km.material <> 'B')\n"
                             + "or (kbef.sbef = 'Wu' and km.material <> 'H')\n"
+                            + "or (bef.esw is not null and (bef.esw < 0 or bef.esw > 1)) "
                             + ")";
             } else {
                 QUERY_SBEF_ATTR = "select distinct " + FG_BA_SBEF.getID() + ", bef." + FG_BA_SBEF.getPrimaryKey()
@@ -697,6 +337,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.sbef = 'Stöste' and km.material not in ('Ste', 'Ste-Fs', 'Ste-Wb'))\n"
                             + "or (kbef.sbef in ('Sw-Gru', 'Sw-So', 'Sw-Stü') and km.material <> 'B')\n"
                             + "or (kbef.sbef = 'Wu' and km.material <> 'H')\n"
+                            + "or (bef.esw is not null and (bef.esw < 0 or bef.esw > 1)) "
                             + ") and gr.owner = '"
                             + user.getUserGroup().getName() + "';";
             }
@@ -732,6 +373,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.bbef = 'Pl' and km.material <> 'B')\n"
                             + "or (kbef.bbef = 'Rin' and km.material not in ('B', 'St-B', 'Ste', 'Ste-Fs', 'Ste-Mw', 'Ste-Wb'))\n"
                             + "or (kbef.bbef = 'Spreit' and km.material <> 'H')\n"
+                            + "or (bef.esw is not null and (bef.esw < 0 or bef.esw > 1)) "
                             + ") ";
             } else {
                 QUERY_BBEF_ATTR = "select distinct " + FG_BA_BBEF.getID() + ", bef." + FG_BA_BBEF.getPrimaryKey()
@@ -763,6 +405,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.bbef = 'Pl' and km.material <> 'B')\n"
                             + "or (kbef.bbef = 'Rin' and km.material not in ('B', 'St-B', 'Ste', 'Ste-Fs', 'Ste-Mw', 'Ste-Wb'))\n"
                             + "or (kbef.bbef = 'Spreit' and km.material <> 'H')\n"
+                            + "or (bef.esw is not null and (bef.esw < 0 or bef.esw > 1)) "
                             + ") and gr.owner = '"
                             + user.getUserGroup().getName() + "';";
             }
@@ -914,6 +557,9 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             if (result.getProfAttr() != null) {
                                 showService(result.getProfAttr());
                             }
+
+                            refreshTree();
+                            refreshMap();
                         } catch (Exception e) {
                             LOG.error("Error while performing the ausbau analyse.", e);
                             successful = false;
@@ -981,11 +627,70 @@ public class AusbauCheckAction extends AbstractCheckAction {
         SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeBBef);
         increaseProgress(wd, 1);
 
+        final List<FeatureServiceAttribute> baProfServiceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
+        FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
+                "id",
+                String.valueOf(Types.INTEGER),
+                true);
+        baProfServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        baProfServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
+        baProfServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
+        baProfServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_st_von", String.valueOf(Types.DOUBLE), true);
+        baProfServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_st_bis", String.valueOf(Types.DOUBLE), true);
+        baProfServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
+        baProfServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
+        baProfServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
+        baProfServiceAttributeDefinition.add(serviceAttribute);
+
         // start checks
+        result.setBbefAttr(analyseByQuery(
+                FG_BA_BBEF,
+                String.format(QUERY_BBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECK_AUSBAU_BBEFBBEF__ATTRIBUTE));
+        increaseProgress(wd, 1);
+
+        result.setUbefGeschl(analyseByCustomSearch(
+                new OverlappedUbefWithR(user, selectedIds),
+                CHECK_AUSBAU_UBEFUBEF__UEBERLAPPUNG_MIT_R,
+                baProfServiceAttributeDefinition));
+        increaseProgress(wd, 1);
+
         result.setProfAttr(analyseByQuery(
                 FG_BA_PROF,
                 String.format(QUERY_PROF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
                 CHECK_AUSBAU_PROFPROF__ATTRIBUTE));
+        increaseProgress(wd, 1);
+
+        result.setUbefAttr(analyseByQuery(
+                FG_BA_UBEF,
+                String.format(QUERY_UBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECK_AUSBAU_UBEFUBEF__ATTRIBUTE));
+        increaseProgress(wd, 1);
+
+        result.setProfHole(analyseByCustomSearch(
+                new BaWithIncompleteProfCoverage(user, selectedIds),
+                CHECK_AUSBAU_PROFPROF__LUECKE_IM__THEMA,
+                baProfServiceAttributeDefinition));
+        increaseProgress(wd, 1);
+
+        result.setProfOverlaps(analyseByCustomSearch(
+                new OverlappedProf(user, selectedIds),
+                CHECK_AUSBAU_PROFPROF__UEBERLAPPUNG__THEMA,
+                baProfServiceAttributeDefinition));
+        increaseProgress(wd, 1);
+
+        result.setProfGeschl(analyseByCustomSearch(
+                new OverlappedProfWithR(user, selectedIds),
+                CHECK_AUSBAU_PROFPROF__UEBERLAPPUNG_MIT_R,
+                baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setSbefAttr(analyseByQuery(
@@ -994,64 +699,28 @@ public class AusbauCheckAction extends AbstractCheckAction {
                 CHECK_AUSBAU_SBEFSBEF__ATTRIBUTE));
         increaseProgress(wd, 1);
 
-        result.setBbefAttr(analyseByQuery(
-                FG_BA_BBEF,
-                String.format(QUERY_BBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_BBEFBBEF__ATTRIBUTE));
+        result.setSbefGeschl(analyseByCustomSearch(
+                new OverlappedSBefWithR(user, selectedIds),
+                CHECK_AUSBAU_SBEFSBEF__UEBERLAPPUNG_MIT_R,
+                baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setProfAttr(analyseByQuery(
-                FG_BA_UBEF,
-                String.format(QUERY_UBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_UBEFUBEF__ATTRIBUTE));
+        result.setBbefGeschl(analyseByCustomSearch(
+                new OverlappedBBefWithR(user, selectedIds),
+                CHECK_AUSBAU_BBEFBBEF__UEBERLAPPUNG_MIT_R,
+                baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setProfHole(analyseByQuery(
-                FG_BA_PROF,
-                String.format(QUERY_PROF_HOLE, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_PROFPROF__LUECKE_IM__THEMA));
+        result.setSbefOverlapsAttr(analyseByCustomSearch(
+                new OverlappedSBefWithProf(user, selectedIds),
+                CHECK_AUSBAU_SBEFPROFSBEF__UEBERLAPPUNG_AT,
+                baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setProfOverlaps(analyseByQuery(
-                FG_BA_PROF,
-                String.format(QUERY_PROF_OVERLAPS, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_PROFPROF__UEBERLAPPUNG__THEMA));
-        increaseProgress(wd, 1);
-
-        result.setProfGeschl(analyseByQuery(
-                FG_BA_PROF,
-                String.format(QUERY_PROF_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_PROFPROF__UEBERLAPPUNG_MIT_R));
-        increaseProgress(wd, 1);
-
-        result.setSbefGeschl(analyseByQuery(
-                FG_BA_SBEF,
-                String.format(QUERY_SBEF_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_SBEFSBEF__UEBERLAPPUNG_MIT_R));
-        increaseProgress(wd, 1);
-
-        result.setUbefGeschl(analyseByQuery(
-                FG_BA_UBEF,
-                String.format(QUERY_UBEF_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_UBEFUBEF__UEBERLAPPUNG_MIT_R));
-        increaseProgress(wd, 1);
-
-        result.setBbefGeschl(analyseByQuery(
-                FG_BA_BBEF,
-                String.format(QUERY_BBEF_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_BBEFBBEF__UEBERLAPPUNG_MIT_R));
-        increaseProgress(wd, 1);
-
-        result.setSbefOverlapsAttr(analyseByQuery(
-                FG_BA_SBEF,
-                String.format(QUERY_SBEF_OVERLAPS, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_SBEFPROFSBEF__UEBERLAPPUNG_AT));
-        increaseProgress(wd, 1);
-
-        result.setBbefOverlapsAttr(analyseByQuery(
-                FG_BA_BBEF,
-                String.format(QUERY_BBEF_OVERLAPS, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECK_AUSBAU_BBEFPROFBBEF__UEBERLAPPUNG_AT));
+        result.setBbefOverlapsAttr(analyseByCustomSearch(
+                new OverlappedBBefWithProf(user, selectedIds),
+                CHECK_AUSBAU_BBEFPROFBBEF__UEBERLAPPUNG_AT,
+                baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
         if (result.getBbefAttr() != null) {

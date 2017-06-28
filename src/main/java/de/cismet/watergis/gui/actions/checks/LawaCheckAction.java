@@ -83,25 +83,21 @@ public class LawaCheckAction extends AbstractCheckAction {
     private static String QUERY_GBK_CATALOGUE;
     private static String QUERY_GWK_CATALOGUE;
 //    private static String QUERY_OBJART_CATALOGUE;
-    private static final String CHECK_BA_EZG_AUSSEN =
-        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: außen";
-    private static final String CHECK_BA_EZG_RAND = "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: Rand";
-    private static final String CHECKEZG_DELTA_GBK =
-        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: innen: Delta GBK/EZG";
-    private static final String CHECK_GWK_DELTA_GWK =
-        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gwk mit Delta GWK/GBK";
+//    private static final String CHECK_BA_EZG_AUSSEN = "Prüfungen->LAWA-Schlüssel->fg_ba vs. EZG: außen";
+//    private static final String CHECK_BA_EZG_RAND = "Prüfungen->LAWA-Schlüssel->fg_ba vs. EZG: Rand";
+//    private static final String CHECKEZG_DELTA_GBK = "Prüfungen->LAWA-Schlüssel->fg_ba vs. EZG:innen: Delta GBK/EZG";
+    private static final String CHECK_GWK_DELTA_GWK = "Prüfungen->LAWA-Schlüssel->fg_bak_gwk mit Delta GWK/GBK";
 //    private static final String CHECK_GBK_CAT_OBJECT =
-//        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_objart";
+//        "Prüfungen->LAWA-Schlüssel->fg_bak_gbk mit Katalogfehler k_objart";
     private static final String CHECK_GBK_CAT_GWK =
-        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_gwk_lawa";
+        "Prüfungen->LAWA-Schlüssel->fg_bak_gwk mit Katalogfehler k_gwk_lawa";
     private static final String CHECK_GBK_CAT_LAWA =
-        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_gbk_lawa";
-    private static final String CHECK_BAK_OHNE_GBK =
-        "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak ohne fg_bak_gbk";
+        "Prüfungen->LAWA-Schlüssel->fg_bak_gbk mit Katalogfehler k_gbk_lawa";
+    private static final String CHECK_BAK_OHNE_GBK = "Prüfungen->LAWA-Schlüssel->fg_bak ohne fg_bak_gbk";
     private static final String[] ALL_CHECKS = new String[] {
-            CHECK_BA_EZG_AUSSEN,
-            CHECK_BA_EZG_RAND,
-            CHECKEZG_DELTA_GBK,
+//            CHECK_BA_EZG_AUSSEN,
+//            CHECK_BA_EZG_RAND,
+//            CHECKEZG_DELTA_GBK,
             CHECK_GWK_DELTA_GWK,
 //            CHECK_GBK_CAT_OBJECT,
             CHECK_GBK_CAT_GWK,
@@ -337,11 +333,15 @@ public class LawaCheckAction extends AbstractCheckAction {
                     serviceAttributeDefinition.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
                     serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("von", String.valueOf(Types.DOUBLE), true);
+                    serviceAttribute = new FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
                     serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("bis", String.valueOf(Types.DOUBLE), true);
+                    serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
                     serviceAttributeDefinition.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("la_cd", String.valueOf(Types.NUMERIC), true);
+                    serviceAttributeDefinition.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.NUMERIC), true);
+                    serviceAttributeDefinition.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.NUMERIC), true);
                     serviceAttributeDefinition.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
                     serviceAttributeDefinition.add(serviceAttribute);
@@ -380,23 +380,23 @@ public class LawaCheckAction extends AbstractCheckAction {
                     serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
 
-                    result.setGbkInIncorrectEzg(analyseByCustomSearch(
-                            new GbkInIncorrectEzg(user, null),
-                            CHECKEZG_DELTA_GBK,
-                            serviceAttributeDefinitionFgBa));
-                    increaseProgress(wd, 1);
+//                    result.setGbkInIncorrectEzg(analyseByCustomSearch(
+//                            new GbkInIncorrectEzg(user, null),
+//                            CHECKEZG_DELTA_GBK,
+//                            serviceAttributeDefinitionFgBa));
+//                    increaseProgress(wd, 1);
 
-                    result.setGbkOnEzgBorder(analyseByCustomSearch(
-                            new FgBaOnEzgBorder(user, null),
-                            CHECK_BA_EZG_RAND,
-                            serviceAttributeDefinitionFgBa));
-                    increaseProgress(wd, 1);
+//                    result.setGbkOnEzgBorder(analyseByCustomSearch(
+//                            new FgBaOnEzgBorder(user, null),
+//                            CHECK_BA_EZG_RAND,
+//                            serviceAttributeDefinitionFgBa));
+//                    increaseProgress(wd, 1);
 
-                    result.setGbkOutsideEzgBorder(analyseByCustomSearch(
-                            new FgBaOutsideEzgBorder(user, null),
-                            CHECK_BA_EZG_AUSSEN,
-                            serviceAttributeDefinitionFgBa));
-                    increaseProgress(wd, 1);
+//                    result.setGbkOutsideEzgBorder(analyseByCustomSearch(
+//                            new FgBaOutsideEzgBorder(user, null),
+//                            CHECK_BA_EZG_AUSSEN,
+//                            serviceAttributeDefinitionFgBa));
+//                    increaseProgress(wd, 1);
 
                     if (result.getFgBakWithoutGbk() != null) {
                         result.setFgBakWithoutGbkErrors(result.getFgBakWithoutGbk().getFeatureCount(null));
@@ -466,34 +466,36 @@ public class LawaCheckAction extends AbstractCheckAction {
                                 "LawaCheckAction.actionPerformed().result.title"),
                             JOptionPane.INFORMATION_MESSAGE);
 
-                        if (result.getGbkOutsideEzgBorder() != null) {
-                            showService(result.getGbkOutsideEzgBorder(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: außen");
-                        }
-                        if (result.getGbkOnEzgBorder() != null) {
-                            showService(result.getGbkOnEzgBorder(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_ba vs. EZG: Rand");
-                        }
-                        if (result.getGbkInIncorrectEzg() != null) {
-                            showService(result.getGbkInIncorrectEzg(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx-> fg_ba vs. EZG: innen: Delta GBK/EZG");
-                        }
+//                        if (result.getGbkOutsideEzgBorder() != null) {
+//                            showService(result.getGbkOutsideEzgBorder(),
+//                                CHECK_BA_EZG_AUSSEN);
+//                        }
+//                        if (result.getGbkOnEzgBorder() != null) {
+//                            showService(result.getGbkOnEzgBorder(),
+//                                CHECK_BA_EZG_RAND);
+//                        }
+//                        if (result.getGbkInIncorrectEzg() != null) {
+//                            showService(result.getGbkInIncorrectEzg(),
+//                                CHECKEZG_DELTA_GBK);
+//                        }
                         if (result.getGwkGbk() != null) {
                             showService(result.getGwkGbk(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gwk mit Delta GWK/GBK");
+                                CHECK_GWK_DELTA_GWK);
                         }
                         if (result.getGwkCat() != null) {
                             showService(result.getGwkCat(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_gwk_lawa");
+                                CHECK_GBK_CAT_GWK);
                         }
                         if (result.getGbkCat() != null) {
                             showService(result.getGbkCat(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak_gbk mit Katalogfehler k_gbk_lawa");
+                                CHECK_GBK_CAT_LAWA);
                         }
                         if (result.getFgBakWithoutGbk() != null) {
                             showService(result.getFgBakWithoutGbk(),
-                                "Prüfungen->LAWA-Schlüssel, EZG-Relation, GNx->fg_bak ohne fg_bak_gbk");
+                                CHECK_BAK_OHNE_GBK);
                         }
+                        refreshTree();
+                        refreshMap();
                     } catch (Exception e) {
                         LOG.error("Error while performing the lawa analyse.", e);
                         successful = false;

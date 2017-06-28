@@ -153,13 +153,13 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_PREFIX = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
-                            + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':')";
+                            + "left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (bak.ww_gr is null or substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':'))";
             } else {
                 QUERY_PREFIX = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
-                            + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':') "
+                            + "left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (bak.ww_gr is null or  substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':')) "
                             + "and gr.owner = '" + user.getUserGroup().getName() + "'";
             }
 
@@ -176,7 +176,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.k_ww_gr gr on (substr(ba_cd, 1, length(gr.praefix) + 1) = (gr.praefix || ':'))\n"
                             + "left join dlm25w.k_ww_gr gr1 on (bak.ww_gr = gr1.id)\n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and (gr1.praefix is null or substr(ba_cd, 1, length(gr1.praefix) + 1) <>  (gr1.praefix || ':'))"
-                            + "and gr.owner = '" + user.getUserGroup().getName() + "'";
+                            + "and gr1.owner = '" + user.getUserGroup().getName() + "'";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -326,6 +326,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             if (result.getShortService() != null) {
                                 showService(result.getShortService(), "Prüfungen->Basisrouten");
                             }
+                            refreshTree();
+                            refreshMap();
                         } catch (Exception e) {
                             LOG.error("Error while performing the route analyse.", e);
                             successful = false;
