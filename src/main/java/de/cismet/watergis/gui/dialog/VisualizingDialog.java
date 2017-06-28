@@ -41,8 +41,6 @@ import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 
-import de.cismet.cismap.commons.styling.CustomSLDParser;
-
 import de.cismet.jump.sld.editor.CidsRenderingStylePanel;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -195,21 +193,21 @@ public class VisualizingDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void jbOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_jbOkActionPerformed
+    private void jbOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbOkActionPerformed
         canceled = false;
         stylePanel.updateStyles();
         setVisible(false);
-    }                                                                        //GEN-LAST:event_jbOkActionPerformed
+    }//GEN-LAST:event_jbOkActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void jbCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_jbCancelActionPerformed
+    private void jbCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCancelActionPerformed
         canceled = true;
         setVisible(false);
-    }                                                                            //GEN-LAST:event_jbCancelActionPerformed
+    }//GEN-LAST:event_jbCancelActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -266,7 +264,7 @@ public class VisualizingDialog extends javax.swing.JDialog {
         final XMLInputFactory factory = XMLInputFactory.newInstance();
 
         try {
-            styles = CustomSLDParser.getStyles(factory.createXMLStreamReader(input));
+            styles = SLDParser.getStyles(factory.createXMLStreamReader(input));
         } catch (Exception ex) {
             LOG.error("Fehler in der SLD", ex);
         }

@@ -75,9 +75,13 @@ public class FgBaExpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("ba_cd")
-                    && !columnName.equals("ww_gr");
+        if (columnName.equals("ww_gr")) {
+            return AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren");
+        } else {
+            return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
+                        && !columnName.equals("laenge") && !columnName.equals("geom") && !columnName.equals("ba_cd")
+                        && !columnName.equals("ww_gr");
+        }
     }
 
     @Override
