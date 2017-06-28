@@ -14,6 +14,8 @@ import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.newuser.User;
 import Sirius.server.newuser.UserGroup;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.apache.log4j.Logger;
 
 import org.deegree.commons.utils.Pair;
@@ -38,7 +40,9 @@ import javax.imageio.ImageIO;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
+import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.MappingModel;
+import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.SLDStyledLayer;
 import de.cismet.cismap.commons.gui.printing.AbstractPrintingInscriber;
@@ -130,19 +134,16 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
         hm.put("Ueberschrift", txtZeile1.getText()); // NOI18N
         hm.put("Unterschrift", txtZeile2.getText()); // NOI18N
         final UserGroup ug = SessionManager.getSession().getUser().getUserGroup();
-        String imageName = null;
+        String imageName = "lung";
 
-        if (prefix != null) {
-            imageName = prefix;
-        } else {
-            imageName = ug.getName().toLowerCase();
+        imageName = ug.getName().toLowerCase();
 
-            if (imageName.contains("_") && (imageName.indexOf("_") != imageName.lastIndexOf("_"))) {
-                imageName = imageName.substring(0, imageName.lastIndexOf("_"));
-            }
+        if (imageName.contains("_") && (imageName.indexOf("_") != imageName.lastIndexOf("_"))) {
+            imageName = imageName.substring(0, imageName.lastIndexOf("_"));
         }
 
-        URL url = AbstractWatergisPrintingTemplate.class.getResource("/" + imageName + ".png");
+        URL url = AbstractWatergisPrintingTemplate.class.getResource("/de/cismet/cismap/commons/gui/printing/"
+                        + imageName + ".jpg");
 
         if (url == null) {
             url = AbstractWatergisPrintingTemplate.class.getResource("/" + imageName + ".jpg");
@@ -188,6 +189,24 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
             if ((service.getPNode() != null) && !service.getPNode().getVisible()) {
                 // no legend should be created, if the layer is not visible
                 continue;
+            }
+
+            if (service instanceof AbstractFeatureService) {
+                final AbstractFeatureService afService = (AbstractFeatureService)service;
+                XBoundingBox currentBox;
+
+                if (afService.getBoundingBox() instanceof XBoundingBox) {
+                    currentBox = (XBoundingBox)afService.getBoundingBox();
+                } else {
+                    final Geometry g = afService.getBoundingBox()
+                                .getGeometry(CrsTransformer.extractSridFromCrs(
+                                        CismapBroker.getInstance().getSrs().getCode()));
+                    currentBox = new XBoundingBox(g);
+                }
+
+                if (!afService.isVisibleInBoundingBox(currentBox)) {
+                    continue;
+                }
             }
 
             try {

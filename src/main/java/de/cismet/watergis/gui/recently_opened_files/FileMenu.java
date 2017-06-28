@@ -175,19 +175,19 @@ public class FileMenu extends JMenu implements Configurable {
             final String complexDescriptionSwitch = next.getAttributeValue("complexdescr"); // NOI18N
 
             final JMenuItem serverProfileMenuItem = new JMenuItem();
-            serverProfileMenuItem.setAction(new AdoptServerConfigFileAction(path));
+            serverProfileMenuItem.setAction(new AdoptServerConfigFileAction(path, name));
             serverProfileMenuItem.setText(name);
             serverProfileMenuItem.setName("ServerProfile:" + sorter + ":" + name); // NOI18N
 
-            if ((complexDescriptionSwitch != null) && complexDescriptionSwitch.equalsIgnoreCase("true") // NOI18N
-                        && (complexDescriptionText != null)) {
-                serverProfileMenuItem.setToolTipText(complexDescriptionText);
-            } else if (descrWidth != null) {
-                serverProfileMenuItem.setToolTipText("<html><table width=\"" + descrWidth               // NOI18N
-                            + "\" border=\"0\"><tr><td>" + descr + "</p></td></tr></table></html>");    // NOI18N
-            } else {
-                serverProfileMenuItem.setToolTipText(descr);
-            }
+//            if ((complexDescriptionSwitch != null) && complexDescriptionSwitch.equalsIgnoreCase("true") // NOI18N
+//                        && (complexDescriptionText != null)) {
+//                serverProfileMenuItem.setToolTipText(complexDescriptionText);
+//            } else if (descrWidth != null) {
+//                serverProfileMenuItem.setToolTipText("<html><table width=\"" + descrWidth               // NOI18N
+//                            + "\" border=\"0\"><tr><td>" + descr + "</p></td></tr></table></html>");    // NOI18N
+//            } else {
+//                serverProfileMenuItem.setToolTipText(descr);
+//            }
 
             try {
                 serverProfileMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource(icon)));

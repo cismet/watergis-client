@@ -486,7 +486,7 @@ public class ChartCreator {
 
             final double additionalWidth = width
                         * 0.05;
-            final double additionalHeight = height
+            final double additionalHeight = ((height == 0) ? 10 : height)
                         * 0.05;
 
             minX -= additionalWidth;

@@ -86,6 +86,7 @@ public class CopyObjectAction extends AbstractAction {
             }
 
             AttributeTable.copySelectedFeaturesToClipboard(featureServiceFeatures);
+            AppBroker.getInstance().getWatergisApp().topicTreeSelectionChanged(null);
         }
     }
 

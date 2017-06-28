@@ -140,6 +140,14 @@ public class Photo extends javax.swing.JPanel {
     private static final Logger LOG = Logger.getLogger(Photo.class);
     private static final WebDavClient webDavClient;
     public static CidsLayerFeature selectedFeature = null;
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
+
+    static {
+        final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        DECIMAL_FORMAT.setDecimalFormatSymbols(symbols);
+        DECIMAL_FORMAT.setGroupingUsed(false);
+    }
 
     static {
         final ResourceBundle bundle = ResourceBundle.getBundle("WebDav");
@@ -348,13 +356,13 @@ public class Photo extends javax.swing.JPanel {
         jToolBar1.setRollover(true);
 
         butPrintPreview.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-preview.png"))); // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-searchdocument.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butPrintPreview,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butPrintPreview.text")); // NOI18N
+            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butPrintPreview.text"));        // NOI18N
         butPrintPreview.setToolTipText(org.openide.util.NbBundle.getMessage(
                 Photo.class,
-                "Photo.butPrintPreview.toolTipText"));                                        // NOI18N
+                "Photo.butPrintPreview.toolTipText"));                                               // NOI18N
         butPrintPreview.setFocusable(false);
         butPrintPreview.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butPrintPreview.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -473,13 +481,13 @@ public class Photo extends javax.swing.JPanel {
         jToolBar1.add(tbProcessing);
 
         butZoomToPhoto.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-resize.png"))); // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-selectionadd.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butZoomToPhoto,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butZoomToPhoto.text")); // NOI18N
+            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butZoomToPhoto.text"));       // NOI18N
         butZoomToPhoto.setToolTipText(org.openide.util.NbBundle.getMessage(
                 Photo.class,
-                "Photo.butZoomToPhoto.toolTipText"));                                        // NOI18N
+                "Photo.butZoomToPhoto.toolTipText"));                                              // NOI18N
         butZoomToPhoto.setFocusable(false);
         butZoomToPhoto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butZoomToPhoto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -493,11 +501,11 @@ public class Photo extends javax.swing.JPanel {
         jToolBar1.add(butZoomToPhoto);
 
         butBack.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/cismap/commons/gui/attributetable/res/icon-thissideup.png"))); // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-fullscreen.png")));                // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butBack,
-            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butBack.text"));                             // NOI18N
-        butBack.setToolTipText(org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butBack.toolTipText"));   // NOI18N
+            org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butBack.text"));                           // NOI18N
+        butBack.setToolTipText(org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butBack.toolTipText")); // NOI18N
         butBack.setFocusable(false);
         butBack.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         butBack.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -511,7 +519,7 @@ public class Photo extends javax.swing.JPanel {
         jToolBar1.add(butBack);
 
         butDelete.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-remove-sign.png")));                   // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-circledelete.png")));                  // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butDelete,
             org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butDelete.text"));                             // NOI18N
@@ -529,7 +537,7 @@ public class Photo extends javax.swing.JPanel {
         jToolBar1.add(butDelete);
 
         butSave.setIcon(new javax.swing.ImageIcon(
-                getClass().getResource("/de/cismet/watergis/res/icons16/icon-save-floppy.png")));               // NOI18N
+                getClass().getResource("/de/cismet/watergis/res/icons16/icon-editalt.png")));                   // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             butSave,
             org.openide.util.NbBundle.getMessage(Photo.class, "Photo.butSave.text"));                           // NOI18N
@@ -733,34 +741,33 @@ public class Photo extends javax.swing.JPanel {
             };
 
         final Map<String, Object> map = new HashMap<String, Object>();
-        final DecimalFormat format = new DecimalFormat("0.00");
-        final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
-        symbols.setDecimalSeparator(',');
-        symbols.setGroupingSeparator('.');
-        format.setDecimalFormatSymbols(symbols);
         final CidsBean basisStat = (CidsBean)feature.getBean().getProperty("ba_st");
         final CidsBean freigabe = (CidsBean)feature.getBean().getProperty("freigabe");
 
         map.put("punkt", feature.getGeometry());
         map.put("foto", feature.getProperty("foto"));
         map.put("upl_nutzer", feature.getProperty("upl_name"));
-        map.put("upl_datum", obj2Time(feature.getProperty("upl_zeit")));
+        map.put(
+            "upl_datum",
+            dateTime2String(feature.getProperty("upl_datum"), (String)feature.getProperty("upl_zeit")));
         map.put("bild_id", String.valueOf(feature.getProperty("foto_nr")));
-        map.put("pos", format.format(feature.getProperty("re")) + ", " + format.format(feature.getProperty("ho")));
-        map.put("winkel", feature.getProperty("winkel"));
-        map.put("lawa", feature.getProperty("la_cd"));
+        map.put("pos", number2String(feature.getProperty("re")) + ", " + number2String(feature.getProperty("ho")));
+        map.put("winkel", number2String(feature.getProperty("winkel")));
+        map.put("lawa", ((feature.getProperty("la_cd") == null) ? "" : feature.getProperty("la_cd").toString()));
         if (basisStat != null) {
             map.put("basis", feature.getProperty("route.ba_cd"));
-            map.put("basis_stat", basisStat.getProperty("wert"));
+            map.put("basis_stat", number2String(basisStat.getProperty("wert")));
         } else {
             map.put("basis", "");
-            map.put("basis_stat", 0.0);
+            map.put("basis_stat", "");
         }
-        map.put("lawa_stat", feature.getProperty("la_st"));
+        map.put("lawa_stat", number2String(feature.getProperty("la_st")));
         map.put("re_li", objectToString(feature.getProperty("l_rl")));
         map.put("status", objectToString(feature.getProperty("l_st")));
         map.put("aufn_nutzer", feature.getProperty("aufn_name"));
-        map.put("aufn_datum", obj2Time(feature.getProperty("aufn_zeit")));
+        map.put(
+            "aufn_datum",
+            dateTime2String(feature.getProperty("aufn_datum"), (String)feature.getProperty("aufn_zeit")));
         if (freigabe != null) {
             map.put("freigabe", freigabe.toString());
         } else {
@@ -780,22 +787,47 @@ public class Photo extends javax.swing.JPanel {
     /**
      * DOCUMENT ME!
      *
-     * @param   o  DOCUMENT ME!
+     * @param   date  o DOCUMENT ME!
+     * @param   time  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private static String obj2Time(final Object o) {
-        if (o == null) {
+    private static String dateTime2String(final Object date, final String time) {
+        if ((date == null) && (time == null)) {
             return "";
+        } else if (date == null) {
+            return time;
+        } else if (time == null) {
+            try {
+                final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                return format.format(date);
+            } catch (IllegalArgumentException e) {
+                LOG.error("Not a date", e);
+                return "";
+            }
         } else {
             try {
-                final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-                return format.format(o);
+                final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                return format.format(date) + " " + time;
             } catch (IllegalArgumentException e) {
                 LOG.error("Not a date", e);
                 return "";
             }
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   o  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private static String number2String(final Object o) {
+        if (o == null) {
+            return "";
+        }
+        return DECIMAL_FORMAT.format(o);
     }
 
     /**
@@ -824,10 +856,26 @@ public class Photo extends javax.swing.JPanel {
             AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(layer);
             AttributeTableFactory.getInstance().switchProcessingMode(layer);
         } else {
-            AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
+            if (!SelectionManager.getInstance().getEditableServices().contains(services.get(0))) {
+                AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
+            }
         }
 
         addLayerToTree("foto_pr_pf");
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    public static void closeEditMode() {
+        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "foto");
+
+        if (!(services == null) || services.isEmpty()) {
+            if (SelectionManager.getInstance().getEditableServices().contains(services.get(0))) {
+                AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
+            }
+        }
     }
 
     /**
@@ -1119,7 +1167,7 @@ public class Photo extends javax.swing.JPanel {
      * @param  feature  DOCUMENT ME!
      */
     private void setEditorFeature(final CidsLayerFeature feature) {
-        if ((selectedFeature != null) && askForSave) {
+        if ((selectedFeature != null) && selectedFeature.hasWritePermissions() && askForSave) {
             if (selectedFeature.getBean().getMetaObject().isChanged()
                         && (selectedFeature.getBean().getMetaObject().getStatus()
                             != Sirius.server.localserver.object.Object.TO_DELETE)) {
