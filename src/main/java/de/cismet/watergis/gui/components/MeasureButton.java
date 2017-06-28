@@ -33,9 +33,10 @@ import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.NoWriteError;
 
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
-import de.cismet.tools.gui.JPopupMenuButton;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.utils.JPopupMenuButton;
 
 /**
  * DOCUMENT ME!

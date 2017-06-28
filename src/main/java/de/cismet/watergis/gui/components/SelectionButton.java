@@ -14,7 +14,6 @@ package de.cismet.watergis.gui.components;
 import org.jdom.Element;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 
 import java.beans.PropertyChangeEvent;
@@ -29,19 +28,18 @@ import javax.swing.JToggleButton;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
-import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.NoWriteError;
 
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
-import de.cismet.tools.gui.JPopupMenuButton;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.listener.SelectionModeChangedEvent;
 import de.cismet.watergis.broker.listener.SelectionModeListener;
+
+import de.cismet.watergis.utils.JPopupMenuButton;
 
 /**
  * DOCUMENT ME!
@@ -146,7 +144,7 @@ public class SelectionButton extends JPopupMenuButton implements PropertyChangeL
         setPopupMenu(popup);
         setUI(new JToggleButton().getUI());
 
-        AppBroker.getInstance().addSelecionModeListener(this);
+//        AppBroker.getInstance().addSelecionModeListener(this);
     }
 
     //~ Methods ----------------------------------------------------------------
