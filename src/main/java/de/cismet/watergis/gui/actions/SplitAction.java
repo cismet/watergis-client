@@ -128,6 +128,8 @@ public class SplitAction extends AbstractAction {
 
                                                     try {
                                                         ((ModifiableFeature)validFeature).saveChangesWithoutReload();
+                                                        validFeature.setEditable(false);
+                                                        validFeature.setEditable(true);
                                                     } catch (Exception ex) {
                                                         LOG.error("Error while saving changes", ex);
                                                     }
