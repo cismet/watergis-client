@@ -127,6 +127,7 @@ import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import de.cismet.cids.custom.watergis.server.search.RouteEnvelopes;
@@ -630,6 +631,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.ShowWindowAction showProblems;
     private de.cismet.watergis.gui.actions.ShowWindowAction showProfiles;
     private de.cismet.watergis.gui.actions.ShowWindowAction showTree;
+    private de.cismet.cids.navigator.utils.SimpleMemoryMonitoringToolbarWidget simpleMemoryMonitoringToolbarWidget1;
     private de.cismet.watergis.gui.actions.checks.SonstigeCheckAction sonstigeCheckAction;
     private de.cismet.watergis.gui.actions.SplitAction splitAction;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
@@ -694,11 +696,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     .showExceptionDialog(this, ExceptionManager.ERROR, "Exception", e.getMessage(), messages);
         }
         final Map<HostConfiguration, Integer> maxHostConnections = new HashMap<HostConfiguration, Integer>();
-        maxHostConnections.put(HostConfiguration.ANY_HOST_CONFIGURATION, 32);
+        maxHostConnections.put(HostConfiguration.ANY_HOST_CONFIGURATION, 128);
         HttpConnectionManagerParams.getDefaultParams()
                 .setParameter(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, maxHostConnections);
         HttpConnectionManagerParams.getDefaultParams()
-                .setIntParameter(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, 64);
+                .setIntParameter(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, 128);
         configManager.addConfigurable(this);
         configManager.configure(this);
         AppBroker.setConfigManager(configManager);
@@ -723,6 +725,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         CismapBroker.getInstance().addMapDnDListener(this);
         cmdAnnex.setAction(new AnnexAction(true));
         cmdAnnex.setEnabled(false);
+        jToolBar1.add(simpleMemoryMonitoringToolbarWidget1);
         ((NewDrawingButton)cmdDrawingMode).setButtonGroup(btnGroupMapMode);
         exportIgmAction.setExport(exportAction1);
 
@@ -1223,6 +1226,27 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         if (!view.isClosable()) {
             view.restore();
+
+            if (view == vTable) {
+                final TreePath selectionPath = pTable.getSelectionPath();
+
+                final Runnable r = new Runnable() {
+
+                        @Override
+                        public void run() {
+                            ((DefaultTreeModel)pTable.getModel()).reload();
+                            if ((selectionPath != null) && (selectionPath.getPath().length > 0)) {
+                                pTable.exploreSubtree(selectionPath);
+                            }
+                        }
+                    };
+
+                if (EventQueue.isDispatchThread()) {
+                    r.run();
+                } else {
+                    EventQueue.invokeLater(r);
+                }
+            }
         }
     }
 
@@ -1938,6 +1962,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         deleteObjectAction1 = new de.cismet.watergis.gui.actions.map.DeleteObjectAction();
         saveToSameFileProjectAction1 = new de.cismet.watergis.gui.actions.SaveToSameFileProjectAction();
         zoomSelectedThemesAction1 = new de.cismet.watergis.gui.actions.selection.ZoomSelectedThemesAction();
+        simpleMemoryMonitoringToolbarWidget1 = new de.cismet.cids.navigator.utils.SimpleMemoryMonitoringToolbarWidget();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveSameFileProject = new javax.swing.JButton();
@@ -3278,10 +3303,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGewaesser.setAction(gewaesserReportAction);
         org.openide.awt.Mnemonics.setLocalizedText(
             mniGewaesser,
-            org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.mniGewaesser.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniGewaesser.text", new Object[] {
+                }));               // NOI18N
         mniGewaesser.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniGewaesser.toolTipText",

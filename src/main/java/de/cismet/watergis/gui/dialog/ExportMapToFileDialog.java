@@ -487,7 +487,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
         final MappingComponent mappingComponent = AppBroker.getInstance().getMappingComponent();
         final int width = mappingComponent.getWidth();
         final int height = mappingComponent.getHeight();
-        final int dpi = ((lastDpi == -1) ? 72 : lastDpi);
+        final int dpi = ((lastDpi == -1) ? 300 : lastDpi);
 
         pixelDPICalculator = new PixelDPICalculator(width, height, dpi);
 

@@ -115,7 +115,7 @@ public class AttributeTableDialog extends javax.swing.JDialog {
             oldLinePaint.put(fsf, fsf.getLinePaint());
             final Color co = getNextColor();
             fsf.setFillingPaint(co);
-            fsf.setLinePaint(co);
+//            fsf.setLinePaint(co);
         }
 
         model = new SimpleAttributeTableModel(
