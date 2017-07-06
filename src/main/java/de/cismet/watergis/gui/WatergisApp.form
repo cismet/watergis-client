@@ -274,6 +274,8 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.selection.ZoomSelectedThemesAction" name="zoomSelectedThemesAction1">
     </Component>
+    <Component class="de.cismet.cids.navigator.utils.SimpleMemoryMonitoringToolbarWidget" name="simpleMemoryMonitoringToolbarWidget1">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menFile">
