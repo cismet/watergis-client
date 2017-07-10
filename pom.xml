@@ -63,7 +63,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-gui-commons</artifactId>
-                <version>5.0.2</version>
+                <version>5.0.3</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>5.2.4</version>
+                <version>5.2.7</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
