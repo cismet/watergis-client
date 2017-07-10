@@ -159,6 +159,8 @@ public class MergeAction extends AbstractAction {
                         }
 
                         serviceFeature.saveChangesWithoutReload();
+                        serviceFeature.setEditable(false);
+                        serviceFeature.setEditable(true);
 
                         for (final Feature f : allValidFeatures) {
                             if (f instanceof ModifiableFeature) {
