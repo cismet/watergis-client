@@ -61,7 +61,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
@@ -136,6 +135,7 @@ import de.cismet.cids.custom.watergis.server.search.ValidLawaCodes;
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+import de.cismet.cids.navigator.utils.SimpleMemoryMonitoringToolbarWidget;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
@@ -153,7 +153,6 @@ import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
-import de.cismet.cismap.commons.featureservice.DefaultLayerProperties;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
@@ -671,6 +670,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         CismapBroker.getInstance().setFeatureStylingComponentKey("Jump");
         CismapBroker.getInstance().setHighlightFeatureOnMouseOver(false);
         CismapBroker.getInstance().setDefaultTranslucency(1.0f);
+        StaticSwingTools.tweakUI();
 
         try {
             initConnection(Proxy.fromPreferences());
@@ -725,7 +725,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         CismapBroker.getInstance().addMapDnDListener(this);
         cmdAnnex.setAction(new AnnexAction(true));
         cmdAnnex.setEnabled(false);
-        jToolBar1.add(simpleMemoryMonitoringToolbarWidget1);
+        if (simpleMemoryMonitoringToolbarWidget1.isVisible()) {
+            jToolBar1.add(simpleMemoryMonitoringToolbarWidget1);
+        }
         ((NewDrawingButton)cmdDrawingMode).setButtonGroup(btnGroupMapMode);
         exportIgmAction.setExport(exportAction1);
 
@@ -1962,7 +1964,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         deleteObjectAction1 = new de.cismet.watergis.gui.actions.map.DeleteObjectAction();
         saveToSameFileProjectAction1 = new de.cismet.watergis.gui.actions.SaveToSameFileProjectAction();
         zoomSelectedThemesAction1 = new de.cismet.watergis.gui.actions.selection.ZoomSelectedThemesAction();
-        simpleMemoryMonitoringToolbarWidget1 = new de.cismet.cids.navigator.utils.SimpleMemoryMonitoringToolbarWidget();
+        simpleMemoryMonitoringToolbarWidget1 = new SimpleMemoryMonitoringToolbarWidget();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveSameFileProject = new javax.swing.JButton();
@@ -3303,8 +3305,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGewaesser.setAction(gewaesserReportAction);
         org.openide.awt.Mnemonics.setLocalizedText(
             mniGewaesser,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniGewaesser.text", new Object[] {
-                }));               // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniGewaesser.text",
+                new Object[] {})); // NOI18N
         mniGewaesser.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniGewaesser.toolTipText",
