@@ -2,6 +2,7 @@
 
 
 <watergis>
+   <cismetLookupOptions>
     <downloads>
       <parallelDownloads>5</parallelDownloads>
       <dialog>
@@ -11,6 +12,7 @@
         <userTitle />
       </dialog>
     </downloads>
+  </cismetLookupOptions>
     <cismapOverviewComponentPreferences srs="EPSG:5650" substitutionAttribute="watergis.overview">
         <overviewExtent>
             <BoundingBox x1="33206890.6290955" y1="5890624.1889224" x2="33460856.7310355" y2="6060840.0968643"/>
