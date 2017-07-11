@@ -81,6 +81,7 @@ import javax.xml.stream.XMLInputFactory;
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener;
 
@@ -155,6 +156,7 @@ public class AppBroker implements Configurable {
     private de.cismet.watergis.gui.actions.gaf.ExportAction gafExport;
     private ReportAction photoPrint;
     private de.cismet.watergis.gui.actions.gaf.ReportAction gafPrint;
+    private FeatureCreator activeFeatureCreator = null;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -183,6 +185,24 @@ public class AppBroker implements Configurable {
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the activeFeatureCreator
+     */
+    public FeatureCreator getActiveFeatureCreator() {
+        return activeFeatureCreator;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  activeFeatureCreator  the activeFeatureCreator to set
+     */
+    public void setActiveFeatureCreator(final FeatureCreator activeFeatureCreator) {
+        this.activeFeatureCreator = activeFeatureCreator;
+    }
 
     /**
      * DOCUMENT ME!
@@ -440,6 +460,9 @@ public class AppBroker implements Configurable {
             action.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, mode));
 
             lastActionMode = action;
+            if (activeFeatureCreator != null) {
+                activeFeatureCreator.cancel();
+            }
         } else {
             LOG.warn("Can not switch to mode " + mode + ". It does not exist.");
         }

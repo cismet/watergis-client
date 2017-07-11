@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.actions;
 
+import org.apache.log4j.Logger;
+
 import org.openide.util.NbBundle;
 
 import java.awt.EventQueue;
@@ -83,103 +85,10 @@ public class NewObjectAction extends AbstractAction {
             final FeatureCreator creator = ruleSet.getFeatureCreator();
             final FeatureServiceFeature feature = service.getFeatureFactory().createNewFeature();
             ruleSet.beforeSave(feature);
-            creator.addFeatureCreatedListener(new FeatureCreatedListener() {
-
-                    @Override
-                    public void featureCreated(final FeatureCreatedEvent event) {
-                        // reload layer
-                        final LayerProperties props = feature.getLayerProperties();
-                        if (feature.getProperty("id") != null) {
-                            feature.setId(((Number)feature.getProperty("id")).intValue());
-
-                            if (feature instanceof PermissionProvider) {
-                                final PermissionProvider permissionprovider = (PermissionProvider)feature;
-                                if (!permissionprovider.hasWritePermissions()) {
-                                    if (feature instanceof ModifiableFeature) {
-                                        try {
-                                            JOptionPane.showMessageDialog(
-                                                AppBroker.getInstance().getWatergisApp(),
-                                                NbBundle.getMessage(
-                                                    NewObjectAction.class,
-                                                    "NewObjectAction.actionPerformed().featureCreated().message"),
-                                                NbBundle.getMessage(
-                                                    NewObjectAction.class,
-                                                    "NewObjectAction.actionPerformed().featureCreated().title"),
-                                                JOptionPane.ERROR_MESSAGE);
-                                            ((ModifiableFeature)feature).delete();
-                                        } catch (Exception e) {
-//                                            LOG.error("Cannot delete feature", e);
-                                        }
-                                    }
-                                    return;
-                                }
-                            }
-                        }
-
-                        if (props != null) {
-                            final AbstractFeatureService service = props.getFeatureService();
-
-                            if (service != null) {
-                                service.retrieve(true);
-                                service.addRetrievalListener(new RetrievalListener() {
-
-                                        @Override
-                                        public void retrievalStarted(final RetrievalEvent e) {
-                                        }
-
-                                        @Override
-                                        public void retrievalProgress(final RetrievalEvent e) {
-                                        }
-
-                                        @Override
-                                        public void retrievalComplete(final RetrievalEvent e) {
-                                            AppBroker.getInstance()
-                                                    .getWatergisApp()
-                                                    .addFeatureToAttributeTable(feature);
-                                            service.removeRetrievalListener(this);
-                                        }
-
-                                        @Override
-                                        public void retrievalAborted(final RetrievalEvent e) {
-                                        }
-
-                                        @Override
-                                        public void retrievalError(final RetrievalEvent e) {
-                                        }
-                                    });
-
-                                final Timer t = new Timer("reload");
-                                t.schedule(new TimerTask() {
-
-                                        @Override
-                                        public void run() {
-                                            final TreeMap<Integer, MapService> services = AppBroker.getInstance()
-                                                        .getMappingComponent()
-                                                        .getMappingModel()
-                                                        .getRasterServices();
-
-                                            for (final MapService mapService : services.values()) {
-                                                if (!mapService.equals(service)) {
-                                                    mapService.retrieve(true);
-                                                }
-                                            }
-//                                            AppBroker.getInstance().switchMapMode(MappingComponent.SELECT);
-//                                            EventQueue.invokeLater(new Runnable() {
-//
-//                                                    @Override
-//                                                    public void run() {
-//                                                        AppBroker.getInstance()
-//                                                                .getMappingComponent()
-//                                                                .setInteractionMode(MappingComponent.ZOOM);
-//                                                    }
-//                                                });
-                                        }
-                                    }, 1000);
-                            }
-                        }
-                    }
-                });
+            final CustomCreatedListener listener = new CustomCreatedListener(service, feature);
+            creator.addFeatureCreatedListener(listener);
             creator.createFeature(CismapBroker.getInstance().getMappingComponent(), feature);
+            AppBroker.getInstance().setActiveFeatureCreator(creator);
         }
 
         firstCall = false;
@@ -215,6 +124,132 @@ public class NewObjectAction extends AbstractAction {
                     "NewObjectAction.cmdNewObject.toolTipText",
                     new Object[] { ": " + service.getName() + " ", type });
             putValue(SHORT_DESCRIPTION, tooltip);
+        }
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private static class CustomCreatedListener implements FeatureCreatedListener {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final Logger LOG = Logger.getLogger(CustomCreatedListener.class);
+
+        //~ Instance fields ----------------------------------------------------
+
+        private final AbstractFeatureService service;
+        private final FeatureServiceFeature feature;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new CustomCreatedListener object.
+         *
+         * @param  service  DOCUMENT ME!
+         * @param  feature  DOCUMENT ME!
+         */
+        public CustomCreatedListener(final AbstractFeatureService service, final FeatureServiceFeature feature) {
+            this.service = service;
+            this.feature = feature;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void featureCreated(final FeatureCreatedEvent event) {
+            // reload layer
+            final LayerProperties props = feature.getLayerProperties();
+            if (feature.getProperty("id") != null) {
+                feature.setId(((Number)feature.getProperty("id")).intValue());
+
+                if (feature instanceof PermissionProvider) {
+                    final PermissionProvider permissionprovider = (PermissionProvider)feature;
+                    if (!permissionprovider.hasWritePermissions()) {
+                        if (feature instanceof ModifiableFeature) {
+                            try {
+                                JOptionPane.showMessageDialog(
+                                    AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        NewObjectAction.class,
+                                        "NewObjectAction.actionPerformed().featureCreated().message"),
+                                    NbBundle.getMessage(
+                                        NewObjectAction.class,
+                                        "NewObjectAction.actionPerformed().featureCreated().title"),
+                                    JOptionPane.ERROR_MESSAGE);
+                                ((ModifiableFeature)feature).delete();
+                            } catch (Exception e) {
+                                LOG.error("Cannot delete feature", e);
+                            }
+                        }
+                        return;
+                    }
+                }
+            }
+
+            if (props != null) {
+                final AbstractFeatureService service = props.getFeatureService();
+
+                if (service != null) {
+                    service.retrieve(true);
+                    service.addRetrievalListener(new RetrievalListener() {
+
+                            @Override
+                            public void retrievalStarted(final RetrievalEvent e) {
+                            }
+
+                            @Override
+                            public void retrievalProgress(final RetrievalEvent e) {
+                            }
+
+                            @Override
+                            public void retrievalComplete(final RetrievalEvent e) {
+                                AppBroker.getInstance().getWatergisApp().addFeatureToAttributeTable(feature);
+                                service.removeRetrievalListener(this);
+                            }
+
+                            @Override
+                            public void retrievalAborted(final RetrievalEvent e) {
+                            }
+
+                            @Override
+                            public void retrievalError(final RetrievalEvent e) {
+                            }
+                        });
+
+                    final Timer t = new Timer("reload");
+                    t.schedule(new TimerTask() {
+
+                            @Override
+                            public void run() {
+                                final TreeMap<Integer, MapService> services = AppBroker.getInstance()
+                                            .getMappingComponent()
+                                            .getMappingModel()
+                                            .getRasterServices();
+
+                                for (final MapService mapService : services.values()) {
+                                    if (!mapService.equals(service)) {
+                                        mapService.retrieve(true);
+                                    }
+                                }
+                            }
+                        }, 1000);
+                }
+            }
+
+            // Preparations for new creation
+            final AttributeTableRuleSet ruleSet = service.getLayerProperties().getAttributeTableRuleSet();
+            final FeatureCreator creator = ruleSet.getFeatureCreator();
+            final FeatureServiceFeature feature = service.getFeatureFactory().createNewFeature();
+            ruleSet.beforeSave(feature);
+            final CustomCreatedListener listener = new CustomCreatedListener(service, feature);
+            creator.addFeatureCreatedListener(listener);
+            creator.createFeature(CismapBroker.getInstance().getMappingComponent(), feature);
+            AppBroker.getInstance().setActiveFeatureCreator(creator);
         }
     }
 }
