@@ -15,30 +15,21 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
-import org.apache.log4j.Logger;
-
 import org.deegree.datatypes.Types;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import java.sql.Timestamp;
 
 import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+import de.cismet.cismap.cidslayer.StationCreationCheck;
 import de.cismet.cismap.cidslayer.StationCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -51,7 +42,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * Not used.
@@ -219,8 +209,16 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final StationCreationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationCreator("ba_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationCreator creator = new StationCreator(
+                "ba_st",
+                routeMc,
+                "Basisgewässer (FG)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 
     @Override
