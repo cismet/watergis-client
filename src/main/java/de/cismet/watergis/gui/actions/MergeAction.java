@@ -31,6 +31,7 @@ import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.features.ModifiableFeature;
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.util.SelectionManager;
@@ -159,6 +160,8 @@ public class MergeAction extends AbstractAction {
                         }
 
                         serviceFeature.saveChangesWithoutReload();
+                        serviceFeature.setEditable(false);
+                        serviceFeature.setEditable(true);
 
                         for (final Feature f : allValidFeatures) {
                             if (f instanceof ModifiableFeature) {
@@ -205,9 +208,22 @@ public class MergeAction extends AbstractAction {
      * @return  DOCUMENT ME!
      */
     private List<FeatureServiceFeature> determineAllValidFeature() {
-        final List<Feature> features = SelectionManager.getInstance().getSelectedFeatures();
+        final List<Feature> allSelectedFeatures = SelectionManager.getInstance().getSelectedFeatures();
+        final List<Feature> features = new ArrayList<>();
         final List<FeatureServiceFeature> allValidFeatures = new ArrayList<FeatureServiceFeature>();
         FeatureServiceFeature type = null;
+
+        // use only the selected features from the editable services
+        for (final Feature f : allSelectedFeatures) {
+            if (f instanceof FeatureServiceFeature) {
+                final FeatureServiceFeature serviceFeature = (FeatureServiceFeature)f;
+                final AbstractFeatureService service = serviceFeature.getLayerProperties().getFeatureService();
+
+                if ((service != null) && SelectionManager.getInstance().getEditableServices().contains(service)) {
+                    features.add(f);
+                }
+            }
+        }
 
         for (final Feature f : features) {
             if (type == null) {

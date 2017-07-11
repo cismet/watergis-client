@@ -61,7 +61,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
@@ -136,6 +135,7 @@ import de.cismet.cids.custom.watergis.server.search.ValidLawaCodes;
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+import de.cismet.cids.navigator.utils.SimpleMemoryMonitoringToolbarWidget;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
@@ -153,7 +153,6 @@ import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
-import de.cismet.cismap.commons.featureservice.DefaultLayerProperties;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
@@ -671,6 +670,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         CismapBroker.getInstance().setFeatureStylingComponentKey("Jump");
         CismapBroker.getInstance().setHighlightFeatureOnMouseOver(false);
         CismapBroker.getInstance().setDefaultTranslucency(1.0f);
+        StaticSwingTools.tweakUI();
 
         try {
             initConnection(Proxy.fromPreferences());
@@ -725,7 +725,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         CismapBroker.getInstance().addMapDnDListener(this);
         cmdAnnex.setAction(new AnnexAction(true));
         cmdAnnex.setEnabled(false);
-        jToolBar1.add(simpleMemoryMonitoringToolbarWidget1);
+        if (simpleMemoryMonitoringToolbarWidget1.isVisible()) {
+            jToolBar1.add(simpleMemoryMonitoringToolbarWidget1);
+        }
         ((NewDrawingButton)cmdDrawingMode).setButtonGroup(btnGroupMapMode);
         exportIgmAction.setExport(exportAction1);
 
@@ -1299,6 +1301,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdZoomSelectedThemes.setEnabled(false);
         newObjectAction.setSelectedService(null);
 
+        if (tbtNewObject.isSelected() && (e != null)) {
+            selectionModeAction.actionPerformed(null);
+        }
+
         if ((tp != null) && (pTopicTree.getSelectionPath() != null) && (pTopicTree.getSelectionPath().length == 1)) {
             final Object o = tp.getLastPathComponent();
 
@@ -1390,6 +1396,18 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 public void processingModeChanged(final AbstractFeatureService service, final boolean active) {
                     SelectionManager.getInstance().switchProcessingMode(service);
                     topicTreeSelectionChanged(null);
+
+                    if (tbtNewObject.isSelected()) {
+                        final TreePath[] path = pTopicTree.getSelectionPath();
+
+                        if ((path != null) && (path.length > 1)) {
+                            selectionModeAction.actionPerformed(null);
+                        } else if ((path != null) && (path.length == 1)
+                                    && path[0].getLastPathComponent().equals(service)) {
+                            selectionModeAction.actionPerformed(null);
+                        }
+                    }
+
                     final List<AbstractFeatureService> editableServices = SelectionManager.getInstance()
                                 .getEditableServices();
                     final boolean savePossible = (editableServices != null) && !editableServices.isEmpty();
@@ -1398,6 +1416,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     if (service.isEditable()
                                 && !SelectionManager.getInstance().getEditableServices().contains(service)) {
                         removeObjectsFromMap();
+                        final FeatureCreator creator = AppBroker.getInstance().getActiveFeatureCreator();
+
+                        if (creator != null) {
+                            creator.cancel();
+                        }
                     }
                 }
 
@@ -1962,7 +1985,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         deleteObjectAction1 = new de.cismet.watergis.gui.actions.map.DeleteObjectAction();
         saveToSameFileProjectAction1 = new de.cismet.watergis.gui.actions.SaveToSameFileProjectAction();
         zoomSelectedThemesAction1 = new de.cismet.watergis.gui.actions.selection.ZoomSelectedThemesAction();
-        simpleMemoryMonitoringToolbarWidget1 = new de.cismet.cids.navigator.utils.SimpleMemoryMonitoringToolbarWidget();
+        simpleMemoryMonitoringToolbarWidget1 = new SimpleMemoryMonitoringToolbarWidget();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveSameFileProject = new javax.swing.JButton();
@@ -3303,8 +3326,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGewaesser.setAction(gewaesserReportAction);
         org.openide.awt.Mnemonics.setLocalizedText(
             mniGewaesser,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniGewaesser.text", new Object[] {
-                }));               // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniGewaesser.text",
+                new Object[] {})); // NOI18N
         mniGewaesser.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniGewaesser.toolTipText",
@@ -4004,7 +4029,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     final String userDomain = st.nextToken();
                     final String userGroup = st.nextToken();
                     final String usergroupDomain = st.nextToken();
-                    final String username = st.nextToken();
+                    String username = st.nextToken();
 
                     final ConnectionInfo i = new ConnectionInfo();
                     i.setCallserverURL(callServer);
@@ -4012,6 +4037,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     i.setUserDomain(userDomain);
                     i.setUsergroup(userGroup);
                     i.setUsergroupDomain(usergroupDomain);
+                    if (username.endsWith("\"")) {
+                        username = username.substring(0, username.length() - 1);
+                    }
                     i.setUsername(username);
 
                     AppBroker.getInstance().setConnectionInfo(i);
@@ -4585,7 +4613,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     final boolean profileSelected = containsAnyRelevantFeature(selectedFeatures, "qp");
                     final boolean drawsSelected = !RemoveDrawingModeAction.getSelectedDrawings().isEmpty();
                     boolean oneEditableFeature = false;
-                    boolean oneEditableService = false;
+                    boolean mergeAllowed = false;
+                    AbstractFeatureService editableService = null;
                     boolean editFeature = false;
 
                     if (selectedFeatures.size() == 1) {
@@ -4603,17 +4632,26 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
 
                     if (selectedFeatures.size() > 0) {
-                        final Feature f = selectedFeatures.get(0);
-                        if (f instanceof DefaultFeatureServiceFeature) {
-                            final DefaultFeatureServiceFeature serviceFeature = (DefaultFeatureServiceFeature)f;
-                            if ((serviceFeature.getLayerProperties() != null)
-                                        && (serviceFeature.getLayerProperties().getFeatureService() != null)) {
-                                final AbstractFeatureService service = serviceFeature.getLayerProperties()
-                                            .getFeatureService();
-                                if (SelectionManager.getInstance().getEditableServices().contains(service)) {
-                                    if (SelectionManager.getInstance().getSelectedFeatures(service).size()
-                                                == selectedFeatures.size()) {
-                                        oneEditableService = true;
+                        for (int i = 0; i < selectedFeatures.size(); ++i) {
+                            final Feature f = selectedFeatures.get(i);
+                            if (f instanceof DefaultFeatureServiceFeature) {
+                                final DefaultFeatureServiceFeature serviceFeature = (DefaultFeatureServiceFeature)f;
+                                if ((serviceFeature.getLayerProperties() != null)
+                                            && (serviceFeature.getLayerProperties().getFeatureService() != null)) {
+                                    final AbstractFeatureService service = serviceFeature.getLayerProperties()
+                                                .getFeatureService();
+                                    if (SelectionManager.getInstance().getEditableServices().contains(service)) {
+                                        if (editableService == null) {
+                                            editableService = serviceFeature.getLayerProperties().getFeatureService();
+                                        } else if (
+                                            !editableService.equals(
+                                                        serviceFeature.getLayerProperties().getFeatureService())) {
+                                            mergeAllowed = false;
+                                            break;
+                                        } else if (editableService.equals(
+                                                        serviceFeature.getLayerProperties().getFeatureService())) {
+                                            mergeAllowed = true;
+                                        }
                                     }
                                 }
                             }
@@ -4647,7 +4685,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
 
                     final boolean splitEnabled = oneEditableFeature;
-                    final boolean mergeEnabled = oneEditableService && (selectedFeatures.size() > 1);
+                    final boolean mergeEnabled = mergeAllowed;
                     final boolean editOperationsEnabled = editFeature;
 
                     EventQueue.invokeLater(new Runnable() {

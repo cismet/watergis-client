@@ -275,6 +275,9 @@
     <Component class="de.cismet.watergis.gui.actions.selection.ZoomSelectedThemesAction" name="zoomSelectedThemesAction1">
     </Component>
     <Component class="de.cismet.cids.navigator.utils.SimpleMemoryMonitoringToolbarWidget" name="simpleMemoryMonitoringToolbarWidget1">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SimpleMemoryMonitoringToolbarWidget()"/>
+      </AuxValues>
     </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>

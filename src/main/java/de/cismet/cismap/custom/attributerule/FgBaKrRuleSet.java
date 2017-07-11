@@ -30,6 +30,7 @@ import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+import de.cismet.cismap.cidslayer.StationCreationCheck;
 import de.cismet.cismap.cidslayer.StationCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -317,8 +318,16 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
+        final StationCreationCheck check = new OnOwnRouteStationCheck();
 
-        return new StationCreator("ba_st", routeMc, new LinearReferencingWatergisHelper());
+        final StationCreator creator = new StationCreator(
+                "ba_st",
+                routeMc,
+                "Basisgewässer (FG)",
+                new LinearReferencingWatergisHelper());
+        creator.setCheck(check);
+
+        return creator;
     }
 
     @Override
