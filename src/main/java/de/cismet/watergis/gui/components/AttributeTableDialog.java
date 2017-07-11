@@ -67,8 +67,8 @@ public class AttributeTableDialog extends javax.swing.JDialog {
             new Color(216, 120, 57)
         };
     private int colorCounter = 0;
-    private final Map<FeatureServiceFeature, Paint> oldFillingPaint = new HashMap<FeatureServiceFeature, Paint>();
-    private final Map<FeatureServiceFeature, Paint> oldLinePaint = new HashMap<FeatureServiceFeature, Paint>();
+//    private final Map<FeatureServiceFeature, Paint> oldFillingPaint = new HashMap<FeatureServiceFeature, Paint>();
+//    private final Map<FeatureServiceFeature, Paint> oldLinePaint = new HashMap<FeatureServiceFeature, Paint>();
     private List<PFeature> allPFeature;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -107,16 +107,16 @@ public class AttributeTableDialog extends javax.swing.JDialog {
     public void setData(final AbstractFeatureService service, final List<FeatureServiceFeature> featureList) {
         final Map<String, FeatureServiceAttribute> featureServiceAttributes = service.getFeatureServiceAttributes();
         final List<String> orderedFeatureServiceAttributes = service.getOrderedFeatureServiceAttributes();
-        oldFillingPaint.clear();
-        oldLinePaint.clear();
-
-        for (final FeatureServiceFeature fsf : featureList) {
-            oldFillingPaint.put(fsf, fsf.getFillingPaint());
-            oldLinePaint.put(fsf, fsf.getLinePaint());
-            final Color co = getNextColor();
-            fsf.setFillingPaint(co);
+//        oldFillingPaint.clear();
+//        oldLinePaint.clear();
+//
+//        for (final FeatureServiceFeature fsf : featureList) {
+//            oldFillingPaint.put(fsf, fsf.getFillingPaint());
+//            oldLinePaint.put(fsf, fsf.getLinePaint());
+//            final Color co = getNextColor();
+//            fsf.setFillingPaint(co);
 //            fsf.setLinePaint(co);
-        }
+//        }
 
         model = new SimpleAttributeTableModel(
                 orderedFeatureServiceAttributes,
@@ -309,18 +309,22 @@ public class AttributeTableDialog extends javax.swing.JDialog {
      * DOCUMENT ME!
      */
     private void resetColors() {
-        for (final FeatureServiceFeature fsf : oldFillingPaint.keySet()) {
-            final Paint old = oldFillingPaint.get(fsf);
-            fsf.setFillingPaint(old);
-            fsf.setLinePaint(oldLinePaint.get(fsf));
-        }
-
-        for (final PFeature feature : allPFeature) {
-            feature.refreshDesign();
-        }
-
-        oldFillingPaint.clear();
-        oldLinePaint.clear();
+//        for (final FeatureServiceFeature fsf : oldFillingPaint.keySet()) {
+//            final Paint old = oldFillingPaint.get(fsf);
+//            if (old != null) {
+//                fsf.setFillingPaint(old);
+//            }
+//            if (oldLinePaint.get(fsf) != null) {
+//                fsf.setLinePaint(oldLinePaint.get(fsf));
+//            }
+//        }
+//
+//        for (final PFeature feature : allPFeature) {
+//            feature.refreshDesign();
+//        }
+//
+//        oldFillingPaint.clear();
+//        oldLinePaint.clear();
     }
 
     /**
@@ -411,25 +415,25 @@ public class AttributeTableDialog extends javax.swing.JDialog {
                 final int column) {
             final Component oc = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-            if (oc instanceof JLabel) {
-                final JLabel origLabel = (JLabel)oc;
-                final JLabel c = new JLabel(origLabel.getText(),
-                        origLabel.getIcon(),
-                        origLabel.getHorizontalAlignment());
-
-                final FeatureServiceFeature fsf = model.getFeatureServiceFeature(table.convertRowIndexToModel(row));
-
-                c.setBorder(origLabel.getBorder());
-                c.setOpaque(true);
-
-                if (isSelected) {
-                    c.setBackground(BasicStyle.lighten((Color)fsf.getFillingPaint()));
-                } else {
-                    c.setBackground((Color)fsf.getFillingPaint());
-                }
-
-                return c;
-            }
+//            if (oc instanceof JLabel) {
+//                final JLabel origLabel = (JLabel)oc;
+//                final JLabel c = new JLabel(origLabel.getText(),
+//                        origLabel.getIcon(),
+//                        origLabel.getHorizontalAlignment());
+//
+//                final FeatureServiceFeature fsf = model.getFeatureServiceFeature(table.convertRowIndexToModel(row));
+//
+//                c.setBorder(origLabel.getBorder());
+//                c.setOpaque(true);
+//
+//                if (isSelected) {
+//                    c.setBackground(BasicStyle.lighten((Color)fsf.getFillingPaint()));
+//                } else {
+//                    c.setBackground((Color)fsf.getFillingPaint());
+//                }
+//
+//                return c;
+//            }
 
             return oc;
         }
