@@ -145,6 +145,11 @@ public class QpGafLPrPfPRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        return null; // todo eventuell aendern
+    }
+
+    @Override
     public Class getAdditionalFieldClass(final int index) {
         return String.class;
     }

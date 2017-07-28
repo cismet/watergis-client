@@ -117,6 +117,15 @@ public class EzgMvDetailRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("flaeche")) {
+            return "st_area(geom)";
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public FeatureCreator getFeatureCreator() {
         return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }

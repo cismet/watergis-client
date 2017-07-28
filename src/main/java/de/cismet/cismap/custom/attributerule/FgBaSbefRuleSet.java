@@ -183,36 +183,51 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        if ((feature.getProperty("ho_a") != null) && isNumberOrNull(feature.getProperty("ho_a"))
-                    && (feature.getProperty("ho_e") != null) && isNumberOrNull(feature.getProperty("ho_e"))) {
-            final double laenge = toNumber(feature.getProperty("ba_st_bis")).doubleValue()
-                        - toNumber(feature.getProperty("ba_st_von")).doubleValue();
-            final double gefaelle = (toNumber(feature.getProperty("ho_e")).doubleValue()
-                            - toNumber(feature.getProperty("ho_a")).doubleValue()) / laenge * 1000;
-            feature.setProperty("gefaelle", gefaelle);
+        if (column.equals("ho_a") || column.equals("ho_e") || column.equals("ba_st_bis")
+                    || column.equals("ba_st_von")) {
+            final Object hoA = (column.equals("ho_a") ? newValue : feature.getProperty("ho_a"));
+            final Object hoE = (column.equals("ho_e") ? newValue : feature.getProperty("ho_e"));
+            final Object von = (column.equals("ba_st_von") ? newValue : feature.getProperty("ba_st_von"));
+            final Object bis = (column.equals("ba_st_bis") ? newValue : feature.getProperty("ba_st_bis"));
+
+            if ((hoA != null) && isNumberOrNull(hoA) && (hoE != null) && isNumberOrNull(hoE)
+                        && (von != null) && isNumberOrNull(von)
+                        && (bis != null) && isNumberOrNull(bis)) {
+                final double laenge = toNumber(bis).doubleValue()
+                            - toNumber(von).doubleValue();
+                final double gefaelle = (toNumber(hoE).doubleValue()
+                                - toNumber(hoA).doubleValue()) / Math.abs(laenge) * 1000;
+                feature.setProperty("gefaelle", gefaelle);
+
+                if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), 0, 50, -10, 100, true)) {
+                    return oldValue;
+                }
+            } else if (feature.getProperty("gefaelle") != null) {
+                feature.setProperty("gefaelle", null);
+            }
         }
 
         if (column.equals("gefaelle") && !checkRangeBetweenOrEqual(column, newValue, 0, 50, -10, 100, true)) {
             return oldValue;
         }
 
-        if (column.equals("sbef") && !isValueEmpty(newValue)) {
-            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
-
-            if (allowedMaterialVArray != null) {
-                if ((!isValueEmpty(feature.getProperty("material")))
-                            && !arrayContains(
-                                allowedMaterialVArray,
-                                feature.getProperty("material").toString())) {
-                    showMessage("Wenn das Attribut sbef = "
-                                + newValue
-                                + ", dann muss das Attribut material "
-                                + arrayToString(allowedMaterialVArray)
-                                + " sein.");
-                    return oldValue;
-                }
-            }
-        }
+//        if (column.equals("sbef") && !isValueEmpty(newValue)) {
+//            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
+//
+//            if (allowedMaterialVArray != null) {
+//                if ((!isValueEmpty(feature.getProperty("material")))
+//                            && !arrayContains(
+//                                allowedMaterialVArray,
+//                                feature.getProperty("material").toString())) {
+//                    showMessage("Wenn das Attribut sbef = "
+//                                + newValue
+//                                + ", dann muss das Attribut material "
+//                                + arrayToString(allowedMaterialVArray)
+//                                + " sein.");
+//                    return oldValue;
+//                }
+//            }
+//        }
 
         if (column.equals("material") && !isValueEmpty(newValue)) {
             final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("sbef").toString());
@@ -394,10 +409,11 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
                 }
             }
 
+            refillGefaelle(feature);
+
             if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), -10, 100, true)) {
                 return false;
             }
-            refillGefaelle(feature);
         }
 
         return super.prepareForSave(features);
@@ -422,6 +438,8 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
             final double gefaelle = (toNumber(feature.getProperty("ho_e")).doubleValue()
                             - toNumber(feature.getProperty("ho_a")).doubleValue()) / laenge * 1000;
             feature.setProperty("gefaelle", gefaelle);
+        } else if (feature.getProperty("gefaelle") != null) {
+            feature.setProperty("gefaelle", null);
         }
     }
 
@@ -454,6 +472,15 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
         }
 
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

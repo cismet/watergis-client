@@ -205,48 +205,48 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        if (column.equals("bbef") && !isValueEmpty(newValue)) {
-            final Double from = (Double)feature.getProperty("ba_st_von");
-            final Double till = (Double)feature.getProperty("ba_st_bis");
-
-            if ((from != null) && (till != null)) {
-                if (isValueIn(feature.getProperty("bbef"), new String[] { "Rin" }, false)) {
-                    if ((Math.abs(till - from) > 5) && (Math.abs(till - from) <= 10)) {
-                        if (
-                            !showSecurityQuestion(
-                                        "Die Länge des Objektes mit der id "
-                                        + feature.getId()
-                                        + "liegt außerhalb des Standardbereichs (0 .. 5) --> verwenden ?")) {
-                            return false;
-                        }
-                    } else if (Math.abs(till - from) > 10) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Länge des Objektes mit der id "
-                                    + feature.getId()
-                                    + " darf nicht größer "
-                                    + 10
-                                    + " sein",
-                            "Ungültiger Wert",
-                            JOptionPane.ERROR_MESSAGE);
-
-                        return false;
-                    }
-                } else {
-                    if (Math.abs(till - from) < 0.5) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Länge des Objektes mit der id "
-                                    + feature.getId()
-                                    + " darf nicht kleiner "
-                                    + 0.5
-                                    + " sein",
-                            "Ungültiger Wert",
-                            JOptionPane.ERROR_MESSAGE);
-
-                        return false;
-                    }
-                }
-            }
-        }
+//        if (column.equals("bbef") && !isValueEmpty(newValue)) {
+//            final Double from = (Double)feature.getProperty("ba_st_von");
+//            final Double till = (Double)feature.getProperty("ba_st_bis");
+//
+//            if ((from != null) && (till != null)) {
+//                if (isValueIn(feature.getProperty("bbef"), new String[] { "Rin" }, false)) {
+//                    if ((Math.abs(till - from) > 5) && (Math.abs(till - from) <= 10)) {
+//                        if (
+//                            !showSecurityQuestion(
+//                                        "Die Länge des Objektes mit der id "
+//                                        + feature.getId()
+//                                        + "liegt außerhalb des Standardbereichs (0 .. 5) --> verwenden ?")) {
+//                            return false;
+//                        }
+//                    } else if (Math.abs(till - from) > 10) {
+//                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                            "Die Länge des Objektes mit der id "
+//                                    + feature.getId()
+//                                    + " darf nicht größer "
+//                                    + 10
+//                                    + " sein",
+//                            "Ungültiger Wert",
+//                            JOptionPane.ERROR_MESSAGE);
+//
+//                        return false;
+//                    }
+//                } else {
+//                    if (Math.abs(till - from) < 0.5) {
+//                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                            "Die Länge des Objektes mit der id "
+//                                    + feature.getId()
+//                                    + " darf nicht kleiner "
+//                                    + 0.5
+//                                    + " sein",
+//                            "Ungültiger Wert",
+//                            JOptionPane.ERROR_MESSAGE);
+//
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
@@ -484,6 +484,15 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
         }
 
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

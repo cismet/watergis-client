@@ -142,6 +142,15 @@ public class FgBakGn1RuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
         final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();

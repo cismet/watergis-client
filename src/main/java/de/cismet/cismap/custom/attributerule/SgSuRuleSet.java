@@ -132,6 +132,19 @@ public class SgSuRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else if (propertyName.equals("su_st_von")) {
+            return "0";
+        } else if (propertyName.equals("su_st_bis")) {
+            return "st_length(geom)";
+        }
+
+        return null;
+    }
+
+    @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
     }

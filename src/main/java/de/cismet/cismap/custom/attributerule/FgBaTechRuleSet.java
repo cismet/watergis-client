@@ -195,6 +195,15 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
     }

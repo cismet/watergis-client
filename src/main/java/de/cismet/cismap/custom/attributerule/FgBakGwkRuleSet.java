@@ -93,7 +93,8 @@ public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("geo_field") && !columnName.equals("geom") && !columnName.equals("ba_cd");
+                    && !columnName.equals("geo_field") && !columnName.equals("geom") && !columnName.equals("ba_cd")
+                    && !columnName.equals("laenge");
     }
 
     @Override
@@ -167,6 +168,15 @@ public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
             value = round(geom.getLength());
         }
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

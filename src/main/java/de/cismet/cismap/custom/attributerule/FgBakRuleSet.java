@@ -61,6 +61,8 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.rasterservice.MapService;
 
+import de.cismet.cismap.linearreferencing.RouteCombo;
+
 import de.cismet.watergis.broker.AppBroker;
 
 /**
@@ -75,6 +77,7 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
 
     private final Logger LOG = Logger.getLogger(FgBakRuleSet.class);
     private TreeSet<FeatureServiceFeature> changedBaCdObjects;
+    private static final Random RANDOM = new Random(new Date().getTime());
 
     //~ Instance initializers --------------------------------------------------
 
@@ -284,6 +287,8 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
+        AppBroker.getInstance().getWatergisApp().initRouteCombo();
+        RouteCombo.clearRouteCache();
 //        final Timer t = new Timer("reload");
 //
 //        t.schedule(new TimerTask() {
@@ -345,6 +350,19 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else if (propertyName.equals("bak_st_von")) {
+            return "0";
+        } else if (propertyName.equals("bak_st_bis")) {
+            return "st_length(geom)";
+        }
+
+        return null;
+    }
+
+    @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
     }
@@ -374,17 +392,17 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
         final CidsBean wwGr = (CidsBean)feature.getProperty("original:ww_gr");
         final String prefix = String.valueOf(wwGr.getProperty("praefix"));
         String baCd = (String)newFeature.getProperty("ba_cd");
-        if (baCd != null) {
-            baCd += "-1";
-        } else {
-            baCd = prefix + ":" + String.valueOf(Math.abs(feature.hashCode()));
-        }
 
         do {
             // ensure, that the value of ba_cd is unique
             unique = true;
             try {
                 final Map<Integer, String> baCdMap = new HashMap<Integer, String>();
+                if (baCd != null) {
+                    baCd += ":1";
+                } else {
+                    baCd = prefix + ":" + String.valueOf(Math.abs(feature.hashCode()));
+                }
                 baCdMap.put(-1, baCd);
                 final User user = SessionManager.getSession().getUser();
                 final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()

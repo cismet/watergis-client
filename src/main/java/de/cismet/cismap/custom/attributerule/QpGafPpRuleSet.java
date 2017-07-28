@@ -224,6 +224,7 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
                     "Wenn das Attribut rk leer ist, dann müssen rk_name, rk_k und rk_kst gesetzt sein.",
                     "Fehlerhaft Attributbelegung",
                     JOptionPane.ERROR_MESSAGE);
+                return false;
             }
             if (isValueEmpty(bk)
                         && (isValueEmpty(feature.getProperty("bk_name")) || isValueEmpty(feature.getProperty("bk_ax"))
@@ -233,6 +234,7 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
                     "Wenn das Attribut rk leer ist, dann müssen bk_name, bk_ax, bk_ay und bk_dp gesetzt sein.",
                     "Fehlerhaft Attributbelegung",
                     JOptionPane.ERROR_MESSAGE);
+                return false;
             }
         }
 
