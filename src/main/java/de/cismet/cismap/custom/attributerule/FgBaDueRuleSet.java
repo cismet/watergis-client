@@ -298,8 +298,8 @@ public class FgBaDueRuleSet extends WatergisDefaultRuleSet {
                     || column.equals("ba_st_von")) {
             final Object hoA = (column.equals("ho_a") ? newValue : feature.getProperty("ho_a"));
             final Object hoE = (column.equals("ho_e") ? newValue : feature.getProperty("ho_e"));
-            final Object von = (column.equals("ho_a") ? newValue : feature.getProperty("ba_st_von"));
-            final Object bis = (column.equals("ho_a") ? newValue : feature.getProperty("ba_st_bis"));
+            final Object von = (column.equals("ba_st_von") ? newValue : feature.getProperty("ba_st_von"));
+            final Object bis = (column.equals("ba_st_bis") ? newValue : feature.getProperty("ba_st_bis"));
 
             if ((hoA != null) && isNumberOrNull(hoA) && (hoE != null) && isNumberOrNull(hoE)
                         && (von != null) && isNumberOrNull(von)
@@ -313,6 +313,8 @@ public class FgBaDueRuleSet extends WatergisDefaultRuleSet {
                 if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), 0, 50, -10, 100, true)) {
                     return oldValue;
                 }
+            } else if (feature.getProperty("gefaelle") != null) {
+                feature.setProperty("gefaelle", null);
             }
         }
 
@@ -590,6 +592,15 @@ public class FgBaDueRuleSet extends WatergisDefaultRuleSet {
         }
 
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

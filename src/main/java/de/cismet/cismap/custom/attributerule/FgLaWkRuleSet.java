@@ -36,10 +36,15 @@ import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
-import de.cismet.tools.gui.downloadmanager.DownloadManager;
-import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
+import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.gui.actions.reports.WkFgReportAction;
+import de.cismet.watergis.gui.dialog.WkFgReportDialog;
+
+import de.cismet.watergis.reports.GewaesserReport;
 
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
@@ -137,6 +142,15 @@ public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
     }
@@ -163,8 +177,19 @@ public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
             final int clickCount) {
         if (columnName.equals("wk_nr")) {
             if ((value instanceof String) && (clickCount == 1)) {
-                downloadDocumentFromWebDav(WK_FG_WEBDAV_PATH, addExtension(value.toString().toUpperCase(), "pdf"));
+                createReport(value.toString().toUpperCase());
+//                downloadDocumentFromWebDav(WK_FG_WEBDAV_PATH, addExtension(value.toString().toUpperCase(), "pdf"));
             }
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  bacd  DOCUMENT ME!
+     */
+    public static void createReport(final String bacd) {
+        final WkFgReportAction action = new WkFgReportAction();
+        action.actionPerformed(null);
     }
 }

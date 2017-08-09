@@ -53,8 +53,8 @@ public class MnFgChmRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("la_st", new Numeric(10, 2, false, false));
         typeMap.put("ms_nr", new Varchar(20, true, true));
         typeMap.put("ms_name", new Varchar(50, true, true));
-        typeMap.put("re", new Numeric(11, 2, true, false));
-        typeMap.put("ho", new Numeric(10, 2, true, false));
+        typeMap.put("re", new Numeric(11, 2, true, true));
+        typeMap.put("ho", new Numeric(10, 2, true, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }

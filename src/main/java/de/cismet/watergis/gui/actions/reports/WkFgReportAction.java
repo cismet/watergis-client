@@ -22,13 +22,17 @@ import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
@@ -42,8 +46,18 @@ import de.cismet.cismap.cidslayer.CidsLayer;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
+import de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet;
+
+import de.cismet.commons.security.WebDavClient;
+import de.cismet.commons.security.WebDavHelper;
+
+import de.cismet.netutil.Proxy;
+
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
+import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
+import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -51,6 +65,8 @@ import de.cismet.watergis.gui.actions.*;
 import de.cismet.watergis.gui.dialog.WkFgReportDialog;
 
 import static javax.swing.Action.NAME;
+
+import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.addExtension;
 
 /**
  * DOCUMENT ME!
@@ -113,14 +129,14 @@ public class WkFgReportAction extends AbstractAction {
                 final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
                         StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                         true,
-                        "erstelle Auswertung",
+                        "lade Steckbriefe",
                         null,
                         100,
                         true) {
 
                         @Override
                         protected Boolean doInBackground() throws Exception {
-                            final List<String> wkNrList = new ArrayList<String>();
+                            final TreeSet<String> wkNrList = new TreeSet<String>();
 
                             if (WkFgReportDialog.getInstance().isSelection()) {
                                 for (final FeatureServiceFeature feature
@@ -154,53 +170,33 @@ public class WkFgReportAction extends AbstractAction {
 
                             for (final String wkk : wkNrList) {
                                 wd.setProgress(index);
-                                wd.setText("Erstelle " + (index++) + " / " + listSize);
+                                wd.setText("Lade " + (index++) + " / " + listSize);
 
-                                // create report
-                                final MetaClass wkFgMc = ClassCacheMultiple.getMetaClass(
-                                        AppBroker.DOMAIN_NAME_WRRL,
-                                        "wk_fg");
-
-                                if (wkFgMc == null) {
-                                    LOG.error("Error while creating report. Cannot retrieve wk_fg meta class");
-//                                    error(new Exception(NbBundle.getMessage(WkFgDownload.class, "WkFgDownload.run.noMc")));
-                                    return false;
-                                }
-                                final String query = "select " + wkFgMc.getID() + ", " + wkFgMc.getTableName() + "."
-                                            + wkFgMc.getPrimaryKey() + " from "
-                                            + wkFgMc.getTableName() + " WHERE wk_k = '" + wkk + "'"; // NOI18N
                                 try {
-                                    final MetaObject[] mos = SessionManager.getProxy()
-                                                .getMetaObjectByQuery(SessionManager.getSession().getUser(),
-                                                    query,
-                                                    AppBroker.DOMAIN_NAME_WRRL);
+                                    // create report
+                                    final String path = WkFgReportDialog.getInstance().getPath();
+                                    final File fileToSaveTo = new File(path, wkk + ".pdf");
+                                    if (fileToSaveTo.exists()) {
+                                        final int ans = JOptionPane.showConfirmDialog(
+                                                AppBroker.getInstance().getWatergisApp(),
+                                                NbBundle.getMessage(
+                                                    WkFgReportAction.class,
+                                                    "WkFgReportAction.actionPerformed().fileExists.text",
+                                                    fileToSaveTo.getAbsolutePath()),
+                                                NbBundle.getMessage(
+                                                    WkFgReportAction.class,
+                                                    "WkFgReportAction.actionPerformed().fileExists.title"),
+                                                JOptionPane.YES_NO_OPTION);
 
-                                    if ((mos != null) && (mos.length > 0)) {
-                                        final String path = WkFgReportDialog.getInstance().getPath();
-                                        final File fileToSaveTo = new File(path, wkk + ".pdf");
-
-                                        if (fileToSaveTo.exists()) {
-                                            final int ans = JOptionPane.showConfirmDialog(
-                                                    AppBroker.getInstance().getWatergisApp(),
-                                                    NbBundle.getMessage(
-                                                        WkFgReportAction.class,
-                                                        "WkFgReportAction.actionPerformed().fileExists.text",
-                                                        fileToSaveTo.getAbsolutePath()),
-                                                    NbBundle.getMessage(
-                                                        WkFgReportAction.class,
-                                                        "WkFgReportAction.actionPerformed().fileExists.title"),
-                                                    JOptionPane.YES_NO_OPTION);
-
-                                            if (ans != JOptionPane.YES_OPTION) {
-                                                continue;
-                                            }
+                                        if (ans != JOptionPane.YES_OPTION) {
+                                            continue;
                                         }
-
-                                        WkFgReport.createReport(fileToSaveTo.getAbsolutePath(), mos[0].getBean());
-                                    } else {
-                                        LOG.error("Cannot find wk_fg object with id " + wkk);
-//                                        error(new Exception(NbBundle.getMessage(WkFgDownload.class, "WkFgDownload.run.objectNotFound")));
                                     }
+
+                                    downloadDocumentFromWebDav(
+                                        WatergisDefaultRuleSet.WK_FG_WEBDAV_PATH,
+                                        WatergisDefaultRuleSet.addExtension(wkk.toUpperCase(), "pdf"),
+                                        fileToSaveTo);
                                 } catch (Exception ex) {
                                     LOG.error("Error while creating report", ex);
 //                                    error(ex);
@@ -229,6 +225,39 @@ public class WkFgReportAction extends AbstractAction {
         } catch (Exception ex) {
             LOG.error("Error while creating gewaesser report", ex);
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   path        DOCUMENT ME!
+     * @param   file        DOCUMENT ME!
+     * @param   fileToSave  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static void downloadDocumentFromWebDav(String path, String file, final File fileToSave) throws Exception {
+        // remove slashs from the file
+        while (file.startsWith("/")) {
+            file = file.substring(1);
+        }
+
+        if (!path.endsWith("/")) {
+            path = path + "/";
+        }
+
+        final WebDavClient webDavClient = WatergisDefaultRuleSet.createWebDavClient();
+        final BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(fileToSave));
+        final InputStream is = webDavClient.getInputStream(path + WebDavHelper.encodeURL(file));
+        final byte[] buffer = new byte[256];
+        int size;
+
+        while ((size = is.read(buffer)) != -1) {
+            os.write(buffer, 0, size);
+        }
+
+        is.close();
+        os.close();
     }
 
     /**

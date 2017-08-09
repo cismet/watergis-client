@@ -141,7 +141,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
             lastLength = g.getLength();
         }
 
-        if (column.equals("wiwe") && (newValue != null)) {
+        if (column.equals("wiwe") && (newValue != null) && !isValueEmpty(feature.getProperty("material"))) {
             final String[] allowedMaterialArray = allowedMaterial.get(newValue.toString());
 
             if (allowedMaterialArray != null) {
@@ -159,7 +159,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        if (column.equals("material") && (newValue != null)) {
+        if (column.equals("material") && (newValue != null) && (feature.getProperty("wiwe") != null)) {
             final String[] allowedMaterialArray = allowedMaterial.get(feature.getProperty("wiwe").toString());
 
             if (allowedMaterialArray != null) {
@@ -363,6 +363,15 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
             value = round(geom.getLength());
         }
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

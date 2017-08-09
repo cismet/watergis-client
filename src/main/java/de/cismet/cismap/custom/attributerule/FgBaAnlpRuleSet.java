@@ -173,43 +173,43 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        if (column.equals("anlp") && !isValueEmpty(feature.getProperty("l_rl"))) {
-            if (isValueIn(
-                            newValue,
-                            new Object[] { "Albw", "Elbw", "Fu", "Rsk", "Schi", "Slu", "Stt" },
-                            false)) {
-                final Object rl = feature.getProperty("l_rl");
-
-                if ((rl != null) && !rl.toString().equals("mi")) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei anlp = Albw/Elbw/Fu/Rsk/Schi/Slu/Stt darf das Attribut l_rl nur den Wert mi haben.");
-                    return oldValue;
-                }
-            } else if (isValueIn(
-                            newValue,
-                            new Object[] { "P", "P-Gr", "P-Steg", "P-Gr-Ste", "P-Lat", "Sta" },
-                            false)) {
-                final Object rl = feature.getProperty("l_rl");
-
-                if ((rl == null)
-                            || !(rl.toString().equals("mi") || rl.toString().equals("re")
-                                || rl.toString().equals("li") || rl.toString().equals("bs"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei anlp = P/P-Gr/P-Steg/P-Gr-Ste/P-Lat/Sta darf das Attribut l_rl nur die Werte re/li/mi/bs haben.");
-                    return oldValue;
-                }
-            } else if (isValueIn(newValue, new Object[] { "Steg", "Vt", "Wes" }, false)) {
-                final Object rl = feature.getProperty("l_rl");
-
-                if ((rl == null)
-                            || !(rl.toString().equals("bs") || rl.toString().equals("re")
-                                || rl.toString().equals("li"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei anlp = Steg/Vt/Wes darf das Attribut l_rl nur die Werte re/li/bs haben.");
-                    return oldValue;
-                }
-            }
-        }
+//        if (column.equals("anlp") && !isValueEmpty(feature.getProperty("l_rl"))) {
+//            if (isValueIn(
+//                            newValue,
+//                            new Object[] { "Albw", "Elbw", "Fu", "Rsk", "Schi", "Slu", "Stt" },
+//                            false)) {
+//                final Object rl = feature.getProperty("l_rl");
+//
+//                if ((rl != null) && !rl.toString().equals("mi")) {
+//                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                        "Bei anlp = Albw/Elbw/Fu/Rsk/Schi/Slu/Stt darf das Attribut l_rl nur den Wert mi haben.");
+//                    return oldValue;
+//                }
+//            } else if (isValueIn(
+//                            newValue,
+//                            new Object[] { "P", "P-Gr", "P-Steg", "P-Gr-Ste", "P-Lat", "Sta" },
+//                            false)) {
+//                final Object rl = feature.getProperty("l_rl");
+//
+//                if ((rl == null)
+//                            || !(rl.toString().equals("mi") || rl.toString().equals("re")
+//                                || rl.toString().equals("li") || rl.toString().equals("bs"))) {
+//                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                        "Bei anlp = P/P-Gr/P-Steg/P-Gr-Ste/P-Lat/Sta darf das Attribut l_rl nur die Werte re/li/mi/bs haben.");
+//                    return oldValue;
+//                }
+//            } else if (isValueIn(newValue, new Object[] { "Steg", "Vt", "Wes" }, false)) {
+//                final Object rl = feature.getProperty("l_rl");
+//
+//                if ((rl == null)
+//                            || !(rl.toString().equals("bs") || rl.toString().equals("re")
+//                                || rl.toString().equals("li"))) {
+//                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                        "Bei anlp = Steg/Vt/Wes darf das Attribut l_rl nur die Werte re/li/bs haben.");
+//                    return oldValue;
+//                }
+//            }
+//        }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
