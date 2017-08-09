@@ -11,6 +11,8 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
+import Sirius.navigator.connection.SessionManager;
+
 import Sirius.server.middleware.types.MetaClass;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -18,6 +20,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+
+import java.sql.Timestamp;
 
 import java.util.List;
 import java.util.TreeSet;
@@ -70,11 +74,11 @@ public class FgLaFgskRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("laenge", new Numeric(10, 2, false, true));
         typeMap.put("wk_nr", new Varchar(10, false, true));
         typeMap.put("typ_lawa", new Numeric(2, 0, false, true));
-        typeMap.put("vorkart", new Numeric(1, 0, true, true));
+        typeMap.put("vorkart", new BooleanAsInteger(true, true));
         typeMap.put("sonderfall", new Varchar(10, false, true));
-        typeMap.put("seeausfl", new Numeric(1, 0, false, true, 0, 1));
+        typeMap.put("seeausfl", new BooleanAsInteger(false, true));
         typeMap.put("wasserf", new Varchar(2, false, true));
-        typeMap.put("gu_status", new Numeric(1, 0, false, true, 0, 1));
+        typeMap.put("gu_status", new BooleanAsInteger(false, true));
         typeMap.put("gk_sohle", new Numeric(1, 0, false, true, 0, 5));
         typeMap.put("gk_ufer", new Numeric(1, 0, false, true, 0, 5));
         typeMap.put("gk_land", new Numeric(1, 0, false, true, 0, 5));
@@ -172,6 +176,8 @@ public class FgLaFgskRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
+        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
+        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
     }
 
     @Override
@@ -201,6 +207,15 @@ public class FgLaFgskRuleSet extends WatergisDefaultRuleSet {
             value = round(geom.getLength());
         }
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

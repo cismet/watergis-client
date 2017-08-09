@@ -118,23 +118,23 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        if (column.equals("l_oiu") && !isValueIn(newValue, new Object[] { "o" }, false)
-                    && !isValueIn(feature.getProperty("kr"), new Object[] { "Br" }, true)) {
-            showMessage("l_oiu muss o sein, wenn kr = Br");
-            return oldValue;
-        }
-
-        if (column.equals("l_oiu") && !isValueIn(newValue, new Object[] { "u" }, false)
-                    && !isValueIn(feature.getProperty("kr"), new Object[] { "U" }, true)) {
-            showMessage("l_oiu muss u sein, wenn kr = U");
-            return oldValue;
-        }
+//        if (column.equals("l_oiu") && !isValueIn(newValue, new Object[] { "o" }, false)
+//                    && isValueIn(feature.getProperty("kr"), new Object[] { "Br" }, true)) {
+//            showMessage("l_oiu muss o sein, wenn kr = Br");
+//            return oldValue;
+//        }
+//
+//        if (column.equals("l_oiu") && !isValueIn(newValue, new Object[] { "u" }, false)
+//                    && isValueIn(feature.getProperty("kr"), new Object[] { "U" }, true)) {
+//            showMessage("l_oiu muss u sein, wenn kr = U");
+//            return oldValue;
+//        }
 
         if (column.equals("kr") && isValueIn(newValue, new Object[] { "Br" }, false)) {
             final Object rl = feature.getProperty("l_oiu");
 
             if (rl == null) {
-                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_loiu", "o"));
+                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_oiu", "o"));
             }
         }
 
@@ -142,7 +142,7 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
             final Object rl = feature.getProperty("l_oiu");
 
             if (rl == null) {
-                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_loiu", "u"));
+                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_oiu", "u"));
             }
         }
 
@@ -298,7 +298,7 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
             final Object rl = feature.getProperty("l_oiu");
 
             if (rl == null) {
-                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_loiu", "o"));
+                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_oiu", "o"));
             }
         }
 
@@ -306,7 +306,7 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
             final Object rl = feature.getProperty("l_oiu");
 
             if (rl == null) {
-                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_loiu", "u"));
+                feature.setProperty("l_oiu", getCatalogueElement("dlm25w.k_l_oiu", "l_oiu", "u"));
             }
         }
     }

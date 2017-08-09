@@ -193,18 +193,18 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        if (column.equals("profil") && (newValue != null) && isValueIn(newValue, new String[] { "kr" }, false)) {
-            feature.setProperty("ho_li", null);
-            feature.setProperty("br_tr_o_li", null);
-        }
-
-        if (column.equals("profil") && (newValue != null) && isValueIn(newValue, new String[] { "ei" }, false)) {
-            feature.setProperty("br_tr_o_li", null);
-        }
-
-        if (column.equals("profil") && (newValue != null) && isValueIn(newValue, new String[] { "re" }, false)) {
-            feature.setProperty("br_tr_o_li", null);
-        }
+//        if (column.equals("profil") && (newValue != null) && isValueIn(newValue, new String[] { "kr" }, false)) {
+//            feature.setProperty("ho_li", null);
+//            feature.setProperty("br_tr_o_li", null);
+//        }
+//
+//        if (column.equals("profil") && (newValue != null) && isValueIn(newValue, new String[] { "ei" }, false)) {
+//            feature.setProperty("br_tr_o_li", null);
+//        }
+//
+//        if (column.equals("profil") && (newValue != null) && isValueIn(newValue, new String[] { "re" }, false)) {
+//            feature.setProperty("br_tr_o_li", null);
+//        }
 
         if (column.equals("ho_li") || column.equals("br_tr_o_li")) {
             if (!isValueEmpty(newValue) && (feature.getProperty("profil") != null)
@@ -272,8 +272,8 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                     || column.equals("ba_st_von")) {
             final Object hoA = (column.equals("ho_a") ? newValue : feature.getProperty("ho_a"));
             final Object hoE = (column.equals("ho_e") ? newValue : feature.getProperty("ho_e"));
-            final Object von = (column.equals("ho_a") ? newValue : feature.getProperty("ba_st_von"));
-            final Object bis = (column.equals("ho_a") ? newValue : feature.getProperty("ba_st_bis"));
+            final Object von = (column.equals("ba_st_von") ? newValue : feature.getProperty("ba_st_von"));
+            final Object bis = (column.equals("ba_st_bis") ? newValue : feature.getProperty("ba_st_bis"));
 
             if ((hoA != null) && isNumberOrNull(hoA) && (hoE != null) && isNumberOrNull(hoE)
                         && (von != null) && isNumberOrNull(von)
@@ -287,6 +287,8 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                 if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), 0, 50, -10, 100, true)) {
                     return oldValue;
                 }
+            } else if (feature.getProperty("gefaelle") != null) {
+                feature.setProperty("gefaelle", null);
             }
         }
 
@@ -540,6 +542,15 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
         }
 
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override
