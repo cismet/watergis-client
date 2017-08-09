@@ -73,11 +73,14 @@ import de.cismet.watergis.broker.AppBroker;
  */
 public class FgBakRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Random RANDOM = new Random(new Date().getTime());
+
     //~ Instance fields --------------------------------------------------------
 
     private final Logger LOG = Logger.getLogger(FgBakRuleSet.class);
     private TreeSet<FeatureServiceFeature> changedBaCdObjects;
-    private static final Random RANDOM = new Random(new Date().getTime());
 
     //~ Instance initializers --------------------------------------------------
 
