@@ -146,24 +146,24 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        if (column.equals("ubef") && !isValueEmpty(newValue)) {
-            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
-
-            if (allowedMaterialVArray != null) {
-                if (!isValueEmpty(feature.getProperty("material"))
-                            && !arrayContains(
-                                allowedMaterialVArray,
-                                ((feature.getProperty("material") != null) ? feature.getProperty("material")
-                                        .toString() : null))) {
-                    showMessage("Wenn das Attribut ubef = "
-                                + newValue
-                                + ", dann muss das Attribut material "
-                                + arrayToString(allowedMaterialVArray)
-                                + " sein.");
-                    return oldValue;
-                }
-            }
-        }
+//        if (column.equals("ubef") && !isValueEmpty(newValue)) {
+//            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
+//
+//            if (allowedMaterialVArray != null) {
+//                if (!isValueEmpty(feature.getProperty("material"))
+//                            && !arrayContains(
+//                                allowedMaterialVArray,
+//                                ((feature.getProperty("material") != null) ? feature.getProperty("material")
+//                                        .toString() : null))) {
+//                    showMessage("Wenn das Attribut ubef = "
+//                                + newValue
+//                                + ", dann muss das Attribut material "
+//                                + arrayToString(allowedMaterialVArray)
+//                                + " sein.");
+//                    return oldValue;
+//                }
+//            }
+//        }
 
         if (column.equals("material") && !isValueEmpty(newValue)) {
             final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("ubef").toString());
@@ -390,6 +390,15 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         }
 
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

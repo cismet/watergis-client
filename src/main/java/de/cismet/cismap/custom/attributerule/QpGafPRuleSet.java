@@ -141,6 +141,17 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("re")) {
+            return "st_x(geom)";
+        } else if (propertyName.equals("ho")) {
+            return "st_y(geom)";
+        }
+
+        return null;
+    }
+
+    @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
     }

@@ -313,7 +313,6 @@ public class FgBaEaRuleSet extends WatergisDefaultRuleSet {
                 routeMc,
                 "Basisgewässer (FG)",
                 new LinearReferencingWatergisHelper());
-        ;
         creator.setCheck(check);
 
         return creator;

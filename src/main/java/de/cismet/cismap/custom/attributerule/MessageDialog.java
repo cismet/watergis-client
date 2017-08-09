@@ -96,6 +96,7 @@ public class MessageDialog extends javax.swing.JDialog {
         setPreferredSize(new java.awt.Dimension(300, 150));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
+        lblText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         org.openide.awt.Mnemonics.setLocalizedText(
             lblText,
             org.openide.util.NbBundle.getMessage(MessageDialog.class, "MessageDialog.lblText.text", new Object[] {})); // NOI18N
@@ -104,7 +105,6 @@ public class MessageDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(lblText, gridBagConstraints);

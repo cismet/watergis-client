@@ -50,6 +50,7 @@ public class KgWkRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("wk_nr", new Varchar(10, true, true));
         typeMap.put("kkm_ort", new Varchar(30, false, true));
+        typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
@@ -113,6 +114,15 @@ public class KgWkRuleSet extends WatergisDefaultRuleSet {
         }
 
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("flaeche")) {
+            return "st_area(geom)::bigint";
+        } else {
+            return null;
+        }
     }
 
     @Override

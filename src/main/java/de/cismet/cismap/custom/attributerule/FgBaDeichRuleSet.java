@@ -18,6 +18,8 @@ import Sirius.server.newuser.User;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import org.apache.log4j.Logger;
+
 import org.deegree.datatypes.Types;
 
 import java.sql.Timestamp;
@@ -35,6 +37,8 @@ import javax.swing.table.TableModel;
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cids.server.cidslayer.CidsLayerInfo;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
@@ -63,6 +67,8 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
 public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
 
     //~ Static fields/initializers ---------------------------------------------
+
+    private static Logger LOG = Logger.getLogger(FgBaDeichRuleSet.class);
 
     static {
         minBaLength = 10.0;
@@ -168,19 +174,19 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         // Start Abhaengigkeiten von l_fk
         if (column.equals("l_fk") && (newValue != null)) {
             if (isValueIn(newValue, new Object[] { "fd" }, false)) {
-                if (!checkRangeBetweenOrEqual("br_f", feature.getProperty("br_f"), 2, 50, true)) {
+                if (!checkRangeBetweenOrEqual("br_f", feature.getProperty("br_f"), 2, 20, 2, 50, true)) {
                     return oldValue;
                 }
-                if (!checkRangeBetweenOrEqual("br_k", feature.getProperty("br_k"), 0.5, 10, true)) {
+                if (!checkRangeBetweenOrEqual("br_k", feature.getProperty("br_k"), 1, 5, 0.5, 10, true)) {
                     return oldValue;
                 }
-                if (!checkRangeBetweenOrEqual("ho_k_f", feature.getProperty("ho_k_f"), 0.5, 15, true)) {
+                if (!checkRangeBetweenOrEqual("ho_k_f", feature.getProperty("ho_k_f"), 0.5, 10, 0.5, 15, true)) {
                     return oldValue;
                 }
-                if (!checkRangeBetweenOrEqual("ho_k_pn", feature.getProperty("ho_k_pn"), 2, 25, true)) {
+                if (!checkRangeBetweenOrEqual("ho_k_pn", feature.getProperty("ho_k_pn"), 2, 20, 2, 25, true)) {
                     return oldValue;
                 }
-                if (!checkRangeBetweenOrEqual("ho_bhw_pn", feature.getProperty("ho_bhw_pn"), 2, 25, true)) {
+                if (!checkRangeBetweenOrEqual("ho_bhw_pn", feature.getProperty("ho_bhw_pn"), 2, 20, 2, 25, true)) {
                     return oldValue;
                 }
 
@@ -190,35 +196,34 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                     return oldValue;
                 }
             } else if (isValueIn(newValue, new Object[] { "bd", "kd" }, false)) {
-                if (!checkRangeBetweenOrEqual("br_f", feature.getProperty("br_f"), 2, 100, true)) {
+                if (!checkRangeBetweenOrEqual("br_f", feature.getProperty("br_f"), 2, 50, 2, 100, true)) {
                     return oldValue;
                 }
-                if (!checkRangeBetweenOrEqual("br_k", feature.getProperty("br_k"), 0.5, 20, true)) {
+                if (!checkRangeBetweenOrEqual("br_k", feature.getProperty("br_k"), 1, 10, 0.5, 20, true)) {
                     return oldValue;
                 }
-                if (!checkRangeBetweenOrEqual("ho_k_f", feature.getProperty("ho_k_f"), 1, 15, true)) {
+                if (!checkRangeBetweenOrEqual("ho_k_f", feature.getProperty("ho_k_f"), 1, 10, 1, 15, true)) {
                     return oldValue;
                 }
-                if (!checkRangeBetweenOrEqual("ho_k_pn", feature.getProperty("ho_k_pn"), 1, 20, true)) {
+                if (!checkRangeBetweenOrEqual("ho_k_pn", feature.getProperty("ho_k_pn"), 1, 15, 1, 20, true)) {
                     return oldValue;
                 }
-                if (!checkRange("ho_bhw_pn", feature.getProperty("ho_bhw_pn"), 0, 20, true, false, true)) {
+                if (!checkRange("ho_bhw_pn", feature.getProperty("ho_bhw_pn"), 0, 15, 0, 20, true, false, true)) {
                     return oldValue;
                 }
+
+                removeStationLine((CidsLayerFeature)feature);
                 feature.setProperty("l_rl", null);
-                feature.setProperty("ba_cd", null);
-                feature.setProperty("ba_st_von", null);
-                feature.setProperty("ba_st_bis", null);
             }
         }
 
         if (column.equals("br_f") && (newValue != null)) {
             if (isValueIn(feature.getProperty("l_fk"), new Object[] { "fd" }, false)) {
-                if (!checkRangeBetweenOrEqual("br_f", newValue, 2, 50, true)) {
+                if (!checkRangeBetweenOrEqual("br_f", newValue, 2, 20, 2, 50, true)) {
                     return oldValue;
                 }
             } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
-                if (!checkRangeBetweenOrEqual("br_f", newValue, 2, 100, true)) {
+                if (!checkRangeBetweenOrEqual("br_f", newValue, 2, 50, 2, 100, true)) {
                     return oldValue;
                 }
             }
@@ -226,11 +231,11 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
 
         if (column.equals("br_k") && (newValue != null)) {
             if (isValueIn(feature.getProperty("l_fk"), new Object[] { "fd" }, false)) {
-                if (!checkRangeBetweenOrEqual("br_k", newValue, 0.5, 10, true)) {
+                if (!checkRangeBetweenOrEqual("br_k", newValue, 1, 5, 0.5, 10, true)) {
                     return oldValue;
                 }
             } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
-                if (!checkRangeBetweenOrEqual("br_k", newValue, 0.5, 20, true)) {
+                if (!checkRangeBetweenOrEqual("br_k", newValue, 1, 10, 0.5, 20, true)) {
                     return oldValue;
                 }
             }
@@ -238,11 +243,11 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
 
         if (column.equals("ho_k_f") && (newValue != null)) {
             if (isValueIn(feature.getProperty("l_fk"), new Object[] { "fd" }, false)) {
-                if (!checkRangeBetweenOrEqual("ho_k_f", newValue, 0.5, 15, true)) {
+                if (!checkRangeBetweenOrEqual("ho_k_f", newValue, 0.5, 10, 0.5, 15, true)) {
                     return oldValue;
                 }
             } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
-                if (!checkRangeBetweenOrEqual("ho_k_f", newValue, 1, 15, true)) {
+                if (!checkRangeBetweenOrEqual("ho_k_f", newValue, 1, 10, 1, 15, true)) {
                     return oldValue;
                 }
             }
@@ -250,11 +255,11 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
 
         if (column.equals("ho_k_pn") && (newValue != null)) {
             if (isValueIn(feature.getProperty("l_fk"), new Object[] { "fd" }, false)) {
-                if (!checkRangeBetweenOrEqual("ho_k_pn", newValue, 2, 25, true)) {
+                if (!checkRangeBetweenOrEqual("ho_k_pn", newValue, 2, 20, 2, 25, true)) {
                     return oldValue;
                 }
             } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
-                if (!checkRangeBetweenOrEqual("ho_k_pn", newValue, 1, 20, true)) {
+                if (!checkRangeBetweenOrEqual("ho_k_pn", newValue, 1, 15, 1, 20, true)) {
                     return oldValue;
                 }
             }
@@ -262,37 +267,38 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
 
         if (column.equals("ho_bhw_pn") && (newValue != null)) {
             if (isValueIn(feature.getProperty("l_fk"), new Object[] { "fd" }, false)) {
-                if (!checkRangeBetweenOrEqual("ho_bhw_pn", newValue, 2, 25, true)) {
+                if (!checkRangeBetweenOrEqual("ho_bhw_pn", newValue, 2, 20, 2, 25, true)) {
                     return oldValue;
                 }
             } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
-                if (!checkRange("ho_bhw_pn", newValue, 0, 20, true, false, true)) {
+                if (!checkRange("ho_bhw_pn", newValue, 0, 15, 0, 20, true, false, true)) {
                     return oldValue;
                 }
             }
         }
 
-        if (column.equals("l_rl") && (newValue != null)) {
-            if (isValueIn(feature.getProperty("l_fk"), new Object[] { "fd" }, false)) {
-                if (!isValueIn(newValue, new Object[] { "re", "li" }, false)) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn l_fk = fd, dann muss l_rl = re oder li");
-                    return oldValue;
-                }
-            } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
-                if (!isValueEmpty(newValue)) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut l_rl muss leer sein, wenn l_fk = bd oder kd");
-                    return oldValue;
-                }
-            }
-        }
+//        if (column.equals("l_rl") && (newValue != null)) {
+//            if (isValueIn(feature.getProperty("l_fk"), new Object[] { "fd" }, false)) {
+//                if (!isValueIn(newValue, new Object[] { "re", "li" }, false)) {
+//                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                        "Wenn l_fk = fd, dann muss l_rl = re oder li");
+//                    return oldValue;
+//                }
+//            } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
+//                if (!isValueEmpty(newValue)) {
+//                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                        "Das Attribut l_rl muss leer sein, wenn l_fk = bd oder kd");
+//                    return oldValue;
+//                }
+//            }
+//        }
 
         if ((column.equals("ba_cd") || column.equals("ba_st_von") || column.equals("ba_st_bis"))
                     && (newValue != null)) {
             if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Es darf keine Stationierung angegeben sein, wenn l_fk = bd oder kd");
+                removeStationLine((CidsLayerFeature)feature);
                 return oldValue;
             }
         }
@@ -390,6 +396,30 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         }
 
         return super.afterEdit(feature, column, row, oldValue, newValue);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  cidsFeature  DOCUMENT ME!
+     */
+    private void removeStationLine(final CidsLayerFeature cidsFeature) {
+        try {
+            cidsFeature.removeStations();
+            cidsFeature.setProperty("ba_cd", null);
+            cidsFeature.getBean().setProperty("ba_cd", null);
+            final CidsLayerInfo info = cidsFeature.getLayerInfo();
+
+            for (final String colName : info.getColumnNames()) {
+                if (info.isStation(colName)) {
+                    if (info.getStationInfo(colName).getRouteTable().equals("dlm25w.fg_ba")) {
+                        cidsFeature.setProperty(colName, null);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error while removing station", e);
+        }
     }
 
     @Override
@@ -777,6 +807,15 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         }
 
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

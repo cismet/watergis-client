@@ -25,6 +25,7 @@ import org.openide.util.NbBundle;
 import java.awt.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -37,6 +38,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +106,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     private static String WEB_DAV_PASSWORD = null;
     private static String WEB_DAV_USER = null;
     private static Boolean accessToProtectedWbbl = null;
-    protected static String WK_FG_WEBDAV_PATH = "http://fry.fis-wasser-mv.de/watergis/wk-reports/";
+    public static String WK_FG_WEBDAV_PATH = "http://fry.fis-wasser-mv.de/watergis/wk-reports/";
 
     private static int currentYear = 0;
 
@@ -179,7 +181,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      * @param  path  DOCUMENT ME!
      * @param  file  DOCUMENT ME!
      */
-    protected void downloadDocumentFromWebDav(String path, String file) {
+    public static void downloadDocumentFromWebDav(String path, String file) {
         if (!DownloadManagerDialog.getInstance().isAskForJobNameEnabled()
                     || DownloadManagerDialog.getInstance().showAskingForUserTitleDialog(
                         AppBroker.getInstance().getRootWindow())) {
@@ -225,6 +227,15 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     /**
      * DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     */
+    public static WebDavClient createWebDavClient() {
+        return new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param   path  DOCUMENT ME!
      * @param   file  DOCUMENT ME!
      *
@@ -244,8 +255,29 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
         try {
             final int statusCode = webDavClient.getStatusCode(path + WebDavHelper.encodeURL(file));
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("checkDocumentExistenceOnWebDav status code: " + statusCode);
+            }
 
-            return (statusCode == 200) || (statusCode == 204);
+            if (!((statusCode == 200) || (statusCode == 204))) {
+                // workaround and test
+                final WebDavClient webDavClientDownload = new WebDavClient(Proxy.fromPreferences(),
+                        WEB_DAV_USER,
+                        WEB_DAV_PASSWORD);
+                final InputStream is = webDavClientDownload.getInputStream(path + WebDavHelper.encodeURL(file));
+                final byte[] tmp = new byte[1000];
+
+                try {
+                    return is.read(tmp) > 800;
+//                    return is.available() > 800;
+                } finally {
+                    if (is != null) {
+                        is.close();
+                    }
+                }
+            } else {
+                return true;
+            }
         } catch (IOException ex) {
             LOG.warn("Check link failed with exception.", ex);
 
@@ -261,7 +293,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static String addExtension(final String name, final String extension) {
+    public static String addExtension(final String name, final String extension) {
         if (!name.toLowerCase().endsWith("." + extension.toLowerCase())) {
             return name + "." + extension;
         }
@@ -685,14 +717,43 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             showMessage("Beim Attribut "
                         + columnName
                         + " sind nur Werte von " + (fromEqualAllowed ? "" : ">")
-                        + from
+                        + trimTrailingZeros(
+                            new BigDecimal(from).setScale(7, BigDecimal.ROUND_HALF_UP).toPlainString().replace(
+                                '.',
+                                ','))
                         + " bis " + (toEqualAllowed ? "" : "<")
-                        + to
+                        + trimTrailingZeros(
+                            new BigDecimal(to).setScale(7, BigDecimal.ROUND_HALF_UP).toPlainString().replace('.', ','))
                         + " erlaubt.");
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   number  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private static String trimTrailingZeros(final String number) {
+        if (!number.contains(",") && !number.contains(".")) {
+            return number;
+        }
+
+        final StringBuilder builder = new StringBuilder(number);
+
+        for (int i = number.length() - 1; i > 0; --i) {
+            if (number.charAt(i) == '0') {
+                builder.deleteCharAt(i);
+            } else {
+                break;
+            }
+        }
+
+        return builder.toString();
     }
 
     /**
@@ -1123,21 +1184,26 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     }
 
     @Override
-    public void copyProperties(final FeatureServiceFeature sourceFeature, final FeatureServiceFeature targetFeature) {
-        // copy properties
-        final Map<String, Object> defaultValues = getDefaultValues();
-
-        if (defaultValues != null) {
-            for (final String propName : defaultValues.keySet()) {
-                targetFeature.setProperty(propName, defaultValues.get(propName));
-            }
+    public Map<String, Object> getDefaultValues() {
+        final Map properties = new HashMap();
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
+        } else {
+            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }
 
+        return properties;
+    }
+
+    @Override
+    public void copyProperties(final FeatureServiceFeature sourceFeature, final FeatureServiceFeature targetFeature) {
         final boolean hasIdExpression = targetFeature.getLayerProperties().getIdExpressionType()
                     == LayerProperties.EXPRESSIONTYPE_PROPERTYNAME;
         final Map<String, FeatureServiceAttribute> attributeMap = targetFeature.getLayerProperties()
                     .getFeatureService()
                     .getFeatureServiceAttributes();
+        final String[] calculatedFields = getAdditionalFieldNames();
+        Arrays.sort(calculatedFields);
 
         for (final String attrKey : attributeMap.keySet()) {
             if (hasIdExpression
@@ -1145,11 +1211,25 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 // do not change the id
                 continue;
             }
-            if (isColumnEditable(attrKey) || attrKey.equalsIgnoreCase("ba_cd") || attrKey.equalsIgnoreCase("bak_cd")) {
-                final Object val = getFeaturePropertyIgnoreCase(sourceFeature, attrKey);
-                if (val != null) {
-                    // without this null check, the geometry will probably be overwritten
-                    targetFeature.setProperty(attrKey, val);
+            if (attrKey.equalsIgnoreCase("obj_nr") || (Arrays.binarySearch(calculatedFields, attrKey) >= 0)) {
+                // this property should never be copied
+                continue;
+            }
+            final Object val = getFeaturePropertyIgnoreCase(sourceFeature, attrKey);
+
+            if (val != null) {
+                // without this null check, the geometry will probably be overwritten
+                targetFeature.setProperty(attrKey, val);
+            }
+        }
+
+        // copy properties
+        final Map<String, Object> defaultValues = getDefaultValues();
+
+        if (defaultValues != null) {
+            for (final String propName : defaultValues.keySet()) {
+                if (attributeMap.containsKey(propName)) {
+                    targetFeature.setProperty(propName, defaultValues.get(propName));
                 }
             }
         }
@@ -1505,6 +1585,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 + (type.isNotNull() ? "" : "/NULL")
                                 + ")");
                     return false;
+                } else if (result.getValidationResult() == Validation.WBBL_NOT_ACCESSIBLE) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wert nicht zulässig, weil Wasserbuchblatt nicht existiert");
+                    return false;
                 }
             }
 
@@ -1556,13 +1640,15 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
                 if ((from != null) && (till != null)) {
                     if (Math.abs(till - from) < minBaLength) {
-                        if (
-                            !showSecurityQuestion(
-                                        "Die Länge des Objektes mit der id "
-                                        + feature.getId()
-                                        + "liegt außerhalb des Standardbereichs (0 .. 5) --> verwenden ?")) {
-                            return false;
-                        }
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Die Länge des Objektes mit der id "
+                                    + feature.getId()
+                                    + " darf nicht kleiner "
+                                    + minBaLength
+                                    + " sein",
+                            "Ungültiger Wert",
+                            JOptionPane.ERROR_MESSAGE);
+                        return false;
                     }
                 }
             }

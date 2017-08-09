@@ -41,8 +41,13 @@ public class DefaultCidsLayerAttributeTableRuleSet extends DefaultAttributeTable
         final CidsBean bean = ((CidsLayerFeature)feature).getBean();
 
         for (final String propertyKey : properties.keySet()) {
-            if (!propertyKey.equalsIgnoreCase("id") && !propertyKey.equals(feature.getIdExpression())) {
-                newFeature.setProperty(propertyKey, bean.getProperty(propertyKey));
+            if (!propertyKey.equalsIgnoreCase("id") && !propertyKey.equals(feature.getIdExpression())
+                        && !propertyKey.equalsIgnoreCase("obj_nr")) {
+                if (bean.getProperty(propertyKey) == null) {
+                    newFeature.setProperty(propertyKey, feature.getProperty(propertyKey));
+                } else {
+                    newFeature.setProperty(propertyKey, bean.getProperty(propertyKey));
+                }
             }
         }
 

@@ -76,7 +76,7 @@ public class FgBakGbkRuleSet extends WatergisDefaultRuleSet {
 
                 @Override
                 public void run() {
-                    final MetaClass mc = ClassCacheMultiple.getMetaClass("dlm25w", "dlm25w.k_gbk_lawa");
+                    final MetaClass mc = ClassCacheMultiple.getMetaClass("DLM25W", "dlm25w.k_gbk_lawa");
 
                     if (mc != null) {
                         DefaultCidsLayerBindableReferenceCombo.preloadData(mc, true, null);
@@ -167,6 +167,15 @@ public class FgBakGbkRuleSet extends WatergisDefaultRuleSet {
         }
 
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

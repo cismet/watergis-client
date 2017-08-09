@@ -109,6 +109,15 @@ public class KgDetailRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("flaeche")) {
+            return "st_area(geom)";
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public Class getAdditionalFieldClass(final int index) {
         return Integer.class;
     }

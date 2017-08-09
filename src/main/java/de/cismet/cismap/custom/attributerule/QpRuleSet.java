@@ -105,9 +105,9 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("la_cd", new Numeric(20, 0, false, false));
         typeMap.put("la_st", new Numeric(10, 2, false, false));
         typeMap.put("l_st", new Catalogue("k_l_st", true, true));
-        typeMap.put("qp_nr", new Numeric(20, 0, true, false));
         typeMap.put("re", new Numeric(11, 2, true, false));
         typeMap.put("ho", new Numeric(10, 2, true, false));
+        typeMap.put("qp_nr", new Numeric(20, 0, true, false));
         typeMap.put("upl_name", new Varchar(50, true, false));
         typeMap.put("upl_datum", new Varchar(10, true, false));
         typeMap.put("upl_zeit", new Varchar(8, true, false));
@@ -280,9 +280,9 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("re")) {
-            return 7;
-        } else if (name.equals("ho")) {
             return 8;
+        } else if (name.equals("ho")) {
+            return 9;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }
@@ -303,6 +303,17 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
         }
 
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("re")) {
+            return "st_x(geom)";
+        } else if (propertyName.equals("ho")) {
+            return "st_y(geom)";
+        }
+
+        return null;
     }
 
     @Override

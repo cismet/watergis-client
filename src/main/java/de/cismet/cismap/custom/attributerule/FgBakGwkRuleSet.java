@@ -77,7 +77,7 @@ public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
 
                 @Override
                 public void run() {
-                    final MetaClass mc = ClassCacheMultiple.getMetaClass("dlm25w", "dlm25w.k_gwk_lawa");
+                    final MetaClass mc = ClassCacheMultiple.getMetaClass("DLM25W", "dlm25w.k_gwk_lawa");
 
                     if (mc != null) {
                         DefaultCidsLayerBindableReferenceCombo.preloadData(mc, true, null);
@@ -93,7 +93,8 @@ public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("geo_field") && !columnName.equals("geom") && !columnName.equals("ba_cd");
+                    && !columnName.equals("geo_field") && !columnName.equals("geom") && !columnName.equals("ba_cd")
+                    && !columnName.equals("laenge");
     }
 
     @Override
@@ -167,6 +168,15 @@ public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
             value = round(geom.getLength());
         }
         return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
     }
 
     @Override

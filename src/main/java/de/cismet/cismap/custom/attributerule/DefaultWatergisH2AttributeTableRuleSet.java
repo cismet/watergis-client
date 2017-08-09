@@ -20,6 +20,8 @@ import java.awt.Component;
 
 import java.lang.reflect.Constructor;
 
+import java.text.DecimalFormat;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,7 @@ import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.H2AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
+import de.cismet.cismap.commons.gui.attributetable.creator.WithoutGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 import de.cismet.cismap.commons.tools.FeatureTools;
 
@@ -151,6 +154,8 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
                 return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, false);
             } else if (geometryType.equalsIgnoreCase("MultiPolygon")) {
                 return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
+            } else if (geometryType.equalsIgnoreCase("none")) {
+                return new WithoutGeometryCreator();
             }
         }
 
@@ -177,6 +182,57 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
+        final LinearReferencingInfo refInfo = getInfoForColumn(columnName);
+
+        if (refInfo != null) {
+            return new DefaultTableCellRenderer() {
+
+                    DecimalFormat format = new DecimalFormat();
+
+                    {
+                        format.setGroupingUsed(false);
+                        format.setMaximumFractionDigits(2);
+                        format.setMinimumFractionDigits(2);
+                    }
+
+                    @Override
+                    public Component getTableCellRendererComponent(final JTable table,
+                            final Object value,
+                            final boolean isSelected,
+                            final boolean hasFocus,
+                            final int row,
+                            final int column) {
+                        Object val = value;
+
+                        if (value instanceof Number) {
+                            val = format.format(value);
+                        } else if (value instanceof String) {
+                            try {
+                                val = Double.parseDouble((String)value);
+                                val = format.format(val);
+                            } catch (NumberFormatException e) {
+                                // should not happen
+                                LOG.error("Numeric field does not contain a numeric value", e);
+                            }
+                        }
+                        final Component c = super.getTableCellRendererComponent(
+                                table,
+                                val,
+                                isSelected,
+                                hasFocus,
+                                row,
+                                column);
+
+                        if (c instanceof JLabel) {
+                            ((JLabel)c).setHorizontalAlignment(JLabel.RIGHT);
+                            ((JLabel)c).setBorder(new EmptyBorder(0, 0, 0, 2));
+                        }
+
+                        return c;
+                    }
+                };
+        }
+
         final FeatureServiceAttribute attr = attributesMap.get(columnName);
 
         if (attr != null) {
