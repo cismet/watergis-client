@@ -2193,7 +2193,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniHelp = new javax.swing.JMenuItem();
         mniInfo = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.title")); // NOI18N
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -3801,7 +3801,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUndomniUndoPerformed
+    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdUndomniUndoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemUndo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -3819,14 +3819,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }//GEN-LAST:event_cmdUndomniUndoPerformed
+    }                                                              //GEN-LAST:event_cmdUndomniUndoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeMoveActionPerformed
+    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3838,14 +3838,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    }//GEN-LAST:event_cmdNodeMoveActionPerformed
+    } //GEN-LAST:event_cmdNodeMoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeAddActionPerformed
+    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeAddActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3857,14 +3857,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    }//GEN-LAST:event_cmdNodeAddActionPerformed
+    } //GEN-LAST:event_cmdNodeAddActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRemoveActionPerformed
+    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRemoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3876,14 +3876,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    }//GEN-LAST:event_cmdNodeRemoveActionPerformed
+    } //GEN-LAST:event_cmdNodeRemoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRouteActionPerformed
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
         final Object selectedObject = cbRoute.getSelectedItem();
 
         if (routeModelInitialised && (selectedObject instanceof RouteElement)) {
@@ -3919,16 +3919,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
             watergisSingleThreadExecutor.execute(t);
         }
-    }//GEN-LAST:event_cbRouteActionPerformed
+    } //GEN-LAST:event_cbRouteActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdGoToActionPerformed
+    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdGoToActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cmdGoToActionPerformed
+    } //GEN-LAST:event_cmdGoToActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -3944,6 +3944,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         }
 
         final PropertyManager propertyManager = PropertyManager.getManager();
+        propertyManager.load(this.getClass().getResourceAsStream("/cfg/navigator.cfg"));
         final Connection connection = ConnectionFactory.getFactory()
                     .createConnection(AppBroker.getInstance().getConnectionClass(),
                         AppBroker.getInstance().getCallserverUrl(),
@@ -4171,98 +4172,66 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
     @Override
     public void dispose() {
-        final List<AttributeTable> unsavedTables = new ArrayList<AttributeTable>();
+        try {
+            for (final String key : attributeTableMap.keySet()) {
+                final View attributeTableView = attributeTableMap.get(key);
 
-        for (final String key : attributeTableMap.keySet()) {
-            final View attributeTableView = attributeTableMap.get(key);
+                if (attributeTableView != null) {
+                    final Component c = attributeTableView.getComponent();
 
-            if (attributeTableView != null) {
-                final Component c = attributeTableView.getComponent();
+                    if (c instanceof AttributeTable) {
+                        final AttributeTable attrTable = (AttributeTable)c;
 
-                if (c instanceof AttributeTable) {
-                    final AttributeTable attrTable = (AttributeTable)c;
+                        if (attrTable.isProcessingModeActive()) {
+                            final String message = NbBundle.getMessage(
+                                    WatergisApp.class,
+                                    "WatergisApp.dispose().singleTable.message",
+                                    attrTable.getFeatureService().getName());
 
-                    if (attrTable.isProcessingModeActive()) {
-                        final String message = NbBundle.getMessage(
-                                WatergisApp.class,
-                                "WatergisApp.dispose().singleTable.message",
-                                attrTable.getFeatureService().getName());
+                            final int ans = JOptionPane.showConfirmDialog(
+                                    WatergisApp.this,
+                                    message,
+                                    NbBundle.getMessage(WatergisApp.class, "WatergisApp.dispose().title"),
+                                    JOptionPane.YES_NO_CANCEL_OPTION);
 
-                        final int ans = JOptionPane.showConfirmDialog(
-                                WatergisApp.this,
-                                message,
-                                NbBundle.getMessage(WatergisApp.class, "WatergisApp.dispose().title"),
-                                JOptionPane.YES_NO_CANCEL_OPTION);
-
-                        if (ans == JOptionPane.YES_OPTION) {
-                            attrTable.changeProcessingMode(true);
-                        } else if (ans == JOptionPane.NO_OPTION) {
-                            attrTable.unlockAll();
-                        } else {
-                            return;
+                            if (ans == JOptionPane.YES_OPTION) {
+                                attrTable.changeProcessingMode(true);
+                            } else if (ans == JOptionPane.NO_OPTION) {
+                                attrTable.unlockAll();
+                            } else {
+                                return;
+                            }
                         }
                     }
                 }
             }
+
+            if (vPhoto.isClosable()) {
+                vPhoto.close();
+            }
+
+            if (vGaf.isClosable()) {
+                vGaf.close();
+            }
+
+            try {
+                StaticStartupTools.saveScreenshotOfFrame(this, FILEPATH_SCREEN);
+            } catch (Exception ex) {
+                LOG.fatal("Error while capturing the app content", ex);
+            }
+
+            setVisible(false);
+            LOG.info("Dispose(): Watergis is going to shut down");
+
+            configManager.writeConfiguration();
+            saveLayout(FILEPATH_DEFAULT_LAYOUT);
+
+            super.dispose();
+        } catch (RuntimeException ex) {
+            LOG.error("Error while disposing main window", ex);
         }
 
-        if (vPhoto.isClosable()) {
-            vPhoto.close();
-        }
-
-        if (vGaf.isClosable()) {
-            vGaf.close();
-        }
-
-//        if (!unsavedTables.isEmpty()) {
-//            String message;
-//
-//            if (unsavedTables.size() == 1) {
-//                message = NbBundle.getMessage(
-//                        WatergisApp.class,
-//                        "WatergisApp.dispose().singleTable.message",
-//                        unsavedTables.get(0).getFeatureService().getName());
-//            } else {
-//                message = NbBundle.getMessage(
-//                        WatergisApp.class,
-//                        "WatergisApp.dispose().multiTable.message",
-//                        unsavedTables.size());
-//            }
-//
-//            final int ans = JOptionPane.showConfirmDialog(
-//                    WatergisApp.this,
-//                    message,
-//                    NbBundle.getMessage(WatergisApp.class, "WatergisApp.dispose().title"),
-//                    JOptionPane.YES_NO_CANCEL_OPTION);
-//
-//            if (ans == JOptionPane.YES_OPTION) {
-//                for (final AttributeTable table : unsavedTables) {
-//                    table.changeProcessingMode(true);
-//                }
-//            } else if (ans == JOptionPane.NO_OPTION) {
-//                for (final AttributeTable table : unsavedTables) {
-//                    table.unlockAll();
-//                }
-//            } else {
-//                return;
-//            }
-//        }
-
-        try {
-            StaticStartupTools.saveScreenshotOfFrame(this, FILEPATH_SCREEN);
-        } catch (Exception ex) {
-            LOG.fatal("Error while capturing the app content", ex);
-        }
-
-        setVisible(false);
-        LOG.info("Dispose(): Watergis is going to shut down");
-
-//        this.saveAppData(FILEPATH_DEFAULT_APP_DATA);
-
-        configManager.writeConfiguration();
-        saveLayout(FILEPATH_DEFAULT_LAYOUT);
-
-        super.dispose();
+        LOG.info("Dispose(): exit");
         System.exit(0);
     }
 
