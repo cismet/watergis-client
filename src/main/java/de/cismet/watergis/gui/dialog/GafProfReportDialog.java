@@ -289,7 +289,6 @@ public class GafProfReportDialog extends javax.swing.JDialog {
                 GafProfReportDialog.class,
                 "GafProfReportDialog.ckbProfileSelection.text",
                 new Object[] {})); // NOI18N
-        ckbProfileSelection.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -559,6 +558,15 @@ public class GafProfReportDialog extends javax.swing.JDialog {
      */
     public boolean isWithoutSelected() {
         return ckbOhne.isSelected();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isObjectRestrictionSelected() {
+        return ckbProfileSelection.isSelected();
     }
 
     //~ Inner Classes ----------------------------------------------------------

@@ -224,7 +224,6 @@ public class PhotoReportDialog extends javax.swing.JDialog {
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
-        txtFile.setEditable(false);
         txtFile.setText(org.openide.util.NbBundle.getMessage(
                 PhotoReportDialog.class,
                 "PhotoReportDialog.txtFile.text_1",
@@ -277,7 +276,6 @@ public class PhotoReportDialog extends javax.swing.JDialog {
                 PhotoReportDialog.class,
                 "PhotoReportDialog.ckbPhotoSelection.text",
                 new Object[] {})); // NOI18N
-        ckbPhotoSelection.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -390,6 +388,15 @@ public class PhotoReportDialog extends javax.swing.JDialog {
      */
     public boolean isCancelled() {
         return cancelled;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isObjectRestrictionSelected() {
+        return ckbPhotoSelection.isSelected();
     }
 
     //~ Inner Classes ----------------------------------------------------------
