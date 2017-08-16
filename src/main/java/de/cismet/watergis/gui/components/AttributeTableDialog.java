@@ -11,6 +11,9 @@
  */
 package de.cismet.watergis.gui.components;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
+
 import org.apache.log4j.Logger;
 
 import org.jdesktop.swingx.JXTable;
@@ -27,11 +30,14 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.features.PureNewFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.style.BasicStyle;
@@ -94,6 +100,35 @@ public class AttributeTableDialog extends javax.swing.JDialog {
         attrTab.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         attrTab.setDefaultRenderer(Object.class, new ColoredCellRenderer());
         attrTab.setDefaultRenderer(Number.class, new ColoredCellRenderer());
+
+        attrTab.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+                @Override
+                public void valueChanged(final ListSelectionEvent e) {
+                    if (!e.getValueIsAdjusting()) {
+                        if (attrTab.getSelectedRowCount() == 1) {
+                            final Feature f = model.getFeatureServiceFeature(
+                                    attrTab.convertRowIndexToModel(attrTab.getSelectedRow()));
+                            Geometry highlightingGeometry = f.getGeometry();
+
+                            if (highlightingGeometry != null) {
+                                if (highlightingGeometry.getCoordinates().length > 500) {
+                                    highlightingGeometry = TopologyPreservingSimplifier.simplify(
+                                            highlightingGeometry,
+                                            30);
+                                }
+                                final PureNewFeature highligtingFeature = new PureNewFeature(highlightingGeometry);
+
+                                highligtingFeature.setFillingPaint(Color.decode("#EEC506"));
+
+                                CismapBroker.getInstance()
+                                        .getMappingComponent()
+                                        .highlightFeature(highligtingFeature, 1500);
+                            }
+                        }
+                    }
+                }
+            });
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -124,7 +159,7 @@ public class AttributeTableDialog extends javax.swing.JDialog {
                 (List<FeatureServiceFeature>)featureList,
                 service.getLayerProperties().getAttributeTableRuleSet());
         attrTab.setModel(model);
-        removeSelectionOnAllFeatures();
+//        removeSelectionOnAllFeatures();
     }
 
     /**

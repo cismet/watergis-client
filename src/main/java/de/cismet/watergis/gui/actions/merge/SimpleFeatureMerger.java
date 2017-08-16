@@ -14,9 +14,7 @@ package de.cismet.watergis.gui.actions.merge;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 
-import de.cismet.cismap.commons.features.CloneableFeature;
 import de.cismet.cismap.commons.features.Feature;
-import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
 /**
  * DOCUMENT ME!
@@ -40,6 +38,17 @@ public class SimpleFeatureMerger implements FeatureMerger {
 
             if (lineMerger.getMergedLineStrings().size() == 1) {
                 mergedGeom = (Geometry)lineMerger.getMergedLineStrings().toArray(new Geometry[1])[0];
+            } else {
+                // try it with the second line in reverse order
+                final Geometry mergedGeomReverseOrder = masterFeature.getGeometry()
+                            .union(childFeature.getGeometry().reverse());
+
+                final LineMerger reverseOrderLineMerger = new LineMerger();
+                reverseOrderLineMerger.add(mergedGeomReverseOrder);
+
+                if (reverseOrderLineMerger.getMergedLineStrings().size() == 1) {
+                    mergedGeom = (Geometry)reverseOrderLineMerger.getMergedLineStrings().toArray(new Geometry[1])[0];
+                }
             }
         }
 
