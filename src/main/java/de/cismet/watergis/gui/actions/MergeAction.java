@@ -21,6 +21,8 @@ import org.openide.util.NbBundle;
 import java.awt.event.ActionEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -99,6 +101,7 @@ public class MergeAction extends AbstractAction {
 
             Feature resultedFeature = masterFeature;
             allValidFeatures.remove(masterFeature);
+            Collections.sort(allValidFeatures, new DistanceComparator(masterFeature));
 
             final FeatureMerger merger = (new FeatureMergerFactory()).getFeatureMergerForFeature(resultedFeature);
             final String geometryType = resultedFeature.getGeometry().getGeometryType();
@@ -117,8 +120,8 @@ public class MergeAction extends AbstractAction {
                 }
             } catch (MergeException ex) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Fehler",
                     ex.getMessage(),
+                    "Fehler",
                     JOptionPane.ERROR_MESSAGE);
 
                 if (resultedFeature instanceof ModifiableFeature) {
@@ -159,10 +162,6 @@ public class MergeAction extends AbstractAction {
                             }
                         }
 
-                        serviceFeature.saveChangesWithoutReload();
-                        serviceFeature.setEditable(false);
-                        serviceFeature.setEditable(true);
-
                         for (final Feature f : allValidFeatures) {
                             if (f instanceof ModifiableFeature) {
                                 final AttributeTable table = AppBroker.getInstance()
@@ -176,15 +175,21 @@ public class MergeAction extends AbstractAction {
                                 }
                             }
                         }
+
+                        serviceFeature.saveChangesWithoutReload();
+                        serviceFeature.setEditable(false);
+                        serviceFeature.setEditable(true);
                     } catch (Exception ex) {
                         LOG.error("Error while saving changes", ex);
                     }
 
-                    if (resultedFeature instanceof FeatureServiceFeature) {
-                        ((FeatureServiceFeature)resultedFeature).getLayerProperties()
-                                .getFeatureService()
-                                .retrieve(true);
-                    }
+                    AppBroker.getInstance().getMappingComponent().refresh();
+
+//                    if (resultedFeature instanceof FeatureServiceFeature) {
+//                        ((FeatureServiceFeature)resultedFeature).getLayerProperties()
+//                                .getFeatureService()
+//                                .retrieve(true);
+//                    }
                 } else if (!geometryType.equals(resultedFeature.getGeometry().getGeometryType())) {
                     // The geometry type has changed during the merge process
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -313,5 +318,40 @@ public class MergeAction extends AbstractAction {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private static class DistanceComparator implements Comparator<FeatureServiceFeature> {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private final FeatureServiceFeature masterFeature;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new DistanceComparator object.
+         *
+         * @param  masterFeature  DOCUMENT ME!
+         */
+        public DistanceComparator(final FeatureServiceFeature masterFeature) {
+            this.masterFeature = masterFeature;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public int compare(final FeatureServiceFeature o1, final FeatureServiceFeature o2) {
+            final Double distanceO1 = masterFeature.getGeometry().distance(o1.getGeometry());
+            final Double distanceO2 = masterFeature.getGeometry().distance(o2.getGeometry());
+
+            return distanceO1.compareTo(distanceO2);
+        }
     }
 }

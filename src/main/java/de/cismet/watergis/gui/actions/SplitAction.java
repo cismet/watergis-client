@@ -23,6 +23,8 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -159,6 +161,9 @@ public class SplitAction extends AbstractAction {
                                                             ((FeatureServiceFeature)validFeature).getLayerProperties()
                                                                         .getFeatureService()
                                                                         .retrieve(true);
+                                                            SelectionManager.getInstance()
+                                                                        .addSelectedFeatures(
+                                                                            Arrays.asList(newFeatures));
                                                         }
                                                     } else {
                                                         LOG.error("Feature is not modifiable");
@@ -185,26 +190,30 @@ public class SplitAction extends AbstractAction {
     private FeatureServiceFeature determineValidFeature() {
         final List<Feature> features = SelectionManager.getInstance().getSelectedFeatures();
 
-        if ((features != null) && (features.size() == 1)) {
-            final Feature f = features.get(0);
+        if ((features != null) && (features.size() > 0)) {
+            for (final Feature f : features) {
+//            final Feature f = features.get(0);
 
-            if (!f.getGeometry().getGeometryType().equalsIgnoreCase("POINT")) {
-                if (features.get(0) instanceof FeatureServiceFeature) {
-                    final FeatureServiceFeature feature = (FeatureServiceFeature)features.get(0);
-                    final AttributeTable table = AppBroker.getInstance()
-                                .getWatergisApp()
-                                .getAttributeTableByFeature(feature);
+                if (!f.getGeometry().getGeometryType().equalsIgnoreCase("POINT")) {
+                    if (f instanceof FeatureServiceFeature) {
+                        final FeatureServiceFeature feature = (FeatureServiceFeature)f;
+                        final AttributeTable table = AppBroker.getInstance()
+                                    .getWatergisApp()
+                                    .getAttributeTableByFeature(feature);
 
-                    if (table != null) {
-                        // take the feature from the attribute table, to ensure that changes will not be overwritten
-                        final List<FeatureServiceFeature> selectedFeatures = table.getSelectedFeatures();
+                        if ((table != null) && table.isProcessingModeActive()) {
+                            // take the feature from the attribute table, to ensure that changes will not be overwritten
+                            final List<FeatureServiceFeature> selectedFeatures = table.getSelectedFeatures();
 
-                        if (selectedFeatures.get(0).equals(feature)) {
-                            return selectedFeatures.get(0);
+                            for (final FeatureServiceFeature sf : selectedFeatures) {
+                                if (sf.equals(feature) && sf.isEditable()) {
+                                    return sf;
+                                }
+                            }
                         }
-                    }
 
-                    return feature;
+                        return feature;
+                    }
                 }
             }
         } else {
