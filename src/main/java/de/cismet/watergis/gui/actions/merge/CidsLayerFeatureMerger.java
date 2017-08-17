@@ -11,18 +11,36 @@
  */
 package de.cismet.watergis.gui.actions.merge;
 
+import Sirius.navigator.connection.SessionManager;
+
+import Sirius.server.middleware.types.MetaClass;
+import Sirius.server.middleware.types.MetaObject;
+
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
 
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+
+import de.cismet.cids.custom.watergis.server.search.DetermineClosestRoute;
+import de.cismet.cids.custom.watergis.server.search.DetermineSourceSink;
+import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
+
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.LineAndStationCreator;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
+import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.LinearReferencedPointFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.cismap.linearreferencing.FeatureRegistry;
@@ -68,6 +86,16 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
 
             if (lineMerger.getMergedLineStrings().size() == 1) {
                 mergedGeom = (Geometry)lineMerger.getMergedLineStrings().toArray(new Geometry[1])[0];
+            } else {
+                final Geometry mergedGeomReverseOrder = masterFeature.getGeometry()
+                            .union(childFeature.getGeometry().reverse());
+
+                final LineMerger reverseOrderLineMerger = new LineMerger();
+                reverseOrderLineMerger.add(mergedGeomReverseOrder);
+
+                if (reverseOrderLineMerger.getMergedLineStrings().size() == 1) {
+                    mergedGeom = (Geometry)reverseOrderLineMerger.getMergedLineStrings().toArray(new Geometry[1])[0];
+                }
             }
         }
 
@@ -105,6 +133,19 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
                     ((CidsLayerFeature)masterFeature).removeStations();
                     ((CidsLayerFeature)masterFeature).setProperty(linePropertyName, null);
                     ((CidsLayerFeature)masterFeature).getBean().setProperty(linePropertyName, null);
+                    final FeatureCreator creator = ruleSet.getFeatureCreator();
+
+                    if (creator instanceof LineAndStationCreator) {
+                        final LineAndStationCreator lineCreator = (LineAndStationCreator)creator;
+                        final MetaClass routeMc = lineCreator.getRouteClass();
+                        final String stationProperty = lineCreator.getStationProperty();
+
+                        setCalculatedLine((FeatureServiceFeature)masterFeature,
+                            routeMc,
+                            linearReferencingHelper,
+                            mergedGeom,
+                            stationProperty);
+                    }
                 } else {
                     final CidsBean otherLineBean = (CidsBean)((CidsLayerFeature)childFeature).getBean()
                                 .getProperty(linePropertyName);
@@ -122,6 +163,14 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
 
                     final CidsBean masterRouteBean = linearReferencingHelper.getRouteBeanFromStationBean(masterFrom);
                     final CidsBean otherRouteBean = linearReferencingHelper.getRouteBeanFromStationBean(otherFrom);
+//least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1
+                    final double d =
+                        Math.min(Math.max(masterFromVal, masterTillVal), Math.max(otherFromVal, otherTillVal))
+                                - Math.max(Math.min(masterFromVal, masterTillVal), Math.min(otherFromVal, otherTillVal));
+
+                    if (!(d > -0.1)) {
+                        throw new MergeException("Die ausgewählten Objekte berühren oder überlappen sich nicht");
+                    }
 
                     if (masterRouteBean.getMetaObject().getID() != otherRouteBean.getMetaObject().getID()) {
                         throw new MergeException("Die ausgewählten Objekte liegen nicht auf der gleichen Route");
@@ -151,6 +200,10 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
                     if (otherTillVal > masterTillVal) {
                         linearReferencingHelper.setLinearValueToStationBean(otherTillVal, masterTill);
                     }
+                    final CidsBean geomBean = linearReferencingHelper.getGeomBeanFromLineBean((CidsBean)origLineBean);
+                    masterFeature.setGeometry((Geometry)geomBean.getProperty("geo_field"));
+
+                    return masterFeature;
                 }
             }
         } catch (MergeException e) {
@@ -161,5 +214,106 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
         masterFeature.setGeometry(mergedGeom);
 
         return masterFeature;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature          DOCUMENT ME!
+     * @param   routeClass       DOCUMENT ME!
+     * @param   helper           DOCUMENT ME!
+     * @param   g                DOCUMENT ME!
+     * @param   stationProperty  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private void setCalculatedLine(final FeatureServiceFeature feature,
+            final MetaClass routeClass,
+            final LinearReferencingHelper helper,
+            final Geometry g,
+            final String stationProperty) throws Exception {
+        final Geometry firstPoint = createPointFromCoords(
+                g.getCoordinates()[0],
+                g.getFactory());
+        final Geometry lastPoint = createPointFromCoords(
+                g.getCoordinates()[g.getNumPoints() - 1],
+                g.getFactory());
+
+        final ArrayList routeMetaObject = (ArrayList)SessionManager.getProxy()
+                    .customServerSearch(SessionManager.getSession().getUser(),
+                            new DetermineClosestRoute(
+                                routeClass.getID(),
+                                routeClass.getPrimaryKey(),
+                                routeClass.getTableName(),
+                                firstPoint.toText()));
+
+        CidsBean routeBean = null;
+
+        if ((routeMetaObject != null) && !routeMetaObject.isEmpty()) {
+            routeBean = ((MetaObject)routeMetaObject.get(0)).getBean();
+        }
+
+        if (routeBean != null) {
+            final CidsBean firstStation = createStationFromRoute(
+                    routeBean,
+                    firstPoint,
+                    helper);
+            final CidsBean lastStation = createStationFromRoute(
+                    routeBean,
+                    lastPoint,
+                    helper);
+            final CidsBean lineBean = helper.createLineBeanFromRouteBean(routeBean);
+            final Double firstVal = (Double)firstStation.getProperty(
+                    helper.getValueProperty(firstStation));
+            final Double lastVal = (Double)lastStation.getProperty(
+                    helper.getValueProperty(lastStation));
+
+            helper.setLinearValueToStationBean(
+                firstVal,
+                helper.getStationBeanFromLineBean(lineBean, true));
+            helper.setLinearValueToStationBean(
+                lastVal,
+                helper.getStationBeanFromLineBean(lineBean, false));
+            feature.setProperty(stationProperty, lineBean);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   coord    DOCUMENT ME!
+     * @param   factory  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Geometry createPointFromCoords(final Coordinate coord,
+            final GeometryFactory factory) {
+        return factory.createPoint(coord);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   routeBean  DOCUMENT ME!
+     * @param   point      DOCUMENT ME!
+     * @param   helper     DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private CidsBean createStationFromRoute(final CidsBean routeBean,
+            final Geometry point,
+            final LinearReferencingHelper helper) {
+        final Coordinate[] firstCoords = DistanceOp.nearestPoints(
+                helper.getGeometryFromRoute(routeBean),
+                point);
+        final double firstPosition = LinearReferencedPointFeature.getPositionOnLine(
+                firstCoords[0],
+                helper.getGeometryFromRoute(routeBean));
+
+        final CidsBean station = helper.createStationBeanFromRouteBean(
+                routeBean,
+                firstPosition);
+
+        return station;
     }
 }

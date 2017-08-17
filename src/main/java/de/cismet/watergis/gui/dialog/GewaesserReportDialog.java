@@ -292,8 +292,8 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
                 GewaesserReportDialog.class,
                 "GewaesserReportDialog.butOk.text",
                 new Object[] {})); // NOI18N
-        butOk.setMinimumSize(new java.awt.Dimension(120, 29));
-        butOk.setPreferredSize(new java.awt.Dimension(150, 29));
+        butOk.setMinimumSize(new java.awt.Dimension(170, 29));
+        butOk.setPreferredSize(new java.awt.Dimension(170, 29));
         butOk.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -316,8 +316,8 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
                 GewaesserReportDialog.class,
                 "GewaesserReportDialog.butCancel.text",
                 new Object[] {})); // NOI18N
-        butCancel.setMinimumSize(new java.awt.Dimension(120, 29));
-        butCancel.setPreferredSize(new java.awt.Dimension(150, 29));
+        butCancel.setMinimumSize(new java.awt.Dimension(170, 29));
+        butCancel.setPreferredSize(new java.awt.Dimension(170, 29));
         butCancel.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
