@@ -40,6 +40,7 @@ import com.vividsolutions.jts.io.WKBReader;
 
 import net.infonode.docking.DockingWindow;
 import net.infonode.docking.DockingWindowAdapter;
+import net.infonode.docking.DockingWindowListener;
 import net.infonode.docking.FloatingWindow;
 import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
@@ -63,6 +64,7 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
@@ -85,6 +87,10 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.event.InputEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -124,6 +130,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
@@ -701,8 +709,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 .setParameter(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, maxHostConnections);
         HttpConnectionManagerParams.getDefaultParams()
                 .setIntParameter(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, 128);
+        HttpConnectionManagerParams.getDefaultParams().setIntParameter(HttpConnectionManagerParams.SO_LINGER, 2);
         configManager.addConfigurable(this);
         configManager.configure(this);
+        ClassCacheMultiple.setInstance(AppBroker.DOMAIN_NAME);
         AppBroker.setConfigManager(configManager);
         UIManager.put("Table.selectionBackground", new Color(195, 212, 232));
         UIManager.put("Tree.selectionBackground", new Color(195, 212, 232));
@@ -1003,26 +1013,26 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      * DOCUMENT ME!
      */
     private static void initLog4J() {
-//        try {
-//            PropertyConfigurator.configure(WatergisApp.class.getResource(
-//                    "/de/cismet/watergis/configuration/log4j.properties"));
-//            LOG.info("Log4J System was configured successfully");
-//        } catch (Exception ex) {
-//            System.err.println("Error during the initialisation");
-//            ex.printStackTrace();
-//        }
-        final Properties p = new Properties();
+        try {
+            PropertyConfigurator.configure(WatergisApp.class.getResource(
+                    "/de/cismet/watergis/configuration/log4j.properties"));
+            LOG.info("Log4J System was configured successfully");
+        } catch (Exception ex) {
+            System.err.println("Error during the initialisation");
+            ex.printStackTrace();
+        }
 //        p.put("log4j.appender.File", "org.apache.log4j.FileAppender");                              // NOI18N
 //        p.put("log4j.appender.File.file", DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.log"); // NOI18N
 //        p.put("log4j.appender.File.layout", "org.apache.log4j.xml.XMLLayout");                      // NOI18N
 //        p.put("log4j.appender.File.append", "false");                                               // NOI18N
 //        p.put("log4j.rootLogger", "WARN,File");                                                     // NOI18N
-        p.put("log4j.appender.Remote", "org.apache.log4j.net.SocketAppender"); // NOI18N
-        p.put("log4j.appender.Remote.remoteHost", "localhost");                // NOI18N
-        p.put("log4j.appender.Remote.port", "4445");                           // NOI18N
-        p.put("log4j.appender.Remote.locationInfo", "true");                   // NOI18N
-        p.put("log4j.rootLogger", "WARN,Remote");                              // NOI18N
-        org.apache.log4j.PropertyConfigurator.configure(p);
+//        final Properties p = new Properties();
+//        p.put("log4j.appender.Remote", "org.apache.log4j.net.SocketAppender"); // NOI18N
+//        p.put("log4j.appender.Remote.remoteHost", "localhost");                // NOI18N
+//        p.put("log4j.appender.Remote.port", "4445");                           // NOI18N
+//        p.put("log4j.appender.Remote.locationInfo", "true");                   // NOI18N
+//        p.put("log4j.rootLogger", "WARN,Remote");                              // NOI18N
+//        org.apache.log4j.PropertyConfigurator.configure(p);
 //        Log4JQuickConfig.configure4LumbermillOnLocalhost();
     }
 
@@ -1421,6 +1431,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         if (creator != null) {
                             creator.cancel();
                         }
+
+                        AppBroker.getInstance().setActiveFeatureCreator(null);
                     }
                 }
 
@@ -1681,7 +1693,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      * @param  table  the AttributeTable that is used inside the view
      */
     private void addAttributeTableWindowListener(final View view, final AttributeTable table) {
-        view.addListener(new DockingWindowAdapter() {
+        final AttributeTableAncestorListener aListener = new AttributeTableAncestorListener(view, table);
+        final DockingWindowListener listener = new DockingWindowAdapter() {
 
                 @Override
                 public void windowClosing(final DockingWindow window) throws OperationAbortedException {
@@ -1694,27 +1707,43 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
                 @Override
                 public void windowClosed(final DockingWindow window) {
-                    disposeTable();
+                    disposeTable(view, table, aListener, this);
                 }
+            };
 
-                private void disposeTable() {
-                    view.removeListener(this);
-                    if (view.getParent() != null) {
-                        view.getParent().remove(view);
-                    }
-                    viewMap.removeView("Attributtabelle " + table.getFeatureService().getName());
-                    attributeTableMap.remove(AttributeTableFactory.createId(table.getFeatureService()));
+        aListener.setDockingWindowListener(listener);
+        view.addAncestorListener(aListener);
+        view.addListener(listener);
+    }
 
-                    SelectionManager.getInstance().removeConsideredAttributeTable(table);
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  view       DOCUMENT ME!
+     * @param  table      DOCUMENT ME!
+     * @param  aListener  DOCUMENT ME!
+     * @param  listener   DOCUMENT ME!
+     */
+    private void disposeTable(final View view,
+            final AttributeTable table,
+            final AncestorListener aListener,
+            final DockingWindowListener listener) {
+        view.removeListener(listener);
+        view.removeAncestorListener(aListener);
+        if (view.getParent() != null) {
+            view.getParent().remove(view);
+        }
+        viewMap.removeView("Attributtabelle " + table.getFeatureService().getName());
+        attributeTableMap.remove(AttributeTableFactory.createId(table.getFeatureService()));
 
-                    // The view is not removed from the root window and this will cause that the layout cannot be saved
-                    // when the application will be closed. So rootWindow.removeView(view) must be invoked. But without
-                    // the invocation of view.close(), the invocation of rootWindow.removeView(view) will do nothing To
-                    // avoid an infinite loop, view.removeListener(this) must be invoked before view.close();
-                    view.close();
-                    rootWindow.removeView(view);
-                }
-            });
+        SelectionManager.getInstance().removeConsideredAttributeTable(table);
+
+        // The view is not removed from the root window and this will cause that the layout cannot be saved
+        // when the application will be closed. So rootWindow.removeView(view) must be invoked. But without
+        // the invocation of view.close(), the invocation of rootWindow.removeView(view) will do nothing To
+        // avoid an infinite loop, view.removeListener(this) must be invoked before view.close();
+        view.close();
+        rootWindow.removeView(view);
     }
 
     /**
@@ -2199,8 +2228,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         tobDLM25W.setFloatable(false);
         tobDLM25W.setRollover(true);
-        tobDLM25W.setMaximumSize(new java.awt.Dimension(679, 32769));
-        tobDLM25W.setMinimumSize(new java.awt.Dimension(667, 26));
+        tobDLM25W.setMaximumSize(new java.awt.Dimension(2000, 28));
+        tobDLM25W.setMinimumSize(new java.awt.Dimension(200, 28));
         tobDLM25W.setPreferredSize(new java.awt.Dimension(691, 28));
 
         cmdOpenProject.setAction(openProjectAction);
@@ -2572,12 +2601,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weightx = 1.0;
         getContentPane().add(tobDLM25W, gridBagConstraints);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
+        jToolBar1.setMaximumSize(new java.awt.Dimension(2000, 28));
+        jToolBar1.setMinimumSize(new java.awt.Dimension(200, 28));
         jToolBar1.setPreferredSize(new java.awt.Dimension(691, 28));
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -2713,6 +2744,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 WatergisApp.class,
                 "WatergisApp.cmdMoveGeometry.toolTipText")); // NOI18N
         cmdMoveGeometry.setBorderPainted(false);
+        cmdMoveGeometry.setEnabled(false);
         cmdMoveGeometry.setFocusPainted(false);
         cmdMoveGeometry.setFocusable(false);
         cmdMoveGeometry.setHideActionText(true);
@@ -4587,19 +4619,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     AbstractFeatureService editableService = null;
                     boolean editFeature = false;
 
-                    if (selectedFeatures.size() == 1) {
-                        final Feature f = selectedFeatures.get(0);
-                        if (f instanceof DefaultFeatureServiceFeature) {
-                            final DefaultFeatureServiceFeature serviceFeature = (DefaultFeatureServiceFeature)f;
-                            if ((serviceFeature.getLayerProperties() != null)
-                                        && (serviceFeature.getLayerProperties().getFeatureService() != null)) {
-                                if (SelectionManager.getInstance().getEditableServices().contains(
-                                                serviceFeature.getLayerProperties().getFeatureService())) {
-                                    oneEditableFeature = true;
-                                }
-                            }
-                        }
-                    }
+//                    if (selectedFeatures.size() == 1) {
+//                        final Feature f = selectedFeatures.get(0);
+//                        if (f instanceof DefaultFeatureServiceFeature) {
+//                            final DefaultFeatureServiceFeature serviceFeature = (DefaultFeatureServiceFeature)f;
+//                            if ((serviceFeature.getLayerProperties() != null)
+//                                        && (serviceFeature.getLayerProperties().getFeatureService() != null)) {
+//                                if (SelectionManager.getInstance().getEditableServices().contains(
+//                                                serviceFeature.getLayerProperties().getFeatureService())) {
+//                                    oneEditableFeature = true;
+//                                }
+//                            }
+//                        }
+//                    }
 
                     if (selectedFeatures.size() > 0) {
                         for (int i = 0; i < selectedFeatures.size(); ++i) {
@@ -4610,17 +4642,21 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                                             && (serviceFeature.getLayerProperties().getFeatureService() != null)) {
                                     final AbstractFeatureService service = serviceFeature.getLayerProperties()
                                                 .getFeatureService();
-                                    if (SelectionManager.getInstance().getEditableServices().contains(service)) {
+                                    if (SelectionManager.getInstance().getEditableServices().contains(service)
+                                                && serviceFeature.isEditable()) {
                                         if (editableService == null) {
                                             editableService = serviceFeature.getLayerProperties().getFeatureService();
+                                            oneEditableFeature = true;
                                         } else if (
                                             !editableService.equals(
                                                         serviceFeature.getLayerProperties().getFeatureService())) {
                                             mergeAllowed = false;
+                                            oneEditableFeature = false;
                                             break;
                                         } else if (editableService.equals(
                                                         serviceFeature.getLayerProperties().getFeatureService())) {
                                             mergeAllowed = true;
+                                            oneEditableFeature = false;
                                         }
                                     }
                                 }
@@ -4694,6 +4730,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                                 cmdNodeMove.setEnabled(editOperationsEnabled);
                                 cmdNodeRemove.setEnabled(editOperationsEnabled);
                                 cmdPresentation.setEnabled(editOperationsEnabled);
+                                cmdMoveGeometry.setEnabled(editOperationsEnabled);
                                 topicTreeSelectionChanged(null);
                             }
                         });
@@ -4895,7 +4932,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         }
 
         @Override
-        public boolean isVisible(final List<ServiceLayer> serviceLayerList) {
+        public boolean isSelectable(final List<ServiceLayer> serviceLayerList) {
             for (final ServiceLayer layer : serviceLayerList) {
                 if (!filter.isValid(layer)) {
                     return false;
@@ -4903,6 +4940,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             }
 
             return true;
+        }
+
+        @Override
+        public boolean isSelectable(final int mask) {
+            return ((visibility & mask) == mask) && ((mask & FEATURE_SERVICE) != 0);
         }
 
         @Override
@@ -5377,6 +5419,92 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
          */
         public int getId() {
             return id;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class AttributeTableAncestorListener implements AncestorListener {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private DockingWindowListener listener = null;
+        private final View view;
+        private final AttributeTable table;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new AttributeTableAncestorListener object.
+         *
+         * @param  view   DOCUMENT ME!
+         * @param  table  DOCUMENT ME!
+         */
+        public AttributeTableAncestorListener(final View view, final AttributeTable table) {
+            this.view = view;
+            this.table = table;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  listener  DOCUMENT ME!
+         */
+        public void setDockingWindowListener(final DockingWindowListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public void ancestorAdded(final AncestorEvent event) {
+        }
+
+        @Override
+        public void ancestorRemoved(final AncestorEvent event) {
+            if (StaticSwingTools.getParentFrame(event.getComponent()) != WatergisApp.this) {
+//            view.removeListener(listener);
+
+                EventQueue.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            view.dock();
+                        }
+                    });
+//                table.dispose();
+//                disposeTable(view, table, this, listener);
+
+//                view.removeAncestorListener(this);
+//                if (view.getParent() != null) {
+//                    view.getParent().remove(view);
+//                }
+//                viewMap.removeView("Attributtabelle " + table.getFeatureService().getName());
+//                attributeTableMap.remove(AttributeTableFactory.createId(table.getFeatureService()));
+//
+//                SelectionManager.getInstance().removeConsideredAttributeTable(table);
+//
+//                // The view is not removed from the root window and this will cause that the layout cannot be saved
+//                // when the application will be closed. So rootWindow.removeView(view) must be invoked. But without
+//                // the invocation of view.close(), the invocation of rootWindow.removeView(view) will do nothing To
+//                // avoid an infinite loop, view.removeListener(this) must be invoked before view.close();
+//                view.close();
+//                rootWindow.removeView(view);
+//                view.close();
+//                        view.dock();
+//                        try {
+//                            view.closeWithAbort();
+//                        } catch (Exception e) {
+//                            // nothing to do
+//                        }
+            }
+        }
+
+        @Override
+        public void ancestorMoved(final AncestorEvent event) {
         }
     }
 }
