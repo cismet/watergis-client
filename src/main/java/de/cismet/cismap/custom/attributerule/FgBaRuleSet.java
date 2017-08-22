@@ -23,10 +23,10 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
-import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.actions.reports.GewaesserReportAction;
 import de.cismet.watergis.gui.dialog.GewaesserReportDialog;
 
 import de.cismet.watergis.reports.GewaesserReport;
@@ -120,6 +120,15 @@ public class FgBaRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("laenge")) {
+            return "st_length(geom)";
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
     }
@@ -142,9 +151,9 @@ public class FgBaRuleSet extends WatergisDefaultRuleSet {
      * @param  bacd  DOCUMENT ME!
      */
     private void createGuReport(final String bacd) {
-        createReport(bacd);
-//        final GewaesserReportAction action = new GewaesserReportAction();
-//        action.actionPerformed(null);
+//        createReport(bacd);
+        final GewaesserReportAction action = new GewaesserReportAction();
+        action.actionPerformed(null);
     }
 
     /**
@@ -162,7 +171,7 @@ public class FgBaRuleSet extends WatergisDefaultRuleSet {
                         true,
                         // NbBundle.getMessage(SonstigeCheckAction.class,
                         // "SonstigeCheckAction.actionPerformed().dialog"),
-                        "erstelle Auswertung",
+                        "erstelle Steckbriefe",
                         null,
                         100,
                         true) {
@@ -170,9 +179,7 @@ public class FgBaRuleSet extends WatergisDefaultRuleSet {
                         @Override
                         protected Boolean doInBackground() throws Exception {
                             final GewaesserReport gr = new GewaesserReport();
-                            gr.createReport(
-                                bacd,
-                                DownloadManager.instance().getDestinationDirectory().getAbsolutePath());
+                            gr.createReport(bacd);
                             gr.cleanup();
 
                             return true;

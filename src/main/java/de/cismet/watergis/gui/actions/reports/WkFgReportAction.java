@@ -178,7 +178,7 @@ public class WkFgReportAction extends AbstractAction {
                                     final File fileToSaveTo = new File(path, wkk + ".pdf");
                                     if (fileToSaveTo.exists()) {
                                         final int ans = JOptionPane.showConfirmDialog(
-                                                AppBroker.getInstance().getWatergisApp(),
+                                                wd,
                                                 NbBundle.getMessage(
                                                     WkFgReportAction.class,
                                                     "WkFgReportAction.actionPerformed().fileExists.text",
@@ -251,13 +251,27 @@ public class WkFgReportAction extends AbstractAction {
         final InputStream is = webDavClient.getInputStream(path + WebDavHelper.encodeURL(file));
         final byte[] buffer = new byte[256];
         int size;
+        int totalSize = 0;
 
         while ((size = is.read(buffer)) != -1) {
+            totalSize += size;
             os.write(buffer, 0, size);
         }
 
         is.close();
         os.close();
+
+        if (totalSize < 800) {
+            // the pdf file does not exist. Write the template file
+            final BufferedOutputStream tos = new BufferedOutputStream(new FileOutputStream(fileToSave));
+            final InputStream tis = WkFgReportAction.class.getResourceAsStream(
+                    "/de/cismet/watergis/printing/Steckbrief-Template.pdf");
+            while ((size = tis.read(buffer)) != -1) {
+                tos.write(buffer, 0, size);
+            }
+            tis.close();
+            tos.close();
+        }
     }
 
     /**
