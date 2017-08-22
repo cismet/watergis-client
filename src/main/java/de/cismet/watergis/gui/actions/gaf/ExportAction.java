@@ -11,14 +11,7 @@
  */
 package de.cismet.watergis.gui.actions.gaf;
 
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperPrint;
-
 import org.apache.log4j.Logger;
-
-import org.deegree.io.shpapi.shape_new.ShapeFile;
-import org.deegree.io.shpapi.shape_new.ShapeFileWriter;
-import org.deegree.model.feature.FeatureCollection;
 
 import org.openide.util.NbBundle;
 
@@ -58,7 +51,6 @@ import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.tools.SimpleFeatureCollection;
 
 import de.cismet.security.WebAccessManager;
 
@@ -72,6 +64,7 @@ import de.cismet.watergis.gui.panels.GafProf;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.GafReader;
+import de.cismet.watergis.utils.JumpShapeWriter;
 
 /**
  * DOCUMENT ME!
@@ -557,17 +550,11 @@ public class ExportAction extends AbstractAction {
             attribList.add(attrName);
         }
 
-        // create qp shape
-        final FeatureCollection fc = new SimpleFeatureCollection(
-                "1",
-                features.toArray(new FeatureServiceFeature[features.size()]),
-                attribList);
-
-        final ShapeFile shape = new ShapeFile(
-                fc,
-                outputFileStem);
-        final ShapeFileWriter writer = new ShapeFileWriter(shape);
-        writer.write();
+        final JumpShapeWriter shapeWriter = new JumpShapeWriter();
+        shapeWriter.writeShpFile(features.toArray(new FeatureServiceFeature[features.size()]),
+            new File(outputFileStem + ".shp"),
+            null,
+            null);
 
         if (createPrj) {
             // create prj
