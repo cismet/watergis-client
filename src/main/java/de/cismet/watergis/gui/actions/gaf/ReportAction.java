@@ -24,6 +24,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import de.cismet.tools.gui.WaitingDialogThread;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.dialog.GafProfReportDialog;
+import de.cismet.watergis.gui.dialog.PhotoReportDialog;
 import de.cismet.watergis.gui.panels.GafProf;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
@@ -91,8 +93,12 @@ public class ReportAction extends AbstractAction {
         StaticSwingTools.showDialog(GafProfReportDialog.getInstance());
 
         if (!GafProfReportDialog.getInstance().isCancelled()) {
-            final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
-                    AppBroker.GAF_PROF_MC_NAME);
+            final List<FeatureServiceFeature> features = new ArrayList<FeatureServiceFeature>();
+
+            if (GafProfReportDialog.getInstance().isObjectRestrictionSelected()) {
+                features.addAll(FeatureServiceHelper.getSelectedCidsLayerFeatures(
+                        AppBroker.GAF_PROF_MC_NAME));
+            }
 
             if (!features.isEmpty()) {
                 final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
@@ -107,6 +113,20 @@ public class ReportAction extends AbstractAction {
 
                         @Override
                         protected Boolean doInBackground() throws Exception {
+                            if (features.isEmpty()) {
+                                final CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                                            AppBroker.DOMAIN_NAME,
+                                            "dlm25w.qp"));
+                                layer.initAndWait();
+                                features.addAll(layer.getFeatureFactory().createFeatures(
+                                        layer.getQuery(),
+                                        null,
+                                        null,
+                                        0,
+                                        0,
+                                        null));
+                            }
+
                             wd.setMax(features.size());
                             int i = 0;
                             wd.setText(NbBundle.getMessage(

@@ -129,12 +129,13 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("ww_gr")) {
             return AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren");
         } else {
+            // Sonderfall ba_st und ba_st sollen nicht bearbeitbar sein
             return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                         && !columnName.equals("geom") && !columnName.equals("id")
                         && !columnName.equals("ho") && !columnName.equals("re") && !columnName.equals("qp_nr")
                         && !columnName.equals("la_st") && !columnName.equals("la_cd")
                         && !columnName.equals("upl_name") && !columnName.equals("upl_datum")
-                        && !columnName.equals("upl_zeit");
+                        && !columnName.equals("upl_zeit") && !columnName.equals("ba_cd") && !columnName.equals("ba_st");
         }
     }
 
