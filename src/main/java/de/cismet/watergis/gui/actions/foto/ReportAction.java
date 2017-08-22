@@ -24,12 +24,16 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -83,10 +87,14 @@ public class ReportAction extends AbstractAction {
         StaticSwingTools.showDialog(PhotoReportDialog.getInstance());
 
         if (!PhotoReportDialog.getInstance().isCancelled()) {
-            final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
-                    AppBroker.FOTO_MC_NAME);
+            final List<FeatureServiceFeature> features = new ArrayList<FeatureServiceFeature>();
 
-            if (!features.isEmpty()) {
+            if (PhotoReportDialog.getInstance().isObjectRestrictionSelected()) {
+                features.addAll(FeatureServiceHelper.getSelectedCidsLayerFeatures(
+                        AppBroker.FOTO_MC_NAME));
+            }
+
+            if (!features.isEmpty() || !PhotoReportDialog.getInstance().isObjectRestrictionSelected()) {
                 final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
                         StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                         true,
@@ -99,6 +107,20 @@ public class ReportAction extends AbstractAction {
 
                         @Override
                         protected Boolean doInBackground() throws Exception {
+                            if (features.isEmpty()) {
+                                final CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+                                            AppBroker.DOMAIN_NAME,
+                                            "dlm25w.foto"));
+                                layer.initAndWait();
+                                features.addAll(layer.getFeatureFactory().createFeatures(
+                                        layer.getQuery(),
+                                        null,
+                                        null,
+                                        0,
+                                        0,
+                                        null));
+                            }
+
                             wd.setMax(features.size());
                             int i = 0;
                             wd.setText(NbBundle.getMessage(

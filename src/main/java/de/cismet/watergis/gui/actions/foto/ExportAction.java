@@ -16,10 +16,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 
 import org.apache.log4j.Logger;
 
-import org.deegree.io.shpapi.shape_new.ShapeFile;
-import org.deegree.io.shpapi.shape_new.ShapeFileWriter;
-import org.deegree.model.feature.FeatureCollection;
-
 import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
@@ -48,7 +44,6 @@ import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.tools.SimpleFeatureCollection;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
@@ -59,6 +54,7 @@ import de.cismet.watergis.gui.dialog.PhotoExportDialog;
 import de.cismet.watergis.gui.panels.Photo;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
+import de.cismet.watergis.utils.JumpShapeWriter;
 
 /**
  * DOCUMENT ME!
@@ -209,17 +205,12 @@ public class ExportAction extends AbstractAction {
                                     attribList.add(attrName);
                                 }
 
-                                final FeatureCollection fc = new SimpleFeatureCollection(
-                                        "1",
-                                        features.toArray(new FeatureServiceFeature[features.size()]),
-                                        attribList);
                                 final File shapeFile = new File(tmpShapeDir, "fotos");
-
-                                final ShapeFile shape = new ShapeFile(
-                                        fc,
-                                        shapeFile.getAbsolutePath());
-                                final ShapeFileWriter writer = new ShapeFileWriter(shape);
-                                writer.write();
+                                final JumpShapeWriter shapeWriter = new JumpShapeWriter();
+                                shapeWriter.writeShpFile(features.toArray(new FeatureServiceFeature[features.size()]),
+                                    new File(shapeFile.toString() + ".shp"),
+                                    null,
+                                    null);
 
                                 final BufferedWriter bw = new BufferedWriter(new FileWriter(
                                             shapeFile.getAbsolutePath()

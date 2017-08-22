@@ -241,6 +241,12 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
                         || FeatureTools.getH2DataType(attr).equalsIgnoreCase("numeric")) {
                 return new DefaultTableCellRenderer() {
 
+                        DecimalFormat format = new DecimalFormat();
+
+                        {
+                            format.setGroupingUsed(false);
+                        }
+
                         @Override
                         public Component getTableCellRendererComponent(final JTable table,
                                 final Object value,
@@ -250,7 +256,7 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
                                 final int column) {
                             final Component c = super.getTableCellRendererComponent(
                                     table,
-                                    value,
+                                    format.format(value).replace('.', ','),
                                     isSelected,
                                     hasFocus,
                                     row,

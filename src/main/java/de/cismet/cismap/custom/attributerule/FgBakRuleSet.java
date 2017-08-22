@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
 
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 
 import java.sql.Timestamp;
@@ -32,9 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.ComboBoxModel;
@@ -44,22 +40,22 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cids.custom.watergis.server.search.FgBaCdCheck;
+import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
 
 import de.cismet.cids.dynamics.CidsBean;
 
-import de.cismet.cismap.cidslayer.CidsLayer;
+import de.cismet.cids.server.search.CidsServerSearch;
+
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-import de.cismet.cismap.commons.interaction.CismapBroker;
-import de.cismet.cismap.commons.rasterservice.MapService;
 
 import de.cismet.cismap.linearreferencing.RouteCombo;
 
@@ -292,6 +288,23 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
     public void afterSave(final TableModel model) {
         AppBroker.getInstance().getWatergisApp().initRouteCombo();
         RouteCombo.clearRouteCache();
+
+        if (model instanceof SimpleAttributeTableModel) {
+            final List<FeatureServiceFeature> removedFeatures = ((SimpleAttributeTableModel)model).getRemovedFeature();
+
+            if ((removedFeatures != null) && !removedFeatures.isEmpty()) {
+                for (final FeatureServiceFeature feature : removedFeatures) {
+                    try {
+                        final CidsServerSearch nodesSearch = new RemoveUnnusedRoute(feature.getId(),
+                                RemoveUnnusedRoute.FG_BAK);
+                        SessionManager.getProxy()
+                                .customServerSearch(SessionManager.getSession().getUser(), nodesSearch);
+                    } catch (Exception e) {
+                        LOG.error("Error while removing unused stations", e);
+                    }
+                }
+            }
+        }
 //        final Timer t = new Timer("reload");
 //
 //        t.schedule(new TimerTask() {

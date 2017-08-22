@@ -209,7 +209,10 @@ public class GafInfoPanel extends javax.swing.JPanel {
         if ((feature != null) && (this.feature != feature)) {
             this.feature = feature;
             labTitle.setText(obj2String(feature.getProperty("titel")));
-            labTime.setText(obj2Time(feature.getProperty("aufn_zeit")));
+            labTime.setText(dateTime2String(
+                    feature.getProperty("aufn_datum"),
+                    (String)feature.getProperty("aufn_zeit")));
+//            labTime.setText(obj2Time(feature.getProperty("aufn_zeit")));
             loadFoto();
         } else {
             this.feature = feature;
@@ -245,6 +248,38 @@ public class GafInfoPanel extends javax.swing.JPanel {
             try {
                 final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                 return format.format(o);
+            } catch (IllegalArgumentException e) {
+                LOG.error("Not a date", e);
+                return "";
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   date  o DOCUMENT ME!
+     * @param   time  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private static String dateTime2String(final Object date, final String time) {
+        if ((date == null) && (time == null)) {
+            return "";
+        } else if (date == null) {
+            return time;
+        } else if (time == null) {
+            try {
+                final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                return format.format(date);
+            } catch (IllegalArgumentException e) {
+                LOG.error("Not a date", e);
+                return "";
+            }
+        } else {
+            try {
+                final SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                return format.format(date) + " " + time;
             } catch (IllegalArgumentException e) {
                 LOG.error("Not a date", e);
                 return "";

@@ -1960,6 +1960,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
             if (result.getValidationResult() == Validation.OK) {
                 if ((value instanceof String) || (value instanceof Number)) {
+                    final boolean isDouble = (value instanceof Double);
+                    final boolean isInteger = (value instanceof Integer);
+                    final boolean isLong = (value instanceof Long);
+                    final boolean isFloat = (value instanceof Float);
                     final String numberString = value.toString();
                     BigDecimal bd = null;
 
@@ -1976,9 +1980,26 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         if (digitsOnTheLeft > (precision - scale)) {
                             result = new ValidationResult(Validation.OUT_OF_SIZE);
                         } else if (tmpScale > scale) {
-                            final String doubleString = bd.round(new MathContext(precision, RoundingMode.HALF_UP))
-                                        .toString();
-                            result = new ValidationResult(Validation.SIZE_CORRECTION, true, doubleString);
+                            Object roundedValue;
+
+                            if (isDouble) {
+                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
+                                            .doubleValue();
+                            } else if (isInteger) {
+                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
+                                            .intValue();
+                            } else if (isLong) {
+                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
+                                            .longValue();
+                            } else if (isFloat) {
+                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
+                                            .floatValue();
+                            } else {
+                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
+                                            .toString();
+                            }
+
+                            result = new ValidationResult(Validation.SIZE_CORRECTION, true, roundedValue);
                         }
                     } catch (NumberFormatException e) {
                         result = new ValidationResult(Validation.WRONG_DATA_TYPE);
@@ -2533,6 +2554,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
          */
         public Time(final boolean notNull, final boolean editable) {
             super(8, notNull, editable);
+            formatter.setLenient(false);
         }
 
         //~ Methods ------------------------------------------------------------
