@@ -1426,7 +1426,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 final Map<Integer, String> idValueMap = new HashMap<Integer, String>();
 
                 if ((changedObjects != null) && changedObjects.contains(feature)) {
-                    final String stalu = (String)newValue;
+                    final String stalu = ((newValue != null) ? String.valueOf(newValue) : (String)newValue);
                     idValueMap.put((Integer)feature.getProperty("id"), stalu);
                 }
 
@@ -1535,7 +1535,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     final TreeSet<FeatureServiceFeature> changedObjects = changedObjectMap.get(type);
 
                     if ((changedObjects != null) && changedObjects.contains(feature)) {
-                        final String stalu = (String)feature.getProperty(type.field);
+                        final String stalu = ((feature.getProperty(type.field) != null)
+                                ? String.valueOf(feature.getProperty(type.field))
+                                : (String)feature.getProperty(type.field));
                         idValueMap.put((Integer)feature.getProperty("id"), stalu);
                     }
                 }

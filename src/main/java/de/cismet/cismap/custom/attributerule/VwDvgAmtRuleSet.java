@@ -55,6 +55,24 @@ public class VwDvgAmtRuleSet extends WatergisDefaultRuleSet {
     //~ Methods ----------------------------------------------------------------
 
     @Override
+    public Object afterEdit(final FeatureServiceFeature feature,
+            final String column,
+            final int row,
+            final Object oldValue,
+            Object newValue) {
+        if ((column.equals("kreis_nr") || column.equals("amt_nr"))
+                    && (newValue instanceof String)) {
+            try {
+                newValue = Integer.parseInt((String)newValue);
+            } catch (NumberFormatException e) {
+                // nothing to do
+            }
+        }
+
+        return super.afterEdit(feature, column, row, oldValue, newValue);
+    }
+
+    @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("amt_fl") && !columnName.equals("geom") && !columnName.equals("id");
