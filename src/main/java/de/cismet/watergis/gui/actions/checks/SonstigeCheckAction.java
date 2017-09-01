@@ -239,33 +239,63 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "or ((ho_k_pn is not null and ho_mw_pn is not null) and ho_k_pn <= ho_mw_pn)) and gr.owner = '"
                             + user.getUserGroup().getName() + "'";
             }
-            // the geo index should not be used to improve the performance
+            // the geo index should not be used to improve the performance if ((user == null) ||
+            // user.getUserGroup().getName().startsWith("lung") ||
+            // user.getUserGroup().getName().equalsIgnoreCase("administratoren")) { QUERY_DEICH_GESCHL = "select " +
+            // FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey() + "       from dlm25w.fg_ba_deich d\n" + "join
+            // geom g on (d.geom = g.id),\n" + "(select (dlm25w.fast_union(\n" + "'select geo_field from dlm25w.fg_ba_rl
+            // r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)\n" + "union\n" + "select
+            // geo_field from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom =
+            // g.id)\n" + "union\n" + "select geo_field from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st =
+            // l.id) join geom g on (l.geom = g.id)'\n" + ")) as geo_field) as geschl_gerinne\n" + "where
+            // _st_intersects(g.geo_field, geschl_gerinne.geo_field)"; } else { QUERY_DEICH_GESCHL = "select " +
+            // FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey() + "       from dlm25w.fg_ba_deich d\n" + "join
+            // geom g on (d.geom = g.id)\n" + "join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)," + "(select
+            // (dlm25w.fast_union(\n" + "'select geo_field from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st
+            // = l.id) join geom g on (l.geom = g.id)\n" + "union\n" + "select geo_field from dlm25w.fg_ba_d r join
+            // dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)\n" + "union\n" + "select
+            // geo_field from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom =
+            // g.id)'\n" + ")) as geo_field) as geschl_gerinne\n" + "where _st_intersects(g.geo_field,
+            // geschl_gerinne.geo_field) and gr.owner = '" + user.getUserGroup().getName() + "'"; }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_DEICH_GESCHL = "select " + FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey()
-                            + "	from dlm25w.fg_ba_deich d\n"
-                            + "join geom g on (d.geom = g.id),\n"
-                            + "(select (dlm25w.fast_union(\n"
-                            + "'select geo_field from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)\n"
-                            + "union\n"
-                            + "select geo_field from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)\n"
-                            + "union\n"
-                            + "select geo_field from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)'\n"
-                            + ")) as geo_field) as geschl_gerinne\n"
-                            + "where _st_intersects(g.geo_field, geschl_gerinne.geo_field)";
+                QUERY_DEICH_GESCHL = "select " + FG_BA_DEICH.getID() + ", t." + FG_BA_DEICH.getPrimaryKey()
+                            + " from dlm25w.fg_ba_deich t\n"
+                            + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
+                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
+                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
+                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
+                            + "((\n"
+                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+                            + ") + \n"
+                            + "(\n"
+                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+                            + ") +\n"
+                            + "(\n"
+                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+                            + ")) < (abs(von.wert - bis.wert))";
             } else {
-                QUERY_DEICH_GESCHL = "select " + FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey()
-                            + "	from dlm25w.fg_ba_deich d\n"
-                            + "join geom g on (d.geom = g.id)\n"
-                            + "join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id),"
-                            + "(select (dlm25w.fast_union(\n"
-                            + "'select geo_field from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)\n"
-                            + "union\n"
-                            + "select geo_field from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)\n"
-                            + "union\n"
-                            + "select geo_field from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)'\n"
-                            + ")) as geo_field) as geschl_gerinne\n"
-                            + "where _st_intersects(g.geo_field, geschl_gerinne.geo_field) and gr.owner = '"
+                QUERY_DEICH_GESCHL = "select " + FG_BA_DEICH.getID() + ", t." + FG_BA_DEICH.getPrimaryKey()
+                            + " from dlm25w.fg_ba_deich t\n"
+                            + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
+                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
+                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
+                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
+                            + "((\n"
+                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+                            + ") + \n"
+                            + "(\n"
+                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+                            + ") +\n"
+                            + "(\n"
+                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+                            + ")) < (abs(von.wert - bis.wert)) and gr.owner = '"
                             + user.getUserGroup().getName() + "'";
             }
 
@@ -519,7 +549,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "(\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) <> (abs(von.wert - bis.wert))";
+                            + ")) < (abs(von.wert - bis.wert))";
             } else {
                 QUERY_TECH_OFF = "select " + FG_BA_TECH.getID() + ", t." + FG_BA_TECH.getPrimaryKey()
                             + " from dlm25w.fg_ba_tech t\n"
@@ -540,7 +570,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "(\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) <> (abs(von.wert - bis.wert)) and gr.owner = '"
+                            + ")) < (abs(von.wert - bis.wert)) and gr.owner = '"
                             + user.getUserGroup().getName() + "'";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")

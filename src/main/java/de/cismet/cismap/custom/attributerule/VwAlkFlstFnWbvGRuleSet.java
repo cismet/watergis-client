@@ -69,7 +69,17 @@ public class VwAlkFlstFnWbvGRuleSet extends WatergisDefaultRuleSet {
             final String column,
             final int row,
             final Object oldValue,
-            final Object newValue) {
+            Object newValue) {
+        if ((column.equals("fl_nr") || column.equals("gmk_nr") || column.equals("gmd_nr") || column.equals("flst")
+                        || column.equals("fn"))
+                    && (newValue instanceof String)) {
+            try {
+                newValue = Integer.parseInt((String)newValue);
+            } catch (NumberFormatException e) {
+                // nothing to do
+            }
+        }
+
         if (newValue instanceof Geometry) {
             Double fn_g_fl = null;
 

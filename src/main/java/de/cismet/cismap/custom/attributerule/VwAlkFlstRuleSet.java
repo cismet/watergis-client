@@ -62,7 +62,16 @@ public class VwAlkFlstRuleSet extends WatergisDefaultRuleSet {
             final String column,
             final int row,
             final Object oldValue,
-            final Object newValue) {
+            Object newValue) {
+        if ((column.equals("fl_nr") || column.equals("gmk_nr") || column.equals("gmd_nr") || column.equals("flst"))
+                    && (newValue instanceof String)) {
+            try {
+                newValue = Integer.parseInt((String)newValue);
+            } catch (NumberFormatException e) {
+                // nothing to do
+            }
+        }
+
         if (newValue instanceof Geometry) {
             // the geometry has changed
             final Geometry geom = ((Geometry)feature.getProperty("geom"));
