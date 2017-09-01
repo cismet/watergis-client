@@ -214,7 +214,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (von.route = ba.id) "
                             + "join dlm25w.k_ww_gr sbgr on (k.ww_gr = sbgr.id) "
                             + "join dlm25w.k_ww_gr bagr on (ba.ww_gr = bagr.id)"
-                            + "where (%1$s is null or ba.id = any(%1$s)) and (k.id is null and t.sb is not null) or sbgr.owner <> bagr.owner;";
+                            + "where (%1$s is null or ba.id = any(%1$s)) and ((k.id is null and t.sb is not null) or sbgr.owner <> bagr.owner);";
             } else {
                 QUERY_SB_CATALOGUE = "select distinct " + FG_BA_SB.getID() + ", t." + FG_BA_SB.getPrimaryKey()
                             + " from " + FG_BA_SB.getTableName() + " t \n"
@@ -226,9 +226,9 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
                             + "join dlm25w.k_ww_gr sbgr on (k.ww_gr = sbgr.id) "
                             + "join dlm25w.k_ww_gr bagr on (ba.ww_gr = bagr.id)"
-                            + "where (%1$s is null or ba.id = any(%1$s)) and (k.id is null and t.sb is not null) and gr.owner = '"
+                            + "where (%1$s is null or ba.id = any(%1$s)) and ((k.id is null and t.sb is not null) or sbgr.owner <> bagr.owner) and gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "' or sbgr.owner <> bagr.owner";
+                            + "'";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")

@@ -28,9 +28,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import de.cismet.cids.custom.watergis.server.search.BakWithIncompleteGbkCoverage;
-import de.cismet.cids.custom.watergis.server.search.BakWithIncompleteObjartCoverage;
-import de.cismet.cids.custom.watergis.server.search.FgBaOnEzgBorder;
-import de.cismet.cids.custom.watergis.server.search.FgBaOutsideEzgBorder;
 import de.cismet.cids.custom.watergis.server.search.FgBakCount;
 import de.cismet.cids.custom.watergis.server.search.GbkInIncorrectEzg;
 import de.cismet.cids.custom.watergis.server.search.GwkLaCdFailure;
@@ -71,9 +68,6 @@ public class LawaCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BAK = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_bak");
-//    private static final MetaClass FG_BAK_OBJART = ClassCacheMultiple.getMetaClass(
-//            AppBroker.DOMAIN_NAME,
-//            "dlm25w.fg_bak_objart");
     private static final MetaClass FG_BAK_GBK = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_bak_gbk");
@@ -82,24 +76,16 @@ public class LawaCheckAction extends AbstractCheckAction {
             "dlm25w.fg_bak_gwk");
     private static String QUERY_GBK_CATALOGUE;
     private static String QUERY_GWK_CATALOGUE;
-//    private static String QUERY_OBJART_CATALOGUE;
-//    private static final String CHECK_BA_EZG_AUSSEN = "Prüfungen->LAWA-Schlüssel->fg_ba vs. EZG: außen";
-//    private static final String CHECK_BA_EZG_RAND = "Prüfungen->LAWA-Schlüssel->fg_ba vs. EZG: Rand";
-//    private static final String CHECKEZG_DELTA_GBK = "Prüfungen->LAWA-Schlüssel->fg_ba vs. EZG:innen: Delta GBK/EZG";
+    private static final String CHECKEZG_DELTA_GBK = "Prüfungen->LAWA-Schlüssel->fg_bak_gbk vs EZG";
     private static final String CHECK_GWK_DELTA_GWK = "Prüfungen->LAWA-Schlüssel->fg_bak_gwk mit Delta GWK/GBK";
-//    private static final String CHECK_GBK_CAT_OBJECT =
-//        "Prüfungen->LAWA-Schlüssel->fg_bak_gbk mit Katalogfehler k_objart";
     private static final String CHECK_GBK_CAT_GWK =
         "Prüfungen->LAWA-Schlüssel->fg_bak_gwk mit Katalogfehler k_gwk_lawa";
     private static final String CHECK_GBK_CAT_LAWA =
         "Prüfungen->LAWA-Schlüssel->fg_bak_gbk mit Katalogfehler k_gbk_lawa";
     private static final String CHECK_BAK_OHNE_GBK = "Prüfungen->LAWA-Schlüssel->fg_bak ohne fg_bak_gbk";
     private static final String[] ALL_CHECKS = new String[] {
-//            CHECK_BA_EZG_AUSSEN,
-//            CHECK_BA_EZG_RAND,
-//            CHECKEZG_DELTA_GBK,
+            CHECKEZG_DELTA_GBK,
             CHECK_GWK_DELTA_GWK,
-//            CHECK_GBK_CAT_OBJECT,
             CHECK_GBK_CAT_GWK,
             CHECK_GBK_CAT_LAWA,
             CHECK_BAK_OHNE_GBK
@@ -148,26 +134,6 @@ public class LawaCheckAction extends AbstractCheckAction {
                             + user.getUserGroup().getName()
                             + "'";
             }
-
-//            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-//                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-//                QUERY_OBJART_CATALOGUE = "select " + FG_BAK_OBJART.getID() + ", t." + FG_BAK_OBJART.getPrimaryKey()
-//                            + " from " + FG_BAK_OBJART.getTableName() + " t\n"
-//                            + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
-//                            + "join dlm25w.fg_bak_punkt von on (linie.von = von.id) "
-//                            + "join dlm25w.fg_bak bak on (von.route = bak.id) "
-//                            + "where not exists (select 1 from dlm25w.k_objart where id = t.objart)";
-//            } else {
-//                QUERY_OBJART_CATALOGUE = "select " + FG_BAK_OBJART.getID() + ", t." + FG_BAK_OBJART.getPrimaryKey()
-//                            + " from " + FG_BAK_OBJART.getTableName() + " t \n"
-//                            + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
-//                            + "join dlm25w.fg_bak_punkt von on (linie.von = von.id) "
-//                            + "join dlm25w.fg_bak bak on (von.route = bak.id) "
-//                            + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-//                            + "where not exists (select 1 from dlm25w.k_objart where id = t.objart) and gr.owner = '"
-//                            + user.getUserGroup().getName()
-//                            + "'";
-//            }
         }
     }
 
@@ -199,7 +165,7 @@ public class LawaCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 12;
+        return 10;
     }
 
     @Override
@@ -253,34 +219,7 @@ public class LawaCheckAction extends AbstractCheckAction {
                     SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeObjart);
                     increaseProgress(wd, 1);
 
-                    // start checks final List<FeatureServiceAttribute> objartServiceAttributeDefinition = new
-                    // ArrayList<FeatureServiceAttribute>();
-                    //
-                    // FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute( "id",
-                    // String.valueOf(Types.INTEGER), true); objartServiceAttributeDefinition.add(serviceAttribute);
-                    // serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
-                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
-                    // FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
-                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
-                    // FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
-                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
-                    // FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
-                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
-                    // FeatureServiceAttribute("objart", String.valueOf(Types.INTEGER), true);
-                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
-                    // FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
-                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
-                    // FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
-                    // objartServiceAttributeDefinition.add(serviceAttribute); serviceAttribute = new
-                    // FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
-                    // objartServiceAttributeDefinition.add(serviceAttribute);
-
-// result.setFgBakWithoutObjart(analyseByCustomSearch(
-// new BakWithIncompleteObjartCoverage(user, null),
-// "Prüfungen->LAWA-Schlüssel, EZG-Relation, Objart, GNx->fg_bak ohne fg_bak_objart",
-// objartServiceAttributeDefinition));
-// increaseProgress(wd, 1);
-
+                    // start checks
                     final List<FeatureServiceAttribute> gbkServiceAttributeDefinition =
                         new ArrayList<FeatureServiceAttribute>();
 
@@ -319,10 +258,6 @@ public class LawaCheckAction extends AbstractCheckAction {
                     result.setGwkCat(analyseByQuery(FG_BAK_GWK,
                             QUERY_GWK_CATALOGUE, CHECK_GBK_CAT_GWK));
                     increaseProgress(wd, 1);
-
-//                    result.setObjartCat(analyseByQuery(FG_BAK_OBJART,
-//                            QUERY_OBJART_CATALOGUE, CHECK_GBK_CAT_OBJECT));
-//                    increaseProgress(wd, 1);
 
                     final List<FeatureServiceAttribute> serviceAttributeDefinition =
                         new ArrayList<FeatureServiceAttribute>();
@@ -380,23 +315,11 @@ public class LawaCheckAction extends AbstractCheckAction {
                     serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
 
-//                    result.setGbkInIncorrectEzg(analyseByCustomSearch(
-//                            new GbkInIncorrectEzg(user, null),
-//                            CHECKEZG_DELTA_GBK,
-//                            serviceAttributeDefinitionFgBa));
-//                    increaseProgress(wd, 1);
-
-//                    result.setGbkOnEzgBorder(analyseByCustomSearch(
-//                            new FgBaOnEzgBorder(user, null),
-//                            CHECK_BA_EZG_RAND,
-//                            serviceAttributeDefinitionFgBa));
-//                    increaseProgress(wd, 1);
-
-//                    result.setGbkOutsideEzgBorder(analyseByCustomSearch(
-//                            new FgBaOutsideEzgBorder(user, null),
-//                            CHECK_BA_EZG_AUSSEN,
-//                            serviceAttributeDefinitionFgBa));
-//                    increaseProgress(wd, 1);
+                    result.setGbkInIncorrectEzg(analyseByCustomSearch(
+                            new GbkInIncorrectEzg(user, null),
+                            CHECKEZG_DELTA_GBK,
+                            serviceAttributeDefinitionFgBa));
+                    increaseProgress(wd, 1);
 
                     if (result.getFgBakWithoutGbk() != null) {
                         result.setFgBakWithoutGbkErrors(result.getFgBakWithoutGbk().getFeatureCount(null));
@@ -420,16 +343,6 @@ public class LawaCheckAction extends AbstractCheckAction {
 
                     if (result.getGbkInIncorrectEzg() != null) {
                         result.setGbkInIncorrectEzgErrors(result.getGbkInIncorrectEzg().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    if (result.getGbkOnEzgBorder() != null) {
-                        result.setGbkOnEzgBorderErrors(result.getGbkOnEzgBorder().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    if (result.getGbkOutsideEzgBorder() != null) {
-                        result.setGbkOutsideEzgBorderErrors(result.getGbkOutsideEzgBorder().getFeatureCount(null));
                         successful = false;
                     }
 
@@ -457,42 +370,32 @@ public class LawaCheckAction extends AbstractCheckAction {
                                     result.getGbkCatErrors(),
                                     result.getGwkCatErrors(),
                                     result.getGwkGbkErrors(),
-                                    result.getGbkInIncorrectEzgErrors(),
-                                    result.getGbkOnEzgBorderErrors(),
-                                    result.getGbkOutsideEzgBorderErrors()
+                                    result.getGbkInIncorrectEzgErrors()
                                 }),
                             NbBundle.getMessage(
                                 LawaCheckAction.class,
                                 "LawaCheckAction.actionPerformed().result.title"),
                             JOptionPane.INFORMATION_MESSAGE);
 
-//                        if (result.getGbkOutsideEzgBorder() != null) {
-//                            showService(result.getGbkOutsideEzgBorder(),
-//                                CHECK_BA_EZG_AUSSEN);
-//                        }
-//                        if (result.getGbkOnEzgBorder() != null) {
-//                            showService(result.getGbkOnEzgBorder(),
-//                                CHECK_BA_EZG_RAND);
-//                        }
-//                        if (result.getGbkInIncorrectEzg() != null) {
-//                            showService(result.getGbkInIncorrectEzg(),
-//                                CHECKEZG_DELTA_GBK);
-//                        }
+                        if (result.getGbkInIncorrectEzg() != null) {
+                            showService(result.getGbkInIncorrectEzg(),
+                                "Prüfungen->LAWA-Schlüssel");
+                        }
                         if (result.getGwkGbk() != null) {
                             showService(result.getGwkGbk(),
-                                CHECK_GWK_DELTA_GWK);
+                                "Prüfungen->LAWA-Schlüssel");
                         }
                         if (result.getGwkCat() != null) {
                             showService(result.getGwkCat(),
-                                CHECK_GBK_CAT_GWK);
+                                "Prüfungen->LAWA-Schlüssel");
                         }
                         if (result.getGbkCat() != null) {
                             showService(result.getGbkCat(),
-                                CHECK_GBK_CAT_LAWA);
+                                "Prüfungen->LAWA-Schlüssel");
                         }
                         if (result.getFgBakWithoutGbk() != null) {
                             showService(result.getFgBakWithoutGbk(),
-                                CHECK_BAK_OHNE_GBK);
+                                "Prüfungen->LAWA-Schlüssel");
                         }
                         refreshTree();
                         refreshMap();
@@ -525,25 +428,17 @@ public class LawaCheckAction extends AbstractCheckAction {
 
         //~ Instance fields ----------------------------------------------------
 
-// private int fgBakWithoutObjartErrors;
         private int fgBakWithoutGbkErrors;
         private int gbkCatErrors;
         private int gwkCatErrors;
-//        private int objartCatErrors;
         private int gwkGbkErrors;
         private int bakCount;
         private int gbkInIncorrectEzgErrors;
-        private int gbkOnEzgBorderErrors;
-        private int gbkOutsideEzgBorderErrors;
-//        private H2FeatureService fgBakWithoutObjart;
         private H2FeatureService fgBakWithoutGbk;
         private H2FeatureService gbkCat;
         private H2FeatureService gwkCat;
-//        private H2FeatureService objartCat;
         private H2FeatureService gwkGbk;
         private H2FeatureService gbkInIncorrectEzg;
-        private H2FeatureService gbkOnEzgBorder;
-        private H2FeatureService gbkOutsideEzgBorder;
 
         //~ Methods ------------------------------------------------------------
 
@@ -730,42 +625,6 @@ public class LawaCheckAction extends AbstractCheckAction {
         /**
          * DOCUMENT ME!
          *
-         * @return  the gbkOnEzgBorderErrors
-         */
-        public int getGbkOnEzgBorderErrors() {
-            return gbkOnEzgBorderErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  gbkOnEzgBorderErrors  the gbkOnEzgBorderErrors to set
-         */
-        public void setGbkOnEzgBorderErrors(final int gbkOnEzgBorderErrors) {
-            this.gbkOnEzgBorderErrors = gbkOnEzgBorderErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the gbkOutsideEzgBorderErrors
-         */
-        public int getGbkOutsideEzgBorderErrors() {
-            return gbkOutsideEzgBorderErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  gbkOutsideEzgBorderErrors  the gbkOutsideEzgBorderErrors to set
-         */
-        public void setGbkOutsideEzgBorderErrors(final int gbkOutsideEzgBorderErrors) {
-            this.gbkOutsideEzgBorderErrors = gbkOutsideEzgBorderErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
          * @return  the gbkInIncorrectEzg
          */
         public H2FeatureService getGbkInIncorrectEzg() {
@@ -779,42 +638,6 @@ public class LawaCheckAction extends AbstractCheckAction {
          */
         public void setGbkInIncorrectEzg(final H2FeatureService gbkInIncorrectEzg) {
             this.gbkInIncorrectEzg = gbkInIncorrectEzg;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the gbkOnEzgBorder
-         */
-        public H2FeatureService getGbkOnEzgBorder() {
-            return gbkOnEzgBorder;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  gbkOnEzgBorder  the gbkOnEzgBorder to set
-         */
-        public void setGbkOnEzgBorder(final H2FeatureService gbkOnEzgBorder) {
-            this.gbkOnEzgBorder = gbkOnEzgBorder;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the gbkOutsideEzgBorder
-         */
-        public H2FeatureService getGbkOutsideEzgBorder() {
-            return gbkOutsideEzgBorder;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  gbkOutsideEzgBorder  the gbkOutsideEzgBorder to set
-         */
-        public void setGbkOutsideEzgBorder(final H2FeatureService gbkOutsideEzgBorder) {
-            this.gbkOutsideEzgBorder = gbkOutsideEzgBorder;
         }
     }
 }
