@@ -254,13 +254,24 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
                                 final boolean hasFocus,
                                 final int row,
                                 final int column) {
-                            final Component c = super.getTableCellRendererComponent(
-                                    table,
-                                    format.format(value).replace('.', ','),
-                                    isSelected,
-                                    hasFocus,
-                                    row,
-                                    column);
+                            Component c;
+                            if (value != null) {
+                                c = super.getTableCellRendererComponent(
+                                        table,
+                                        format.format(value).replace('.', ','),
+                                        isSelected,
+                                        hasFocus,
+                                        row,
+                                        column);
+                            } else {
+                                c = super.getTableCellRendererComponent(
+                                        table,
+                                        value,
+                                        isSelected,
+                                        hasFocus,
+                                        row,
+                                        column);
+                            }
 
                             if (c instanceof JLabel) {
                                 ((JLabel)c).setHorizontalAlignment(JLabel.RIGHT);

@@ -127,15 +127,15 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
     private static String QUERY_KR_DISTANCE;
     private static String QUERY_EA_DISTANCE;
     private static String QUERY_SCHA_OFFEN;
-//    private static String QUERY_WEHR_GESCHL;
     private static String QUERY_ANLP_OFFEN;
     private static String QUERY_ANLP_GESCHL;
     private static String QUERY_ANLP_ESW;
     private static String QUERY_KR_ESW;
-//    private static String QUERY_EA_GESCHL;
     private static String QUERY_EA_ESW;
     private static String QUERY_ANLL_GESCHL;
     private static String QUERY_KR_MARKED_TWICE;
+    private static String QUERY_KR_KEIN_FG_BA;
+    private static String QUERY_KR_INVALID;
     private static final String CHECKS_BAUWERKE_KR_KR_DOPPELTE__MARKIERUNG =
         "Prüfungen->Bauwerke->Kr->Kr: doppelte Markierung";
     private static final String CHECKS_BAUWERKE_ANLL_ANLL_AUF_GESCHLOSSEN =
@@ -149,35 +149,33 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
     private static final String CHECKS_BAUWERKE_ANLP_ANLP__ESW_FUER_GESCHLO =
         "Prüfungen->Bauwerke->Anlp->Anlp: Esw für geschlossenes Gerinne";
     private static final String CHECKS_BAUWERKE_ANLP_ANLP_AUF_GESCHLOSSEN =
-        "Prüfungen->Bauwerke->Anlp->Anlp: auf geschlossenem Gerinne";
+        "Prüfungen->Bauwerke->Anlp->Anlp: falsch auf geschlossenem Gerinne";
     private static final String CHECKS_BAUWERKE_ANLP_ANLP_AUF_OFFENEM__GER =
-        "Prüfungen->Bauwerke->Anlp->Anlp: auf offenem Gerinne";
+        "Prüfungen->Bauwerke->Anlp->Anlp: falsch auf offenem Gerinne";
     private static final String CHECKS_BAUWERKE_WEHR_WEHR_AUF_GESCHLOSSEN =
         "Prüfungen->Bauwerke->Wehr->Wehr: auf geschlossenem Gerinne";
     private static final String CHECKS_BAUWERKE_SCHA_SCHA_AUF_OFFENEM__GER =
         "Prüfungen->Bauwerke->Scha->Scha: auf offenem Gerinne";
     private static final String CHECKS_BAUWERKE_EA_EA_DOPPELTZU_NAH = "Prüfungen->Bauwerke->Ea->Ea: doppelt/zu nah";
     private static final String CHECKS_BAUWERKE_KR_KR_DOPPELTZU_NAH = "Prüfungen->Bauwerke->Kr->Kr: doppelt/zu nah";
+    private static final String CHECKS_BAUWERKE_KR_KEIN_FG_BA = "Prüfungen->Bauwerke->Kr->Kr: keine Kreuzung";
+    private static final String CHECKS_BAUWERKE_KR_INVALID = "Prüfungen->Bauwerke->Kr->Kr: unzulässige Profillage";
     private static final String CHECKS_BAUWERKE_SCHW_SCHW_DOPPELTZU_NAH =
         "Prüfungen->Bauwerke->Schw->Schw: doppelt/zu nah";
     private static final String CHECKS_BAUWERKE_WEHR_WEHR_DOPPELTZU_NAH =
         "Prüfungen->Bauwerke->Wehr->Wehr: doppelt/zu nah";
     private static final String CHECKS_BAUWERKE_SCHA_SCHA_DOPPELTZU_NAH =
         "Prüfungen->Bauwerke->Scha->Scha: doppelt/zu nah";
-    private static final String CHECKS_BAUWERKE_DUE_DUE__UEBERLAPPUNG = "Prüfungen->Bauwerke->Due->Due: Überlappung";
-    private static final String CHECKS_BAUWERKE_DD__UEBERLAPPUNG = "Prüfungen->Bauwerke->D->D: Überlappung";
-    private static final String CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG = "Prüfungen->Bauwerke->RL->RL: Überlappung";
-    private static final String CHECKS_BAUWERKE_DUE_DUE__LUECKE = "Prüfungen->Bauwerke->Due->Due: Lücke";
-    private static final String CHECKS_BAUWERKE_DD__LUECKE = "Prüfungen->Bauwerke->D->D: Lücke";
-    private static final String CHECKS_BAUWERKE_RL_RL__LUECKE = "Prüfungen->Bauwerke->RL->RL: Lücke";
-    private static final String CHECKS_BAUWERKE_DD__ATTRIBUTE = "Prüfungen->Bauwerke->D->D: Attribute";
+    private static final String CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG = "Prüfungen->Bauwerke->RL/D/Dü->RL: Überlappung";
+    private static final String CHECKS_BAUWERKE_RL_RL__LUECKE = "Prüfungen->Bauwerke->RL/D/Dü->RL: Lücke";
+    private static final String CHECKS_BAUWERKE_DD__ATTRIBUTE = "Prüfungen->Bauwerke->RL/D/Dü->D: Attribute";
     private static final String CHECKS_BAUWERKE_WEHR_WEHR__ATTRIBUTE = "Prüfungen->Bauwerke->Wehr->Wehr: Attribute";
     private static final String CHECKS_BAUWERKE_SCHW_SCHW__ATTRIBUTE = "Prüfungen->Bauwerke->Schw->Schw: Attribute";
     private static final String CHECKS_BAUWERKE_SCHA_SCHA__ATTRIBUTE = "Prüfungen->Bauwerke->Scha->Scha: Attribute";
-    private static final String CHECKS_BAUWERKE_RL_RL__ATTRIBUTE = "Prüfungen->Bauwerke->RL->RL: Attribute";
+    private static final String CHECKS_BAUWERKE_RL_RL__ATTRIBUTE = "Prüfungen->Bauwerke->RL/D/Dü->RL: Attribute";
     private static final String CHECKS_BAUWERKE_KR_KR__ATTRIBUTE = "Prüfungen->Bauwerke->Kr->Kr: Attribute";
     private static final String CHECKS_BAUWERKE_EA_EA__ATTRIBUTE = "Prüfungen->Bauwerke->Ea->Ea: Attribute";
-    private static final String CHECKS_BAUWERKE_DUE_DUE__ATTRIBUTE = "Prüfungen->Bauwerke->Dü->Dü: Attribute";
+    private static final String CHECKS_BAUWERKE_DUE_DUE__ATTRIBUTE = "Prüfungen->Bauwerke->RL/D/Dü->Due: Attribute";
     private static final String CHECKS_BAUWERKE_ANLP_ANLP__ATTRIBUTE = "Prüfungen->Bauwerke->Anlp->Anlp: Attribute";
     private static final String CHECKS_BAUWERKE_ANLL_ANLL__ATTRIBUTE = "Prüfungen->Bauwerke->Anll->Anll: Attribute";
     private static final String[] ALL_CHECKS = new String[] {
@@ -188,10 +186,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             CHECKS_BAUWERKE_ANLP_ANLP__ATTRIBUTE,
             CHECKS_BAUWERKE_ANLP_ANLP__ESW_FUER_GESCHLO,
             CHECKS_BAUWERKE_DD__ATTRIBUTE,
-            CHECKS_BAUWERKE_DD__LUECKE,
-            CHECKS_BAUWERKE_DD__UEBERLAPPUNG,
-            CHECKS_BAUWERKE_DUE_DUE__LUECKE,
-            CHECKS_BAUWERKE_DUE_DUE__UEBERLAPPUNG,
             CHECKS_BAUWERKE_DUE_DUE__ATTRIBUTE,
             CHECKS_BAUWERKE_EA_EA_AUF_GESCHLOSSENEM_G,
             CHECKS_BAUWERKE_EA_EA_DOPPELTZU_NAH,
@@ -199,6 +193,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             CHECKS_BAUWERKE_EA_EA__ESW_FUER_GESCHLOSSEN,
             CHECKS_BAUWERKE_KR_KR_DOPPELTE__MARKIERUNG,
             CHECKS_BAUWERKE_KR_KR_DOPPELTZU_NAH,
+            CHECKS_BAUWERKE_KR_KEIN_FG_BA,
+            CHECKS_BAUWERKE_KR_INVALID,
             CHECKS_BAUWERKE_KR_KR__ATTRIBUTE,
             CHECKS_BAUWERKE_KR_KR__ESW_FUER_GESCHLOSSEN,
             CHECKS_BAUWERKE_RL_RL__ATTRIBUTE,
@@ -1366,43 +1362,103 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_KR_MARKED_TWICE = "select distinct " + FG_BA_KR.getID() + ", k1." + FG_BA_KR.getPrimaryKey()
                             + " from \n"
-                            + "(select kr.id, g.geo_field, s.route\n"
+                            + "(select kr.id, g.geo_field, s.route, kkr.kr kr\n"
                             + "from dlm25w.fg_ba_kr kr\n"
                             + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
                             + "join geom g on (s.real_point = g.id)\n"
                             + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)) as k1,\n"
-                            + "(select kr.id, g.geo_field, s.route \n"
+                            + "(select kr.id, g.geo_field, s.route, kkr.kr kr \n"
                             + "from dlm25w.fg_ba_kr kr\n"
                             + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
                             + "join geom g on (s.real_point = g.id)\n"
                             + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)) as k2\n"
-                            + " where (%1$s is null or k1.route = any(%1$s)) and k1.id <> k2.id and st_intersects(k1.geo_field, st_buffer(k2.geo_field, 1));";
+                            + " where (%1$s is null or k1.route = any(%1$s)) and k1.id <> k2.id and k1.kr = 'Gew' and k2.kr = 'Gew' and st_intersects(k1.geo_field, st_buffer(k2.geo_field, 3));";
             } else {
                 QUERY_KR_MARKED_TWICE = "select distinct " + FG_BA_KR.getID() + ", k1." + FG_BA_KR.getPrimaryKey()
                             + " from \n"
-                            + "(select kr.id, g.geo_field, s.route\n"
+                            + "(select kr.id, g.geo_field, s.route, kkr.kr kr\n"
                             + "from dlm25w.fg_ba_kr kr\n"
                             + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
                             + "join geom g on (s.real_point = g.id)\n"
                             + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)"
                             + " where gr.owner = '"
                             + user.getUserGroup().getName() + "') as k1,\n"
-                            + "(select kr.id, g.geo_field, s.route \n"
+                            + "(select kr.id, g.geo_field, s.route , kkr.kr kr\n"
                             + "from dlm25w.fg_ba_kr kr\n"
                             + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
                             + "join geom g on (s.real_point = g.id)\n"
                             + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)"
                             + " where gr.owner = '"
                             + user.getUserGroup().getName() + "') as k2\n"
-                            + "where (%1$s is null or k1.route = any(%1$s)) and k1.id <> k2.id and not st_isempty(st_intersection(k1.geo_field, st_buffer(k2.geo_field, 1)));";
+                            + "where (%1$s is null or k1.route = any(%1$s)) and k1.id <> k2.id and k1.kr = 'Gew' and k2.kr = 'Gew' and not st_isempty(st_intersection(k1.geo_field, st_buffer(k2.geo_field, 3)));";
+            }
+
+            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
+                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+                QUERY_KR_KEIN_FG_BA = "select distinct " + FG_BA_KR.getID() + ", kr." + FG_BA_KR.getPrimaryKey()
+                            + " from dlm25w.fg_ba_kr kr\n"
+                            + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
+                            + "join geom g on (s.real_point = g.id)\n"
+                            + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
+                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+                            + " where (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and (select count(ba.id) from dlm25w.fg_ba ba join geom on (ba.geom = geom.id) where st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) ) < 2;";
+            } else {
+                QUERY_KR_KEIN_FG_BA = "select distinct " + FG_BA_KR.getID() + ", kr." + FG_BA_KR.getPrimaryKey()
+                            + " from dlm25w.fg_ba_kr kr\n"
+                            + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
+                            + "join geom g on (s.real_point = g.id)\n"
+                            + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
+                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+                            + " where gr.owner = '"
+                            + user.getUserGroup().getName()
+                            + "' and (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and (select count(ba.id) from dlm25w.fg_ba ba join geom on (ba.geom = geom.id) where st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) ) < 2;";
+            }
+
+            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
+                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+                QUERY_KR_INVALID = "select distinct " + FG_BA_KR.getID() + ", kr." + FG_BA_KR.getPrimaryKey()
+                            + " from dlm25w.fg_ba_kr kr\n"
+                            + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
+                            + "join geom g on (s.real_point = g.id)\n"
+                            + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
+                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "left join dlm25w.k_l_oiu koiu on (kr.l_oiu = koiu.id)\n"
+                            + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+                            + " where (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and koiu.l_oiu = 'i' and ( dlm25w.isgeschlossenesgerinne(st_buffer(g.geo_field, 0.01), ba.id)  or (dlm25w.isoffenesgerinne(st_buffer(g.geo_field, 0.01), ba.id) and dlm25w.isoffenesgerinne(\n"
+                            + "(select st_buffer(ST_Line_Interpolate_Point(geo_field, ST_LineLocatePoint(geo_field, g.geo_field)), 0.01) from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1), \n"
+                            + "(select b.id from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1)) ) );";
+            } else {
+                QUERY_KR_INVALID = "select distinct " + FG_BA_KR.getID() + ", kr." + FG_BA_KR.getPrimaryKey()
+                            + " from dlm25w.fg_ba_kr kr\n"
+                            + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
+                            + "join geom g on (s.real_point = g.id)\n"
+                            + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
+                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "left join dlm25w.k_l_oiu koiu on (kr.l_oiu = koiu.id)\n"
+                            + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+                            + " where  gr.owner = '"
+                            + user.getUserGroup().getName()
+                            + "' and (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and koiu.l_oiu = 'i' and ( dlm25w.isgeschlossenesgerinne(st_buffer(g.geo_field, 0.01), ba.id)  or (dlm25w.isoffenesgerinne(st_buffer(g.geo_field, 0.01), ba.id) and dlm25w.isoffenesgerinne(\n"
+                            + "(select st_buffer(ST_Line_Interpolate_Point(geo_field, ST_LineLocatePoint(geo_field, g.geo_field)), 0.01) from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1), \n"
+                            + "(select b.id from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1)) ) );";
             }
         }
     }
@@ -1435,7 +1491,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 36;
+        return 33;
     }
 
     @Override
@@ -1454,8 +1510,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                     addService(result, cr.getAnlpGeschlossen());
                     addService(result, cr.getAnlpOffen());
                     addService(result, cr.getDueAttr());
-                    addService(result, cr.getDueHole());
-                    addService(result, cr.getDueOverlapps());
+//                    addService(result, cr.getDueHole());
+//                    addService(result, cr.getDueOverlapps());
                     addService(result, cr.getEaAttr());
                     addService(result, cr.getEaDistance());
                     addService(result, cr.getEaEsw());
@@ -1476,8 +1532,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                     addService(result, cr.getWehrDistance());
 //                    addService(result, cr.getWehrGeschlossen());
                     addService(result, cr.getdAttr());
-                    addService(result, cr.getdHole());
-                    addService(result, cr.getdOverlapps());
+//                    addService(result, cr.getdHole());
+//                    addService(result, cr.getdOverlapps());
                 }
             } catch (Exception e) {
                 LOG.error("Error while performing check", e);
@@ -1529,11 +1585,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                                         result.getKrAttrErrors(),
                                         result.getEaAttrErrors(),
                                         result.getRlHoleErrors(),
-                                        result.getdHoleErrors(),
-                                        result.getDueHoleErrors(),
                                         result.getRlOverlappsErrors(),
-                                        result.getdOverlappsErrors(),
-                                        result.getDueOverlappsErrors(),
                                         result.getSchaDistanceError()
                                                 + result.getSchaOffenError(),
                                         result.getWehrDistanceError(),
@@ -1545,7 +1597,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                                         result.getAnllGeschlError(),
                                         result.getKrDistanceError()
                                                 + result.getKrEswError()
-                                                + result.getKrMarkedTwiceError(),
+                                                + result.getKrMarkedTwiceError()
+                                                + result.getKrFgBaError()
+                                                + result.getKrInvalidError(),
                                         result.getEaDistanceError()
                                                 + result.getEaEswError()
                                                 // + result.getEaGeschlError()
@@ -1570,8 +1624,14 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             if (result.getKrEsw() != null) {
                                 showService(result.getKrEsw());
                             }
+                            if (result.getKrInvalid() != null) {
+                                showService(result.getKrInvalid());
+                            }
                             if (result.getKrMarkedTwice() != null) {
                                 showService(result.getKrMarkedTwice());
+                            }
+                            if (result.getKrFgBa() != null) {
+                                showService(result.getKrFgBa());
                             }
                             if (result.getKrDistance() != null) {
                                 showService(result.getKrDistance());
@@ -1618,20 +1678,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             if (result.getSchaAttr() != null) {
                                 showService(result.getSchaAttr());
                             }
-                            if (result.getDueOverlapps() != null) {
-                                showService(result.getDueOverlapps());
-                            }
-                            if (result.getDueHole() != null) {
-                                showService(result.getDueHole());
-                            }
                             if (result.getDueAttr() != null) {
                                 showService(result.getDueAttr());
-                            }
-                            if (result.getdOverlapps() != null) {
-                                showService(result.getdOverlapps());
-                            }
-                            if (result.getdHole() != null) {
-                                showService(result.getdHole());
                             }
                             if (result.getdAttr() != null) {
                                 showService(result.getdAttr());
@@ -1834,17 +1882,17 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setdHole(analyseByCustomSearch(
-                new DWithHole(user, selectedIds),
-                CHECKS_BAUWERKE_DD__LUECKE,
-                serviceAttributeDefinition));
-        increaseProgress(wd, 1);
-
-        result.setDueHole(analyseByCustomSearch(
-                new DueWithHole(user, selectedIds),
-                CHECKS_BAUWERKE_DUE_DUE__LUECKE,
-                serviceAttributeDefinition));
-        increaseProgress(wd, 1);
+//        result.setdHole(analyseByCustomSearch(
+//                new DWithHole(user, selectedIds),
+//                CHECKS_BAUWERKE_DD__LUECKE,
+//                serviceAttributeDefinition));
+//        increaseProgress(wd, 1);
+//
+//        result.setDueHole(analyseByCustomSearch(
+//                new DueWithHole(user, selectedIds),
+//                CHECKS_BAUWERKE_DUE_DUE__LUECKE,
+//                serviceAttributeDefinition));
+//        increaseProgress(wd, 1);
 
         result.setRlOverlapps(analyseByCustomSearch(
                 new OverlappedRlWithRDDue(user, selectedIds),
@@ -1852,17 +1900,17 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setdOverlapps(analyseByCustomSearch(
-                new OverlappedDWithRDDue(user, selectedIds),
-                CHECKS_BAUWERKE_DD__UEBERLAPPUNG,
-                serviceAttributeDefinition));
-        increaseProgress(wd, 1);
-
-        result.setDueOverlapps(analyseByCustomSearch(
-                new OverlappedDueWithRDDue(user, selectedIds),
-                CHECKS_BAUWERKE_DUE_DUE__UEBERLAPPUNG,
-                serviceAttributeDefinition));
-        increaseProgress(wd, 1);
+//        result.setdOverlapps(analyseByCustomSearch(
+//                new OverlappedDWithRDDue(user, selectedIds),
+//                CHECKS_BAUWERKE_DD__UEBERLAPPUNG,
+//                serviceAttributeDefinition));
+//        increaseProgress(wd, 1);
+//
+//        result.setDueOverlapps(analyseByCustomSearch(
+//                new OverlappedDueWithRDDue(user, selectedIds),
+//                CHECKS_BAUWERKE_DUE_DUE__UEBERLAPPUNG,
+//                serviceAttributeDefinition));
+//        increaseProgress(wd, 1);
 
         result.setSchaDistance(analyseByQuery(
                 FG_BA_SCHA,
@@ -1886,6 +1934,18 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 FG_BA_KR,
                 String.format(QUERY_KR_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)),
                 CHECKS_BAUWERKE_KR_KR_DOPPELTZU_NAH));
+        increaseProgress(wd, 1);
+
+        result.setKrFgBa(analyseByQuery(
+                FG_BA_KR,
+                String.format(QUERY_KR_KEIN_FG_BA, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECKS_BAUWERKE_KR_KEIN_FG_BA));
+        increaseProgress(wd, 1);
+
+        result.setKrInvalid(analyseByQuery(
+                FG_BA_KR,
+                String.format(QUERY_KR_INVALID, SQLFormatter.createSqlArrayString(selectedIds)),
+                CHECKS_BAUWERKE_KR_INVALID));
         increaseProgress(wd, 1);
 
         result.setEaDistance(analyseByQuery(
@@ -2003,30 +2063,30 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             successful = false;
         }
 
-        if (result.getdHole() != null) {
-            result.setdHoleErrors(result.getdHole().getFeatureCount(null));
-            successful = false;
-        }
-
-        if (result.getDueHole() != null) {
-            result.setDueHoleErrors(result.getDueHole().getFeatureCount(null));
-            successful = false;
-        }
+//        if (result.getdHole() != null) {
+//            result.setdHoleErrors(result.getdHole().getFeatureCount(null));
+//            successful = false;
+//        }
+//
+//        if (result.getDueHole() != null) {
+//            result.setDueHoleErrors(result.getDueHole().getFeatureCount(null));
+//            successful = false;
+//        }
 
         if (result.getRlOverlapps() != null) {
             result.setRlOverlappsErrors(result.getRlOverlapps().getFeatureCount(null));
             successful = false;
         }
 
-        if (result.getdOverlapps() != null) {
-            result.setdOverlappsErrors(result.getdOverlapps().getFeatureCount(null));
-            successful = false;
-        }
-
-        if (result.getDueOverlapps() != null) {
-            result.setDueOverlappsErrors(result.getDueOverlapps().getFeatureCount(null));
-            successful = false;
-        }
+//        if (result.getdOverlapps() != null) {
+//            result.setdOverlappsErrors(result.getdOverlapps().getFeatureCount(null));
+//            successful = false;
+//        }
+//
+//        if (result.getDueOverlapps() != null) {
+//            result.setDueOverlappsErrors(result.getDueOverlapps().getFeatureCount(null));
+//            successful = false;
+//        }
 
         if (result.getSchaDistance() != null) {
             result.setSchaDistanceError(result.getSchaDistance().getFeatureCount(null));
@@ -2045,6 +2105,16 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 
         if (result.getKrDistance() != null) {
             result.setKrDistanceError(result.getKrDistance().getFeatureCount(null));
+            successful = false;
+        }
+
+        if (result.getKrFgBa() != null) {
+            result.setKrFgBaError(result.getKrFgBa().getFeatureCount(null));
+            successful = false;
+        }
+
+        if (result.getKrInvalid() != null) {
+            result.setKrInvalidError(result.getKrInvalid().getFeatureCount(null));
             successful = false;
         }
 
@@ -2135,24 +2205,20 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private int krAttrErrors;
         private int eaAttrErrors;
         private int rlHoleErrors;
-        private int dHoleErrors;
-        private int dueHoleErrors;
         private int rlOverlappsErrors;
-        private int dOverlappsErrors;
-        private int dueOverlappsErrors;
         private int schaDistanceError;
         private int wehrDistanceError;
         private int schwDistanceError;
         private int krDistanceError;
+        private int krFgBaError;
+        private int krInvalidError;
         private int eaDistanceError;
         private int schaOffenError;
-//        private int wehrGeschlossenError;
         private int anlpOffenError;
         private int anlpGeschlossenError;
         private int anlpEswError;
         private int krEswError;
         private int eaEswError;
-//        private int eaGeschlError;
         private int anllGeschlError;
         private int krMarkedTwiceError;
         private H2FeatureService rlAttr;
@@ -2166,28 +2232,96 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private H2FeatureService krAttr;
         private H2FeatureService eaAttr;
         private H2FeatureService rlHole;
-        private H2FeatureService dHole;
-        private H2FeatureService dueHole;
         private H2FeatureService rlOverlapps;
-        private H2FeatureService dOverlapps;
-        private H2FeatureService dueOverlapps;
         private H2FeatureService schaDistance;
         private H2FeatureService wehrDistance;
         private H2FeatureService schwDistance;
         private H2FeatureService krDistance;
+        private H2FeatureService krFgBa;
+        private H2FeatureService krInvalid;
         private H2FeatureService eaDistance;
         private H2FeatureService schaOffen;
-//        private H2FeatureService wehrGeschlossen;
         private H2FeatureService anlpOffen;
         private H2FeatureService anlpGeschlossen;
         private H2FeatureService anlpEsw;
         private H2FeatureService krEsw;
         private H2FeatureService eaEsw;
-//        private H2FeatureService eaGeschl;
         private H2FeatureService anllGeschl;
         private H2FeatureService krMarkedTwice;
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the krInvalidError
+         */
+        public int getKrInvalidError() {
+            return krInvalidError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  krInvalidError  the krInvalidError to set
+         */
+        public void setKrInvalidError(final int krInvalidError) {
+            this.krInvalidError = krInvalidError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the krInvalid
+         */
+        public H2FeatureService getKrInvalid() {
+            return krInvalid;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  krInvalid  the krInvalid to set
+         */
+        public void setKrInvalid(final H2FeatureService krInvalid) {
+            this.krInvalid = krInvalid;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the krFgBaError
+         */
+        public int getKrFgBaError() {
+            return krFgBaError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  krFgBaError  the krFgBaError to set
+         */
+        public void setKrFgBaError(final int krFgBaError) {
+            this.krFgBaError = krFgBaError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the krFgBa
+         */
+        public H2FeatureService getKrFgBa() {
+            return krFgBa;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  krFgBa  the krFgBa to set
+         */
+        public void setKrFgBa(final H2FeatureService krFgBa) {
+            this.krFgBa = krFgBa;
+        }
 
         /**
          * DOCUMENT ME!
@@ -2588,42 +2722,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         /**
          * DOCUMENT ME!
          *
-         * @return  the dHoleErrors
-         */
-        public int getdHoleErrors() {
-            return dHoleErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  dHoleErrors  the dHoleErrors to set
-         */
-        public void setdHoleErrors(final int dHoleErrors) {
-            this.dHoleErrors = dHoleErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the dueHoleErrors
-         */
-        public int getDueHoleErrors() {
-            return dueHoleErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  dueHoleErrors  the dueHoleErrors to set
-         */
-        public void setDueHoleErrors(final int dueHoleErrors) {
-            this.dueHoleErrors = dueHoleErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
          * @return  the rlHole
          */
         public H2FeatureService getRlHole() {
@@ -2637,42 +2735,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
          */
         public void setRlHole(final H2FeatureService rlHole) {
             this.rlHole = rlHole;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the dHole
-         */
-        public H2FeatureService getdHole() {
-            return dHole;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  dHole  the dHole to set
-         */
-        public void setdHole(final H2FeatureService dHole) {
-            this.dHole = dHole;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the dueHole
-         */
-        public H2FeatureService getDueHole() {
-            return dueHole;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  dueHole  the dueHole to set
-         */
-        public void setDueHole(final H2FeatureService dueHole) {
-            this.dueHole = dueHole;
         }
 
         /**
@@ -2696,42 +2758,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         /**
          * DOCUMENT ME!
          *
-         * @return  the dOverlapps
-         */
-        public H2FeatureService getdOverlapps() {
-            return dOverlapps;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  dOverlapps  the dOverlapps to set
-         */
-        public void setdOverlapps(final H2FeatureService dOverlapps) {
-            this.dOverlapps = dOverlapps;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the dueOverlapps
-         */
-        public H2FeatureService getDueOverlapps() {
-            return dueOverlapps;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  dueOverlapps  the dueOverlapps to set
-         */
-        public void setDueOverlapps(final H2FeatureService dueOverlapps) {
-            this.dueOverlapps = dueOverlapps;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
          * @return  the rlOverlappsErrors
          */
         public int getRlOverlappsErrors() {
@@ -2745,42 +2771,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
          */
         public void setRlOverlappsErrors(final int rlOverlappsErrors) {
             this.rlOverlappsErrors = rlOverlappsErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the dOverlappsErrors
-         */
-        public int getdOverlappsErrors() {
-            return dOverlappsErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  dOverlappsErrors  the dOverlappsErrors to set
-         */
-        public void setdOverlappsErrors(final int dOverlappsErrors) {
-            this.dOverlappsErrors = dOverlappsErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the dueOverlappsErrors
-         */
-        public int getDueOverlappsErrors() {
-            return dueOverlappsErrors;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  dueOverlappsErrors  the dueOverlappsErrors to set
-         */
-        public void setDueOverlappsErrors(final int dueOverlappsErrors) {
-            this.dueOverlappsErrors = dueOverlappsErrors;
         }
 
         /**
@@ -2981,24 +2971,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             this.schaOffen = schaOffen;
         }
 
-//        /**
-//         * DOCUMENT ME!
-//         *
-//         * @return  the wehrGeschlossen
-//         */
-//        public H2FeatureService getWehrGeschlossen() {
-//            return wehrGeschlossen;
-//        }
-//
-//        /**
-//         * DOCUMENT ME!
-//         *
-//         * @param  wehrGeschlossen  the wehrGeschlossen to set
-//         */
-//        public void setWehrGeschlossen(final H2FeatureService wehrGeschlossen) {
-//            this.wehrGeschlossen = wehrGeschlossen;
-//        }
-
         /**
          * DOCUMENT ME!
          *
@@ -3070,24 +3042,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         public void setSchaOffenError(final int schaOffenError) {
             this.schaOffenError = schaOffenError;
         }
-
-//        /**
-//         * DOCUMENT ME!
-//         *
-//         * @return  the wehrGeschlossenError
-//         */
-//        public int getWehrGeschlossenError() {
-//            return wehrGeschlossenError;
-//        }
-//
-//        /**
-//         * DOCUMENT ME!
-//         *
-//         * @param  wehrGeschlossenError  the wehrGeschlossenError to set
-//         */
-//        public void setWehrGeschlossenError(final int wehrGeschlossenError) {
-//            this.wehrGeschlossenError = wehrGeschlossenError;
-//        }
 
         /**
          * DOCUMENT ME!
@@ -3179,24 +3133,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             this.eaEsw = eaEsw;
         }
 
-//        /**
-//         * DOCUMENT ME!
-//         *
-//         * @return  the eaGeschl
-//         */
-//        public H2FeatureService getEaGeschl() {
-//            return eaGeschl;
-//        }
-//
-//        /**
-//         * DOCUMENT ME!
-//         *
-//         * @param  eaGeschl  the eaGeschl to set
-//         */
-//        public void setEaGeschl(final H2FeatureService eaGeschl) {
-//            this.eaGeschl = eaGeschl;
-//        }
-
         /**
          * DOCUMENT ME!
          *
@@ -3268,24 +3204,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         public void setEaEswError(final int eaEswError) {
             this.eaEswError = eaEswError;
         }
-
-//        /**
-//         * DOCUMENT ME!
-//         *
-//         * @return  the eaGeschlError
-//         */
-//        public int getEaGeschlError() {
-//            return eaGeschlError;
-//        }
-//
-//        /**
-//         * DOCUMENT ME!
-//         *
-//         * @param  eaGeschlError  the eaGeschlError to set
-//         */
-//        public void setEaGeschlError(final int eaGeschlError) {
-//            this.eaGeschlError = eaGeschlError;
-//        }
 
         /**
          * DOCUMENT ME!
