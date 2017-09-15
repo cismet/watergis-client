@@ -12,6 +12,10 @@
  */
 package de.cismet.watergis.gui.panels;
 
+import Sirius.navigator.connection.SessionManager;
+
+import Sirius.server.newuser.User;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -27,21 +31,24 @@ import org.openide.util.Exceptions;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import java.lang.ref.SoftReference;
 
 import java.sql.Time;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,26 +58,29 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
+import de.cismet.cids.custom.watergis.server.search.CalculateFgLa;
+
 import de.cismet.cids.dynamics.CidsBean;
 import de.cismet.cids.dynamics.DisposableCidsBeanStore;
 
 import de.cismet.cids.editors.DefaultCustomObjectEditor;
 
+import de.cismet.cids.server.search.CidsServerSearch;
+
 import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
+import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
-
-import de.cismet.cismap.linearreferencing.TableStationEditor;
-
-import de.cismet.commons.concurrency.CismetConcurrency;
 
 import de.cismet.tools.CismetThreadPool;
 
 import de.cismet.watergis.utils.CidsBeanUtils;
+import de.cismet.watergis.utils.ConversionUtils;
 import de.cismet.watergis.utils.GafReader;
-import de.cismet.watergis.utils.ModelLoader;
 import de.cismet.watergis.utils.RendererTools;
 
 /**
@@ -110,11 +120,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     private Timer timer;
     private ImageResizeWorker currentResizeWorker;
     private Dimension lastDims;
+    private boolean firstInit = true;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private de.cismet.cids.editors.DefaultBindableReferenceCombo cbFreigabe;
     private javax.swing.JCheckBox cbHoehe;
-    private de.cismet.cids.editors.DefaultBindableReferenceCombo cbLst;
     private de.cismet.cids.editors.DefaultBindableDateChooser dateChooser;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -131,6 +140,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     private javax.swing.JLabel labAufnName;
     private javax.swing.JLabel labBaCd;
     private javax.swing.JLabel labBaCdVal;
+    private javax.swing.JLabel labBaStVal;
     private javax.swing.JLabel labBemerkung;
     private javax.swing.JLabel labBeschreibung;
     private javax.swing.JLabel labEmpty;
@@ -156,14 +166,15 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     private org.jdesktop.swingx.JXBusyLabel lblBusyLoad;
     private javax.swing.JPanel panAufn;
     private javax.swing.JPanel panBesch;
+    private javax.swing.JPanel panFreigabe;
     private javax.swing.JPanel panGewaesserBezug;
     private javax.swing.JPanel panImage;
-    private javax.swing.JPanel panStatEdit;
+    private javax.swing.JPanel panStatus;
     private javax.swing.JPanel panUpload;
     private javax.swing.JPanel panVerortung;
     private javax.swing.JTextArea taBemerkung;
-    private javax.swing.JTextArea taBemerkung1;
     private javax.swing.JTextArea taBeschreibung;
+    private javax.swing.JTextArea taTitle;
     private javax.swing.JTextField txtAufn;
     private javax.swing.JTextField txtAufn1;
     private javax.swing.JTextField txtHo;
@@ -178,7 +189,6 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
      */
     public GafProfEditor() {
         initComponents();
-        panStatEdit.setEnabled(false);
         RendererTools.makeReadOnly(txtHo);
         RendererTools.makeReadOnly(txtRe);
         lblBusy.setBusy(false);
@@ -270,23 +280,23 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labLaCdVal = new javax.swing.JLabel();
         labLst = new javax.swing.JLabel();
         labHoehe = new javax.swing.JLabel();
-        cbLst = new de.cismet.cids.editors.DefaultBindableReferenceCombo();
         labStatLa = new javax.swing.JLabel();
         labStatBa = new javax.swing.JLabel();
         labStatLaVal = new javax.swing.JLabel();
-        panStatEdit = new TableStationEditor("dlm25w.fg_ba");
         jLabel3 = new javax.swing.JLabel();
         cbHoehe = new javax.swing.JCheckBox();
+        labBaStVal = new javax.swing.JLabel();
+        panStatus = new javax.swing.JPanel();
         panAufn = new javax.swing.JPanel();
         labAufnName = new javax.swing.JLabel();
         labAufnDatum = new javax.swing.JLabel();
         txtAufn = new javax.swing.JTextField();
         labFreigabe = new javax.swing.JLabel();
-        cbFreigabe = new de.cismet.cids.editors.DefaultBindableReferenceCombo();
         jLabel4 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         txtAufn1 = new javax.swing.JTextField();
         dateChooser = new de.cismet.cids.editors.DefaultBindableDateChooser();
+        panFreigabe = new javax.swing.JPanel();
         panBesch = new javax.swing.JPanel();
         labTitle = new javax.swing.JLabel();
         labBemerkung = new javax.swing.JLabel();
@@ -296,7 +306,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         jScrollPane2 = new javax.swing.JScrollPane();
         taBeschreibung = new javax.swing.JTextArea();
         jScrollPane3 = new javax.swing.JScrollPane();
-        taBemerkung1 = new javax.swing.JTextArea();
+        taTitle = new javax.swing.JTextArea();
         panImage = new javax.swing.JPanel();
         labImage = new javax.swing.JLabel();
         lblBusy = new org.jdesktop.swingx.JXBusyLabel(new Dimension(75, 75));
@@ -534,17 +544,6 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labLaCd, gridBagConstraints);
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.ba_st.route.ba_cd}"),
-                labBaCdVal,
-                org.jdesktop.beansbinding.BeanProperty.create("text"));
-        binding.setSourceNullValue("null");
-        binding.setSourceUnreadableValue("null");
-        bindingGroup.addBinding(binding);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -583,24 +582,6 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labHoehe, gridBagConstraints);
-
-        cbLst.setMinimumSize(new java.awt.Dimension(150, 25));
-        cbLst.setPreferredSize(new java.awt.Dimension(150, 25));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.l_st}"),
-                cbLst,
-                org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
-        bindingGroup.addBinding(binding);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        panGewaesserBezug.add(cbLst, gridBagConstraints);
 
         labStatLa.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -642,13 +623,6 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labStatLaVal, gridBagConstraints);
 
-        panStatEdit.setPreferredSize(new java.awt.Dimension(150, 25));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        panGewaesserBezug.add(panStatEdit, gridBagConstraints);
-
         jLabel3.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                           // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel3,
@@ -672,6 +646,26 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(cbHoehe, gridBagConstraints);
+
+        labBaStVal.setPreferredSize(new java.awt.Dimension(150, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        panGewaesserBezug.add(labBaStVal, gridBagConstraints);
+
+        panStatus.setMinimumSize(new java.awt.Dimension(120, 25));
+        panStatus.setPreferredSize(new java.awt.Dimension(120, 25));
+        panStatus.setLayout(new java.awt.GridLayout(1, 0));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        panGewaesserBezug.add(panStatus, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -714,15 +708,13 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
         txtAufn.setMinimumSize(new java.awt.Dimension(250, 25));
         txtAufn.setPreferredSize(new java.awt.Dimension(210, 25));
+        txtAufn.addFocusListener(new java.awt.event.FocusAdapter() {
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.aufn_name}"),
-                txtAufn,
-                org.jdesktop.beansbinding.BeanProperty.create("text"));
-        bindingGroup.addBinding(binding);
-
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtAufnFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -746,24 +738,6 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panAufn.add(labFreigabe, gridBagConstraints);
 
-        cbFreigabe.setMinimumSize(new java.awt.Dimension(120, 25));
-        cbFreigabe.setPreferredSize(new java.awt.Dimension(120, 25));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.freigabe}"),
-                cbFreigabe,
-                org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
-        bindingGroup.addBinding(binding);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        panAufn.add(cbFreigabe, gridBagConstraints);
-
         jLabel4.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                           // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel4,
@@ -780,16 +754,13 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
         txtAufn1.setMinimumSize(new java.awt.Dimension(85, 25));
         txtAufn1.setPreferredSize(new java.awt.Dimension(85, 25));
+        txtAufn1.addFocusListener(new java.awt.event.FocusAdapter() {
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.aufn_zeit}"),
-                txtAufn1,
-                org.jdesktop.beansbinding.BeanProperty.create("text"));
-        binding.setValidator(new TimeValidator());
-        bindingGroup.addBinding(binding);
-
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtAufn1FocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -807,6 +778,13 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         binding.setConverter(dateChooser.getConverter());
         bindingGroup.addBinding(binding);
 
+        dateChooser.addFocusListener(new java.awt.event.FocusAdapter() {
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    dateChooserFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -821,6 +799,17 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panAufn.add(jPanel4, gridBagConstraints);
+
+        panFreigabe.setMinimumSize(new java.awt.Dimension(120, 25));
+        panFreigabe.setPreferredSize(new java.awt.Dimension(120, 25));
+        panFreigabe.setLayout(new java.awt.GridLayout(1, 0));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        panAufn.add(panFreigabe, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -863,15 +852,13 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
         taBemerkung.setColumns(20);
         taBemerkung.setRows(4);
+        taBemerkung.addFocusListener(new java.awt.event.FocusAdapter() {
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.bemerkung}"),
-                taBemerkung,
-                org.jdesktop.beansbinding.BeanProperty.create("text"));
-        bindingGroup.addBinding(binding);
-
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    taBemerkungFocusLost(evt);
+                }
+            });
         jScrollPane1.setViewportView(taBemerkung);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -900,15 +887,13 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
         taBeschreibung.setColumns(20);
         taBeschreibung.setRows(4);
+        taBeschreibung.addFocusListener(new java.awt.event.FocusAdapter() {
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.beschreib}"),
-                taBeschreibung,
-                org.jdesktop.beansbinding.BeanProperty.create("text"));
-        bindingGroup.addBinding(binding);
-
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    taBeschreibungFocusLost(evt);
+                }
+            });
         jScrollPane2.setViewportView(taBeschreibung);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -921,18 +906,16 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panBesch.add(jScrollPane2, gridBagConstraints);
 
-        taBemerkung1.setColumns(20);
-        taBemerkung1.setRows(4);
+        taTitle.setColumns(20);
+        taTitle.setRows(4);
+        taTitle.addFocusListener(new java.awt.event.FocusAdapter() {
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
-                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
-                this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.titel}"),
-                taBemerkung1,
-                org.jdesktop.beansbinding.BeanProperty.create("text"));
-        bindingGroup.addBinding(binding);
-
-        jScrollPane3.setViewportView(taBemerkung1);
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    taTitleFocusLost(evt);
+                }
+            });
+        jScrollPane3.setViewportView(taTitle);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -998,6 +981,73 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     } // </editor-fold>//GEN-END:initComponents
 
     /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void taTitleFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_taTitleFocusLost
+        feature.setProperty("titel", taTitle.getText());
+    }                                                                    //GEN-LAST:event_taTitleFocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void taBeschreibungFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_taBeschreibungFocusLost
+        feature.setProperty("beschreib", taBeschreibung.getText());
+    }                                                                           //GEN-LAST:event_taBeschreibungFocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void taBemerkungFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_taBemerkungFocusLost
+        feature.setProperty("bemerkung", taBemerkung.getText());
+    }                                                                        //GEN-LAST:event_taBemerkungFocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtAufnFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtAufnFocusLost
+        feature.setProperty("aufn_name", txtAufn.getText());
+    }                                                                    //GEN-LAST:event_txtAufnFocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtAufn1FocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtAufn1FocusLost
+        feature.setProperty("aufn_zeit", txtAufn1.getText());
+    }                                                                     //GEN-LAST:event_txtAufn1FocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void dateChooserFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_dateChooserFocusLost
+        // TODO add your handling code here:
+    } //GEN-LAST:event_dateChooserFocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   text  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  NumberFormatException  DOCUMENT ME!
+     */
+    private Double getDouble(final String text) throws NumberFormatException {
+        return Double.parseDouble(text);
+    }
+
+    /**
      * Set the cids layer feature. This method should be used instead of the setCidsBean method
      *
      * @param  feature  The feature that should be shown in the editor
@@ -1010,6 +1060,59 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         } else {
             setCidsBean(feature.getBean());
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  feature  DOCUMENT ME!
+     * @param  baCd     DOCUMENT ME!
+     * @param  baSt     DOCUMENT ME!
+     * @param  laCd     DOCUMENT ME!
+     * @param  laSt     DOCUMENT ME!
+     */
+    protected void refreshLaStation(final FeatureServiceFeature feature,
+            final String baCd,
+            final Double baSt,
+            final String laCd,
+            final String laSt) {
+        final Thread refreshLa = new Thread("refreshLa") {
+
+                @Override
+                public void run() {
+                    try {
+                        if ((baCd == null) || (baSt == null)) {
+                            feature.setProperty(laCd, null);
+                            feature.setProperty(laSt, null);
+                            labLaCdVal.setText("");
+                            labStatLaVal.setText("");
+                        } else {
+                            final CidsServerSearch search = new CalculateFgLa(baCd, baSt);
+
+                            final User user = SessionManager.getSession().getUser();
+                            final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
+                                        .getProxy().customServerSearch(user, search);
+
+                            if ((attributes != null) && (attributes.size() > 0) && (attributes.get(0) != null)
+                                        && (attributes.get(0).size() > 1)) {
+                                feature.setProperty(laCd, attributes.get(0).get(0));
+                                feature.setProperty(laSt, attributes.get(0).get(1));
+                                labLaCdVal.setText(String.valueOf(attributes.get(0).get(0)));
+                                labStatLaVal.setText(String.valueOf(attributes.get(0).get(1)));
+                            } else {
+                                feature.setProperty(laCd, null);
+                                feature.setProperty(laSt, null);
+                                labLaCdVal.setText("");
+                                labStatLaVal.setText("");
+                            }
+                        }
+                    } catch (Exception e) {
+                        LOG.error("Cannot retrieve la_cd, la_st", e);
+                    }
+                }
+            };
+
+        refreshLa.start();
     }
 
     /**
@@ -1031,9 +1134,9 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
      * @return  The feature that is currently shown in the editor
      */
     public CidsLayerFeature getCidsLayerFeature() {
-        if (feature != null) {
-            this.feature.syncWithBean();
-        }
+//        if (feature != null) {
+//            this.feature.syncWithBean();
+//        }
         return this.feature;
     }
 
@@ -1045,43 +1148,64 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     @Override
     public void setCidsBean(final CidsBean cidsBean) {
         bindingGroup.unbind();
-        ((TableStationEditor)panStatEdit).setCidsBean(null);
-        ((TableStationEditor)panStatEdit).setParentFeature(null);
+        panStatus.removeAll();
+        panFreigabe.removeAll();
         this.cidsBean = cidsBean;
 
         if (cidsBean != null) {
-            cbLst.setFakeModel(true);
-            cbFreigabe.setFakeModel(true);
+            try {
+                GafProf.tryStationCreation(feature, cidsBean);
+            } catch (Exception ex) {
+                LOG.error("Cannot determine new station", ex);
+            }
             DefaultCustomObjectEditor.setMetaClassInformationToMetaClassStoreComponentsInBindingGroup(
                 bindingGroup,
                 this.cidsBean);
             bindingGroup.bind();
-            cbLst.setFakeModel(false);
-            cbFreigabe.setFakeModel(false);
-            final ModelLoader lstLoader = new ModelLoader("k_l_st", cbLst, "qp");
-            final ModelLoader freigabeLoader = new ModelLoader("k_freigabe", cbFreigabe, "qp");
-
-            CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(lstLoader);
-            CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(freigabeLoader);
-            labUplNameVal.setText(getPropString("upl_name"));
-
             if (feature != null) {
-                final Object laCd = feature.getProperty("la_cd");
-                final Object laSt = feature.getProperty("la_st");
-                labLaCdVal.setText(((laCd != null) ? laCd.toString() : ""));
-                labStatLaVal.setText(((laSt != null) ? laSt.toString() : ""));
-                labStatLaVal.setText(labStatLaVal.getText().replace('.', ','));
-            }
-            final CidsBean baSt = (CidsBean)cidsBean.getProperty("ba_st");
+                EventQueue.invokeLater(new Runnable() {
 
-            ((TableStationEditor)panStatEdit).setParentFeature(feature);
-            ((TableStationEditor)panStatEdit).setStationProperty("ba_st");
+                        @Override
+                        public void run() {
+                            if ((feature == null)
+                                        || (feature.getCatalogueCombo("l_st") == null)
+                                        || (feature.getCatalogueCombo("freigabe") == null)) {
+                                return;
+                            }
+                            panStatus.add(feature.getCatalogueCombo("l_st"));
+                            panFreigabe.add(feature.getCatalogueCombo("freigabe"));
 
-            if (baSt != null) {
-                ((TableStationEditor)panStatEdit).setCidsBean(baSt);
-            } else {
-                ((TableStationEditor)panStatEdit).setCidsBean(null);
+                            if (firstInit) {
+                                final CidsLayerFeatureFilter filter = new CidsLayerFeatureFilter() {
+
+                                        @Override
+                                        public boolean accept(final CidsLayerFeature bean) {
+                                            if (bean == null) {
+                                                return true;
+                                            }
+
+                                            return (bean.getProperty("qp") != null)
+                                                        && (Boolean)bean.getProperty("qp");
+                                        }
+                                    };
+
+                                feature.getCatalogueCombo("l_st").setBeanFilter(filter);
+                                feature.getCatalogueCombo("freigabe").setBeanFilter(filter);
+                                firstInit = false;
+                            }
+                        }
+                    });
             }
+            cidsBean.addPropertyChangeListener(new PropertyChangeListener() {
+
+                    @Override
+                    public void propertyChange(final PropertyChangeEvent evt) {
+                        if (evt.getPropertyName().equals("aufn_datum")) {
+                            feature.setProperty("aufn_datum", dateChooser.getDate());
+                        }
+                    }
+                });
+            refreshGui();
             final Date uplDate = (Date)cidsBean.getProperty("upl_datum");
             final String uplTime = (String)cidsBean.getProperty("upl_zeit");
 
@@ -1098,6 +1222,42 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
     /**
      * DOCUMENT ME!
+     */
+    public void refreshGui() {
+        labUplNameVal.setText(getPropString("upl_name"));
+        taBemerkung.setText(object2String(feature.getProperty("bemerkung")));
+        taTitle.setText(object2String(feature.getProperty("titel")));
+        taBeschreibung.setText(object2String(feature.getProperty("beschreib")));
+        refreshLaStation(
+            feature,
+            (String)feature.getProperty("ba_cd"),
+            (Double)feature.getProperty("ba_st"),
+            "la_cd",
+            "la_st");
+
+        if (feature != null) {
+            final Object laCd = feature.getProperty("la_cd");
+            final Object laSt = feature.getProperty("la_st");
+            labLaCdVal.setText(((laCd != null) ? laCd.toString() : ""));
+            labStatLaVal.setText(((laSt != null) ? laSt.toString() : ""));
+            labStatLaVal.setText(labStatLaVal.getText().replace('.', ','));
+        }
+
+        if (feature.getProperty("ba_cd") != null) {
+            labBaCdVal.setText(String.valueOf(feature.getProperty("ba_cd")));
+        } else {
+            labBaCdVal.setText("");
+        }
+
+        if (feature.getProperty("ba_st") != null) {
+            labBaStVal.setText(ConversionUtils.numberToString(feature.getProperty("ba_st")));
+        } else {
+            labBaStVal.setText("");
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
      *
      * @param  readOnly  DOCUMENT ME!
      */
@@ -1107,19 +1267,44 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
             dateChooser.setEnabled(false);
             txtAufn1.setEnabled(false);
             RendererTools.makeReadOnly(taBemerkung);
-            RendererTools.makeReadOnly(taBemerkung1);
+            RendererTools.makeReadOnly(taTitle);
             RendererTools.makeReadOnly(taBeschreibung);
-            RendererTools.makeReadOnly(cbFreigabe);
-            RendererTools.makeReadOnly(cbLst);
+            if (panFreigabe.getComponentCount() > 0) {
+                RendererTools.makeReadOnly((DefaultCidsLayerBindableReferenceCombo)panFreigabe.getComponent(0));
+            }
+            if (panStatus.getComponentCount() > 0) {
+                RendererTools.makeReadOnly((DefaultCidsLayerBindableReferenceCombo)panStatus.getComponent(0));
+            }
         } else {
             RendererTools.makeWritable(txtAufn);
             dateChooser.setEnabled(true);
             txtAufn1.setEnabled(true);
             RendererTools.makeWritable(taBemerkung);
-            RendererTools.makeWritable(taBemerkung1);
+            RendererTools.makeWritable(taTitle);
             RendererTools.makeWritable(taBeschreibung);
-            RendererTools.makeWritable(cbFreigabe);
-            RendererTools.makeWritable(cbLst);
+            if (panFreigabe.getComponentCount() > 0) {
+                RendererTools.makeWritable((DefaultCidsLayerBindableReferenceCombo)panFreigabe.getComponent(0));
+            }
+            if (panStatus.getComponentCount() > 0) {
+                RendererTools.makeWritable((DefaultCidsLayerBindableReferenceCombo)panStatus.getComponent(0));
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   o  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String object2String(final Object o) {
+        if (o == null) {
+            return "";
+        } else if (o instanceof Double) {
+            return String.valueOf(o).replace('.', ',');
+        } else {
+            return String.valueOf(o);
         }
     }
 
@@ -1421,17 +1606,11 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
             if (geo instanceof Point) {
                 final Point point = (Point)geo;
-                final DecimalFormat format = new DecimalFormat("0.00");
-                final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
-                symbols.setDecimalSeparator(',');
-                symbols.setGroupingSeparator('.');
-                format.setGroupingUsed(true);
-                format.setDecimalFormatSymbols(symbols);
 
                 if (rw) {
-                    return format.format(point.getX());
+                    return ConversionUtils.numberToString(point.getX());
                 } else {
-                    return format.format(point.getY());
+                    return ConversionUtils.numberToString(point.getY());
                 }
             } else {
                 return "";
