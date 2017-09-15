@@ -365,7 +365,7 @@ public class GafCheckDialog extends javax.swing.JDialog {
                 new String[] { "csv" },
                 org.openide.util.NbBundle.getMessage(
                     GafCheckDialog.class,
-                    "GafCheckReportDialog.butFileActionPerformed().getDescription()"),
+                    "GafCheckReportDialog.butRkFileActionPerformed().getDescription()"),
                 AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
         if (file != null) {
@@ -388,7 +388,7 @@ public class GafCheckDialog extends javax.swing.JDialog {
                 new String[] { "csv" },
                 org.openide.util.NbBundle.getMessage(
                     GafCheckDialog.class,
-                    "GafCheckReportDialog.butFileActionPerformed().getDescription()"),
+                    "GafCheckReportDialog.butBkFileActionPerformed().getDescription()"),
                 AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
         if (file != null) {

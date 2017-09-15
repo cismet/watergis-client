@@ -634,8 +634,10 @@ public class ChartCreator {
             this.color = color;
             this.x = x;
             this.y = y;
-            this.width = width;
-            this.height = height;
+            this.width = width
+                        / 2;
+            this.height = height
+                        / 2;
         }
 
         //~ Methods ------------------------------------------------------------
