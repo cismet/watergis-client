@@ -126,6 +126,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -317,6 +318,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private InfoPanel pInfo;
     private SelectionPanel pSelection;
     private MetaCatalogueTree pTable;
+    private JScrollPane pTablePane = new JScrollPane();
     private OverviewComponent pOverview;
     private CapabilityWidget pCapabilities;
     // Views
@@ -1075,6 +1077,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         try {
             AppBroker.getInstance().initComponentRegistry(this);
             pTable = AppBroker.getInstance().getComponentRegistry().getCatalogueTree();
+            pTablePane.setViewportView(pTable);
             final PureTreeNode treeNode = (PureTreeNode)((RootTreeNode)pTable.getModel().getRoot()).getChildAt(0);
             String childStat = treeNode.getMetaNode().getDynamicChildrenStatement();
             String user = "null";
@@ -1154,14 +1157,28 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         vPhoto = new View(title, null, pPhoto);
         viewMap.addView(title, vPhoto);
         AppBroker.getInstance().setPhotoView(vPhoto);
+        vPhoto.addListener(new DockingWindowAdapter() {
+
+                @Override
+                public void windowClosed(final DockingWindow window) {
+                    pPhoto.dispose();
+                }
+            });
 
         title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Gaf");
         vGaf = new View(title, null, pGaf);
         viewMap.addView(title, vGaf);
         AppBroker.getInstance().setGafView(vGaf);
+        vGaf.addListener(new DockingWindowAdapter() {
+
+                @Override
+                public void windowClosed(final DockingWindow window) {
+                    pGaf.dispose();
+                }
+            });
 
         title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Table");
-        vTable = new View(title, null, pTable);
+        vTable = new View(title, null, pTablePane);
         viewMap.addView(title, vTable);
 
         title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Overview");
@@ -3833,7 +3850,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdUndomniUndoPerformed
+    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUndomniUndoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemUndo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -3851,14 +3868,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }                                                              //GEN-LAST:event_cmdUndomniUndoPerformed
+    }//GEN-LAST:event_cmdUndomniUndoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
+    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3870,14 +3887,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    } //GEN-LAST:event_cmdNodeMoveActionPerformed
+    }//GEN-LAST:event_cmdNodeMoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeAddActionPerformed
+    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeAddActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3889,14 +3906,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    } //GEN-LAST:event_cmdNodeAddActionPerformed
+    }//GEN-LAST:event_cmdNodeAddActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRemoveActionPerformed
+    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRemoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3908,14 +3925,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    } //GEN-LAST:event_cmdNodeRemoveActionPerformed
+    }//GEN-LAST:event_cmdNodeRemoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRouteActionPerformed
         final Object selectedObject = cbRoute.getSelectedItem();
 
         if (routeModelInitialised && (selectedObject instanceof RouteElement)) {
@@ -3951,16 +3968,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
             watergisSingleThreadExecutor.execute(t);
         }
-    } //GEN-LAST:event_cbRouteActionPerformed
+    }//GEN-LAST:event_cbRouteActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdGoToActionPerformed
+    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdGoToActionPerformed
         // TODO add your handling code here:
-    } //GEN-LAST:event_cmdGoToActionPerformed
+    }//GEN-LAST:event_cmdGoToActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -5009,19 +5026,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     ExportDownload ed;
                     final List<String[]> attributeNames;
 
-                    if (!outputFile.getName().toLowerCase().equals("csv")
-                                && !outputFile.getName().toLowerCase().equals("txt")) {
+                    if (!outputFile.getName().toLowerCase().endsWith("csv")
+                                && !outputFile.getName().toLowerCase().endsWith("txt")) {
                         attributeNames = getAliasAttributeList(afs, true);
                     } else {
                         attributeNames = getAliasAttributeList(afs, false);
                     }
 
-                    if (outputFile.getName().toLowerCase().equals("dbf")) {
+                    if (outputFile.getName().toLowerCase().endsWith("dbf")) {
                         ed = new ExportDbfDownload();
                         ed.init(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
-                    } else if (outputFile.getName().toLowerCase().equals("csv")) {
+                    } else if (outputFile.getName().toLowerCase().endsWith("csv")) {
                         ed = new ExportCsvDownload(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
-                    } else if (outputFile.getName().toLowerCase().equals("txt")) {
+                    } else if (outputFile.getName().toLowerCase().endsWith("txt")) {
                         ed = new ExportTxtDownload(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
                     } else {
                         ed = new ExportShapeDownload();
