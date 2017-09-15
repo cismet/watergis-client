@@ -284,7 +284,6 @@ public class PhotoExportDialog extends javax.swing.JDialog {
                 PhotoExportDialog.class,
                 "PhotoExportDialog.ckbPhotoSelection.text",
                 new Object[] {})); // NOI18N
-        ckbPhotoSelection.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
