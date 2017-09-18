@@ -1274,33 +1274,8 @@ public class Photo extends javax.swing.JPanel {
         final CidsLayerFeature formerSelectedFeature = selectedFeature;
         selectedFeature = feature;
 
-        refreshFeatureVisualisation(formerSelectedFeature);
-        refreshFeatureVisualisation(selectedFeature);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  feature  DOCUMENT ME!
-     */
-    private void refreshFeatureVisualisation(final CidsLayerFeature feature) {
-        if (feature != null) {
-            final AbstractFeatureService service = feature.getLayerProperties().getFeatureService();
-            if (service != null) {
-                final List<PFeature> pfeatureList = service.getPNode().getChildrenReference();
-
-                for (final PFeature pf : pfeatureList) {
-                    final Feature f = pf.getFeature();
-
-                    if (f instanceof FeatureServiceFeature) {
-                        if (((FeatureServiceFeature)f).getId() == feature.getId()) {
-                            pf.visualize();
-                            pf.refreshDesign();
-                        }
-                    }
-                }
-            }
-        }
+        refreshFeatureDesignOnMap(formerSelectedFeature);
+        refreshFeatureDesignOnMap(selectedFeature);
     }
 
     /**
@@ -1407,6 +1382,7 @@ public class Photo extends javax.swing.JPanel {
      * DOCUMENT ME!
      */
     public void dispose() {
+        final CidsLayerFeature lastSelectedFeature = selectedFeature;
         selectedFeature = null;
         editor.dispose();
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
@@ -1415,6 +1391,39 @@ public class Photo extends javax.swing.JPanel {
         if ((services != null) && !services.isEmpty()) {
             if (SelectionManager.getInstance().getEditableServices().contains(services.get(0))) {
                 AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  feature  DOCUMENT ME!
+     */
+    public static void refreshFeatureDesignOnMap(final CidsLayerFeature feature) {
+        if (feature != null) {
+            final AbstractFeatureService service = feature.getLayerProperties().getFeatureService();
+            final PFeature mapFeature = CismapBroker.getInstance().getMappingComponent().getPFeatureHM().get(feature);
+
+            if (mapFeature != null) {
+                mapFeature.visualize();
+                mapFeature.refreshDesign();
+            }
+
+            if (service != null) {
+                final List<PFeature> pfeatureList = service.getPNode().getChildrenReference();
+
+                for (final PFeature pf : pfeatureList) {
+                    final Feature f = pf.getFeature();
+
+                    if (f instanceof FeatureServiceFeature) {
+                        if (((FeatureServiceFeature)f).getId() == feature.getId()) {
+                            ((FeatureServiceFeature)f).setGeometry(feature.getGeometry());
+                            pf.visualize();
+                            pf.refreshDesign();
+                        }
+                    }
+                }
             }
         }
     }
