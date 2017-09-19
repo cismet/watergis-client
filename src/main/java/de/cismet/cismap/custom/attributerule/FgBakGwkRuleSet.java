@@ -187,7 +187,7 @@ public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final Map properties = new HashMap();
-        properties.put("la_cd", 0);
+//        properties.put("la_cd", 0);
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
         final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
