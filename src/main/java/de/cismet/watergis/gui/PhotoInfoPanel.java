@@ -174,8 +174,10 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labTime,
-            org.openide.util.NbBundle.getMessage(PhotoInfoPanel.class, "PhotoInfoPanel.labTime.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                PhotoInfoPanel.class,
+                "PhotoInfoPanel.labTime.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -190,8 +192,10 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel1,
-            org.openide.util.NbBundle.getMessage(PhotoInfoPanel.class, "PhotoInfoPanel.jLabel1.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                PhotoInfoPanel.class,
+                "PhotoInfoPanel.jLabel1.text",
+                new Object[] {})); // NOI18N
         jPanel1.add(jLabel1, java.awt.BorderLayout.NORTH);
 
         gridBagConstraints = new java.awt.GridBagConstraints();

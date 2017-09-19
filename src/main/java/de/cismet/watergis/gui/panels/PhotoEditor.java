@@ -103,7 +103,7 @@ import de.cismet.watergis.utils.RendererTools;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBeanStore {
+public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBeanStore, PropertyChangeListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -582,6 +582,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
                 org.jdesktop.beansbinding.BeanProperty.create("text"));
         binding.setSourceNullValue("");
         binding.setSourceUnreadableValue("");
+        binding.setConverter(new DoubleConverter());
         bindingGroup.addBinding(binding);
 
         txtWinklel.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -827,10 +828,8 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         labAufnDatum.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labAufnDatum,
-            org.openide.util.NbBundle.getMessage(
-                PhotoEditor.class,
-                "PhotoEditor.labAufnDatum.text",
-                new Object[] {}));                                // NOI18N
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labAufnDatum.text", new Object[] {
+                }));                                              // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -1000,10 +999,8 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         labBemerkung.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labBemerkung,
-            org.openide.util.NbBundle.getMessage(
-                PhotoEditor.class,
-                "PhotoEditor.labBemerkung.text",
-                new Object[] {}));                                // NOI18N
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labBemerkung.text", new Object[] {
+                }));                                              // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -1322,6 +1319,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 //            showNewAngle();
 //        } catch (NumberFormatException e) {
 //        }
+        showNewAngle();
     } //GEN-LAST:event_txtWinklelFocusLost
 
     /**
@@ -1356,7 +1354,13 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
      * @param  feature  The feature that should be shown in the editor
      */
     public void setCidsLayerFeature(final CidsLayerFeature feature) {
+        if (this.feature != null) {
+            this.feature.removePropertyChangeListener(this);
+        }
         this.feature = feature;
+        if (this.feature != null) {
+            this.feature.addPropertyChangeListener(this);
+        }
 
         if (feature == null) {
             setCidsBean(null);
@@ -1464,62 +1468,13 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         bindingGroup.unbind();
         panRouteCombo.removeAll();
         panStatEdit.removeAll();
-//        panStatus.removeAll();
-//        panReLi.removeAll();
-//        panFreigabe.removeAll();
         wrapper.setFeature(null);
         this.cidsBean = cidsBean;
 
         if (cidsBean != null) {
             wrapper.setFeature(feature);
-//            DefaultCustomObjectEditor.setMetaClassInformationToMetaClassStoreComponentsInBindingGroup(
-//                bindingGroup,
-//                cidsBean);
             bindingGroup.bind();
-//            if (feature != null) {
-//                EventQueue.invokeLater(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            if ((feature == null)) {
-//                                return;
-//                            }
-//
-//                            if (firstInit) {
-//                                final CidsLayerFeatureFilter filter = new CidsLayerFeatureFilter() {
-//
-//                                        @Override
-//                                        public boolean accept(final CidsLayerFeature bean) {
-//                                            if (bean == null) {
-//                                                return true;
-//                                            }
-//
-//                                            return (bean.getProperty("nicht_qp") != null)
-//                                                        && (Boolean)bean.getProperty("nicht_qp");
-//                                        }
-//                                    };
-//
-//                                final CidsLayerFeatureFilter photoFilter = new CidsLayerFeatureFilter() {
-//
-//                                        @Override
-//                                        public boolean accept(final CidsLayerFeature bean) {
-//                                            if (bean == null) {
-//                                                return true;
-//                                            }
-//
-//                                            return (bean.getProperty("foto") != null)
-//                                                        && (Boolean)bean.getProperty("foto");
-//                                        }
-//                                    };
-//
-//                                feature.getCatalogueCombo("l_st").setBeanFilter(filter);
-//                                feature.getCatalogueCombo("l_rl").setBeanFilter(photoFilter);
-//                                feature.getCatalogueCombo("freigabe").setBeanFilter(photoFilter);
-//                                firstInit = false;
-//                            }
-//                        }
-//                    });
-//            }
+
             final Component routeComp = routeCellEditor.getFeatureComponent(feature, feature.getProperty("ba_cd"));
             panRouteCombo.add(routeComp);
             routeComp.addFocusListener(new FocusListener() {
@@ -1534,12 +1489,6 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
                     }
                 });
 
-//            cidsBean.addPropertyChangeListener(new PropertyChangeListener() {
-//
-//                });
-//            feature.addPropertyChangeListener(new PropertyChangeListener() {
-//
-//                });
             refreshGui();
 
             final CidsBean baSt = (CidsBean)cidsBean.getProperty("ba_st");
@@ -1874,6 +1823,17 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         }
     }
 
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("wert")) {
+            feature.setProperty("ba_st", evt.getNewValue());
+        } else if (evt.getPropertyName().equals("geom")) {
+            txtRe.setText(getPointValue(true));
+            txtHo.setText(getPointValue(false));
+            relocateFeature();
+        }
+    }
+
     //~ Inner Classes ----------------------------------------------------------
 
     /**
@@ -2070,18 +2030,40 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
      *
      * @version  $Revision$, $Date$
      */
-    private class FeaturePropertyChangeListener implements PropertyChangeListener {
+    private class DoubleConverter extends Converter<Double, String> {
 
         //~ Methods ------------------------------------------------------------
 
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   value  an instance of the class de.cismet.cids.dynamics.Geom is expected
+         *
+         * @return  DOCUMENT ME!
+         */
         @Override
-        public void propertyChange(final PropertyChangeEvent evt) {
-            if (evt.getPropertyName().equals("wert")) {
-                feature.setProperty("ba_st", evt.getNewValue());
-            } else if (evt.getPropertyName().equals("geom")) {
-                txtRe.setText(getPointValue(true));
-                txtHo.setText(getPointValue(false));
-                relocateFeature();
+        public String convertForward(final Double value) {
+            if (value != null) {
+                return ConversionUtils.numberToString(value);
+            } else {
+                return "";
+            }
+        }
+
+        @Override
+        public Double convertReverse(final String value) {
+            try {
+                if ((value == null) || value.equals("")) {
+                    return null;
+                }
+                final double coord = Double.parseDouble(value.replace(',', '.'));
+
+                return coord;
+            } catch (NumberFormatException e) {
+                return null;
+            } catch (Exception e) {
+                LOG.error("Error in Double converter", e);
+                return null;
             }
         }
     }

@@ -240,6 +240,9 @@
                   <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
                   <Property name="nullValue" type="java.lang.String" value=""/>
                   <Property name="incompletePathValue" type="java.lang.String" value=""/>
+                  <Property name="converter" type="org.jdesktop.beansbinding.Converter" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                    <Connection code="new DoubleConverter()" type="code"/>
+                  </Property>
                 </BindingProperty>
               </BindingProperties>
               <Events>
@@ -775,9 +778,7 @@
                     <Property name="rows" type="int" value="4"/>
                   </Properties>
                   <BindingProperties>
-                    <BindingProperty name="text" source="Form" sourcePath="${wrapper.bemerkung}" target="taBemerkung" targetPath="text" updateStrategy="0" immediately="false">
-                      <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-                    </BindingProperty>
+                    <BindingProperty name="text" source="Form" sourcePath="${wrapper.bemerkung}" target="taBemerkung" targetPath="text" updateStrategy="0" immediately="false"/>
                   </BindingProperties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="taBemerkungFocusLost"/>
@@ -818,9 +819,7 @@
                     <Property name="rows" type="int" value="4"/>
                   </Properties>
                   <BindingProperties>
-                    <BindingProperty name="text" source="Form" sourcePath="${wrapper.beschreibung}" target="taBeschreibung" targetPath="text" updateStrategy="0" immediately="false">
-                      <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-                    </BindingProperty>
+                    <BindingProperty name="text" source="Form" sourcePath="${wrapper.beschreibung}" target="taBeschreibung" targetPath="text" updateStrategy="0" immediately="false"/>
                   </BindingProperties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="taBeschreibungFocusLost"/>
@@ -846,9 +845,7 @@
                     <Property name="rows" type="int" value="4"/>
                   </Properties>
                   <BindingProperties>
-                    <BindingProperty name="text" source="Form" sourcePath="${wrapper.titel}" target="taTitle" targetPath="text" updateStrategy="0" immediately="false">
-                      <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-                    </BindingProperty>
+                    <BindingProperty name="text" source="Form" sourcePath="${wrapper.titel}" target="taTitle" targetPath="text" updateStrategy="0" immediately="false"/>
                   </BindingProperties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="taTitleFocusLost"/>
