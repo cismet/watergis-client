@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Fließgewässerstrukturgütekartierung Mecklenburg-Vorpommern" pageWidth="842" pageHeight="595" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="de.cismet.watergis.reports.FotoScriptlet" whenResourceMissingType="Error" uuid="1e1b19d6-8a98-47d5-a56a-5a27c1984c34">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Fließgewässerstrukturgütekartierung Mecklenburg-Vorpommern" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="de.cismet.watergis.reports.FotoScriptlet" whenResourceMissingType="Error" uuid="1e1b19d6-8a98-47d5-a56a-5a27c1984c34">
 	<property name="ireport.zoom" value="1.9487171000000014"/>
 	<property name="ireport.x" value="695"/>
-	<property name="ireport.y" value="515"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
