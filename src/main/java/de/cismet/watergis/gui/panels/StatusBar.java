@@ -31,10 +31,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 
 import javax.swing.JPanel;
 
 import de.cismet.cismap.commons.Crs;
+import de.cismet.cismap.commons.RetrievalServiceLayer;
 import de.cismet.cismap.commons.ServiceLayer;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
@@ -48,6 +50,7 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.StatusListener;
 import de.cismet.cismap.commons.interaction.events.ActiveLayerEvent;
 import de.cismet.cismap.commons.interaction.events.StatusEvent;
+import de.cismet.cismap.commons.rasterservice.MapService;
 import de.cismet.cismap.commons.retrieval.RepaintEvent;
 import de.cismet.cismap.commons.retrieval.RepaintListener;
 
@@ -397,23 +400,54 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
 
                 @Override
                 public void run() {
-                    if (e == null) {
-                        if (services.isEmpty()) {
-                            pnlServicesStatus.removeAll();
-                            if (erroneousServices.isEmpty()) {
-                                pnlServicesStatus.add(servicesRetrievedPanel, BorderLayout.CENTER);
-                            } else {
-                                pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
-                            }
-                            pnlServicesStatus.revalidate();
-                            pnlServicesStatus.repaint();
-                        } else if ((!erroneousServices.isEmpty()) && (pnlServicesStatus.getComponentCount() > 0)
-                                    && !pnlServicesStatus.getComponent(0).equals(servicesErrorPanel)) {
-                            pnlServicesStatus.removeAll();
-                            pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
-                            pnlServicesStatus.revalidate();
-                            pnlServicesStatus.repaint();
+                    final TreeMap<Integer, MapService> services = CismapBroker.getInstance()
+                                .getMappingComponent()
+                                .getMappingModel()
+                                .getRasterServices();
+                    int stat = 0;
+
+                    for (final Integer key : services.keySet()) {
+                        final MapService service = services.get(key);
+
+                        if (!service.isVisible() || (service.getPNode() == null)
+                                    || (service.getPNode().getTransparency() == 0.0)) {
+                            continue;
                         }
+
+                        if ((service instanceof RetrievalServiceLayer)
+                                    && !((RetrievalServiceLayer)service).isEnabled()) {
+                            continue;
+                        }
+
+                        final int progress = service.getProgress();
+
+                        if (service.isRefreshNeeded()) {
+                            if (stat == 0) {
+                                stat = 1;
+                            }
+                        } else if ((progress == -1) || ((progress > 0) && (progress < 100))) {
+                            if (stat == 0) {
+                                stat = 1;
+                            }
+                        } else if ((service instanceof RetrievalServiceLayer)
+                                    && ((RetrievalServiceLayer)service).hasErrors()) {
+                            stat = 2;
+                        }
+                    }
+
+                    pnlServicesStatus.removeAll();
+
+                    if (stat == 0) {
+                        pnlServicesStatus.add(servicesRetrievedPanel, BorderLayout.CENTER);
+                    } else if (stat == 1) {
+                        pnlServicesStatus.add(servicesBusyPanel, BorderLayout.CENTER);
+                    } else if (stat == 2) {
+                        pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
+                    }
+                    pnlServicesStatus.revalidate();
+                    pnlServicesStatus.repaint();
+
+                    if (e == null) {
                     } else if (e.getName().equals(StatusEvent.COORDINATE_STRING)) {
                         final Coordinate c = (Coordinate)e.getValue();
                         lblCoordinates.setText(MappingComponent.getCoordinateString(c.x, c.y));
@@ -428,44 +462,6 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
                     } else if (e.getName().equals(StatusEvent.CRS)) {
                         lblCoordinates.setToolTipText(((Crs)e.getValue()).getShortname());
                     } else if (e.getName().equals(StatusEvent.RETRIEVAL_STARTED)) {
-                        if ((pnlServicesStatus.getComponentCount() > 0)
-                                    && !pnlServicesStatus.getComponent(0).equals(servicesBusyPanel)) {
-                            pnlServicesStatus.removeAll();
-                            pnlServicesStatus.add(servicesBusyPanel, BorderLayout.CENTER);
-                            pnlServicesStatus.revalidate();
-                            pnlServicesStatus.repaint();
-                        }
-                    } else if ( // e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED) || //use the repaintComplete
-
-                                // event
-                                e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)
-                                || e.getName().equals(StatusEvent.RETRIEVAL_REMOVED)) {
-                        if (services.isEmpty()) {
-                            pnlServicesStatus.removeAll();
-                            if (erroneousServices.isEmpty()) {
-                                pnlServicesStatus.add(servicesRetrievedPanel, BorderLayout.CENTER);
-                            } else {
-                                pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
-                            }
-                            pnlServicesStatus.revalidate();
-                            pnlServicesStatus.repaint();
-                        } else {
-                            if ((pnlServicesStatus.getComponentCount() > 0)
-                                        && !pnlServicesStatus.getComponent(0).equals(servicesBusyPanel)) {
-                                pnlServicesStatus.removeAll();
-                                pnlServicesStatus.add(servicesBusyPanel, BorderLayout.CENTER);
-                                pnlServicesStatus.revalidate();
-                                pnlServicesStatus.repaint();
-                            }
-                        }
-                    } else if (e.getName().equals(StatusEvent.RETRIEVAL_ERROR)) {
-                        if ((pnlServicesStatus.getComponentCount() > 0)
-                                    && !pnlServicesStatus.getComponent(0).equals(servicesErrorPanel)) {
-                            pnlServicesStatus.removeAll();
-                            pnlServicesStatus.add(servicesErrorPanel, BorderLayout.CENTER);
-                            pnlServicesStatus.revalidate();
-                            pnlServicesStatus.repaint();
-                        }
                     } else if (e.getName().equals(StatusEvent.MAP_EXTEND_FIXED)) {
                         // do nothing
                     } else if (e.getName().equals(StatusEvent.MAP_SCALE_FIXED)) {
@@ -692,6 +688,7 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
         if (e.getRetrievalEvent().getRetrievalService() instanceof ServiceLayer) {
             final ServiceLayer service = (ServiceLayer)e.getRetrievalEvent().getRetrievalService();
             removeService(service);
+            erroneousServices.remove(service);
         }
 
         if (LOG.isDebugEnabled()) {

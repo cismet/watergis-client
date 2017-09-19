@@ -126,6 +126,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -317,6 +318,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private InfoPanel pInfo;
     private SelectionPanel pSelection;
     private MetaCatalogueTree pTable;
+    private JScrollPane pTablePane = new JScrollPane();
     private OverviewComponent pOverview;
     private CapabilityWidget pCapabilities;
     // Views
@@ -857,6 +859,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      * DOCUMENT ME!
      */
     private void initCismap() {
+        CismapBroker.getInstance().setEnableDummyLayerWhenAvailable(false);
         mappingComponent = new MappingComponent(true);
         AppBroker.getInstance().setMappingComponent(mappingComponent);
         final SelectionListener sl = (SelectionListener)mappingComponent.getInputEventListener()
@@ -1075,6 +1078,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         try {
             AppBroker.getInstance().initComponentRegistry(this);
             pTable = AppBroker.getInstance().getComponentRegistry().getCatalogueTree();
+            pTablePane.setViewportView(pTable);
             final PureTreeNode treeNode = (PureTreeNode)((RootTreeNode)pTable.getModel().getRoot()).getChildAt(0);
             String childStat = treeNode.getMetaNode().getDynamicChildrenStatement();
             String user = "null";
@@ -1154,14 +1158,28 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         vPhoto = new View(title, null, pPhoto);
         viewMap.addView(title, vPhoto);
         AppBroker.getInstance().setPhotoView(vPhoto);
+        vPhoto.addListener(new DockingWindowAdapter() {
+
+                @Override
+                public void windowClosed(final DockingWindow window) {
+                    pPhoto.dispose();
+                }
+            });
 
         title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Gaf");
         vGaf = new View(title, null, pGaf);
         viewMap.addView(title, vGaf);
         AppBroker.getInstance().setGafView(vGaf);
+        vGaf.addListener(new DockingWindowAdapter() {
+
+                @Override
+                public void windowClosed(final DockingWindow window) {
+                    pGaf.dispose();
+                }
+            });
 
         title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Table");
-        vTable = new View(title, null, pTable);
+        vTable = new View(title, null, pTablePane);
         viewMap.addView(title, vTable);
 
         title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Overview");
@@ -5009,19 +5027,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     ExportDownload ed;
                     final List<String[]> attributeNames;
 
-                    if (!outputFile.getName().toLowerCase().equals("csv")
-                                && !outputFile.getName().toLowerCase().equals("txt")) {
+                    if (!outputFile.getName().toLowerCase().endsWith("csv")
+                                && !outputFile.getName().toLowerCase().endsWith("txt")) {
                         attributeNames = getAliasAttributeList(afs, true);
                     } else {
                         attributeNames = getAliasAttributeList(afs, false);
                     }
 
-                    if (outputFile.getName().toLowerCase().equals("dbf")) {
+                    if (outputFile.getName().toLowerCase().endsWith("dbf")) {
                         ed = new ExportDbfDownload();
                         ed.init(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
-                    } else if (outputFile.getName().toLowerCase().equals("csv")) {
+                    } else if (outputFile.getName().toLowerCase().endsWith("csv")) {
                         ed = new ExportCsvDownload(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
-                    } else if (outputFile.getName().toLowerCase().equals("txt")) {
+                    } else if (outputFile.getName().toLowerCase().endsWith("txt")) {
                         ed = new ExportTxtDownload(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
                     } else {
                         ed = new ExportShapeDownload();

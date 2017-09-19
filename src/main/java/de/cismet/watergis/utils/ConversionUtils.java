@@ -18,6 +18,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import java.text.DecimalFormat;
+
 import java.util.Base64;
 
 import javax.imageio.ImageIO;
@@ -30,7 +32,34 @@ import javax.imageio.ImageIO;
  */
 public class ConversionUtils {
 
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final DecimalFormat format = new DecimalFormat("0.00");
+
+    static {
+        final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        symbols.setGroupingSeparator('.');
+        format.setDecimalFormatSymbols(symbols);
+        format.setGroupingUsed(true);
+    }
+
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   d  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static String numberToString(final Object d) {
+        if (d == null) {
+            return "";
+        } else {
+            return format.format(d);
+        }
+    }
 
     /**
      * Converts the given image to a base64 string.

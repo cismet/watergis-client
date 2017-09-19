@@ -408,9 +408,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 final Integer id = wwGr.getPrimaryKeyValue();
                 query.append("dlm25wPk_ww_gr1=").append(id);
             }
-            query.append(")");
-
-            return query.toString();
+            if (query != null) {
+                query.append(")");
+                return query.toString();
+            }
         }
 
         return null;

@@ -31,8 +31,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.type.OrientationEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.view.JRViewer;
+import net.sf.jasperreports.view.JRSaveContributor;
 
 import org.apache.log4j.Logger;
 
@@ -58,12 +59,12 @@ import java.math.BigDecimal;
 
 import java.net.URLDecoder;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +95,7 @@ import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
@@ -119,6 +121,9 @@ import de.cismet.watergis.gui.PhotoAngleListener;
 import de.cismet.watergis.gui.dialog.PhotoOptionsDialog;
 
 import de.cismet.watergis.utils.CidsBeanUtils;
+import de.cismet.watergis.utils.ContributorWrapper;
+import de.cismet.watergis.utils.ConversionUtils;
+import de.cismet.watergis.utils.CustomJrViewer;
 import de.cismet.watergis.utils.ExifReader;
 import de.cismet.watergis.utils.FeatureServiceHelper;
 
@@ -140,14 +145,7 @@ public class Photo extends javax.swing.JPanel {
     private static final Logger LOG = Logger.getLogger(Photo.class);
     private static final WebDavClient webDavClient;
     public static CidsLayerFeature selectedFeature = null;
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
-
-    static {
-        final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
-        symbols.setDecimalSeparator(',');
-        DECIMAL_FORMAT.setDecimalFormatSymbols(symbols);
-        DECIMAL_FORMAT.setGroupingUsed(false);
-    }
+    private static final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
 
     static {
         final ResourceBundle bundle = ResourceBundle.getBundle("WebDav");
@@ -196,6 +194,24 @@ public class Photo extends javax.swing.JPanel {
     public Photo() {
         initComponents();
         tbProcessing.setVisible(false);
+
+//        addAncestorListener(new AncestorListener() {
+//
+//                @Override
+//                public void ancestorAdded(final AncestorEvent event) {
+//                }
+//
+//                @Override
+//                public void ancestorRemoved(final AncestorEvent event) {
+//                    if (event.getAncestor().equals(Photo.this)) {
+//                        dispose();
+//                    }
+//                }
+//
+//                @Override
+//                public void ancestorMoved(final AncestorEvent event) {
+//                }
+//            });
 //        butRemoveSelection.setVisible(true);
         SelectionManager.getInstance().addSelectionChangedListener(new SelectionChangedListener() {
 
@@ -618,7 +634,35 @@ public class Photo extends javax.swing.JPanel {
                     try {
                         final JasperPrint jasperPrint = get();
 
-                        final JRViewer aViewer = new JRViewer(jasperPrint);
+                        final CustomJrViewer aViewer = new CustomJrViewer(jasperPrint);
+                        final List<JRSaveContributor> contributors = new ArrayList<JRSaveContributor>();
+
+                        for (final JRSaveContributor contributor : aViewer.getSaveContributors()) {
+                            if (contributor.getDescription().toLowerCase().contains("pdf")) {
+                                contributors.add(new ContributorWrapper(contributor, "PDF"));
+                            } else if (contributor.getDescription().toLowerCase().contains("docx")) {
+                                contributors.add(new ContributorWrapper(contributor, "DOCX"));
+                            }
+                        }
+
+                        Collections.sort(contributors, new Comparator<JRSaveContributor>() {
+
+                                @Override
+                                public int compare(final JRSaveContributor o1, final JRSaveContributor o2) {
+                                    if ((o1 != null) && (o2 != null)) {
+                                        return o1.getDescription().compareTo(o2.getDescription());
+                                    } else if ((o1 == null) && (o2 == null)) {
+                                        return 0;
+                                    } else if (o1 == null) {
+                                        return 1;
+                                    } else {
+                                        return -1;
+                                    }
+                                }
+                            });
+
+                        aViewer.setSaveContributors(contributors.toArray(new JRSaveContributor[contributors.size()]));
+
                         final JFrame aFrame = new JFrame(org.openide.util.NbBundle.getMessage(
                                     Photo.class,
                                     "Photo.butPrintPreviewActionPerformed.aFrame.title")); // NOI18N
@@ -666,7 +710,7 @@ public class Photo extends javax.swing.JPanel {
                 protected void done() {
                     try {
                         final JasperPrint jasperPrint = get();
-
+                        jasperPrint.setOrientation(OrientationEnum.LANDSCAPE);
                         JasperPrintManager.printReport(jasperPrint, true);
                     } catch (Exception e) {
                         LOG.error("Error while creating report", e);
@@ -706,7 +750,32 @@ public class Photo extends javax.swing.JPanel {
         final String path = (String)feature.getProperty("dateipfad");
         final String file = (String)feature.getProperty("foto");
         WebDavHelper.deleteFileFromWebDAV(file, webDavClient, WEB_DAV_DIRECTORY + path);
-        feature.delete();
+        final AttributeTable table = AppBroker.getInstance().getWatergisApp().getAttributeTableByFeature(feature);
+
+        feature.removeStations();
+        if (table != null) {
+            table.removeFeature(feature);
+        } else {
+            feature.delete();
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void reloadPrPfTable() {
+        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "foto_pr_pf");
+
+        if ((services != null) && !services.isEmpty()) {
+            final AttributeTable tablePf = AppBroker.getInstance()
+                        .getWatergisApp()
+                        .getAttributeTableByFeatureService(services.get(0));
+
+            if (tablePf != null) {
+                tablePf.reload();
+            }
+        }
     }
 
     /**
@@ -751,17 +820,22 @@ public class Photo extends javax.swing.JPanel {
             "upl_datum",
             dateTime2String(feature.getProperty("upl_datum"), (String)feature.getProperty("upl_zeit")));
         map.put("bild_id", String.valueOf(feature.getProperty("foto_nr")));
-        map.put("pos", number2String(feature.getProperty("re")) + ", " + number2String(feature.getProperty("ho")));
-        map.put("winkel", number2String(feature.getProperty("winkel")));
+//        map.put("pos", number2String(feature.getProperty("re")) + " " + number2String(feature.getProperty("ho")));
+        map.put(
+            "pos",
+            ConversionUtils.numberToString(feature.getProperty("re"))
+                    + " "
+                    + ConversionUtils.numberToString(feature.getProperty("ho")));
+        map.put("winkel", ConversionUtils.numberToString(feature.getProperty("winkel")));
         map.put("lawa", ((feature.getProperty("la_cd") == null) ? "" : feature.getProperty("la_cd").toString()));
         if (basisStat != null) {
-            map.put("basis", feature.getProperty("route.ba_cd"));
-            map.put("basis_stat", number2String(basisStat.getProperty("wert")));
+            map.put("basis", feature.getProperty("ba_cd"));
+            map.put("basis_stat", ConversionUtils.numberToString(basisStat.getProperty("wert")));
         } else {
             map.put("basis", "");
             map.put("basis_stat", "");
         }
-        map.put("lawa_stat", number2String(feature.getProperty("la_st")));
+        map.put("lawa_stat", ConversionUtils.numberToString(feature.getProperty("la_st")));
         map.put("re_li", objectToString(feature.getProperty("l_rl")));
         map.put("status", objectToString(feature.getProperty("l_st")));
         map.put("aufn_nutzer", feature.getProperty("aufn_name"));
@@ -818,26 +892,18 @@ public class Photo extends javax.swing.JPanel {
 
     /**
      * DOCUMENT ME!
-     *
-     * @param   o  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private static String number2String(final Object o) {
-        if (o == null) {
-            return "";
-        }
-        return DECIMAL_FORMAT.format(o);
-    }
-
-    /**
-     * DOCUMENT ME!
      */
     public static void reloadPhotoServices() {
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                 "foto");
 
         for (final AbstractFeatureService featureService : services) {
+            featureService.retrieve(true);
+        }
+        final List<AbstractFeatureService> servicesPrPf = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "foto_pr_pf");
+
+        for (final AbstractFeatureService featureService : servicesPrPf) {
             featureService.retrieve(true);
         }
     }
@@ -1167,27 +1233,27 @@ public class Photo extends javax.swing.JPanel {
      * @param  feature  DOCUMENT ME!
      */
     private void setEditorFeature(final CidsLayerFeature feature) {
-        if ((selectedFeature != null) && selectedFeature.hasWritePermissions() && askForSave) {
-            if (selectedFeature.getBean().getMetaObject().isChanged()
-                        && (selectedFeature.getBean().getMetaObject().getStatus()
-                            != Sirius.server.localserver.object.Object.TO_DELETE)) {
-                final int ans = JOptionPane.showConfirmDialog(
-                        Photo.this,
-                        NbBundle.getMessage(
-                            Photo.class,
-                            "Photo.setEditorFeature().text"),
-                        NbBundle.getMessage(Photo.class, "Photo.setEditorFeature().title"),
-                        JOptionPane.YES_NO_CANCEL_OPTION);
-
-                if (ans == JOptionPane.YES_OPTION) {
-                    butSaveActionPerformed(null);
-                } else if (ans == JOptionPane.NO_OPTION) {
-                    // nothing to do
-                } else {
-                    return;
-                }
-            }
-        }
+//        if ((selectedFeature != null) && selectedFeature.hasWritePermissions() && askForSave) {
+//            if (selectedFeature.getBean().getMetaObject().isChanged()
+//                        && (selectedFeature.getBean().getMetaObject().getStatus()
+//                            != Sirius.server.localserver.object.Object.TO_DELETE)) {
+//                final int ans = JOptionPane.showConfirmDialog(
+//                        Photo.this,
+//                        NbBundle.getMessage(
+//                            Photo.class,
+//                            "Photo.setEditorFeature().text"),
+//                        NbBundle.getMessage(Photo.class, "Photo.setEditorFeature().title"),
+//                        JOptionPane.YES_NO_CANCEL_OPTION);
+//
+//                if (ans == JOptionPane.YES_OPTION) {
+//                    butSaveActionPerformed(null);
+//                } else if (ans == JOptionPane.NO_OPTION) {
+//                    // nothing to do
+//                } else {
+//                    return;
+//                }
+//            }
+//        }
 
         askForSave = true;
         if (tbLocate.isSelected()) {
@@ -1198,38 +1264,17 @@ public class Photo extends javax.swing.JPanel {
             tbAngle.setSelected(false);
             tbAngleActionPerformed(null);
         }
+        if ((feature != null) && !feature.isEditable()) {
+            makeFeatureEditable(feature);
+        }
+
         editor.setCidsLayerFeature(feature);
         enableToolbar(feature != null);
         final CidsLayerFeature formerSelectedFeature = selectedFeature;
         selectedFeature = feature;
 
-        refreshFeatureVisualisation(formerSelectedFeature);
-        refreshFeatureVisualisation(selectedFeature);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  feature  DOCUMENT ME!
-     */
-    private void refreshFeatureVisualisation(final CidsLayerFeature feature) {
-        if (feature != null) {
-            final AbstractFeatureService service = feature.getLayerProperties().getFeatureService();
-            if (service != null) {
-                final List<PFeature> pfeatureList = service.getPNode().getChildrenReference();
-
-                for (final PFeature pf : pfeatureList) {
-                    final Feature f = pf.getFeature();
-
-                    if (f instanceof FeatureServiceFeature) {
-                        if (((FeatureServiceFeature)f).getId() == feature.getId()) {
-                            pf.visualize();
-                            pf.refreshDesign();
-                        }
-                    }
-                }
-            }
-        }
+        refreshFeatureDesignOnMap(formerSelectedFeature);
+        refreshFeatureDesignOnMap(selectedFeature);
     }
 
     /**
@@ -1277,7 +1322,7 @@ public class Photo extends javax.swing.JPanel {
      *
      * @return  DOCUMENT ME!
      */
-    private Station getNextFgBaStat(final Geometry geom, final double maxDist) {
+    private static Station getNextFgBaStat(final Geometry geom, final double maxDist) {
         try {
             final User user = SessionManager.getSession().getUser();
             final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
@@ -1308,7 +1353,7 @@ public class Photo extends javax.swing.JPanel {
      *
      * @return  DOCUMENT ME!
      */
-    private Station getNextFgLaStat(final Geometry geom) {
+    private static Station getNextFgLaStat(final Geometry geom) {
         try {
             final User user = SessionManager.getSession().getUser();
             final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
@@ -1330,6 +1375,103 @@ public class Photo extends javax.swing.JPanel {
         }
 
         return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    public void dispose() {
+        final CidsLayerFeature lastSelectedFeature = selectedFeature;
+        selectedFeature = null;
+        editor.dispose();
+        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "foto");
+
+        if ((services != null) && !services.isEmpty()) {
+            if (SelectionManager.getInstance().getEditableServices().contains(services.get(0))) {
+                AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  feature  DOCUMENT ME!
+     */
+    public static void refreshFeatureDesignOnMap(final CidsLayerFeature feature) {
+        if (feature != null) {
+            final AbstractFeatureService service = feature.getLayerProperties().getFeatureService();
+            final PFeature mapFeature = CismapBroker.getInstance().getMappingComponent().getPFeatureHM().get(feature);
+
+            if (mapFeature != null) {
+                mapFeature.visualize();
+                mapFeature.refreshDesign();
+            }
+
+            if (service != null) {
+                final List<PFeature> pfeatureList = service.getPNode().getChildrenReference();
+
+                for (final PFeature pf : pfeatureList) {
+                    final Feature f = pf.getFeature();
+
+                    if (f instanceof FeatureServiceFeature) {
+                        if (((FeatureServiceFeature)f).getId() == feature.getId()) {
+                            ((FeatureServiceFeature)f).setGeometry(feature.getGeometry());
+                            pf.visualize();
+                            pf.refreshDesign();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature  DOCUMENT ME!
+     * @param   bean     DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static void tryStationCreation(final CidsLayerFeature feature, final CidsBean bean) throws Exception {
+        final Station stat = getNextFgBaStat(feature.getGeometry(),
+                PhotoOptionsDialog.getInstance().getDistance());
+
+        if (stat != null) {
+            final MetaClass routeMc = ClassCacheMultiple.getMetaClass(
+                    AppBroker.DOMAIN_NAME,
+                    "dlm25w.fg_ba");
+            final CidsBean stationBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.fg_ba_punkt");
+            final CidsBean geom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+            final MetaObject route = SessionManager.getProxy()
+                        .getMetaObject(stat.getId(), routeMc.getID(), AppBroker.DOMAIN_NAME);
+            CidsBean newFotoBean = bean;
+
+            if (newFotoBean == null) {
+                newFotoBean = feature.getBean();
+            }
+            geom.setProperty("geo_field", stat.getPoint());
+
+            stationBean.setProperty("wert", stat.getStat());
+            stationBean.setProperty("route", route.getBean());
+            stationBean.setProperty("real_point", geom);
+
+            newFotoBean.setProperty("ba_st", stationBean);
+            feature.setProperty("ba_cd", stat.getBaCd());
+            feature.setProperty("ba_st", stat.getStat());
+            feature.removeStations();
+            feature.initStations();
+            final Station laStat = getNextFgLaStat(stat.getPoint());
+
+            if (laStat != null) {
+                newFotoBean.setProperty("la_cd", laStat.getLaCd());
+                newFotoBean.setProperty("la_st", laStat.getStat());
+                feature.setProperty("la_cd", laStat.getLaCd());
+                feature.setProperty("la_st", laStat.getStat());
+            }
+        }
     }
 
     //~ Inner Classes ----------------------------------------------------------
@@ -1423,7 +1565,7 @@ public class Photo extends javax.swing.JPanel {
                 newFotoBean.setProperty("foto", fileName);
                 newFotoBean.setProperty("dateipfad", filePrefix);
                 newFotoBean.setProperty("upl_datum", new java.sql.Date(currentTime.getTime()));
-                newFotoBean.setProperty("upl_zeit", new java.sql.Timestamp(currentTime.getTime()));
+                newFotoBean.setProperty("upl_zeit", timeFormatter.format(currentTime));
                 newFotoBean.setProperty("upl_name", userName);
                 newFotoBean.setProperty("dateipfad", filePrefix);
                 newFotoBean.setProperty("foto_nr", getNextPhotoNumber());
@@ -1479,34 +1621,7 @@ public class Photo extends javax.swing.JPanel {
                 }
 
                 if (PhotoOptionsDialog.getInstance().isAutomatic()) {
-                    final Station stat = getNextFgBaStat(feature.getGeometry(),
-                            PhotoOptionsDialog.getInstance().getDistance());
-
-                    if (stat != null) {
-                        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(
-                                AppBroker.DOMAIN_NAME,
-                                "dlm25w.fg_ba");
-                        final CidsBean stationBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.fg_ba_punkt");
-                        final CidsBean geom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
-                        final MetaObject route = SessionManager.getProxy()
-                                    .getMetaObject(stat.getId(), routeMc.getID(), AppBroker.DOMAIN_NAME);
-
-                        geom.setProperty("geo_field", stat.getPoint());
-
-                        stationBean.setProperty("wert", stat.getStat());
-                        stationBean.setProperty("route", route.getBean());
-                        stationBean.setProperty("real_point", geom);
-
-                        newFotoBean.setProperty("ba_st", stationBean);
-                        feature.setProperty("ba_cd", stat.getBaCd());
-
-                        final Station laStat = getNextFgLaStat(stat.getPoint());
-
-                        if (laStat != null) {
-                            newFotoBean.setProperty("la_cd", laStat.getLaCd());
-                            newFotoBean.setProperty("la_st", laStat.getStat());
-                        }
-                    }
+                    tryStationCreation(feature, newFotoBean);
                 }
 
                 final CidsBean freigabeBean = getCatalogueElement("dlm25w.k_freigabe", "name", "alle Nutzer");
@@ -1540,6 +1655,7 @@ public class Photo extends javax.swing.JPanel {
                     SelectionManager.getInstance().addSelectedFeatures(newFeatures);
 //                    setEditorFeature(newFeatures.get(0));
                     reloadPhotoServices();
+                    reloadPrPfTable();
                 }
             } catch (InterruptedException ex) {
                 LOG.warn(ex, ex);
@@ -1609,7 +1725,7 @@ public class Photo extends javax.swing.JPanel {
      *
      * @version  $Revision$, $Date$
      */
-    private class Station {
+    private static class Station {
 
         //~ Instance fields ----------------------------------------------------
 

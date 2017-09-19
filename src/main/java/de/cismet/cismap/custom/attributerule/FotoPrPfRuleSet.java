@@ -155,13 +155,13 @@ public class FotoPrPfRuleSet extends WatergisDefaultRuleSet {
         action.actionPerformed(null);
     }
 
-    @Override
-    public boolean hasCustomPrintFeaturesMethod() {
-        return true;
-    }
-
-    @Override
-    public void printFeatures() {
-        AppBroker.getInstance().getPhotoPrint().actionPerformed(null);
-    }
+//    @Override
+//    public boolean hasCustomPrintFeaturesMethod() {
+//        return true;
+//    }
+//
+//    @Override
+//    public void printFeatures() {
+//        AppBroker.getInstance().getPhotoPrint().actionPerformed(null);
+//    }
 }

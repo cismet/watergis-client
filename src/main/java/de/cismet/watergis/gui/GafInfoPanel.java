@@ -49,6 +49,7 @@ import de.cismet.watergis.gui.panels.GafProfEditor;
 import de.cismet.watergis.gui.panels.PhotoEditor;
 
 import de.cismet.watergis.utils.GafReader;
+import de.cismet.watergis.utils.RendererTools;
 
 /**
  * DOCUMENT ME!
@@ -77,9 +78,10 @@ public class GafInfoPanel extends javax.swing.JPanel {
     private GafInfoPHandle handle;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel labImage;
     private javax.swing.JLabel labTime;
-    private javax.swing.JLabel labTitle;
     private org.jdesktop.swingx.JXBusyLabel lblBusy;
     private javax.swing.JPanel panData;
     private javax.swing.JPanel panImage;
@@ -126,8 +128,9 @@ public class GafInfoPanel extends javax.swing.JPanel {
         labImage = new javax.swing.JLabel();
         lblBusy = new org.jdesktop.swingx.JXBusyLabel(new Dimension(75, 75));
         panData = new javax.swing.JPanel();
-        labTitle = new de.cismet.watergis.utils.MultiLineJLabel();
         labTime = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -155,17 +158,6 @@ public class GafInfoPanel extends javax.swing.JPanel {
         panData.setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
-            labTitle,
-            org.openide.util.NbBundle.getMessage(GafInfoPanel.class, "GafInfoPanel.labTitle.text", new Object[] {})); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        panData.add(labTitle, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(
             labTime,
             org.openide.util.NbBundle.getMessage(GafInfoPanel.class, "GafInfoPanel.labTime.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -175,6 +167,23 @@ public class GafInfoPanel extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         panData.add(labTime, gridBagConstraints);
+
+        jPanel1.setMaximumSize(new java.awt.Dimension(250, 32));
+        jPanel1.setPreferredSize(new java.awt.Dimension(250, 32));
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel1,
+            org.openide.util.NbBundle.getMessage(GafInfoPanel.class, "GafInfoPanel.jLabel1.text", new Object[] {})); // NOI18N
+        jPanel1.add(jLabel1, java.awt.BorderLayout.NORTH);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        panData.add(jPanel1, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -208,7 +217,7 @@ public class GafInfoPanel extends javax.swing.JPanel {
     public void setFeature(final CidsLayerFeature feature) {
         if ((feature != null) && (this.feature != feature)) {
             this.feature = feature;
-            labTitle.setText(obj2String(feature.getProperty("titel")));
+            jLabel1.setText("<html>" + obj2String(feature.getProperty("titel")) + "</html>");
             labTime.setText(dateTime2String(
                     feature.getProperty("aufn_datum"),
                     (String)feature.getProperty("aufn_zeit")));

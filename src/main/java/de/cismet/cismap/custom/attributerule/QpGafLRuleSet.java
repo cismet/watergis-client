@@ -183,24 +183,23 @@ public class QpGafLRuleSet extends WatergisDefaultRuleSet {
         }
     }
 
-    @Override
-    public boolean hasCustomExportFeaturesMethod() {
-        return true;
-    }
+//    @Override
+//    public boolean hasCustomExportFeaturesMethod() {
+//        return true;
+//    }
+//
+//    @Override
+//    public void exportFeatures() {
+//        AppBroker.getInstance().getGafExport().actionPerformed(null);
+//    }
 
-    @Override
-    public void exportFeatures() {
-        AppBroker.getInstance().getGafExport().actionPerformed(null);
-    }
-
-    @Override
-    public boolean hasCustomPrintFeaturesMethod() {
-        return true;
-    }
-
-    @Override
-    public void printFeatures() {
-        AppBroker.getInstance().getGafPrint().actionPerformed(null);
-        ;
-    }
+//    @Override
+//    public boolean hasCustomPrintFeaturesMethod() {
+//        return true;
+//    }
+//
+//    @Override
+//    public void printFeatures() {
+//        AppBroker.getInstance().getGafPrint().actionPerformed(null);
+//    }
 }

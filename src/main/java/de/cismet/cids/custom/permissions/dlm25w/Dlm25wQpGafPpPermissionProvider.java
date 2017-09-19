@@ -111,33 +111,7 @@ public class Dlm25wQpGafPpPermissionProvider extends WatergisPermissionProvider 
             return true;
         }
 
-        final CidsBean wwGr = getWwGrBean();
-
-        if ((AppBroker.getInstance().getOwnWwGr() != null)
-                    && (AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr") != null)) {
-            if ((wwGr != null)) {
-                String owner = (String)wwGr.getProperty("owner");
-                String groupName = u.getUserGroup().getName();
-
-                if (owner.endsWith("_edit")) {
-                    owner = owner.substring(0, owner.lastIndexOf("_edit"));
-                }
-
-                if (groupName.endsWith("_edit")) {
-                    groupName = groupName.substring(0, groupName.lastIndexOf("_edit"));
-                }
-
-                if (owner.equals(groupName)) {
-                    return true;
-                } else {
-                    return (wwGr != null) && wwGr.getProperty("ww_gr").equals(4000);
-                }
-            } else {
-                return (wwGr != null) && wwGr.getProperty("ww_gr").equals(4000);
-            }
-        } else {
-            return false;
-        }
+        return false;
     }
 
     @Override
@@ -150,33 +124,7 @@ public class Dlm25wQpGafPpPermissionProvider extends WatergisPermissionProvider 
             return true;
         }
 
-        final CidsBean wwGr = getWwGrfromFeature(feature);
-
-        if ((AppBroker.getInstance().getOwnWwGr() != null)
-                    && (AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr") != null)) {
-            if (wwGr != null) {
-                String owner = (String)wwGr.getProperty("owner");
-                String groupName = u.getUserGroup().getName();
-
-                if (owner.endsWith("_edit")) {
-                    owner = owner.substring(0, owner.lastIndexOf("_edit"));
-                }
-
-                if (groupName.endsWith("_edit")) {
-                    groupName = groupName.substring(0, groupName.lastIndexOf("_edit"));
-                }
-
-                if (owner.equals(groupName)) {
-                    return true;
-                } else {
-                    return (wwGr != null) && wwGr.getProperty("ww_gr").equals(4000);
-                }
-            } else {
-                return (wwGr != null) && wwGr.getProperty("ww_gr").equals(4000);
-            }
-        } else {
-            return false;
-        }
+        return false;
     }
 
 //    @Override

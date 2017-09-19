@@ -31,7 +31,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.type.OrientationEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JRSaveContributor;
 import net.sf.jasperreports.view.JRViewer;
 
 import org.apache.log4j.Logger;
@@ -65,6 +67,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,6 +78,8 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import de.cismet.cids.custom.watergis.server.search.GafPosition;
 import de.cismet.cids.custom.watergis.server.search.PhotoGetBaStat;
@@ -117,9 +122,14 @@ import de.cismet.watergis.gui.dialog.GafImportDialog;
 import de.cismet.watergis.gui.dialog.PhotoOptionsDialog;
 
 import de.cismet.watergis.utils.CidsBeanUtils;
+import de.cismet.watergis.utils.ContributorWrapper;
+import de.cismet.watergis.utils.ConversionUtils;
 import de.cismet.watergis.utils.CustomGafCatalogueReader;
+import de.cismet.watergis.utils.CustomJrViewer;
 import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.GafReader;
+
+import static de.cismet.watergis.gui.panels.Photo.selectedFeature;
 
 /**
  * DOCUMENT ME!
@@ -139,14 +149,6 @@ public class GafProf extends javax.swing.JPanel {
     private static final Logger LOG = Logger.getLogger(GafProf.class);
     private static final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
     public static CidsLayerFeature selectedFeature = null;
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
-
-    static {
-        final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
-        symbols.setDecimalSeparator(',');
-        DECIMAL_FORMAT.setDecimalFormatSymbols(symbols);
-        DECIMAL_FORMAT.setGroupingUsed(false);
-    }
 
     //~ Instance fields --------------------------------------------------------
 
@@ -610,7 +612,35 @@ public class GafProf extends javax.swing.JPanel {
                     try {
                         final JasperPrint jasperPrint = get();
 
-                        final JRViewer aViewer = new JRViewer(jasperPrint);
+                        final CustomJrViewer aViewer = new CustomJrViewer(jasperPrint);
+                        final List<JRSaveContributor> contributors = new ArrayList<JRSaveContributor>();
+
+                        for (final JRSaveContributor contributor : aViewer.getSaveContributors()) {
+                            if (contributor.getDescription().toLowerCase().contains("pdf")) {
+                                contributors.add(new ContributorWrapper(contributor, "PDF"));
+                            } else if (contributor.getDescription().toLowerCase().contains("docx")) {
+                                contributors.add(new ContributorWrapper(contributor, "DOCX"));
+                            }
+                        }
+
+                        Collections.sort(contributors, new Comparator<JRSaveContributor>() {
+
+                                @Override
+                                public int compare(final JRSaveContributor o1, final JRSaveContributor o2) {
+                                    if ((o1 != null) && (o2 != null)) {
+                                        return o1.getDescription().compareTo(o2.getDescription());
+                                    } else if ((o1 == null) && (o2 == null)) {
+                                        return 0;
+                                    } else if (o1 == null) {
+                                        return 1;
+                                    } else {
+                                        return -1;
+                                    }
+                                }
+                            });
+
+                        aViewer.setSaveContributors(contributors.toArray(new JRSaveContributor[contributors.size()]));
+
                         final JFrame aFrame = new JFrame(org.openide.util.NbBundle.getMessage(
                                     GafProf.class,
                                     "GafProf.butPrintPreviewActionPerformed.aFrame.title")); // NOI18N
@@ -657,6 +687,7 @@ public class GafProf extends javax.swing.JPanel {
                 protected void done() {
                     try {
                         final JasperPrint jasperPrint = get();
+                        jasperPrint.setOrientation(OrientationEnum.LANDSCAPE);
 
                         JasperPrintManager.printReport(jasperPrint, true);
                     } catch (Exception e) {
@@ -874,11 +905,6 @@ public class GafProf extends javax.swing.JPanel {
             };
 
         final Map<String, Object> map = new HashMap<String, Object>();
-        final DecimalFormat format = new DecimalFormat("0.00");
-        final java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
-        symbols.setDecimalSeparator(',');
-        symbols.setGroupingSeparator('.');
-        format.setDecimalFormatSymbols(symbols);
         final CidsBean basisStat = (CidsBean)feature.getBean().getProperty("ba_st");
         final CidsBean freigabe = (CidsBean)feature.getBean().getProperty("freigabe");
 
@@ -888,24 +914,29 @@ public class GafProf extends javax.swing.JPanel {
             "upl_datum",
             dateTime2String(feature.getProperty("upl_datum"), (String)feature.getProperty("upl_zeit")));
         map.put("qp_nr", objectToString(feature.getProperty("qp_nr")));
-        map.put("pos", format.format(feature.getProperty("re")) + "  " + format.format(feature.getProperty("ho")));
+        map.put(
+            "pos",
+            ConversionUtils.numberToString(feature.getProperty("re"))
+                    + " "
+                    + ConversionUtils.numberToString(feature.getProperty("ho")));
         map.put("lawa", objectToString(feature.getProperty("la_cd")));
         map.put(
             "lawa_stat",
-            ((feature.getProperty("la_st") == null) ? "" : DECIMAL_FORMAT.format(feature.getProperty("la_st"))));
+            ((feature.getProperty("la_st") == null) ? ""
+                                                    : ConversionUtils.numberToString(feature.getProperty("la_st"))));
         map.put("dhhn", "ja");
         map.put("status", objectToString(feature.getProperty("l_st")));
         map.put("aufn_nutzer", feature.getProperty("aufn_name"));
         map.put(
             "aufn_datum",
-            dateTime2String(feature.getProperty("auf_datum"), (String)feature.getProperty("aufn_zeit")));
+            dateTime2String(feature.getProperty("aufn_datum"), (String)feature.getProperty("aufn_zeit")));
         map.put("titel", feature.getProperty("titel"));
         map.put("beschreibung", feature.getProperty("beschreib"));
         map.put("bemerkung", feature.getProperty("bemerkung"));
 
         if (basisStat != null) {
-            map.put("basis", feature.getProperty("route.ba_cd"));
-            map.put("basis_stat", DECIMAL_FORMAT.format(basisStat.getProperty("wert")));
+            map.put("basis", feature.getProperty("ba_cd"));
+            map.put("basis_stat", ConversionUtils.numberToString(basisStat.getProperty("wert")));
         } else {
             map.put("basis", "");
             map.put("basis_stat", "");
@@ -1285,32 +1316,36 @@ public class GafProf extends javax.swing.JPanel {
      * @param  feature  DOCUMENT ME!
      */
     private void setEditorFeature(final CidsLayerFeature feature) {
-        if ((selectedFeature != null) && askForSave && editor.hasWriteAccess()) {
-            if (selectedFeature.getBean().getMetaObject().isChanged()
-                        && (selectedFeature.getBean().getMetaObject().getStatus()
-                            != Sirius.server.localserver.object.Object.TO_DELETE)) {
-                final int ans = JOptionPane.showConfirmDialog(
-                        GafProf.this,
-                        NbBundle.getMessage(GafProf.class,
-                            "GafProf.setEditorFeature().text"),
-                        NbBundle.getMessage(GafProf.class, "GafProf.setEditorFeature().title"),
-                        JOptionPane.YES_NO_CANCEL_OPTION);
-
-                if (ans == JOptionPane.YES_OPTION) {
-                    butSaveActionPerformed(null);
-                } else if (ans == JOptionPane.NO_OPTION) {
-                    // nothing to do
-                } else {
-                    return;
-                }
-            }
-        }
+//        if ((selectedFeature != null) && askForSave && editor.hasWriteAccess()) {
+//            if (selectedFeature.getBean().getMetaObject().isChanged()
+//                        && (selectedFeature.getBean().getMetaObject().getStatus()
+//                            != Sirius.server.localserver.object.Object.TO_DELETE)) {
+//                final int ans = JOptionPane.showConfirmDialog(
+//                        GafProf.this,
+//                        NbBundle.getMessage(GafProf.class,
+//                            "GafProf.setEditorFeature().text"),
+//                        NbBundle.getMessage(GafProf.class, "GafProf.setEditorFeature().title"),
+//                        JOptionPane.YES_NO_CANCEL_OPTION);
+//
+//                if (ans == JOptionPane.YES_OPTION) {
+//                    butSaveActionPerformed(null);
+//                } else if (ans == JOptionPane.NO_OPTION) {
+//                    // nothing to do
+//                } else {
+//                    return;
+//                }
+//            }
+//        }
 
         askForSave = true;
 
         if (tbLocate.isSelected()) {
             tbLocate.setSelected(false);
             tbLocateActionPerformed(null);
+        }
+
+        if ((feature != null) && !feature.isEditable()) {
+            makeFeatureEditable(feature);
         }
 
         editor.setCidsLayerFeature(feature);
@@ -1344,6 +1379,12 @@ public class GafProf extends javax.swing.JPanel {
                         if (((FeatureServiceFeature)f).getId() == feature.getId()) {
                             pf.visualize();
                             pf.refreshDesign();
+                        }
+                        final PFeature mapFeature = pf.getViewer().getPFeatureHM().get(feature);
+
+                        if (mapFeature != null) {
+                            mapFeature.visualize();
+                            mapFeature.refreshDesign();
                         }
                     }
                 }
@@ -1428,6 +1469,124 @@ public class GafProf extends javax.swing.JPanel {
 //                    JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    public void dispose() {
+        selectedFeature = null;
+        editor.dispose();
+        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "qp");
+
+        if ((services != null) && !services.isEmpty()) {
+            if (SelectionManager.getInstance().getEditableServices().contains(services.get(0))) {
+                AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   feature     DOCUMENT ME!
+     * @param   newGafBean  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static void tryStationCreation(final CidsLayerFeature feature, final CidsBean newGafBean) throws Exception {
+        final Station stat = getNextFgBaStat(feature.getGeometry(), 1);
+
+        if (stat != null) {
+            final MetaClass routeMc = ClassCacheMultiple.getMetaClass(
+                    AppBroker.DOMAIN_NAME,
+                    "dlm25w.fg_ba");
+            final CidsBean stationBean = CidsBeanUtils.createNewCidsBeanFromTableName(
+                    "dlm25w.fg_ba_punkt");
+            final CidsBean stationGeom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
+            final MetaObject route = SessionManager.getProxy()
+                        .getMetaObject(stat.getId(), routeMc.getID(), AppBroker.DOMAIN_NAME);
+
+            stationGeom.setProperty("geo_field", stat.getPoint());
+
+            stationBean.setProperty("wert", stat.getStat());
+            stationBean.setProperty("route", route.getBean());
+            stationBean.setProperty("real_point", stationGeom);
+
+            newGafBean.setProperty("ba_st", stationBean);
+            feature.setProperty("ba_cd", stat.getBaCd());
+
+            final Station laStat = getNextFgLaStat(stat.getPoint());
+
+            if (laStat != null) {
+                feature.setProperty("la_cd", laStat.getLaCd());
+                feature.setProperty("la_st", laStat.getStat());
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geom     DOCUMENT ME!
+     * @param   maxDist  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private static Station getNextFgBaStat(final Geometry geom, final double maxDist) {
+        try {
+            final User user = SessionManager.getSession().getUser();
+            final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                        .customServerSearch(user, new PhotoGetBaStat(geom, maxDist));
+
+            if ((attributes != null) && !attributes.isEmpty()) {
+                final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                        CismapBroker.getInstance().getDefaultCrsAlias());
+                final WKBReader wkbReader = new WKBReader(geomFactory);
+                final Station stat = new Station();
+                stat.setId((Integer)attributes.get(0).get(0));
+                stat.setBaCd((String)attributes.get(0).get(1));
+                stat.setStat((Double)attributes.get(0).get(2));
+                stat.setPoint(wkbReader.read((byte[])attributes.get(0).get(3)));
+                return stat;
+            }
+        } catch (Exception ex) {
+            LOG.error("Errro while retrieving next fg ba station.", ex);
+        }
+
+        return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geom  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private static Station getNextFgLaStat(final Geometry geom) {
+        try {
+            final User user = SessionManager.getSession().getUser();
+            final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                        .customServerSearch(user, new PhotoGetLaStat(geom));
+
+            if ((attributes != null) && !attributes.isEmpty()) {
+                final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                        CismapBroker.getInstance().getDefaultCrsAlias());
+                final WKBReader wkbReader = new WKBReader(geomFactory);
+                final Station stat = new Station();
+//                    stat.setId((Integer)attributes.get(0).get(0));
+                stat.setLaCd((BigDecimal)attributes.get(0).get(1));
+                stat.setStat((Double)attributes.get(0).get(2));
+//                    stat.setPoint(wkbReader.read((byte[])attributes.get(0).get(3)));
+                return stat;
+            }
+        } catch (Exception ex) {
+            LOG.error("Errro while retrieving next fg ba station.", ex);
+        }
+
+        return null;
     }
 
     //~ Inner Classes ----------------------------------------------------------
@@ -1611,34 +1770,7 @@ public class GafProf extends javax.swing.JPanel {
                             newGafBean.setProperty("l_st", statusBean);
                         }
 
-                        final Station stat = getNextFgBaStat(feature.getGeometry(), 1);
-
-                        if (stat != null) {
-                            final MetaClass routeMc = ClassCacheMultiple.getMetaClass(
-                                    AppBroker.DOMAIN_NAME,
-                                    "dlm25w.fg_ba");
-                            final CidsBean stationBean = CidsBeanUtils.createNewCidsBeanFromTableName(
-                                    "dlm25w.fg_ba_punkt");
-                            final CidsBean stationGeom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
-                            final MetaObject route = SessionManager.getProxy()
-                                        .getMetaObject(stat.getId(), routeMc.getID(), AppBroker.DOMAIN_NAME);
-
-                            stationGeom.setProperty("geo_field", stat.getPoint());
-
-                            stationBean.setProperty("wert", stat.getStat());
-                            stationBean.setProperty("route", route.getBean());
-                            stationBean.setProperty("real_point", stationGeom);
-
-                            newGafBean.setProperty("ba_st", stationBean);
-                            feature.setProperty("ba_cd", stat.getBaCd());
-
-                            final Station laStat = getNextFgLaStat(stat.getPoint());
-
-                            if (laStat != null) {
-                                feature.setProperty("la_cd", laStat.getLaCd());
-                                feature.setProperty("la_st", laStat.getStat());
-                            }
-                        }
+                        tryStationCreation(feature, newGafBean);
                     } else {
                     }
 
@@ -1794,38 +1926,6 @@ public class GafProf extends javax.swing.JPanel {
         /**
          * DOCUMENT ME!
          *
-         * @param   geom     DOCUMENT ME!
-         * @param   maxDist  DOCUMENT ME!
-         *
-         * @return  DOCUMENT ME!
-         */
-        private Station getNextFgBaStat(final Geometry geom, final double maxDist) {
-            try {
-                final User user = SessionManager.getSession().getUser();
-                final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
-                            .customServerSearch(user, new PhotoGetBaStat(geom, maxDist));
-
-                if ((attributes != null) && !attributes.isEmpty()) {
-                    final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
-                            CismapBroker.getInstance().getDefaultCrsAlias());
-                    final WKBReader wkbReader = new WKBReader(geomFactory);
-                    final Station stat = new Station();
-                    stat.setId((Integer)attributes.get(0).get(0));
-                    stat.setBaCd((String)attributes.get(0).get(1));
-                    stat.setStat((Double)attributes.get(0).get(2));
-                    stat.setPoint(wkbReader.read((byte[])attributes.get(0).get(3)));
-                    return stat;
-                }
-            } catch (Exception ex) {
-                LOG.error("Errro while retrieving next fg ba station.", ex);
-            }
-
-            return null;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
          * @param   geom  DOCUMENT ME!
          *
          * @return  DOCUMENT ME!
@@ -1849,37 +1949,6 @@ public class GafProf extends javax.swing.JPanel {
 
             return null;
         }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param   geom  DOCUMENT ME!
-         *
-         * @return  DOCUMENT ME!
-         */
-        private Station getNextFgLaStat(final Geometry geom) {
-            try {
-                final User user = SessionManager.getSession().getUser();
-                final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
-                            .customServerSearch(user, new PhotoGetLaStat(geom));
-
-                if ((attributes != null) && !attributes.isEmpty()) {
-                    final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
-                            CismapBroker.getInstance().getDefaultCrsAlias());
-                    final WKBReader wkbReader = new WKBReader(geomFactory);
-                    final Station stat = new Station();
-//                    stat.setId((Integer)attributes.get(0).get(0));
-                    stat.setLaCd((BigDecimal)attributes.get(0).get(1));
-                    stat.setStat((Double)attributes.get(0).get(2));
-//                    stat.setPoint(wkbReader.read((byte[])attributes.get(0).get(3)));
-                    return stat;
-                }
-            } catch (Exception ex) {
-                LOG.error("Errro while retrieving next fg ba station.", ex);
-            }
-
-            return null;
-        }
     }
 
     /**
@@ -1887,7 +1956,7 @@ public class GafProf extends javax.swing.JPanel {
      *
      * @version  $Revision$, $Date$
      */
-    private class Station {
+    private static class Station {
 
         //~ Instance fields ----------------------------------------------------
 

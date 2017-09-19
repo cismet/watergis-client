@@ -705,7 +705,7 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
         }
 
         cbAutomatic.setSelected(automatic);
-        txtDistance.setText(String.valueOf(distance));
+        txtDistance.setText(String.valueOf(distance).replace('.', ','));
 
         setVisible(false);
     } //GEN-LAST:event_butCancelActionPerformed
