@@ -213,6 +213,16 @@ public class PhotoAngleListener extends PBasicInputEventHandler {
                                     ((FeatureServiceFeature)f).setProperty("winkel", Math.round(angle * 100) / 100.0);
                                     pf.visualize();
                                     pf.refreshDesign();
+                                    final PFeature mapFeature = pf.getViewer().getPFeatureHM().get(feature);
+
+                                    if (mapFeature != null) {
+                                        ((FeatureServiceFeature)mapFeature.getFeature()).setProperty(
+                                            "winkel",
+                                            Math.round(angle * 100)
+                                                    / 100.0);
+                                        mapFeature.visualize();
+                                        mapFeature.refreshDesign();
+                                    }
                                     break;
                                 }
                             }

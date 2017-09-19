@@ -237,10 +237,10 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                             - toNumber(von).doubleValue();
                 final double gefaelle = (toNumber(hoE).doubleValue()
                                 - toNumber(hoA).doubleValue()) / Math.abs(laenge) * 1000;
-                feature.setProperty("gefaelle", gefaelle);
-                if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), 0, 50, -10, 100, true)) {
+                if (!checkRangeBetweenOrEqual("gefaelle", gefaelle, 0, 50, -10, 100, true)) {
                     return oldValue;
                 }
+                feature.setProperty("gefaelle", gefaelle);
             } else if (feature.getProperty("gefaelle") != null) {
                 feature.setProperty("gefaelle", null);
             }
@@ -417,7 +417,8 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
             }
 
             if ((feature.getProperty("profil") != null) && feature.getProperty("profil").toString().equals("tr")) {
-                if (hasValue("bv_re", feature.getProperty("bv_re"), 0, true)
+                if ((feature.getProperty("bv_re") != null) && (feature.getProperty("bv_li") != null)
+                            && hasValue("bv_re", feature.getProperty("bv_re"), 0, true)
                             && hasValue("bv_li", feature.getProperty("bv_li"), 0, true)) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                         "Die Attribute bv_re und bv_li dürfen nicht beide 0 sein, wenn das Attribut profil den Wert tr hat.");

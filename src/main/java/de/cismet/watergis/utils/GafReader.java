@@ -277,8 +277,22 @@ public class GafReader {
 
         try {
             reader = new BufferedReader(new FileReader(gafFile));
-            final String headerLine = reader.readLine();
             final List<String> headers = new ArrayList<String>();
+            boolean hasValue = true;
+            String headerLine;
+
+            do {
+                headerLine = reader.readLine();
+                final String trimmedLine = headerLine.trim();
+
+                if (trimmedLine.length() == 0) {
+                    // ignore empty lines and lines which contains only whitespaces
+                    hasValue = false;
+                } else {
+                    hasValue = true;
+                }
+            } while (!hasValue || (headerLine == null));
+
             StringTokenizer st = new StringTokenizer(headerLine, " \t");
             int index = 0;
 
@@ -299,18 +313,29 @@ public class GafReader {
             String line;
 
             while ((line = reader.readLine()) != null) {
+                final String trimmedLine = line.trim();
+                if (trimmedLine.length() == 0) {
+                    // ignore empty lines and lines which contains only whitespaces
+                    continue;
+                }
                 if (line.length() <= 1) {
                     // end of file. The last line contains a single character
                     break;
                 }
                 line = line.replace(',', '.');
-                line = line.toUpperCase();
+//                line = line.toUpperCase();
                 st = new StringTokenizer(line, " \t");
                 final List<String> contFields = new ArrayList<String>();
+                int tokenIndex = 0;
 
                 while (st.hasMoreTokens()) {
-                    final String token = st.nextToken();
+                    String token = st.nextToken();
+
+                    if ((tokenIndex != GAF_FIELDS.ID.ordinal()) && (tokenIndex != GAF_FIELDS.HYK.ordinal())) {
+                        token = token.toUpperCase();
+                    }
                     contFields.add(token);
+                    ++tokenIndex;
                 }
                 final String[] contentFields = contFields.toArray(new String[contFields.size()]);
 
@@ -457,7 +482,9 @@ public class GafReader {
         for (final String[] line : gaf) {
             try {
                 final String kzVal = line[gafIndex[GAF_FIELDS.KZ.ordinal()]];
-
+//                if (!kzVal.startsWith("uk") && !kzVal.startsWith("UK")) {
+//                    continue;
+//                }
                 if (kzVal.equalsIgnoreCase("PA")) {
                     xStart = Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]);
                     started = true;
@@ -472,15 +499,15 @@ public class GafReader {
                             Color.BLACK,
                             x,
                             y,
-                            false,
-                            true);
-                    pointWithLine.setStroke(new BasicStroke(
-                            1,
-                            BasicStroke.CAP_SQUARE,
-                            BasicStroke.JOIN_MITER,
-                            2,
-                            new float[] { 1f, 3f },
-                            0));
+                            true,
+                            false);
+//                    pointWithLine.setStroke(new BasicStroke(
+//                            1,
+//                            BasicStroke.CAP_SQUARE,
+//                            BasicStroke.JOIN_MITER,
+//                            2,
+//                            new float[] { 1f, 3f },
+//                            0));
                     chart.addPoint(pointWithLine);
                 }
                 if (kzVal.equalsIgnoreCase("PE")) {
@@ -540,9 +567,8 @@ public class GafReader {
                             Color.black,
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]),
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Z.ordinal()]]),
-                            false,
-                            false,
-                            text);
+                            true,
+                            false);
                     chart.addPoint(point);
                 }
 
@@ -590,7 +616,7 @@ public class GafReader {
                             UK_COLOR,
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]),
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Z.ordinal()]]),
-                            false,
+                            true,
                             false));
                 }
                 if (kzVal.equalsIgnoreCase("UKPP")
@@ -611,7 +637,7 @@ public class GafReader {
                             UK_COLOR,
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]),
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Z.ordinal()]]),
-                            false,
+                            true,
                             false));
                     ChartCreator.Point lastPoint = null;
 
@@ -628,8 +654,8 @@ public class GafReader {
                                     UK_COLOR,
                                     point.getX(),
                                     point.getY(),
-                                    false,
-                                    true));
+                                    true,
+                                    false));
                         }
                         lastPoint = point;
                     }
@@ -637,8 +663,8 @@ public class GafReader {
                             UK_COLOR,
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]),
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Z.ordinal()]]),
-                            false,
-                            true));
+                            true,
+                            false));
                     baUk.clear();
                 }
 
@@ -684,8 +710,8 @@ public class GafReader {
                                     OK_COLOR,
                                     point.getX(),
                                     point.getY(),
-                                    false,
-                                    true));
+                                    true,
+                                    false));
                         }
                         lastPoint = point;
                     }
@@ -693,8 +719,8 @@ public class GafReader {
                             OK_COLOR,
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]),
                             Double.parseDouble(line[gafIndex[GAF_FIELDS.Z.ordinal()]]),
-                            false,
-                            true));
+                            true,
+                            false));
                     baOk.clear();
                 }
             } catch (NumberFormatException e) {
@@ -1320,8 +1346,8 @@ public class GafReader {
         }
 
         errorList.addAll(Arrays.asList(checkNP()));
-//        errorList.addAll(Arrays.asList(checkMGHint()));
-//        errorList.addAll(Arrays.asList(checkOGHint()));
+        errorList.addAll(Arrays.asList(checkMGError()));
+        errorList.addAll(Arrays.asList(checkOGError()));
         errorList.addAll(Arrays.asList(checkNPPAPE()));
         errorList.addAll(Arrays.asList(checkNPLogik()));
         errorList.addAll(Arrays.asList(checkSOAOE()));
@@ -1434,7 +1460,7 @@ public class GafReader {
      *
      * @return  DOCUMENT ME!
      */
-    private GafErrorContainer[] checkOGHint() {
+    private GafErrorContainer[] checkOGError() {
         final List<GafErrorContainer> errors = new ArrayList<GafErrorContainer>();
         String[] fileRow = null;
         int lineNumber = -1;
@@ -1472,7 +1498,7 @@ public class GafReader {
      *
      * @return  DOCUMENT ME!
      */
-    private GafErrorContainer[] checkMGHint() {
+    private GafErrorContainer[] checkMGError() {
         final List<GafErrorContainer> errors = new ArrayList<GafErrorContainer>();
         String[] fileRow = null;
         int lineNumber = -1;
@@ -1600,14 +1626,14 @@ public class GafReader {
     }
 
     /**
-     * Check: Verletzung der logischen Reihenfolge LDOK - LDUK - LBOK - LBUK - LU - FS - RU - RBUK - RBOK - RDUK - RDOK
+     * Check: Verletzung der logischen Reihenfolge LDUK - LDOK - LBOK - LBUK - LU - FS - RU - RBUK - RBOK - RDOK - RDUK
      *
      * @return  true, iff the check was completed successfully
      */
     private GafErrorContainer[] checkNPLogik() {
         final List<GafErrorContainer> errors = new ArrayList<GafErrorContainer>();
         int lineNumber = 1;
-        final String[] npOrder = { "LDOK", "LDUK", "LBOK", "LBUK", "LU", "FS", "RU", "RBUK", "RBOK", "RDUK", "RDOK" };
+        final String[] npOrder = { "LDUK", "LDOK", "LBOK", "LBUK", "LU", "FS", "RU", "RBUK", "RBOK", "RDOK", "RDUK" };
         int index = 0;
         double station = -1;
 

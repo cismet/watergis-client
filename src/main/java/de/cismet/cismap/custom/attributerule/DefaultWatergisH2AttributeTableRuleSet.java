@@ -239,48 +239,98 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
             if (FeatureTools.getH2DataType(attr).equalsIgnoreCase("double")
                         || FeatureTools.getH2DataType(attr).equalsIgnoreCase("integer")
                         || FeatureTools.getH2DataType(attr).equalsIgnoreCase("numeric")) {
-                return new DefaultTableCellRenderer() {
+                if (columnName.equals("ba_st_von") || columnName.equals("ba_st_bis") || columnName.equals("laenge")
+                            || columnName.equals("bak_st_von") || columnName.equals("bak_st_bis")
+                            || columnName.equals("lak_st_von") || columnName.equals("lak_st_bis")
+                            || columnName.equals("la_st_von") || columnName.equals("la_st_bis")) {
+                    return new DefaultTableCellRenderer() {
 
-                        DecimalFormat format = new DecimalFormat();
+                            DecimalFormat format = new DecimalFormat();
 
-                        {
-                            format.setGroupingUsed(false);
-                        }
-
-                        @Override
-                        public Component getTableCellRendererComponent(final JTable table,
-                                final Object value,
-                                final boolean isSelected,
-                                final boolean hasFocus,
-                                final int row,
-                                final int column) {
-                            Component c;
-                            if (value != null) {
-                                c = super.getTableCellRendererComponent(
-                                        table,
-                                        format.format(value).replace('.', ','),
-                                        isSelected,
-                                        hasFocus,
-                                        row,
-                                        column);
-                            } else {
-                                c = super.getTableCellRendererComponent(
-                                        table,
-                                        value,
-                                        isSelected,
-                                        hasFocus,
-                                        row,
-                                        column);
+                            {
+                                format.setGroupingUsed(false);
+                                format.setMaximumFractionDigits(2);
+                                format.setMinimumFractionDigits(2);
                             }
 
-                            if (c instanceof JLabel) {
-                                ((JLabel)c).setHorizontalAlignment(JLabel.RIGHT);
-                                ((JLabel)c).setBorder(new EmptyBorder(0, 0, 0, 2));
+                            @Override
+                            public Component getTableCellRendererComponent(final JTable table,
+                                    final Object value,
+                                    final boolean isSelected,
+                                    final boolean hasFocus,
+                                    final int row,
+                                    final int column) {
+                                Component c;
+                                if (value != null) {
+                                    c = super.getTableCellRendererComponent(
+                                            table,
+                                            format.format(value).replace('.', ','),
+                                            isSelected,
+                                            hasFocus,
+                                            row,
+                                            column);
+                                } else {
+                                    c = super.getTableCellRendererComponent(
+                                            table,
+                                            value,
+                                            isSelected,
+                                            hasFocus,
+                                            row,
+                                            column);
+                                }
+
+                                if (c instanceof JLabel) {
+                                    ((JLabel)c).setHorizontalAlignment(JLabel.RIGHT);
+                                    ((JLabel)c).setBorder(new EmptyBorder(0, 0, 0, 2));
+                                }
+
+                                return c;
+                            }
+                        };
+                } else {
+                    return new DefaultTableCellRenderer() {
+
+                            DecimalFormat format = new DecimalFormat();
+
+                            {
+                                format.setGroupingUsed(false);
                             }
 
-                            return c;
-                        }
-                    };
+                            @Override
+                            public Component getTableCellRendererComponent(final JTable table,
+                                    final Object value,
+                                    final boolean isSelected,
+                                    final boolean hasFocus,
+                                    final int row,
+                                    final int column) {
+                                Component c;
+                                if ((value != null) && (value instanceof Number)) {
+                                    c = super.getTableCellRendererComponent(
+                                            table,
+                                            format.format(value).replace('.', ','),
+                                            isSelected,
+                                            hasFocus,
+                                            row,
+                                            column);
+                                } else {
+                                    c = super.getTableCellRendererComponent(
+                                            table,
+                                            value,
+                                            isSelected,
+                                            hasFocus,
+                                            row,
+                                            column);
+                                }
+
+                                if (c instanceof JLabel) {
+                                    ((JLabel)c).setHorizontalAlignment(JLabel.RIGHT);
+                                    ((JLabel)c).setBorder(new EmptyBorder(0, 0, 0, 2));
+                                }
+
+                                return c;
+                            }
+                        };
+                }
             }
         }
 
