@@ -215,7 +215,7 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void formMouseClicked(final java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+    private void formMouseClicked(final java.awt.event.MouseEvent evt) { //GEN-FIRST:event_formMouseClicked
         if (evt.getClickCount() > 1) {
             if (!CismapBroker.getInstance().getMappingComponent().isInternalLayerWidgetVisible()) {
                 CismapBroker.getInstance().getMappingComponent().showInternalLayerWidget(true, 300);
@@ -223,7 +223,7 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
                 CismapBroker.getInstance().getMappingComponent().showInternalLayerWidget(false, 150);
             }
         }
-    }//GEN-LAST:event_formMouseClicked
+    }                                                                    //GEN-LAST:event_formMouseClicked
 
     /**
      * Shows the given text in the status bar. After 5 seconds it will be removed.
