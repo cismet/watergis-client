@@ -51,6 +51,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -141,6 +142,7 @@ public class ExportAction extends AbstractAction implements Configurable {
     private List<AbstractCheckAction> checks;
     private Map<Integer, CidsBean> wwGrBeans = null;
     private List<DefaultFeatureServiceFeature> expFeatures = null;
+    private String path = WatergisApp.getDIRECTORYPATH_WATERGIS();
 
     //~ Constructors -----------------------------------------------------------
 
@@ -179,7 +181,8 @@ public class ExportAction extends AbstractAction implements Configurable {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        final File file = StaticSwingTools.chooseFile(WatergisApp.getDIRECTORYPATH_WATERGIS(),
+        final File file = StaticSwingTools.chooseFile(
+                path,
                 true,
                 new String[] { "zip" },
                 org.openide.util.NbBundle.getMessage(
@@ -189,6 +192,10 @@ public class ExportAction extends AbstractAction implements Configurable {
 
         if (file == null) {
             return;
+        }
+
+        if (file.getParent() != null) {
+            path = file.getParent();
         }
 
         final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
@@ -297,8 +304,14 @@ public class ExportAction extends AbstractAction implements Configurable {
                                             || user.getUserGroup().getName().equalsIgnoreCase("lung_edit1")) {
                                     selectedbaCdArray = getAttributesOfSelectedObjects("fg_ba", "ba_cd");
                                 }
+                                String query = null;
+
+                                if (!service.getName().startsWith("k_")) {
+                                    // Issue 40: Kataloge: werden immer komplett ausgespielt
+                                    query = createExportQuery(service, selectedbaCdArray);
+                                }
                                 List<DefaultFeatureServiceFeature> features = service.getFeatureFactory()
-                                            .createFeatures(createExportQuery(service, selectedbaCdArray),
+                                            .createFeatures(query,
                                                 null,
                                                 null,
                                                 0,
@@ -308,7 +321,10 @@ public class ExportAction extends AbstractAction implements Configurable {
                                     return null;
                                 }
 
-                                features = filterFeatures(service, features);
+                                if (!service.getName().startsWith("k_")) {
+                                    // Issue 40: Kataloge: werden immer komplett ausgespielt
+                                    features = filterFeatures(service, features);
+                                }
 
                                 String name = service.getName();
 
@@ -421,7 +437,30 @@ public class ExportAction extends AbstractAction implements Configurable {
                 private List<DefaultFeatureServiceFeature> createErrorFileContent(final List<ErrorContainer> errors) {
                     final List<DefaultFeatureServiceFeature> errorFeatures =
                         new ArrayList<DefaultFeatureServiceFeature>();
-                    final TreeSet<String> set = new TreeSet<String>();
+                    final TreeSet<String> set = new TreeSet<String>(new Comparator<String>() {
+
+                                @Override
+                                public int compare(final String o1, final String o2) {
+                                    // wsa vor wbv, NIEMAND am Schluss und sonst in alphabetischer Reihenfolge
+                                    if ((o1 == null) && (o2 == null)) {
+                                        return 0;
+                                    } else if ((o1 == null) && (o2 != null)) {
+                                        return -1;
+                                    } else if ((o1 != null) && (o2 == null)) {
+                                        return 1;
+                                    } else if (o1.startsWith("NIEMAND") && !o2.startsWith("NIEMAND")) {
+                                        return 1;
+                                    } else if (!o1.startsWith("NIEMAND") && o2.startsWith("NIEMAND")) {
+                                        return -1;
+                                    } else if (o1.startsWith("wsa") && o2.startsWith("wbv")) {
+                                        return -1;
+                                    } else if (o1.startsWith("wbv") && o2.startsWith("wsa")) {
+                                        return 1;
+                                    } else {
+                                        return o1.compareTo(o2);
+                                    }
+                                }
+                            });
                     Collections.sort(errors);
                     String lastErrorMessage = "";
                     final Map<String, FeatureServiceAttribute> attributeMap =
@@ -479,7 +518,8 @@ public class ExportAction extends AbstractAction implements Configurable {
                     try {
                         for (final H2FeatureService service : services) {
                             final List<JDBCFeature> features = service.getFeatureFactory()
-                                        .createFeatures(createQuery(service), null, null, 0, 0, null);
+                                        .createFeatures(null, null, null, 0, 0, null);
+//                                        .createFeatures(createQuery(service), null, null, 0, 0, null);
 
                             if ((features != null) && !features.isEmpty()) {
                                 for (final JDBCFeature feature : features) {
@@ -507,7 +547,8 @@ public class ExportAction extends AbstractAction implements Configurable {
                     try {
                         for (final AbstractFeatureService service : services) {
                             final List<JDBCFeature> features = service.getFeatureFactory()
-                                        .createFeatures(createQuery(service), null, null, 0, 0, null);
+                                        .createFeatures(null, null, null, 0, 0, null);
+//                                        .createFeatures(createQuery(service), null, null, 0, 0, null);
 
                             if (e.getActionCommand().equalsIgnoreCase("igm")
                                         && (service.getName().contains("Leis")
@@ -515,7 +556,7 @@ public class ExportAction extends AbstractAction implements Configurable {
                                 // do nothing to remove all features from the service
                             } else {
                                 List<DefaultFeatureServiceFeature> copiedFeaturesList = new ArrayList(features);
-                                copiedFeaturesList = filterFeatures(service, copiedFeaturesList);
+                                copiedFeaturesList = filterErrorFeatures(service, copiedFeaturesList);
                                 features.removeAll(copiedFeaturesList);
                             }
 
@@ -525,6 +566,60 @@ public class ExportAction extends AbstractAction implements Configurable {
                         }
                     } catch (Exception e) {
                         LOG.error("Error while filtering check results.", e);
+                    }
+                }
+
+                private List<DefaultFeatureServiceFeature> filterErrorFeatures(final AbstractFeatureService service,
+                        final List<DefaultFeatureServiceFeature> features) {
+                    final User user = SessionManager.getSession().getUser();
+                    final Map<String, FeatureServiceAttribute> attributes = service.getFeatureServiceAttributes();
+                    boolean hasWdm = false;
+
+                    if ((features == null) || features.isEmpty()) {
+                        return features;
+                    }
+
+                    for (final FeatureServiceAttribute attr : attributes.values()) {
+                        if (attr.getName().equals("ww_gr")) {
+                            hasWdm = true;
+                        }
+                    }
+
+                    if (hasWdm) {
+                        final List<DefaultFeatureServiceFeature> acceptedFeatures =
+                            new ArrayList<DefaultFeatureServiceFeature>(features.size());
+
+                        for (final DefaultFeatureServiceFeature feature : features) {
+                            boolean acceptFeature = true;
+                            if (!ExportDialog.getInstance().has1501() && isWdm1501(feature)) {
+                                acceptFeature = false;
+                            }
+                            if (!ExportDialog.getInstance().has1502() && isWdm1502(feature)) {
+                                acceptFeature = false;
+                            }
+                            if (!ExportDialog.getInstance().has1503() && isWdm1503(feature)) {
+                                acceptFeature = false;
+                            }
+                            if (!ExportDialog.getInstance().has1504() && isWdm1504(feature)) {
+                                acceptFeature = false;
+                            }
+                            if (!ExportDialog.getInstance().has1505() && isWdm1505(feature)) {
+                                acceptFeature = false;
+                            }
+
+                            if (!user.getUserGroup().getName().equalsIgnoreCase("administratoren")
+                                        && isInvalidForeignData(feature)) {
+                                acceptFeature = false;
+                            }
+
+                            if (acceptFeature) {
+                                acceptedFeatures.add(feature);
+                            }
+                        }
+
+                        return acceptedFeatures;
+                    } else {
+                        return features;
                     }
                 }
 
@@ -548,9 +643,9 @@ public class ExportAction extends AbstractAction implements Configurable {
                                 && ExportDialog.getInstance().hasForeignData()) {
                         final List<DefaultFeatureServiceFeature> acceptedFeatures =
                             new ArrayList<DefaultFeatureServiceFeature>(features.size());
-                        boolean acceptFeature = true;
 
                         for (final DefaultFeatureServiceFeature feature : features) {
+                            boolean acceptFeature = true;
                             if (!ExportDialog.getInstance().has1501() && isWdm1501(feature)) {
                                 acceptFeature = false;
                             }
@@ -689,10 +784,10 @@ public class ExportAction extends AbstractAction implements Configurable {
                                     return false;
                                 } else {
                                     feature.setGeometry(feature.getGeometry().intersection(g));
-                                    final Integer von = (Integer)feature.getProperty("ba_st_von");
-                                    final Integer bis = (Integer)feature.getProperty("ba_st_bis");
-                                    final Integer expVon = (Integer)exp.getProperty("ba_st_von");
-                                    final Integer expBis = (Integer)exp.getProperty("ba_st_bis");
+                                    final Double von = (Double)feature.getProperty("ba_st_von");
+                                    final Double bis = (Double)feature.getProperty("ba_st_bis");
+                                    final Double expVon = (Double)exp.getProperty("ba_st_von");
+                                    final Double expBis = (Double)exp.getProperty("ba_st_bis");
 
                                     if ((von != null) && (expVon != null) && (von < expVon)) {
                                         feature.setProperty("ba_st_von", expVon);
@@ -729,7 +824,7 @@ public class ExportAction extends AbstractAction implements Configurable {
                     final List<CidsBean> ownBeans = AppBroker.getInstance().getOwnWwGrList();
 
                     for (final CidsBean bean : ownBeans) {
-                        if (bean.getPrimaryKeyValue().equals(wwGr)) {
+                        if ((bean.getProperty("ww_gr") != null) && bean.getProperty("ww_gr").equals(wwGr)) {
                             return true;
                         }
                     }
@@ -807,7 +902,15 @@ public class ExportAction extends AbstractAction implements Configurable {
                         }
                     }
 
-                    if (hasWdm) {
+                    boolean hasBaCd = false;
+
+                    for (final FeatureServiceAttribute attr : attributes.values()) {
+                        if (attr.getName().equals("ba_cd")) {
+                            hasBaCd = true;
+                        }
+                    }
+
+                    if (hasWdm || service.getName().equals("Stationen")) {
                         if (!ExportDialog.getInstance().has1501()) {
                             if (query == null) {
                                 query = "1501";
@@ -845,54 +948,84 @@ public class ExportAction extends AbstractAction implements Configurable {
                         }
 
                         if (query != null) {
-                            query = " dlm25wPk_ww_gr1.wdm not in (" + query + ")";
+                            if (service.getName().equals("Stationen")) {
+                                query =
+                                    "  ba_cd in (select ba_cd from dlm25w.fg_ba b join dlm25w.k_ww_gr gr on (b.ww_gr = gr.id) where  gr.wdm not in ("
+                                            + query
+                                            + "))";
+                            } else {
+                                query = " dlm25wPk_ww_gr1.wdm not in ("
+                                            + query
+                                            + ")";
+                            }
                         }
 
                         final User user = SessionManager.getSession().getUser();
 
                         if (!user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                             if (isGu()) {
-                                if (query == null) {
-                                    query = " dlm25wPk_ww_gr1.wdm in (select id from dlm25w.k_ww_gr where owner = '"
-                                                + user.getUserGroup().getName() + "')";
+                                if (service.getName().equals("Stationen")) {
+                                    if (query == null) {
+                                        query =
+                                            "  ba_cd in (select ba_cd from dlm25w.fg_ba b join dlm25w.k_ww_gr gr on (b.ww_gr = gr.id) where  gr.wdm in (select wdm from dlm25w.k_ww_gr where owner = '"
+                                                    + user.getUserGroup().getName()
+                                                    + "'))";
+                                    } else {
+                                        query +=
+                                            " and ba_cd in (select ba_cd from dlm25w.fg_ba b join dlm25w.k_ww_gr gr on (b.ww_gr = gr.id) where  gr.wdm in (select wdm from dlm25w.k_ww_gr where owner = '"
+                                                    + user.getUserGroup().getName()
+                                                    + "'))";
+                                    }
                                 } else {
-                                    query += " and dlm25wPk_ww_gr1.wdm in (select id from dlm25w.k_ww_gr where owner = '"
-                                                + user.getUserGroup().getName() + "')";
+                                    if (query == null) {
+                                        query =
+                                            " dlm25wPk_ww_gr1.wdm in (select wdm from dlm25w.k_ww_gr where owner = '"
+                                                    + user.getUserGroup().getName()
+                                                    + "')";
+                                    } else {
+                                        query +=
+                                            " and dlm25wPk_ww_gr1.wdm in (select wdm from dlm25w.k_ww_gr where owner = '"
+                                                    + user.getUserGroup().getName()
+                                                    + "')";
+                                    }
                                 }
                             } else {
                                 if (query == null) {
                                     query = "false";
                                 } else {
-                                    query = "(" + query + ") and false";
+                                    query = "("
+                                                + query
+                                                + ") and false";
                                 }
                             }
 
                             if (ExportDialog.getInstance().hasForeignData()) {
-                                if (query != null) {
-                                    query = "(" + query
-                                                + ") or (ba_cd in (select ba_cd from dlm25w.fg_ba_exp where ww_gr in (select id from dlm25w.k_ww_gr where owner = '"
-                                                + user.getUserGroup().getName() + "')))";
+                                if ((query != null) && hasBaCd) {
+                                    query = "("
+                                                + query
+                                                + ") or (ba_cd in (select ba.ba_cd from dlm25w.fg_ba_exp e join "
+                                                + "dlm25w.fg_ba_linie l on (ba_st = l.id) join dlm25w.fg_ba_punkt p "
+                                                + "on (l.von = p.id) join dlm25w.fg_ba ba on (ba.id = p.route) "
+                                                + "where e.ww_gr  in (select id from dlm25w.k_ww_gr where owner = '"
+                                                + user.getUserGroup().getName()
+                                                + "')))";
                                 }
                             }
                         }
                     }
 
                     if (selectedbaCdArray != null) {
-                        boolean hasBaCd = false;
-
-                        for (final FeatureServiceAttribute attr : attributes.values()) {
-                            if (attr.getName().equals("ba_cd")) {
-                                hasBaCd = true;
-                            }
-                        }
-
                         if (hasBaCd) {
                             if (query == null) {
                                 query = "(ba_cd = any("
-                                            + SQLFormatter.createSqlArrayString(selectedbaCdArray) + "))";
+                                            + SQLFormatter.createSqlArrayString(selectedbaCdArray)
+                                            + "))";
                             } else {
-                                query = "(" + query + ") and (ba_cd = any("
-                                            + SQLFormatter.createSqlArrayString(selectedbaCdArray) + "))";
+                                query = "("
+                                            + query
+                                            + ") and (ba_cd = any("
+                                            + SQLFormatter.createSqlArrayString(selectedbaCdArray)
+                                            + "))";
                             }
                         }
                     }
@@ -977,10 +1110,12 @@ public class ExportAction extends AbstractAction implements Configurable {
                         }
 
                         if (!hasGeometry) {
-                            String shpFileName = filename + ".shp";
+                            String shpFileName = filename
+                                        + ".shp";
 
                             deleteFileIfExists(shpFileName);
-                            shpFileName = filename + ".shx";
+                            shpFileName = filename
+                                        + ".shx";
                             deleteFileIfExists(shpFileName);
                         }
                     } catch (Exception ex) {
@@ -1430,8 +1565,10 @@ public class ExportAction extends AbstractAction implements Configurable {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = (17 * hash) + ((this.errorMessage != null) ? this.errorMessage.hashCode() : 0);
-            hash = (17 * hash) + ((this.owner != null) ? this.owner.hashCode() : 0);
+            hash = (17 * hash)
+                        + ((this.errorMessage != null) ? this.errorMessage.hashCode() : 0);
+            hash = (17 * hash)
+                        + ((this.owner != null) ? this.owner.hashCode() : 0);
             return hash;
         }
 
