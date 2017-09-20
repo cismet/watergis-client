@@ -14,7 +14,6 @@ package de.cismet.watergis.gui.dialog;
 
 import Sirius.navigator.connection.SessionManager;
 
-import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.newuser.User;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -32,6 +31,8 @@ import org.openide.util.NbBundle;
 
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import java.sql.Timestamp;
 
@@ -49,23 +50,19 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 
-import de.cismet.cids.custom.watergis.server.search.AllGemeinden;
 import de.cismet.cids.custom.watergis.server.search.Buffer;
 import de.cismet.cids.custom.watergis.server.search.PreparedRandstreifenGeoms;
-
-import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
 import de.cismet.cismap.cidslayer.CidsLayer;
 
-import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.XBoundingBox;
-import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureCollectionEvent;
 import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -83,8 +80,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.GeometryUtils;
-
-import static java.awt.image.ImageObserver.WIDTH;
 
 /**
  * DOCUMENT ME!
@@ -105,6 +100,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
     private boolean cancelled = false;
     private int selectedThemeFeatureCount = -1;
     private int selectedGewFeatureCount = -1;
+    private String lastValue = "";
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;
@@ -179,11 +175,57 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
         allTxtBr = new JTextField[] { txtBr1, txtBr2, txtBr3, txtBr4, txtBr5, txtBr6, txtBr7, txtBr8, txtBr9, txtBr10 };
 
         for (final JTextField field : allTxtBr) {
-            field.setInputVerifier(verifier);
+            field.addFocusListener(new FocusAdapter() {
+
+                    @Override
+                    public void focusGained(final FocusEvent e) {
+                        lastValue = field.getText();
+                    }
+
+                    @Override
+                    public void focusLost(final FocusEvent e) {
+                        boolean valid = false;
+
+                        String text = field.getText();
+                        text = text.replace(',', '.');
+
+                        if (text.equals("")) {
+                            parameterValid(false);
+                            return;
+                        }
+
+                        try {
+                            final double d = Double.parseDouble(text);
+
+                            if ((d > 0) && (d < 1000)) {
+                                if (!text.contains(".") || ((text.indexOf(".") + 3) >= text.length())) {
+                                    valid = true;
+                                }
+                            }
+                        } catch (NumberFormatException ex) {
+                            // nothing to do
+                        }
+
+                        if (!valid) {
+                            JOptionPane.showMessageDialog(
+                                FgGerogaRsDialog.this,
+                                "Eingabewert ist nicht zulässig !",
+                                "Unzulässige Eingabe",
+                                JOptionPane.WARNING_MESSAGE);
+                            field.setText(lastValue);
+                        } else {
+                            parameterValid(false);
+                        }
+                    }
+                });
         }
 
-        txtVar2Br.setInputVerifier(verifier2Br);
-        txtVar2St.setInputVerifier(verifier2St);
+//        for (final JTextField field : allTxtBr) {
+//            field.setInputVerifier(verifier);
+//        }
+//
+//        txtVar2Br.setInputVerifier(verifier2Br);
+//        txtVar2St.setInputVerifier(verifier2St);
 
         if (!modal) {
             // is not required, if the dialog is modal
@@ -287,6 +329,75 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
     /**
      * DOCUMENT ME!
      *
+     * @param   disableButton  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private boolean parameterValid(final boolean disableButton) {
+        Double lastValue = null;
+        Double currentValue = null;
+        boolean firstField = true;
+
+        for (final JTextField text : allTxtBr) {
+            if (firstField) {
+                firstField = false;
+                currentValue = getDouble(text);
+                lastValue = getDouble(text);
+
+                if (lastValue == null) {
+                    if (disableButton) {
+                        butOk.setEnabled(false);
+                    }
+                    return false;
+                }
+            } else {
+                currentValue = getDouble(text);
+
+                if (currentValue != null) {
+                    if ((lastValue == null) || (currentValue <= lastValue)) {
+                        if (disableButton) {
+                            butOk.setEnabled(false);
+                        }
+                        return false;
+                    }
+                }
+                lastValue = currentValue;
+            }
+        }
+        butOk.setEnabled(true);
+
+        return true;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   field  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Double getDouble(final JTextField field) {
+        String text = field.getText();
+        text = text.replace(',', '.');
+
+        if (text.equals("")) {
+            return null;
+        }
+
+        try {
+            final double d = Double.parseDouble(text);
+
+            return d;
+        } catch (NumberFormatException ex) {
+            // nothing to do
+        }
+
+        return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @return  DOCUMENT ME!
      */
     public static FgGerogaRsDialog getInstance() {
@@ -306,6 +417,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      * DOCUMENT ME!
      */
     private void setLayerModel() {
+        final Object selectedObject = cbbFlaeche.getSelectedItem();
         cbbFlaeche.setModel(new DefaultComboBoxModel(
                 new String[] {
                     NbBundle.getMessage(
@@ -322,7 +434,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                                     new AbstractFeatureService[0]));
                         model.insertElementAt(null, 0);
                         cbbFlaeche.setModel(model);
-                        cbbFlaeche.setSelectedItem(null);
+                        cbbFlaeche.setSelectedItem(selectedObject);
                     }
                 });
 
@@ -527,6 +639,13 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 FgGerogaRsDialog.class,
                 "FgGerogaRsDialog.ckbOffeneFgBreite.text",
                 new Object[] {})); // NOI18N
+        ckbOffeneFgBreite.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbOffeneFgBreiteActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -540,6 +659,13 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 "FgGerogaRsDialog.txtGerBr.text",
                 new Object[] {})); // NOI18N
         txtGerBr.setPreferredSize(new java.awt.Dimension(50, 27));
+        txtGerBr.addFocusListener(new java.awt.event.FocusAdapter() {
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtGerBrFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -596,6 +722,13 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 FgGerogaRsDialog.class,
                 "FgGerogaRsDialog.ckbFgFlaechen.text",
                 new Object[] {})); // NOI18N
+        ckbFgFlaechen.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbFgFlaechenActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -894,6 +1027,13 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 "FgGerogaRsDialog.txtVar2Br.text",
                 new Object[] {})); // NOI18N
         txtVar2Br.setPreferredSize(new java.awt.Dimension(50, 27));
+        txtVar2Br.addFocusListener(new java.awt.event.FocusAdapter() {
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtVar2BrFocusLost(evt);
+                }
+            });
         txtVar2Br.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -929,6 +1069,13 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 "FgGerogaRsDialog.txtVar2St.text",
                 new Object[] {})); // NOI18N
         txtVar2St.setPreferredSize(new java.awt.Dimension(50, 27));
+        txtVar2St.addFocusListener(new java.awt.event.FocusAdapter() {
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtVar2StFocusLost(evt);
+                }
+            });
         txtVar2St.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -940,7 +1087,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 11;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 10, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 5);
         jPanel2.add(txtVar2St, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1137,6 +1284,14 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+        if (ckbVar1.isSelected() && !parameterValid(true)) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Die Breiten bei Variante 1 müssen aufsteigend sein.",
+                "Fehlerhafte Werte",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         if (!txtFile.getText().equals("") && checkValues()) {
             cancelled = false;
             setVisible(false);
@@ -1152,8 +1307,65 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void ckbOffeneFgActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbOffeneFgActionPerformed
-        // TODO add your handling code here:
-    } //GEN-LAST:event_ckbOffeneFgActionPerformed
+        CheckBoxCheck();
+    }                                                                               //GEN-LAST:event_ckbOffeneFgActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void CheckBoxCheck() {
+        int count = 0;
+
+        if (ckbFgFlaechen.isSelected()) {
+            ++count;
+        }
+        if (ckbOffeneFg.isSelected()) {
+            ++count;
+        }
+        if (ckbOffeneFgBreite.isSelected()) {
+            ++count;
+        }
+        if (ckbSee.isSelected()) {
+            ++count;
+        }
+        if (ckbKleinsee.isSelected()) {
+            ++count;
+        }
+        if (ckbOstsee.isSelected()) {
+            ++count;
+        }
+
+        if (count > 1) {
+            ckbFgFlaechen.setEnabled(true);
+            ckbOffeneFg.setEnabled(true);
+            ckbOffeneFgBreite.setEnabled(true);
+            ckbSee.setEnabled(true);
+            ckbKleinsee.setEnabled(true);
+            ckbOstsee.setEnabled(true);
+        } else if (count == 1) {
+            if (ckbFgFlaechen.isSelected()) {
+                ckbFgFlaechen.setEnabled(false);
+            }
+            if (ckbOffeneFg.isSelected()) {
+                ckbOffeneFg.setEnabled(false);
+            }
+            if (ckbOffeneFgBreite.isSelected()) {
+                ckbOffeneFgBreite.setEnabled(false);
+            }
+            if (ckbSee.isSelected()) {
+                ckbSee.setEnabled(false);
+            }
+            if (ckbKleinsee.isSelected()) {
+                ckbKleinsee.setEnabled(false);
+            }
+            if (ckbOstsee.isSelected()) {
+                ckbOstsee.setEnabled(false);
+            }
+        } else if (count == 0) {
+            ckbKleinsee.setSelected(true);
+            ckbKleinsee.setEnabled(false);
+        }
+    }
 
     /**
      * DOCUMENT ME!
@@ -1163,6 +1375,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
     private void ckbStandActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbStandActionPerformed
         ckbSee.setSelected(ckbStand.isSelected());
         ckbKleinsee.setSelected(ckbStand.isSelected());
+        CheckBoxCheck();
     }                                                                            //GEN-LAST:event_ckbStandActionPerformed
 
     /**
@@ -1171,8 +1384,8 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void ckbOstseeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbOstseeActionPerformed
-        // TODO add your handling code here:
-    } //GEN-LAST:event_ckbOstseeActionPerformed
+        CheckBoxCheck();
+    }                                                                             //GEN-LAST:event_ckbOstseeActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -1247,6 +1460,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      */
     private void ckbSeeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbSeeActionPerformed
         ckbStand.setSelected(ckbSee.isSelected() && ckbKleinsee.isSelected());
+        CheckBoxCheck();
     }                                                                          //GEN-LAST:event_ckbSeeActionPerformed
 
     /**
@@ -1256,7 +1470,110 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      */
     private void ckbKleinseeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbKleinseeActionPerformed
         ckbStand.setSelected(ckbSee.isSelected() && ckbKleinsee.isSelected());
+        CheckBoxCheck();
     }                                                                               //GEN-LAST:event_ckbKleinseeActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtGerBrFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtGerBrFocusLost
+        double br = 0.0;
+        try {
+            br = Double.parseDouble(txtGerBr.getText());
+
+            if ((br > 1000) || (br < 0)) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Eingabewert ist nicht zulässig !",
+                    "Unzulässige Eingabe",
+                    JOptionPane.WARNING_MESSAGE);
+                txtGerBr.setText("6");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Eingabewert ist nicht zulässig !",
+                "Unzulässige Eingabe",
+                JOptionPane.WARNING_MESSAGE);
+            txtGerBr.setText("6");
+        }
+    } //GEN-LAST:event_txtGerBrFocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbOffeneFgBreiteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbOffeneFgBreiteActionPerformed
+        CheckBoxCheck();
+    }                                                                                     //GEN-LAST:event_ckbOffeneFgBreiteActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbFgFlaechenActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbFgFlaechenActionPerformed
+        CheckBoxCheck();
+    }                                                                                 //GEN-LAST:event_ckbFgFlaechenActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtVar2BrFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtVar2BrFocusLost
+        double br = 0.0;
+        try {
+            br = Double.parseDouble(txtVar2Br.getText());
+
+            if ((br > 1000) || (br <= 0)) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Eingabewert ist nicht zulässig !",
+                    "Unzulässige Eingabe",
+                    JOptionPane.WARNING_MESSAGE);
+                txtVar2Br.setText("20");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Eingabewert ist nicht zulässig !",
+                "Unzulässige Eingabe",
+                JOptionPane.WARNING_MESSAGE);
+            txtVar2Br.setText("20");
+        }
+    } //GEN-LAST:event_txtVar2BrFocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtVar2StFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtVar2StFocusLost
+        int br = 0;
+        try {
+            br = Integer.parseInt(txtVar2St.getText());
+
+            if ((br > 1000) || (br <= 0)) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Eingabewert ist nicht zulässig !",
+                    "Unzulässige Eingabe",
+                    JOptionPane.WARNING_MESSAGE);
+                txtVar2St.setText("4");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Eingabewert ist nicht zulässig !",
+                "Unzulässige Eingabe",
+                JOptionPane.WARNING_MESSAGE);
+            txtVar2St.setText("4");
+        }
+    } //GEN-LAST:event_txtVar2StFocusLost
 
     /**
      * DOCUMENT ME!
@@ -1289,14 +1606,16 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      * DOCUMENT ME!
      */
     private void start() {
-        final WaitingDialogThread<Void> wdt = new WaitingDialogThread<Void>(AppBroker.getInstance().getWatergisApp(),
+        final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
+                        .getInstance().getWatergisApp(),
                 true,
                 NbBundle.getMessage(FgGerogaRsDialog.class, "FgGerogaRsDialog.start().WaitingDialogThread"),
                 null,
-                100) {
+                100,
+                true) {
 
                 @Override
-                protected Void doInBackground() throws Exception {
+                protected H2FeatureService doInBackground() throws Exception {
                     Geometry totalGeom = null;
                     XBoundingBox bbox = null;
                     final boolean useAreas = cbbFlaeche.getSelectedIndex() != -1;
@@ -1312,8 +1631,13 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                             areaFeatures = service.getFeatureFactory()
                                         .createFeatures(service.getQuery(), null, null, 0, 0, null);
                         }
-
+                        if (canceled) {
+                            return null;
+                        }
                         Geometry g = GeometryUtils.unionFeatureEnvelopes(areaFeatures);
+                        if (canceled) {
+                            return null;
+                        }
                         g = g.buffer(getBiggestStreifen() + 1);
                         bbox = new XBoundingBox(g);
                     }
@@ -1438,6 +1762,10 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                     final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
                                 .customServerSearch(user, search);
 
+                    if (canceled) {
+                        return null;
+                    }
+
                     if ((attributes != null) && !attributes.isEmpty()) {
                         if (!attributes.get(0).isEmpty() && (attributes.get(0).get(0) instanceof byte[])) {
                             final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(
@@ -1447,19 +1775,258 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                             totalGeom = wkbReader.read((byte[])attributes.get(0).get(0));
                         }
                     }
+                    if (canceled) {
+                        return null;
+                    }
 
                     if (bbox != null) {
-                        createStreifen(totalGeom.intersection(bbox.getGeometry()), useAreas, areaFeatures, service);
+                        return createStreifen(totalGeom.intersection(bbox.getGeometry()),
+                                useAreas,
+                                areaFeatures,
+                                service);
                     } else {
-                        createStreifen(totalGeom, useAreas, areaFeatures, service);
+                        return createStreifen(totalGeom, useAreas, areaFeatures, service);
                     }
-                    return null;
+                }
+
+                /**
+                 * DOCUMENT ME!
+                 *
+                 * @param   totalGeom    DOCUMENT ME!
+                 * @param   useAreas     DOCUMENT ME!
+                 * @param   areaFeature  DOCUMENT ME!
+                 * @param   areaService  DOCUMENT ME!
+                 *
+                 * @return  DOCUMENT ME!
+                 *
+                 * @throws  Exception  DOCUMENT ME!
+                 */
+                private H2FeatureService createStreifen(final Geometry totalGeom,
+                        final boolean useAreas,
+                        final List<FeatureServiceFeature> areaFeature,
+                        final AbstractFeatureService areaService) throws Exception {
+                    Geometry oldRs = totalGeom;
+                    H2FeatureService targetlayer = null;
+                    final Timestamp time = new Timestamp(new Date().getTime());
+                    final String user = SessionManager.getSession().getUser().getName();
+                    String attr1String = null;
+                    String attr2String = null;
+                    final Double[] streifen = getStreifen();
+                    int index = 0;
+
+                    if (useAreas && ckbPerArea.isSelected()) {
+                        wd.setMax(streifen.length);
+                        for (final Double rs : streifen) {
+                            wd.setText("Erstelle (Randstreifen) " + (++index) + " / " + streifen.length);
+                            wd.setProgress(index - 1);
+                            final Geometry currentRs = buffer(totalGeom, rs);
+                            if (canceled) {
+                                return null;
+                            }
+                            final Geometry rsWithOutMiddle = currentRs.difference(oldRs);
+                            oldRs = currentRs;
+
+                            for (final FeatureServiceFeature area : areaFeature) {
+                                if (canceled) {
+                                    return null;
+                                }
+                                final Geometry rsForArea = rsWithOutMiddle.intersection(area.getGeometry());
+                                rsForArea.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
+
+                                for (int geomNumber = 0; geomNumber < rsForArea.getNumGeometries(); ++geomNumber) {
+                                    if (canceled) {
+                                        return null;
+                                    }
+                                    final Geometry g = rsForArea.getGeometryN(geomNumber);
+                                    if (!(g instanceof Polygon)) {
+                                        continue;
+                                    }
+
+                                    if (targetlayer == null) {
+                                        // create new layer
+                                        attr1String = (String)cbbAttr1.getSelectedItem();
+                                        attr2String = (String)cbbAttr2.getSelectedItem();
+                                        final Map<String, FeatureServiceAttribute> attrMap =
+                                            areaService.getLayerProperties()
+                                                    .getFeatureService()
+                                                    .getFeatureServiceAttributes();
+                                        final FeatureServiceAttribute attr1 = attrMap.get(attr1String);
+                                        final FeatureServiceAttribute attr2 = attrMap.get(attr2String);
+                                        final List<FeatureServiceAttribute> serviceAttributes =
+                                            new ArrayList<FeatureServiceAttribute>();
+                                        FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
+                                                "id",
+                                                String.valueOf(Types.INTEGER),
+                                                true);
+                                        serviceAttributes.add(serviceAttribute);
+                                        serviceAttribute = new FeatureServiceAttribute(
+                                                "geom",
+                                                String.valueOf(Types.GEOMETRY),
+                                                true);
+                                        serviceAttributes.add(serviceAttribute);
+                                        serviceAttribute = new FeatureServiceAttribute(attr1.getName(),
+                                                attr1.getType(),
+                                                true);
+                                        serviceAttributes.add(serviceAttribute);
+                                        serviceAttribute = new FeatureServiceAttribute(attr2.getName(),
+                                                attr2.getType(),
+                                                true);
+                                        serviceAttributes.add(serviceAttribute);
+                                        serviceAttribute = new FeatureServiceAttribute(
+                                                "br_rs",
+                                                String.valueOf(Types.DOUBLE),
+                                                true);
+                                        serviceAttributes.add(serviceAttribute);
+                                        serviceAttribute = new FeatureServiceAttribute(
+                                                "fl_rs",
+                                                String.valueOf(Types.DOUBLE),
+                                                true);
+                                        serviceAttributes.add(serviceAttribute);
+                                        serviceAttribute = new FeatureServiceAttribute(
+                                                "fis_g_date",
+                                                String.valueOf(Types.TIMESTAMP),
+                                                true);
+                                        serviceAttributes.add(serviceAttribute);
+                                        serviceAttribute = new FeatureServiceAttribute(
+                                                "fis_g_user",
+                                                String.valueOf(Types.VARCHAR),
+                                                true);
+                                        serviceAttributes.add(serviceAttribute);
+
+                                        final ArrayList<ArrayList> properties = new ArrayList<ArrayList>();
+                                        final ArrayList propList = new ArrayList();
+                                        propList.add(1);
+                                        propList.add(g);
+                                        propList.add(area.getProperty(attr1String));
+                                        propList.add(area.getProperty(attr2String));
+                                        propList.add(rs);
+                                        propList.add(round(g.getArea()));
+                                        propList.add(time);
+                                        propList.add(user);
+                                        properties.add(propList);
+
+                                        targetlayer = FeatureServiceHelper.createNewService(
+                                                properties,
+                                                txtFile.getText(),
+                                                serviceAttributes);
+                                    } else {
+                                        final JDBCFeature f = (JDBCFeature)targetlayer.getFeatureFactory()
+                                                    .createNewFeature();
+                                        f.setProperty("br_rs", rs);
+                                        f.setProperty("geom", g);
+                                        f.setProperty("fis_g_date", time);
+                                        f.setProperty("fis_g_user", user);
+                                        f.setGeometry(g);
+                                        f.setProperty(attr1String, area.getProperty(attr1String));
+                                        f.setProperty(attr2String, area.getProperty(attr2String));
+                                        f.setProperty("fl_rs", round(g.getArea()));
+                                        f.saveChangesWithoutReload();
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // keine Flächen oder Randstreifen pro Fläche deaktiviert
+                        Geometry areaPolygon = null;
+                        if (useAreas) {
+                            areaPolygon = GeometryUtils.unionFeatureGeometries(areaFeature);
+                        }
+                        if (canceled) {
+                            return null;
+                        }
+
+                        for (final Double rs : getStreifen()) {
+                            if (canceled) {
+                                return null;
+                            }
+                            final Geometry currentRs = buffer(totalGeom, rs);
+                            Geometry rsWithOutMiddle = currentRs.difference(oldRs);
+                            oldRs = currentRs;
+                            if (canceled) {
+                                return null;
+                            }
+                            if (useAreas) {
+                                rsWithOutMiddle = rsWithOutMiddle.intersection(areaPolygon);
+                            }
+                            rsWithOutMiddle.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
+
+                            for (int geomNumber = 0; geomNumber < rsWithOutMiddle.getNumGeometries(); ++geomNumber) {
+                                if (canceled) {
+                                    return null;
+                                }
+                                final Geometry g = rsWithOutMiddle.getGeometryN(geomNumber);
+                                if (!(g instanceof Polygon)) {
+                                    continue;
+                                }
+
+                                if (targetlayer == null) {
+                                    // create new layer
+                                    final List<FeatureServiceAttribute> serviceAttributes =
+                                        new ArrayList<FeatureServiceAttribute>();
+                                    FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
+                                            "id",
+                                            String.valueOf(Types.INTEGER),
+                                            true);
+                                    serviceAttributes.add(serviceAttribute);
+                                    serviceAttribute = new FeatureServiceAttribute(
+                                            "geom",
+                                            String.valueOf(Types.GEOMETRY),
+                                            true);
+                                    serviceAttributes.add(serviceAttribute);
+                                    serviceAttribute = new FeatureServiceAttribute(
+                                            "br_rs",
+                                            String.valueOf(Types.DOUBLE),
+                                            true);
+                                    serviceAttributes.add(serviceAttribute);
+                                    serviceAttribute = new FeatureServiceAttribute(
+                                            "fis_g_date",
+                                            String.valueOf(Types.TIMESTAMP),
+                                            true);
+                                    serviceAttributes.add(serviceAttribute);
+                                    serviceAttribute = new FeatureServiceAttribute(
+                                            "fis_g_user",
+                                            String.valueOf(Types.VARCHAR),
+                                            true);
+                                    serviceAttributes.add(serviceAttribute);
+
+                                    final ArrayList<ArrayList> properties = new ArrayList<ArrayList>();
+                                    final ArrayList propList = new ArrayList();
+                                    propList.add(1);
+                                    propList.add(g);
+                                    propList.add(rs);
+                                    propList.add(time);
+                                    propList.add(user);
+                                    properties.add(propList);
+
+                                    targetlayer = FeatureServiceHelper.createNewService(
+                                            properties,
+                                            txtFile.getText(),
+                                            serviceAttributes);
+                                } else {
+                                    final JDBCFeature f = (JDBCFeature)targetlayer.getFeatureFactory()
+                                                .createNewFeature();
+                                    f.setProperty("br_rs", rs);
+                                    f.setProperty("geom", g);
+                                    f.setProperty("fis_g_date", time);
+                                    f.setProperty("fis_g_user", user);
+                                    f.setGeometry(g);
+                                    f.saveChangesWithoutReload();
+                                }
+                            }
+                        }
+                    }
+
+                    return targetlayer;
                 }
 
                 @Override
                 protected void done() {
                     try {
-                        get();
+                        final H2FeatureService service = get();
+
+                        if (service != null) {
+                            CismapBroker.getInstance().getMappingComponent().getMappingModel().addLayer(service);
+                        }
                     } catch (Exception e) {
                         LOG.error("Error during the theme creation", e);
                     }
@@ -1490,184 +2057,16 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
     /**
      * DOCUMENT ME!
      *
-     * @param   totalGeom    DOCUMENT ME!
-     * @param   useAreas     DOCUMENT ME!
-     * @param   areaFeature  DOCUMENT ME!
-     * @param   areaService  DOCUMENT ME!
+     * @param   value  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
-     *
-     * @throws  Exception  DOCUMENT ME!
      */
-    private H2FeatureService createStreifen(final Geometry totalGeom,
-            final boolean useAreas,
-            final List<FeatureServiceFeature> areaFeature,
-            final AbstractFeatureService areaService) throws Exception {
-        Geometry oldRs = totalGeom;
-        H2FeatureService targetlayer = null;
-        final Timestamp time = new Timestamp(new Date().getTime());
-        final String user = SessionManager.getSession().getUser().getName();
-        String attr1String = null;
-        String attr2String = null;
-
-        if (useAreas && ckbPerArea.isSelected()) {
-            for (final Double rs : getStreifen()) {
-                final Geometry currentRs = buffer(totalGeom, rs);
-                final Geometry rsWithOutMiddle = currentRs.difference(oldRs);
-                oldRs = currentRs;
-
-                for (final FeatureServiceFeature area : areaFeature) {
-                    final Geometry rsForArea = rsWithOutMiddle.intersection(area.getGeometry());
-                    rsForArea.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
-
-                    for (int geomNumber = 0; geomNumber < rsForArea.getNumGeometries(); ++geomNumber) {
-                        final Geometry g = rsForArea.getGeometryN(geomNumber);
-
-                        if (targetlayer == null) {
-                            // create new layer
-                            attr1String = (String)cbbAttr1.getSelectedItem();
-                            attr2String = (String)cbbAttr2.getSelectedItem();
-                            final Map<String, FeatureServiceAttribute> attrMap = areaService.getLayerProperties()
-                                        .getFeatureService()
-                                        .getFeatureServiceAttributes();
-                            final FeatureServiceAttribute attr1 = attrMap.get(attr1String);
-                            final FeatureServiceAttribute attr2 = attrMap.get(attr2String);
-                            final List<FeatureServiceAttribute> serviceAttributes =
-                                new ArrayList<FeatureServiceAttribute>();
-                            FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
-                                    "id",
-                                    String.valueOf(Types.INTEGER),
-                                    true);
-                            serviceAttributes.add(serviceAttribute);
-                            serviceAttribute = new FeatureServiceAttribute(
-                                    "geom",
-                                    String.valueOf(Types.GEOMETRY),
-                                    true);
-                            serviceAttributes.add(serviceAttribute);
-                            serviceAttribute = new FeatureServiceAttribute(attr1.getName(), attr1.getType(), true);
-                            serviceAttributes.add(serviceAttribute);
-                            serviceAttribute = new FeatureServiceAttribute(attr2.getName(), attr2.getType(), true);
-                            serviceAttributes.add(serviceAttribute);
-                            serviceAttribute = new FeatureServiceAttribute("br_rs", String.valueOf(Types.DOUBLE), true);
-                            serviceAttributes.add(serviceAttribute);
-                            serviceAttribute = new FeatureServiceAttribute("fl_rs", String.valueOf(Types.DOUBLE), true);
-                            serviceAttributes.add(serviceAttribute);
-                            serviceAttribute = new FeatureServiceAttribute(
-                                    "fis_g_date",
-                                    String.valueOf(Types.TIMESTAMP),
-                                    true);
-                            serviceAttributes.add(serviceAttribute);
-                            serviceAttribute = new FeatureServiceAttribute(
-                                    "fis_g_user",
-                                    String.valueOf(Types.VARCHAR),
-                                    true);
-                            serviceAttributes.add(serviceAttribute);
-
-                            final ArrayList<ArrayList> properties = new ArrayList<ArrayList>();
-                            final ArrayList propList = new ArrayList();
-                            propList.add(1);
-                            propList.add(g);
-                            propList.add(area.getProperty(attr1String));
-                            propList.add(area.getProperty(attr2String));
-                            propList.add(rs);
-                            propList.add(g.getArea());
-                            propList.add(time);
-                            propList.add(user);
-                            properties.add(propList);
-
-                            targetlayer = FeatureServiceHelper.createNewService(
-                                    properties,
-                                    txtFile.getText(),
-                                    serviceAttributes);
-                        } else {
-                            final JDBCFeature f = (JDBCFeature)targetlayer.getFeatureFactory().createNewFeature();
-                            f.setProperty("br_rs", rs);
-                            f.setProperty("geom", g);
-                            f.setProperty("fis_g_date", time);
-                            f.setProperty("fis_g_user", user);
-                            f.setGeometry(g);
-                            f.setProperty(attr1String, area.getProperty(attr1String));
-                            f.setProperty(attr2String, area.getProperty(attr2String));
-                            f.setProperty("fl_rs", g.getArea());
-                            f.saveChangesWithoutReload();
-                        }
-                    }
-                }
-            }
+    private Double round(final Double value) {
+        if (value == null) {
+            return null;
         } else {
-            // keine Flächen oder Randstreifen pro Fläche deaktiviert
-            Geometry areaPolygon = null;
-            if (useAreas) {
-                areaPolygon = GeometryUtils.unionFeatureGeometries(areaFeature);
-            }
-
-            for (final Double rs : getStreifen()) {
-                System.out.println("rs: " + rs + " ram: " + Runtime.getRuntime().freeMemory() + " / "
-                            + Runtime.getRuntime().maxMemory());
-                final Geometry currentRs = buffer(totalGeom, rs);
-                System.out.println("Puffer fertig rs: " + rs + " ram: " + Runtime.getRuntime().freeMemory() + " / "
-                            + Runtime.getRuntime().maxMemory());
-                Geometry rsWithOutMiddle = currentRs.difference(oldRs);
-                oldRs = currentRs;
-                if (useAreas) {
-                    rsWithOutMiddle = rsWithOutMiddle.intersection(areaPolygon);
-                }
-                rsWithOutMiddle.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
-
-                for (int geomNumber = 0; geomNumber < rsWithOutMiddle.getNumGeometries(); ++geomNumber) {
-                    final Geometry g = rsWithOutMiddle.getGeometryN(geomNumber);
-
-                    if (targetlayer == null) {
-                        // create new layer
-                        final List<FeatureServiceAttribute> serviceAttributes =
-                            new ArrayList<FeatureServiceAttribute>();
-                        FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
-                                "id",
-                                String.valueOf(Types.INTEGER),
-                                true);
-                        serviceAttributes.add(serviceAttribute);
-                        serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
-                        serviceAttributes.add(serviceAttribute);
-                        serviceAttribute = new FeatureServiceAttribute("br_rs", String.valueOf(Types.DOUBLE), true);
-                        serviceAttributes.add(serviceAttribute);
-                        serviceAttribute = new FeatureServiceAttribute(
-                                "fis_g_date",
-                                String.valueOf(Types.TIMESTAMP),
-                                true);
-                        serviceAttributes.add(serviceAttribute);
-                        serviceAttribute = new FeatureServiceAttribute(
-                                "fis_g_user",
-                                String.valueOf(Types.VARCHAR),
-                                true);
-                        serviceAttributes.add(serviceAttribute);
-
-                        final ArrayList<ArrayList> properties = new ArrayList<ArrayList>();
-                        final ArrayList propList = new ArrayList();
-                        propList.add(1);
-                        propList.add(g);
-                        propList.add(rs);
-                        propList.add(time);
-                        propList.add(user);
-                        properties.add(propList);
-
-                        targetlayer = FeatureServiceHelper.createNewService(
-                                properties,
-                                txtFile.getText(),
-                                serviceAttributes);
-                    } else {
-                        final JDBCFeature f = (JDBCFeature)targetlayer.getFeatureFactory().createNewFeature();
-                        f.setProperty("br_rs", rs);
-                        f.setProperty("geom", g);
-                        f.setProperty("fis_g_date", time);
-                        f.setProperty("fis_g_user", user);
-                        f.setGeometry(g);
-                        f.saveChangesWithoutReload();
-                    }
-                }
-            }
+            return Math.round(value * 100) / 100.0;
         }
-
-        return targetlayer;
     }
 
     /**
@@ -1736,8 +2135,6 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
         if (cbbFlaeche.getSelectedItem() instanceof AbstractFeatureService) {
             set.addAll(FeatureServiceHelper.getSelectedFeatures((AbstractFeatureService)cbbFlaeche.getSelectedItem()));
-        } else {
-            return -1;
         }
 
         final int count = set.size();
@@ -1801,8 +2198,12 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
         if (service != null) {
             final List<String> fields = FeatureServiceHelper.getAllFieldNames(service, null);
+            final Object oldValue = cbbAttr1.getSelectedItem();
+            final Object oldValue2 = cbbAttr2.getSelectedItem();
             cbbAttr1.setModel(new DefaultComboBoxModel(fields.toArray(new String[fields.size()])));
             cbbAttr2.setModel(new DefaultComboBoxModel(fields.toArray(new String[fields.size()])));
+            cbbAttr1.setSelectedItem(oldValue);
+            cbbAttr2.setSelectedItem(oldValue2);
         } else {
             cbbAttr1.setModel(new DefaultComboBoxModel());
             cbbAttr2.setModel(new DefaultComboBoxModel());
@@ -2002,7 +2403,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             try {
                 final double d = Double.parseDouble(text);
 
-                if ((d > 0) && (d < 100000)) {
+                if ((d > 0) && (d < 1000)) {
                     if (!text.contains(".") || ((text.indexOf(".") + 3) >= text.length())) {
                         valid = true;
                     }
@@ -2035,7 +2436,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             try {
                 final double d = Double.parseDouble(text);
 
-                if ((d > 0) && (d < 100000)) {
+                if ((d > 0) && (d < 1000)) {
                     if (!text.contains(".") || ((text.indexOf(".") + 3) >= text.length())) {
                         valid = true;
                     }

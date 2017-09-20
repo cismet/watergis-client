@@ -37,16 +37,10 @@
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
 	</variable>
-	<background>
-		<band/>
-	</background>
-	<pageHeader>
-		<band/>
-	</pageHeader>
 	<columnHeader>
-		<band height="42">
+		<band height="28">
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="0" y="14" width="47" height="28" backcolor="#DADADA" uuid="22d080c3-69cf-48d5-af4d-4bc4bcdccf43"/>
+				<reportElement style="column_header_style" mode="Opaque" x="0" y="14" width="47" height="14" backcolor="#DADADA" uuid="22d080c3-69cf-48d5-af4d-4bc4bcdccf43"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement verticalAlignment="Top">
 					<font fontName="Arial" size="8" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -54,7 +48,7 @@
 				<text><![CDATA[von]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="47" y="14" width="47" height="28" backcolor="#DADADA" uuid="b53dc880-2206-42a9-8e7e-19def3a4678c"/>
+				<reportElement style="column_header_style" mode="Opaque" x="47" y="14" width="47" height="14" backcolor="#DADADA" uuid="b53dc880-2206-42a9-8e7e-19def3a4678c"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement verticalAlignment="Top">
 					<font fontName="Arial" size="8" isBold="false" isPdfEmbedded="true"/>
@@ -62,22 +56,20 @@
 				<text><![CDATA[bis]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="158" y="14" width="223" height="28" backcolor="#DADADA" uuid="95c09c04-6b66-42f2-ae7f-879871eb2328"/>
+				<reportElement style="column_header_style" mode="Opaque" x="158" y="14" width="223" height="14" backcolor="#DADADA" uuid="95c09c04-6b66-42f2-ae7f-879871eb2328"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement verticalAlignment="Top">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Name
-rechts]]></text>
+				<text><![CDATA[Name rechts]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="94" y="14" width="64" height="28" backcolor="#DADADA" uuid="0f6add6a-a606-43b7-bf73-f53074601220"/>
+				<reportElement style="column_header_style" mode="Opaque" x="94" y="14" width="64" height="14" backcolor="#DADADA" uuid="0f6add6a-a606-43b7-bf73-f53074601220"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement verticalAlignment="Top" markup="html">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Nummer
-rechts]]></text>
+				<text><![CDATA[Nummer rechts]]></text>
 			</staticText>
 			<textField>
 				<reportElement style="column_header_style" mode="Opaque" x="94" y="0" width="668" height="14" backcolor="#FDFD00" uuid="64c87194-d531-463b-9e7a-0122fa0241e5"/>
@@ -108,7 +100,7 @@ rechts]]></text>
 				<textFieldExpression><![CDATA["Verwaltung"]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="715" y="14" width="47" height="28" backcolor="#DADADA" uuid="7b85d46d-dc99-408e-b47b-f5a906a35406"/>
+				<reportElement style="column_header_style" mode="Opaque" x="715" y="14" width="47" height="14" backcolor="#DADADA" uuid="7b85d46d-dc99-408e-b47b-f5a906a35406"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement verticalAlignment="Top">
 					<font fontName="Arial" size="8" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -116,7 +108,7 @@ rechts]]></text>
 				<text><![CDATA[Länge]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="668" y="14" width="47" height="28" backcolor="#DADADA" uuid="38a05aec-cbbb-4b6a-b62a-db6fe2df8f4f"/>
+				<reportElement style="column_header_style" mode="Opaque" x="668" y="14" width="47" height="14" backcolor="#DADADA" uuid="38a05aec-cbbb-4b6a-b62a-db6fe2df8f4f"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement verticalAlignment="Top">
 					<font fontName="Arial" size="8" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -124,22 +116,20 @@ rechts]]></text>
 				<text><![CDATA[re <> li]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="381" y="14" width="64" height="28" backcolor="#DADADA" uuid="792cde99-0f23-4c94-8ea2-405b542643b2"/>
+				<reportElement style="column_header_style" mode="Opaque" x="381" y="14" width="64" height="14" backcolor="#DADADA" uuid="792cde99-0f23-4c94-8ea2-405b542643b2"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement verticalAlignment="Top" markup="html">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Nummer
-links]]></text>
+				<text><![CDATA[Nummer links]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="445" y="14" width="223" height="28" backcolor="#DADADA" uuid="aad03196-eeff-492f-b9ca-0d597b8f6c62"/>
+				<reportElement style="column_header_style" mode="Opaque" x="445" y="14" width="223" height="14" backcolor="#DADADA" uuid="aad03196-eeff-492f-b9ca-0d597b8f6c62"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement verticalAlignment="Top">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Name
-links]]></text>
+				<text><![CDATA[Name links]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -148,7 +138,7 @@ links]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="0" y="0" width="47" height="14" isPrintWhenDetailOverflows="true" uuid="94dd8453-052e-407d-92b0-a624d609e8ab"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{von}]]></textFieldExpression>
@@ -164,7 +154,7 @@ links]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="0" width="47" height="14" isPrintWhenDetailOverflows="true" uuid="43ea5d45-8b7d-48d1-a836-6da2e1a61d27"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{bis}]]></textFieldExpression>
@@ -180,7 +170,7 @@ links]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="715" y="0" width="47" height="14" isPrintWhenDetailOverflows="true" uuid="991179a6-52f1-48a8-b1d6-584d3c332b05"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{laenge}]]></textFieldExpression>
@@ -211,7 +201,4 @@ links]]></text>
 			</textField>
 		</band>
 	</detail>
-	<columnFooter>
-		<band/>
-	</columnFooter>
 </jasperReport>

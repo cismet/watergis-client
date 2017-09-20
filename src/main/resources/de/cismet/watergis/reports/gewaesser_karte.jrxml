@@ -36,8 +36,11 @@
 	</background>
 	<title>
 		<band height="400">
+			<rectangle>
+				<reportElement mode="Opaque" x="0" y="0" width="762" height="400" uuid="acc3b697-c128-4c43-8f38-8d24541346cb"/>
+			</rectangle>
 			<image>
-				<reportElement x="0" y="0" width="762" height="400" uuid="e1bb1a6d-5b64-45d9-a0f7-bed0dddd58a4"/>
+				<reportElement x="1" y="1" width="760" height="398" uuid="e1bb1a6d-5b64-45d9-a0f7-bed0dddd58a4"/>
 				<imageExpression><![CDATA[$P{map}]]></imageExpression>
 			</image>
 		</band>

@@ -33,12 +33,6 @@
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
 	</variable>
-	<background>
-		<band/>
-	</background>
-	<pageHeader>
-		<band/>
-	</pageHeader>
 	<columnHeader>
 		<band height="28">
 			<staticText>
@@ -94,7 +88,7 @@
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="0" y="0" width="47" height="14" isPrintWhenDetailOverflows="true" uuid="94dd8453-052e-407d-92b0-a624d609e8ab"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{station}]]></textFieldExpression>
@@ -125,7 +119,4 @@
 			</textField>
 		</band>
 	</detail>
-	<columnFooter>
-		<band/>
-	</columnFooter>
 </jasperReport>
