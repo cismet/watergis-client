@@ -16,6 +16,15 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.linearref.LengthLocationMap;
+import com.vividsolutions.jts.linearref.LinearLocation;
+import com.vividsolutions.jts.linearref.LocationIndexedLine;
+import com.vividsolutions.jts.operation.buffer.BufferOp;
+import com.vividsolutions.jts.operation.buffer.BufferParameters;
+
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
@@ -43,6 +52,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -165,6 +175,9 @@ public class GewaesserReport {
     private static final MetaClass FOTO = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.foto");
+    private static final MetaClass K_GU = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.k_gu");
     private static ImageIcon annotationIco = new javax.swing.ImageIcon(GewaesserReport.class.getResource(
                 "/de/cismet/watergis/reports/Station.png")); // NOI18N
     private static final DecimalFormat formatter = new DecimalFormat();
@@ -197,13 +210,21 @@ public class GewaesserReport {
         parameters.put("wbblPath", "http://fry.fis-wasser-mv.de/watergis/wr_wbu_wbbl_o/");
 
         parameters.put("karte", GewaesserReportDialog.getInstance().isKarte());
+        final CidsLayer cl = createCidsLayer(FG_BA);
+        final String query = cl.decoratePropertyName("ba_cd") + " = '" + baCd + "'";
+        final List<CidsLayerFeature> featureList = cl.getFeatureFactory().createFeatures(query, null, null, 0, 0, null);
+
+        CidsLayerFeature baFeature = null;
+        if ((featureList != null) && (featureList.size() == 1)) {
+            baFeature = featureList.get(0);
+        }
 
         if (GewaesserReportDialog.getInstance().isGwk()) {
-            dataSources.put("gwk", getLawaGwk(baCd));
+            dataSources.put("gwk", getLawaGwk(baCd, baFeature));
             parameters.put("gwk", true);
         }
         if (GewaesserReportDialog.getInstance().isGbk()) {
-            dataSources.put("gbk", getLawaGbk(baCd));
+            dataSources.put("gbk", getLawaGbk(baCd, baFeature));
             parameters.put("gbk", true);
         }
         if (GewaesserReportDialog.getInstance().isBen()) {
@@ -291,7 +312,7 @@ public class GewaesserReport {
             parameters.put("verk", true);
         }
         if (GewaesserReportDialog.getInstance().isTopo()) {
-            dataSources.put("topo", getTopo(baCd));
+            dataSources.put("topo", getTopo(baCd, baFeature));
             parameters.put("topo", true);
         }
         if (GewaesserReportDialog.getInstance().isWsg()) {
@@ -323,10 +344,6 @@ public class GewaesserReport {
             parameters.put("tech", true);
         }
 
-        final CidsLayer cl = createCidsLayer(FG_BA);
-        final String query = cl.decoratePropertyName("ba_cd") + " = '" + baCd + "'";
-        final List<CidsLayerFeature> featureList = cl.getFeatureFactory().createFeatures(query, null, null, 0, 0, null);
-
         if ((featureList != null) && (featureList.size() == 1)) {
             final CidsLayerFeature feature = featureList.get(0);
             if (!GewaesserReportDialog.getInstance().isKarte()) {
@@ -334,7 +351,8 @@ public class GewaesserReport {
             } else {
                 parameters.put("map", generateMap(feature));
             }
-            parameters.put("quelle", feature.getGeometry().getLength());
+            parameters.put("quelle", convertStation(feature.getGeometry().getLength()));
+            parameters.put("muendung", convertStation(0.0));
             parameters.put("senke", 0);
             dataSources.put("dummy", getSteckbrief(feature));
             final JRDataSource dataSource = getSteckbrief(feature);
@@ -378,10 +396,18 @@ public class GewaesserReport {
         parameters.put("wbblPath", "http://fry.fis-wasser-mv.de/watergis/wr_wbu_wbbl_o/");
 
         parameters.put("karte", true);
+        final CidsLayer cl = createCidsLayer(FG_BA);
+        final String query = cl.decoratePropertyName("ba_cd") + " = '" + baCd + "'";
+        final List<CidsLayerFeature> featureList = cl.getFeatureFactory().createFeatures(query, null, null, 0, 0, null);
 
-        dataSources.put("gwk", getLawaGwk(baCd));
+        CidsLayerFeature baFeature = null;
+        if ((featureList != null) && (featureList.size() == 1)) {
+            baFeature = featureList.get(0);
+        }
+
+        dataSources.put("gwk", getLawaGwk(baCd, baFeature));
         parameters.put("gwk", true);
-        dataSources.put("gbk", getLawaGbk(baCd));
+        dataSources.put("gbk", getLawaGbk(baCd, baFeature));
         parameters.put("gbk", true);
         dataSources.put("wr_ben", getWasserrechtBenutzung(baCd));
         parameters.put("ben", true);
@@ -425,7 +451,7 @@ public class GewaesserReport {
         parameters.put("ea", true);
         dataSources.put("verkn", getVerkn(baCd));
         parameters.put("verk", true);
-        dataSources.put("topo", getTopo(baCd));
+        dataSources.put("topo", getTopo(baCd, baFeature));
         parameters.put("topo", true);
         dataSources.put("schutz", getSchutz(baCd));
         parameters.put("wsg", true);
@@ -441,10 +467,6 @@ public class GewaesserReport {
         parameters.put("leis", true);
         dataSources.put("tech", getTech(baCd));
         parameters.put("tech", true);
-
-        final CidsLayer cl = createCidsLayer(FG_BA);
-        final String query = cl.decoratePropertyName("ba_cd") + " = '" + baCd + "'";
-        final List<CidsLayerFeature> featureList = cl.getFeatureFactory().createFeatures(query, null, null, 0, 0, null);
 
         if ((featureList != null) && (featureList.size() == 1)) {
             final CidsLayerFeature feature = featureList.get(0);
@@ -514,8 +536,9 @@ public class GewaesserReport {
                         .createFeatures(null, mapProvider.getCurrentBoundingBoxFromMap(), null, 0, 0, null);
 
             final CidsLayer clStat = createCidsLayer(FG_BA_STAT);
+            final String query = "ba_cd = '" + feature.getProperty("ba_cd") + "'";
             final List<CidsLayerFeature> statList = clStat.getFeatureFactory()
-                        .createFeatures(null, mapProvider.getCurrentBoundingBoxFromMap(), null, 0, 0, null);
+                        .createFeatures(query, mapProvider.getCurrentBoundingBoxFromMap(), null, 0, 0, null);
 
             for (final CidsLayerFeature fgBa : featureList) {
                 if (fgBa.getId() == feature.getId()) {
@@ -550,12 +573,12 @@ public class GewaesserReport {
                 feat.setPrimaryAnnotationPaint(Color.BLACK);
 //                feat.setPrimaryAnnotationHalo(Color.WHITE);
                 feat.setPrimaryAnnotationJustification(JLabel.CENTER_ALIGNMENT);
-                feat.setPrimaryAnnotationFont(new Font("sansserif", Font.PLAIN, 8));
+                feat.setPrimaryAnnotationFont(new Font("sansserif", Font.PLAIN, 10));
                 feat.setAutoScale(true);
                 mapProvider.addFeature(feat);
             }
 
-            return mapProvider.getImageAndWait(72, 130, 762, 400);
+            return mapProvider.getImageAndWait(72, 200, 760, 398);
         } catch (Exception e) {
             LOG.error("Error while retrievin gmap.", e);
             return null;
@@ -565,13 +588,81 @@ public class GewaesserReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   baCd  DOCUMENT ME!
+     * @param   geom     DOCUMENT ME!
+     * @param   feature  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Double calculateFromRelatedToFeatureGeom(final Geometry geom, final CidsLayerFeature feature) {
+        final Geometry baGeom = feature.getGeometry();
+        final Coordinate firstCoord = geom.getCoordinates()[0];
+        final Coordinate firstBaCoord = baGeom.getCoordinates()[0];
+        final GeometryFactory f = baGeom.getFactory();
+        final Geometry firstPoint = f.createPoint(firstCoord);
+        final Geometry firstBaPoint = f.createPoint(firstBaCoord);
+        final Geometry intersection = geom.intersection(baGeom.buffer(0.05, 0, BufferParameters.CAP_FLAT));
+
+        if (intersection.isEmpty()) {
+            return null;
+        }
+
+        if (firstPoint.distance(baGeom) < 0.01) {
+            final LocationIndexedLine lineLIL = new LocationIndexedLine(baGeom);
+            final LengthLocationMap lineLLM = new LengthLocationMap(baGeom);
+            final LinearLocation pointLL = lineLIL.indexOf(firstCoord);
+            final double pointPosition = lineLLM.getLength(pointLL);
+
+            return pointPosition * baGeom.getLength();
+        } else {
+            return 0.0;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geom     DOCUMENT ME!
+     * @param   feature  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Double calculateTillRelatedToFeatureGeom(final Geometry geom, final CidsLayerFeature feature) {
+        final Geometry baGeom = feature.getGeometry();
+        final Coordinate lastCoord = geom.getCoordinates()[geom.getCoordinates().length - 1];
+        final Coordinate firstBaCoord = baGeom.getCoordinates()[0];
+        final Coordinate lastBaCoord = baGeom.getCoordinates()[baGeom.getCoordinates().length - 1];
+        final GeometryFactory f = baGeom.getFactory();
+        final Geometry lastPoint = f.createPoint(lastCoord);
+        final Geometry lastBaPoint = f.createPoint(lastBaCoord);
+        final Geometry firstBaPoint = f.createPoint(firstBaCoord);
+        final Geometry intersection = geom.intersection(baGeom.buffer(0.05, 0, BufferParameters.CAP_FLAT));
+        if (intersection.isEmpty()) {
+            return null;
+        }
+
+        if (lastPoint.distance(baGeom) < 0.01) {
+            final LocationIndexedLine lineLIL = new LocationIndexedLine(baGeom);
+            final LengthLocationMap lineLLM = new LengthLocationMap(baGeom);
+            final LinearLocation pointLL = lineLIL.indexOf(lastCoord);
+            final double pointPosition = lineLLM.getLength(pointLL);
+
+            return pointPosition * baGeom.getLength();
+        } else {
+            return baGeom.getLength();
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   baCd       DOCUMENT ME!
+     * @param   baFeature  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private JRDataSource getLawaGwk(final String baCd) throws Exception {
+    private JRDataSource getLawaGwk(final String baCd, final CidsLayerFeature baFeature) throws Exception {
         final CidsLayer cl = createCidsLayer(FG_LA);
         final String query = "la_cd in (\n"
                     + "select distinct k.la_cd\n"
@@ -591,13 +682,27 @@ public class GewaesserReport {
 
         for (final CidsLayerFeature cidsFeature : featureList) {
             final Map<String, String> feature = new HashMap<String, String>();
-            feature.put("von", convertStation((Double)cidsFeature.getProperty("la_st_von")));
-            feature.put("bis", convertStation((Double)cidsFeature.getProperty("la_st_bis")));
+//            feature.put("von", convertStation((Double)cidsFeature.getProperty("la_st_von")));
+//            feature.put("bis", convertStation((Double)cidsFeature.getProperty("la_st_bis")));
+            if (baFeature == null) {
+                // fg_ba object does not exist
+                break;
+            }
+            final Double from = calculateFromRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+            final Double till = calculateTillRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+
+            if ((from == null) || (till == null)) {
+                // the object is not within the fg_ba
+                continue;
+            }
+
+            feature.put("von", convertStation(from));
+            feature.put("bis", convertStation(till));
+            feature.put("laenge", toString(Math.abs(till - from)));
             feature.put("gwk", toString(cidsFeature.getProperty("la_cd")));
             feature.put("gwk_kurz", toString(cidsFeature.getProperty("la_cd_k")));
             feature.put("name", toString(cidsFeature.getProperty("la_gn")));
             feature.put("wrrl", toString(cidsFeature.getProperty("la_wrrl")));
-            feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
 
             features.add(feature);
         }
@@ -616,13 +721,25 @@ public class GewaesserReport {
      */
     private JRDataSource getSteckbrief(final CidsLayerFeature f) throws Exception {
         final List<Map<String, String>> features = new ArrayList<Map<String, String>>();
+        String unterhalter = "";
+
+        if (f.getBean().getProperty("ww_gr.praefixgroup") != null) {
+            final CidsLayer cl = createCidsLayer(K_GU);
+            final String query = "code = '" + f.getBean().getProperty("ww_gr.praefixgroup") + "'";
+            final List<CidsLayerFeature> featureList = cl.getFeatureFactory()
+                        .createFeatures(query, null, null, 0, 0, null);
+
+            if ((featureList != null) && (featureList.size() == 1)) {
+                unterhalter = (String)featureList.get(0).getProperty("name");
+            }
+        }
 
         final Map<String, String> feature = new HashMap<String, String>();
         feature.put("gewaessercode", toString(f.getProperty("ba_cd")));
-        feature.put("unterhalter", toString(f.getBean().getProperty("ww_gr.owner")));                           // todo
+        feature.put("unterhalter", unterhalter);
         feature.put("gewaessername", toString(f.getProperty("ba_gn")));
         feature.put("laenge", toString(f.getProperty("laenge")));
-        feature.put("ordnung", ((f.getProperty("wdm") != null) ? String.valueOf(f.getProperty("wdm")) : null)); // todo
+        feature.put("ordnung", ((f.getProperty("wdm") != null) ? String.valueOf(f.getProperty("wdm")) : null));
         feature.put("datum", toString(new Date()));
 
         features.add(feature);
@@ -633,13 +750,14 @@ public class GewaesserReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   baCd  DOCUMENT ME!
+     * @param   baCd       DOCUMENT ME!
+     * @param   baFeature  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private JRDataSource getLawaGbk(final String baCd) throws Exception {
+    private JRDataSource getLawaGbk(final String baCd, final CidsLayerFeature baFeature) throws Exception {
         final CidsLayer cl = createCidsLayer(FG_BAK_GBK);
         final String query = cl.decoratePropertyName("ba_cd") + " = '" + baCd + "'";
         final FeatureServiceAttribute fsa = cl.getFeatureServiceAttributes().get("bak_st_von");
@@ -651,14 +769,26 @@ public class GewaesserReport {
         for (final CidsLayerFeature cidsFeature : featureList) {
             final CidsBean bean = (CidsBean)cidsFeature.getBean().getProperty("gbk_lawa");
             final Map<String, String> feature = new HashMap<String, String>();
-            feature.put("von", convertStation((Double)cidsFeature.getProperty("bak_st_von")));
-            feature.put("bis", convertStation((Double)cidsFeature.getProperty("bak_st_bis")));
+//            feature.put("von", convertStation((Double)cidsFeature.getProperty("bak_st_von")));
+//            feature.put("bis", convertStation((Double)cidsFeature.getProperty("bak_st_bis")));
+            final Double from = calculateFromRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+            final Double till = calculateTillRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+
+            if ((from == null) || (till == null)) {
+                // the object is not within the fg_ba
+                continue;
+            }
+
+            feature.put("von", convertStation(from));
+            feature.put("bis", convertStation(till));
+            feature.put("laenge", toString(Math.abs(till - from)));
+
             feature.put("gbk", toString(bean.getProperty("gbk_lawa")));
             feature.put("gbk_kurz", toString(bean.getProperty("gbk_lawa_k")));
-            feature.put("name", toString(bean.getProperty("gwk_lawa")));
+            feature.put("name", toString(bean.getProperty("la_gn")));
             feature.put("gbk_von", toString(bean.getProperty("gbk_von")));
-            feature.put("gbk_bis", toString(bean.getProperty("gbk_von")));
-            feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
+            feature.put("gbk_bis", toString(bean.getProperty("gbk_bis")));
+//            feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
 
             features.add(feature);
         }
@@ -753,9 +883,12 @@ public class GewaesserReport {
             }
             final Map<String, String> feature = new HashMap<String, String>();
             feature.put("station", convertStation((Double)featurePops.get(0)));
-            feature.put("seite", toString(featurePops.get(3)));
             feature.put("einm", toString(featurePops.get(1)));
             feature.put("entsp", toString(featurePops.get(2)));
+            feature.put(
+                "seite",
+                ((featurePops.get(1) != null) ? flipSide(toString(featurePops.get(3)))
+                                              : toString(featurePops.get(3))));
 
             features.add(feature);
         }
@@ -766,13 +899,31 @@ public class GewaesserReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   baCd  DOCUMENT ME!
+     * @param   side  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String flipSide(final String side) {
+        if ((side != null) && side.equals("re")) {
+            return "li";
+        } else if ((side != null) && side.equals("li")) {
+            return "re";
+        }
+
+        return side;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   baCd       DOCUMENT ME!
+     * @param   baFeature  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private JRDataSource getTopo(final String baCd) throws Exception {
+    private JRDataSource getTopo(final String baCd, final CidsLayerFeature baFeature) throws Exception {
         final CidsLayer gn1 = createCidsLayer(FG_BAK_GN1);
         final String queryGn1 = gn1.decoratePropertyName("ba_cd") + " = '" + baCd + "'";
         final FeatureServiceAttribute fsaGn1 = gn1.getFeatureServiceAttributes().get("bak_st_von");
@@ -793,6 +944,65 @@ public class GewaesserReport {
         fsaGn3.setAscOrder(true);
         final List<CidsLayerFeature> featureListGn3 = gn3.getFeatureFactory()
                     .createFeatures(queryGn3, null, null, 0, 0, new FeatureServiceAttribute[] { fsaGn3 });
+
+        Iterator<CidsLayerFeature> featureIt;
+
+        if (featureListGn1 != null) {
+            featureIt = featureListGn1.iterator();
+
+            while (featureIt.hasNext()) {
+                final CidsLayerFeature cidsFeature = featureIt.next();
+                final Double from = calculateFromRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+                final Double till = calculateTillRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+
+                if ((from == null) || (till == null)) {
+                    // the object is not within the fg_ba
+                    featureIt.remove();
+                }
+
+                cidsFeature.setProperty("bak_st_von", convertStation(from));
+                cidsFeature.setProperty("bak_st_bis", convertStation(till));
+                cidsFeature.setProperty("laenge", toString(Math.abs(till - from)));
+            }
+        }
+
+        if (featureListGn1 != null) {
+            featureIt = featureListGn2.iterator();
+
+            while (featureIt.hasNext()) {
+                final CidsLayerFeature cidsFeature = featureIt.next();
+                final Double from = calculateFromRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+                final Double till = calculateTillRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+
+                if ((from == null) || (till == null)) {
+                    // the object is not within the fg_ba
+                    featureIt.remove();
+                }
+
+                cidsFeature.setProperty("bak_st_von", convertStation(from));
+                cidsFeature.setProperty("bak_st_bis", convertStation(till));
+                cidsFeature.setProperty("laenge", toString(Math.abs(till - from)));
+            }
+        }
+
+        if (featureListGn1 != null) {
+            featureIt = featureListGn3.iterator();
+
+            while (featureIt.hasNext()) {
+                final CidsLayerFeature cidsFeature = featureIt.next();
+                final Double from = calculateFromRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+                final Double till = calculateTillRelatedToFeatureGeom(cidsFeature.getGeometry(), baFeature);
+
+                if ((from == null) || (till == null)) {
+                    // the object is not within the fg_ba
+                    featureIt.remove();
+                }
+
+                cidsFeature.setProperty("bak_st_von", convertStation(from));
+                cidsFeature.setProperty("bak_st_bis", convertStation(till));
+                cidsFeature.setProperty("laenge", toString(Math.abs(till - from)));
+            }
+        }
 
         final topoFeatureCalc calc = new topoFeatureCalc();
         calc.addFeatures(featureListGn1, "gn1", "topGn1");
@@ -931,9 +1141,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("profil", toString(cidsFeature.getProperty("profil")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -981,9 +1191,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("sbef", toString(cidsFeature.getProperty("sbef")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -1027,9 +1237,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("bbef", toString(cidsFeature.getProperty("bbef")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -1071,9 +1281,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("ubef", toString(cidsFeature.getProperty("ubef")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -1114,16 +1324,22 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("profil", toString(cidsFeature.getProperty("profil")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
-            feature.put("br_dm_li", toString(cidsFeature.getProperty("br_dm_li")));
+            if (toString(cidsFeature.getProperty("profil")).equals("kr")
+                        || toString(cidsFeature.getProperty("profil")).equals("ei")) {
+                feature.put("br_dm_li", toString(cidsFeature.getProperty("br_dm_li"), false));
+                feature.put("ho_li", toString(cidsFeature.getProperty("ho_li"), false));
+            } else {
+                feature.put("br_dm_li", toString(cidsFeature.getProperty("br_dm_li")));
+                feature.put("ho_li", toString(cidsFeature.getProperty("ho_li")));
+            }
             feature.put("ho_e", toString(cidsFeature.getProperty("ho_e")));
             feature.put("ho_a", toString(cidsFeature.getProperty("ho_a")));
             feature.put("gefaelle", toString(cidsFeature.getProperty("gefaelle")));
-            feature.put("ho_li", toString(cidsFeature.getProperty("ho_li")));
             feature.put("br_tr_o_li", toString(cidsFeature.getProperty("br_tr_o_li")));
             feature.put("ho_d_e", toString(cidsFeature.getProperty("ho_d_e")));
             feature.put("ho_d_a", toString(cidsFeature.getProperty("ho_d_a")));
@@ -1163,16 +1379,22 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("profil", toString(cidsFeature.getProperty("profil")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
-            feature.put("br_dm_li", toString(cidsFeature.getProperty("br_dm_li")));
+            if (toString(cidsFeature.getProperty("profil")).equals("kr")
+                        || toString(cidsFeature.getProperty("profil")).equals("ei")) {
+                feature.put("br_dm_li", toString(cidsFeature.getProperty("br_dm_li"), false));
+                feature.put("ho_li", toString(cidsFeature.getProperty("ho_li"), false));
+            } else {
+                feature.put("br_dm_li", toString(cidsFeature.getProperty("br_dm_li")));
+                feature.put("ho_li", toString(cidsFeature.getProperty("ho_li")));
+            }
             feature.put("ho_e", toString(cidsFeature.getProperty("ho_e")));
             feature.put("ho_a", toString(cidsFeature.getProperty("ho_a")));
             feature.put("gefaelle", toString(cidsFeature.getProperty("gefaelle")));
-            feature.put("ho_li", toString(cidsFeature.getProperty("ho_li")));
             feature.put("br_tr_o_li", toString(cidsFeature.getProperty("br_tr_o_li")));
             feature.put("ho_d_e", toString(cidsFeature.getProperty("ho_d_e")));
             feature.put("ho_d_a", toString(cidsFeature.getProperty("ho_d_a")));
@@ -1212,16 +1434,22 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("profil", toString(cidsFeature.getProperty("profil")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
-            feature.put("br_dm_li", toString(cidsFeature.getProperty("br_dm_li")));
+            if (toString(cidsFeature.getProperty("profil")).equals("kr")
+                        || toString(cidsFeature.getProperty("profil")).equals("ei")) {
+                feature.put("br_dm_li", toString(cidsFeature.getProperty("br_dm_li"), false));
+                feature.put("ho_li", toString(cidsFeature.getProperty("ho_li"), false));
+            } else {
+                feature.put("br_dm_li", toString(cidsFeature.getProperty("br_dm_li")));
+                feature.put("ho_li", toString(cidsFeature.getProperty("ho_li")));
+            }
             feature.put("ho_e", toString(cidsFeature.getProperty("ho_e")));
             feature.put("ho_a", toString(cidsFeature.getProperty("ho_a")));
             feature.put("gefaelle", toString(cidsFeature.getProperty("gefaelle")));
-            feature.put("ho_li", toString(cidsFeature.getProperty("ho_li")));
             feature.put("br_tr_o_li", toString(cidsFeature.getProperty("br_tr_o_li")));
             feature.put("ho_d_e", toString(cidsFeature.getProperty("ho_d_e")));
             feature.put("ho_d_a", toString(cidsFeature.getProperty("ho_d_a")));
@@ -1262,9 +1490,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("scha", toString(cidsFeature.getProperty("scha")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("ho_so", toString(cidsFeature.getProperty("ho_so")));
@@ -1301,9 +1529,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("wehr", toString(cidsFeature.getProperty("wehr")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -1346,9 +1574,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("schw", toString(cidsFeature.getProperty("schw")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -1391,9 +1619,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("anlp", toString(cidsFeature.getProperty("anlp")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -1430,9 +1658,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("kr", toString(cidsFeature.getProperty("kr")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -1469,9 +1697,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("ea", toString(cidsFeature.getProperty("ea")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -1512,9 +1740,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("ughz", toString(cidsFeature.getProperty("ughz")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
@@ -1553,7 +1781,7 @@ public class GewaesserReport {
             feature.put("bis", convertStation((Double)cidsFeature.getProperty("ba_st_bis")));
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("leis", toString(cidsFeature.getProperty("leis")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
             feature.put("esw", toString(cidsFeature.getProperty("esw")));
@@ -1589,7 +1817,7 @@ public class GewaesserReport {
             feature.put("bis", convertStation((Double)cidsFeature.getProperty("ba_st_bis")));
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("tech", toString(cidsFeature.getProperty("tech")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("esw", toString(cidsFeature.getProperty("esw")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
@@ -1625,9 +1853,9 @@ public class GewaesserReport {
             feature.put("km_von", toString(cidsFeature.getProperty("km_von")));
             feature.put("km_bis", toString(cidsFeature.getProperty("km_bis")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
@@ -1687,8 +1915,12 @@ public class GewaesserReport {
             feature.put("titel", toString(cidsFeature.getProperty("titel")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
-            feature.put("datum", toString(cidsFeature.getProperty("datum")));
+            feature.put("datum", toString(cidsFeature.getProperty("aufn_datum")));
             feature.put("winkel", toString(cidsFeature.getProperty("winkel")));
+            feature.put("zeit", toString(cidsFeature.getProperty("aufn_zeit")));
+            feature.put("obj_nr", toString(cidsFeature.getProperty("foto_nr")));
+            feature.put("freigabe", toString(cidsFeature.getProperty("freigabe")));
+            feature.put("beschreibung", toString(cidsFeature.getProperty("beschreib")));
 
             features.add(feature);
         }
@@ -1721,9 +1953,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("anll", toString(cidsFeature.getProperty("anll")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("jahr")));
-            feature.put("zk", toString(cidsFeature.getProperty("zust_kl")));
-            feature.put("objnr", toString(cidsFeature.getProperty("objnr"), false));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
@@ -1759,9 +1991,9 @@ public class GewaesserReport {
             feature.put("station", convertStation((Double)cidsFeature.getProperty("ba_st")));
             feature.put(
                 "kurzbeschreibung",
-                toString(cidsFeature.getProperty("wbausbau1"))
-                        + " "
-                        + toString(cidsFeature.getProperty("wbausbau2")));
+                toStringWithoutNull(cidsFeature.getProperty("wbausbau1"))
+                        + ((cidsFeature.getProperty("wbausbau1") != null) ? " " : "")
+                        + toStringWithoutNull(cidsFeature.getProperty("wbausbau2")));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
 
             features.add(feature);
@@ -1824,15 +2056,30 @@ public class GewaesserReport {
             feature.put("station", convertStation((Double)cidsFeature.getProperty("ba_st")));
             feature.put(
                 "kurzbeschreibung",
-                toString(cidsFeature.getProperty("wbbenzw1"))
-                        + " "
-                        + toString(cidsFeature.getProperty("wbbenzw2")));
+                toStringWithoutNull(cidsFeature.getProperty("wbbenzw1"))
+                        + ((cidsFeature.getProperty("wbbenzw1") != null) ? " " : "")
+                        + toStringWithoutNull(cidsFeature.getProperty("wbbenzw2")));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
 
             features.add(feature);
         }
 
         return new FeatureDataSource(features);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   o  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String toStringWithoutNull(final Object o) {
+        if (o == null) {
+            return "";
+        } else {
+            return String.valueOf(o);
+        }
     }
 
     /**

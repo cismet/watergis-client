@@ -1041,7 +1041,6 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         getContentPane().add(ckbFoto, gridBagConstraints);
 
-        ckbLeis.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbLeis,
             org.openide.util.NbBundle.getMessage(
@@ -1059,7 +1058,6 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
         getContentPane().add(ckbLeis, gridBagConstraints);
 
-        ckbTech.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbTech,
             org.openide.util.NbBundle.getMessage(
