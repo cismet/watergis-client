@@ -506,8 +506,7 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                     final double bl = Math.sqrt(Math.pow(bv * bh, 2) + Math.pow(bh, 2));
 
                     feature.setProperty("bl_re", Math.round(bl * 100) / 100.0);
-                } else if ((toNumber(feature.getProperty("bv_re")).doubleValue() != 0.0)
-                            && (toNumber(feature.getProperty("bh_re")).doubleValue() != 0.0)) {
+                } else if ((toNumber(feature.getProperty("bv_re")).doubleValue() == 0.0)) {
                     feature.setProperty("bl_re", toNumber(feature.getProperty("bh_re")).doubleValue());
                 }
             }
@@ -523,8 +522,7 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                     final double bl = Math.sqrt(Math.pow(bv * bh, 2) + Math.pow(bh, 2));
 
                     feature.setProperty("bl_li", Math.round(bl * 100) / 100.0);
-                } else if ((toNumber(feature.getProperty("bv_li")).doubleValue() == 0.0)
-                            && (toNumber(feature.getProperty("bh_li")).doubleValue() == 0.0)) {
+                } else if ((toNumber(feature.getProperty("bv_li")).doubleValue() == 0.0)) {
                     feature.setProperty("bl_li", toNumber(feature.getProperty("bh_li")).doubleValue());
                 }
             }

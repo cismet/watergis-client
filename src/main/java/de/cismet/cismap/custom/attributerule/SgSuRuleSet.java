@@ -15,26 +15,34 @@ import Sirius.navigator.connection.SessionManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import org.apache.log4j.Logger;
+
 import org.deegree.datatypes.Types;
 
 import java.sql.Timestamp;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
+
+import de.cismet.cids.server.search.CidsServerSearch;
+
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-
-import de.cismet.watergis.broker.AppBroker;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 /**
  * DOCUMENT ME!
@@ -43,6 +51,10 @@ import de.cismet.watergis.broker.AppBroker;
  * @version  $Revision$, $Date$
  */
 public class SgSuRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(SgSuRuleSet.class);
 
     //~ Instance initializers --------------------------------------------------
 
@@ -94,6 +106,45 @@ public class SgSuRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
+        if (model instanceof SimpleAttributeTableModel) {
+            final List<FeatureServiceFeature> removedFeatures = ((SimpleAttributeTableModel)model).getRemovedFeature();
+
+            if ((removedFeatures != null) && !removedFeatures.isEmpty()) {
+                final List<Feature> selectedFeaturesToRemove = new ArrayList<Feature>();
+
+                for (final FeatureServiceFeature feature : removedFeatures) {
+                    try {
+                        final CidsServerSearch nodesSearch = new RemoveUnnusedRoute(feature.getId(),
+                                RemoveUnnusedRoute.SU);
+                        SessionManager.getProxy()
+                                .customServerSearch(SessionManager.getSession().getUser(), nodesSearch);
+                    } catch (Exception e) {
+                        LOG.error("Error while removing unused stations", e);
+                    }
+
+                    final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures();
+
+                    for (final Feature f : selectedFeatures) {
+                        if (f instanceof CidsLayerFeature) {
+                            final CidsLayerFeature clf = (CidsLayerFeature)f;
+
+                            if ((clf.getProperty("su_cd") != null) && (feature.getProperty("su_cd") != null)) {
+                                final String selectedFeatureBaCd = String.valueOf(clf.getProperty("su_cd"));
+                                final String deletedFeatureBaCd = String.valueOf(feature.getProperty("su_cd"));
+
+                                if (selectedFeatureBaCd.equals(deletedFeatureBaCd)) {
+                                    selectedFeaturesToRemove.add(f);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!selectedFeaturesToRemove.isEmpty()) {
+                    SelectionManager.getInstance().removeSelectedFeatures(selectedFeaturesToRemove);
+                }
+            }
+        }
     }
 
     @Override

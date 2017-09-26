@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import java.util.Collection;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -29,6 +30,9 @@ import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.PureNewFeature;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.piccolo.PFeature;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.actions.CustomAction;
+import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.cismap.custom.attributerule.MessageDialog;
 
@@ -89,6 +93,15 @@ public class FlipAction extends AbstractAction implements CleanUpAction {
             if (feature.getGeometry().getGeometryType().equals("LineString")) {
                 if (feature.isEditable()) {
                     feature.setGeometry(feature.getGeometry().reverse());
+                    final PFeature pf = map.getPFeatureHM().get(feature);
+
+                    if (pf != null) {
+                        pf.refresh();
+                    }
+                    CismapBroker.getInstance()
+                            .getMappingComponent()
+                            .getMemUndo()
+                            .addAction(new FeatureFlipAction(feature, map));
                     geometryChanged = true;
                 }
             } else {
@@ -96,22 +109,14 @@ public class FlipAction extends AbstractAction implements CleanUpAction {
             }
         }
 
-        if (geometryChanged) {
-//            final Component c = AppBroker.getInstance().getComponent(ComponentName.STATUSBAR);
-//
-//            if (c instanceof StatusBar) {
-//                ((StatusBar)c).showNotification(NbBundle.getMessage(
-//                        FlipAction.class,
-//                        "FlipAction.actionPerformed.geometryChanged"));
-//            }
-
-            final MessageDialog dialog = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    true,
-                    NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.geometryChanged"),
-                    NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.geometryChanged.title"));
-            dialog.setSize(200, 100);
-            StaticSwingTools.showDialog(dialog);
-        }
+//        if (geometryChanged) {
+//            final MessageDialog dialog = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                    true,
+//                    NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.geometryChanged"),
+//                    NbBundle.getMessage(FlipAction.class, "FlipAction.actionPerformed.geometryChanged.title"));
+//            dialog.setSize(200, 100);
+//            StaticSwingTools.showDialog(dialog);
+//        }
 
         if (!geometryChanged && invalidGeometryType) {
             JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -137,5 +142,61 @@ public class FlipAction extends AbstractAction implements CleanUpAction {
     public void cleanUp() {
         ((DefaultFeatureCollection)(AppBroker.getInstance().getMappingComponent().getFeatureCollection()))
                 .removeFeaturesByInstance(PureNewFeature.class);
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private static class FeatureFlipAction implements CustomAction {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private final Feature f;
+        private final MappingComponent mc;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new FeatureFlipAction object.
+         *
+         * @param  f   DOCUMENT ME!
+         * @param  mc  DOCUMENT ME!
+         */
+        public FeatureFlipAction(final Feature f, final MappingComponent mc) {
+            this.f = f;
+            this.mc = mc;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void doAction() {
+            final Vector v = new Vector();
+            final PFeature pf = mc.getPFeatureHM().get(f);
+
+            v.add(f);
+            f.setGeometry(f.getGeometry().reverse());
+            pf.visualize();
+            ((DefaultFeatureCollection)mc.getFeatureCollection()).fireFeaturesChanged(v);
+        }
+
+        @Override
+        public String info() {
+            return "Geometrie drehen";
+        }
+
+        @Override
+        public CustomAction getInverse() {
+            return new FeatureFlipAction(f, mc);
+        }
+
+        @Override
+        public boolean featureConcerned(final Feature feature) {
+            return (f != null) && f.equals(feature);
+        }
     }
 }

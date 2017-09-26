@@ -37,6 +37,9 @@ import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
+import de.cismet.cismap.cidslayer.CidsLayer;
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
 import de.cismet.tools.gui.StaticSwingTools;
@@ -129,15 +132,33 @@ public class GewaesserReportAction extends AbstractAction {
                                     baCdList.add((String)feature.getProperty("ba_cd"));
                                 }
                             } else {
-                                final CidsServerSearch search = new AllRoutes();
+                                SessionManager.getSession().getUser();
+                                final String owner = AppBroker.getInstance().getOwner();
 
-                                final User user = SessionManager.getSession().getUser();
-                                final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
-                                            .getProxy().customServerSearch(user, search);
+                                if (!owner.equalsIgnoreCase("Administratoren")) {
+                                    final MetaClass FG_BA = ClassCacheMultiple.getMetaClass(
+                                            AppBroker.DOMAIN_NAME,
+                                            "dlm25w.fg_ba");
+                                    final CidsLayer cl = new CidsLayer(FG_BA);
+                                    cl.initAndWait();
+                                    final String query = "dlm25wPk_ww_gr1.owner  = '" + owner + "'";
+                                    final List<CidsLayerFeature> featureList = cl.getFeatureFactory()
+                                                .createFeatures(query, null, null, 0, 0, null);
 
-                                if ((attributes != null) && !attributes.isEmpty()) {
-                                    for (final ArrayList f : attributes) {
-                                        baCdList.add((String)f.get(0));
+                                    for (final CidsLayerFeature f : featureList) {
+                                        baCdList.add((String)f.getProperty("ba_cd"));
+                                    }
+                                } else {
+                                    final CidsServerSearch search = new AllRoutes();
+
+                                    final User user = SessionManager.getSession().getUser();
+                                    final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
+                                                .getProxy().customServerSearch(user, search);
+
+                                    if ((attributes != null) && !attributes.isEmpty()) {
+                                        for (final ArrayList f : attributes) {
+                                            baCdList.add((String)f.get(0));
+                                        }
                                     }
                                 }
                             }

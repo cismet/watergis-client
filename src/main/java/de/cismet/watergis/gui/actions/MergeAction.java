@@ -173,6 +173,8 @@ public class MergeAction extends AbstractAction {
                                 } else {
                                     ((ModifiableFeature)f).delete();
                                 }
+
+                                SelectionManager.getInstance().removeSelectedFeatures(f);
                             }
                         }
 
