@@ -182,13 +182,13 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing a db statement", ex);
                 }
             }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    LOG.error("Error while closing the db connection", ex);
-                }
-            }
+//            if (conn != null) {
+//                try {
+//                    conn.close();
+//                } catch (SQLException ex) {
+//                    LOG.error("Error while closing the db connection", ex);
+//                }
+//            }
         }
     }
 
@@ -446,13 +446,13 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing statement", ex);
                 }
             }
-            if (cw != null) {
-                try {
-                    cw.close();
-                } catch (SQLException ex) {
-                    LOG.error("Error while closing connection", ex);
-                }
-            }
+//            if (cw != null) {
+//                try {
+//                    cw.close();
+//                } catch (SQLException ex) {
+//                    LOG.error("Error while closing connection", ex);
+//                }
+//            }
 
             fireDrawingCountChanged();
         }
@@ -542,13 +542,13 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing statement", ex);
                 }
             }
-            if (cw != null) {
-                try {
-                    cw.close();
-                } catch (SQLException ex) {
-                    LOG.error("Error while closing connection", ex);
-                }
-            }
+//            if (cw != null) {
+//                try {
+//                    cw.close();
+//                } catch (SQLException ex) {
+//                    LOG.error("Error while closing connection", ex);
+//                }
+//            }
         }
     }
 
@@ -624,13 +624,13 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing statement", ex);
                 }
             }
-            if (cw != null) {
-                try {
-                    cw.close();
-                } catch (SQLException ex) {
-                    LOG.error("Error while closing connection", ex);
-                }
-            }
+//            if (cw != null) {
+//                try {
+//                    cw.close();
+//                } catch (SQLException ex) {
+//                    LOG.error("Error while closing connection", ex);
+//                }
+//            }
             executeUpdate("drop table \"" + TEMP_TABLE + "\"");
 
             fireDrawingCountChanged();
@@ -661,13 +661,13 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing statement", ex);
                 }
             }
-            if (cw != null) {
-                try {
-                    cw.close();
-                } catch (SQLException ex) {
-                    LOG.error("Error while closing connection", ex);
-                }
-            }
+//            if (cw != null) {
+//                try {
+//                    cw.close();
+//                } catch (SQLException ex) {
+//                    LOG.error("Error while closing connection", ex);
+//                }
+//            }
         }
     }
 
@@ -743,13 +743,13 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing statement", ex);
                 }
             }
-            if (cw != null) {
-                try {
-                    cw.close();
-                } catch (SQLException ex) {
-                    LOG.error("Error while closing connection", ex);
-                }
-            }
+//            if (cw != null) {
+//                try {
+//                    cw.close();
+//                } catch (SQLException ex) {
+//                    LOG.error("Error while closing connection", ex);
+//                }
+//            }
         }
 
         return features;
@@ -782,13 +782,13 @@ public class DrawingManager implements FeatureCollectionListener {
                     LOG.error("Error while closing statement", ex);
                 }
             }
-            if (cw != null) {
-                try {
-                    cw.close();
-                } catch (SQLException ex) {
-                    LOG.error("Error while closing connection", ex);
-                }
-            }
+//            if (cw != null) {
+//                try {
+//                    cw.close();
+//                } catch (SQLException ex) {
+//                    LOG.error("Error while closing connection", ex);
+//                }
+//            }
         }
 
         return false;
@@ -876,13 +876,13 @@ public class DrawingManager implements FeatureCollectionListener {
                         LOG.error("Error while closing statement", ex);
                     }
                 }
-                if (cw != null) {
-                    try {
-                        cw.close();
-                    } catch (SQLException ex) {
-                        LOG.error("Error while closing connection", ex);
-                    }
-                }
+//                if (cw != null) {
+//                    try {
+//                        cw.close();
+//                    } catch (SQLException ex) {
+//                        LOG.error("Error while closing connection", ex);
+//                    }
+//                }
             }
         }
     }

@@ -112,6 +112,7 @@ import de.cismet.watergis.gui.actions.checks.AbstractCheckAction;
 import de.cismet.watergis.gui.dialog.ExportDialog;
 
 import de.cismet.watergis.utils.GeometryUtils;
+import de.cismet.watergis.utils.JumpShapeWriter;
 
 import static javax.swing.Action.NAME;
 
@@ -1073,15 +1074,21 @@ public class ExportAction extends AbstractAction implements Configurable {
                             featureArray = new FeatureServiceFeature[] { feature };
                         }
 
-                        final FeatureCollection fc = new SimpleFeatureCollection(
-                                id,
-                                featureArray,
-                                attribList);
-                        final ShapeFile shape = new ShapeFile(
-                                fc,
-                                filename);
-                        final ShapeFileWriter writer = new ShapeFileWriter(shape);
-                        writer.write();
+//                        final FeatureCollection fc = new SimpleFeatureCollection(
+//                                id,
+//                                featureArray,
+//                                attribList);
+//                        final ShapeFile shape = new ShapeFile(
+//                                fc,
+//                                filename);
+//                        final ShapeFileWriter writer = new ShapeFileWriter(shape);
+//                        writer.write();
+
+                        final JumpShapeWriter shapeWriter = new JumpShapeWriter();
+                        shapeWriter.writeShpFile(featureArray,
+                            new File(filename + ".shp"),
+                            null,
+                            null);
 
                         if (emptyShape) {
                             final String geometryType = service.getGeometryType();

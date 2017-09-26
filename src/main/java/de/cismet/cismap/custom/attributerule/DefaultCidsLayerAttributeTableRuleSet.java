@@ -46,10 +46,18 @@ public class DefaultCidsLayerAttributeTableRuleSet extends DefaultAttributeTable
                 if (bean.getProperty(propertyKey) == null) {
                     newFeature.setProperty(propertyKey, feature.getProperty(propertyKey));
                 } else {
-                    newFeature.setProperty(propertyKey, bean.getProperty(propertyKey));
+                    if ((bean.getProperty(propertyKey) instanceof CidsBean)
+                                && bean.getProperty(propertyKey).getClass().getName().equals(
+                                    "de.cismet.cids.dynamics.Geom")) {
+                        newFeature.setProperty(propertyKey, feature.getGeometry());
+                    } else {
+                        newFeature.setProperty(propertyKey, bean.getProperty(propertyKey));
+                    }
                 }
             }
         }
+
+        newFeature.setGeometry(feature.getGeometry());
 
         return newFeature;
     }

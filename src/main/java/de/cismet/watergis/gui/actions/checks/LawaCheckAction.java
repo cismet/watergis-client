@@ -31,6 +31,7 @@ import de.cismet.cids.custom.watergis.server.search.BakWithIncompleteGbkCoverage
 import de.cismet.cids.custom.watergis.server.search.FgBakCount;
 import de.cismet.cids.custom.watergis.server.search.GbkInIncorrectEzg;
 import de.cismet.cids.custom.watergis.server.search.GwkLaCdFailure;
+import de.cismet.cids.custom.watergis.server.search.MergeBaGbkDelta;
 import de.cismet.cids.custom.watergis.server.search.MergeBakGbk;
 import de.cismet.cids.custom.watergis.server.search.MergeBakGn;
 import de.cismet.cids.custom.watergis.server.search.MergeBakObjart;
@@ -215,8 +216,11 @@ public class LawaCheckAction extends AbstractCheckAction {
                     final CidsServerSearch mergeGn = new MergeBakGn(user);
                     SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGn);
                     increaseProgress(wd, 1);
-                    final CidsServerSearch mergeObjart = new MergeBakObjart(user);
-                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeObjart);
+//                    final CidsServerSearch mergeObjart = new MergeBakObjart(user);
+//                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeObjart);
+//                    increaseProgress(wd, 1);
+                    final CidsServerSearch mergeGbkDelta = new MergeBaGbkDelta(user);
+                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGbkDelta);
                     increaseProgress(wd, 1);
 
                     // start checks

@@ -59,7 +59,7 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(CidsLayerFeatureMerger.class);
-    private static final String[] POSSIBLE_LINE_PROP_NAMES = { "ba_st", "bak_st", "la_st", "lak_st" };
+    private static final String[] POSSIBLE_LINE_PROP_NAMES = { "ba_st", "bak_st", "la_st", "lak_st", "sg_su_stat" };
 
     //~ Instance fields --------------------------------------------------------
 
@@ -145,6 +145,7 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
                             linearReferencingHelper,
                             mergedGeom,
                             stationProperty);
+                        ((CidsLayerFeature)masterFeature).initStations();
                     }
                 } else {
                     final CidsBean otherLineBean = (CidsBean)((CidsLayerFeature)childFeature).getBean()
@@ -227,7 +228,7 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private void setCalculatedLine(final FeatureServiceFeature feature,
+    public static void setCalculatedLine(final FeatureServiceFeature feature,
             final MetaClass routeClass,
             final LinearReferencingHelper helper,
             final Geometry g,
@@ -286,7 +287,7 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
      *
      * @return  DOCUMENT ME!
      */
-    private Geometry createPointFromCoords(final Coordinate coord,
+    private static Geometry createPointFromCoords(final Coordinate coord,
             final GeometryFactory factory) {
         return factory.createPoint(coord);
     }
@@ -300,7 +301,7 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
      *
      * @return  DOCUMENT ME!
      */
-    private CidsBean createStationFromRoute(final CidsBean routeBean,
+    private static CidsBean createStationFromRoute(final CidsBean routeBean,
             final Geometry point,
             final LinearReferencingHelper helper) {
         final Coordinate[] firstCoords = DistanceOp.nearestPoints(

@@ -87,8 +87,8 @@ public class RemoveDrawingModeAction extends AbstractAction {
 
         for (final Feature f : selectedFeatures) {
             map.getFeatureCollection().removeFeature(f);
-            map.getMemUndo().addAction(new FeatureCreateAction(map, f));
-            map.getMemRedo().clear();
+//            map.getMemUndo().addAction(new FeatureCreateAction(map, f));
+//            map.getMemRedo().clear();
             final PNotificationCenter pn = PNotificationCenter.defaultCenter();
             pn.postNotification(FEATURE_DELETE_REQUEST_NOTIFICATION, this);
         }

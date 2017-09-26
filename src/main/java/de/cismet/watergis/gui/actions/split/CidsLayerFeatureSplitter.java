@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.actions.split;
 
+import Sirius.server.middleware.types.MetaClass;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
@@ -20,6 +22,8 @@ import com.vividsolutions.jts.linearref.LengthIndexedLine;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import de.cismet.cids.custom.wrrl_db_mv.util.CidsBeanSupport;
@@ -27,17 +31,21 @@ import de.cismet.cids.custom.wrrl_db_mv.util.CidsBeanSupport;
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.LineAndStationCreator;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
+import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.cismap.linearreferencing.FeatureRegistry;
 import de.cismet.cismap.linearreferencing.LinearReferencingHelper;
 
 import de.cismet.math.geometry.StaticGeometryFunctions;
+
+import de.cismet.watergis.gui.actions.merge.CidsLayerFeatureMerger;
 
 import de.cismet.watergis.utils.GeometryUtils;
 
@@ -52,7 +60,7 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(CidsLayerFeatureSplitter.class);
-    private static final String[] POSSIBLE_LINE_PROP_NAMES = { "ba_st", "bak_st", "la_st", "lak_st" };
+    private static final String[] POSSIBLE_LINE_PROP_NAMES = { "ba_st", "bak_st", "la_st", "lak_st", "sg_su_stat" };
 
     //~ Instance fields --------------------------------------------------------
 
@@ -75,6 +83,18 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
                 for (int i = 0; i < splittedGeom.length; ++i) {
                     splittedGeom[i] = StaticGeometryFunctions.toMultiGeometry(splittedGeom[i]);
                     splittedGeom[i].setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
+                }
+            } else {
+                if (splittedGeom[0] instanceof LineString) {
+                    // the longest line should be the first, because the longest Geometry
+                    // should still contain its ba_cd (theme FG_BA).
+                    Arrays.sort(splittedGeom, new Comparator<Geometry>() {
+
+                            @Override
+                            public int compare(final Geometry o1, final Geometry o2) {
+                                return (int)Math.signum(o2.getLength() - o1.getLength());
+                            }
+                        });
                 }
             }
 
@@ -117,12 +137,35 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
                         if (linePropertyName != null) {
                             if (ruleSet.isCatThree()) {
                                 newFeature.setProperty(linePropertyName, null);
+                                final FeatureCreator creator = ruleSet.getFeatureCreator();
+                                final LineAndStationCreator lineCreator = (LineAndStationCreator)creator;
+                                final MetaClass routeMc = lineCreator.getRouteClass();
+                                final String stationProperty = lineCreator.getStationProperty();
 
                                 if (i == 1) {
                                     // adjust the master stations only one time
                                     ((CidsLayerFeature)masterFeature).removeStations();
                                     ((CidsLayerFeature)masterFeature).setProperty(linePropertyName, null);
                                     ((CidsLayerFeature)masterFeature).getBean().setProperty(linePropertyName, null);
+
+                                    if (creator instanceof LineAndStationCreator) {
+                                        CidsLayerFeatureMerger.setCalculatedLine((FeatureServiceFeature)masterFeature,
+                                            routeMc,
+                                            linearReferencingHelper,
+                                            splittedGeom[0],
+                                            stationProperty);
+                                    }
+                                    ((CidsLayerFeature)masterFeature).initStations();
+                                }
+
+                                if (creator instanceof LineAndStationCreator) {
+                                    CidsLayerFeatureMerger.setCalculatedLine(
+                                        newFeature,
+                                        routeMc,
+                                        linearReferencingHelper,
+                                        splittedGeom[i],
+                                        stationProperty);
+                                    ((CidsLayerFeature)newFeature).initStations();
                                 }
                             } else {
                                 CidsBean statLine = CidsBeanSupport.cloneStationline((CidsBean)origLineBean);
