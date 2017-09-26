@@ -148,10 +148,10 @@
             <artifactId>cids-custom-wrrl-db-mv</artifactId>
             <version>5.0</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>de.cismet.custom</groupId>
             <artifactId>cismet-deegree</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>de.cismet.commons</groupId>
             <artifactId>cismet-commons</artifactId>
