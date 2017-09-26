@@ -136,8 +136,10 @@ wehr_av]]></text>
 				<text><![CDATA[]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="208" y="14" width="50" height="42" backcolor="#DADADA" uuid="792cde99-0f23-4c94-8ea2-405b542643b2"/>
-				<box leftPadding="2" rightPadding="2"/>
+				<reportElement style="column_header_style" mode="Opaque" x="208" y="28" width="50" height="28" backcolor="#DADADA" uuid="792cde99-0f23-4c94-8ea2-405b542643b2"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.0"/>
+				</box>
 				<textElement verticalAlignment="Top" markup="html">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
@@ -263,6 +265,16 @@ br_li]]></text>
 				</textElement>
 				<text><![CDATA[]]></text>
 			</staticText>
+			<staticText>
+				<reportElement style="column_header_style" mode="Opaque" x="208" y="14" width="50" height="14" backcolor="#DADADA" uuid="65f5608a-cc06-4f2b-a071-5676a1a0983c"/>
+				<box leftPadding="2" rightPadding="2">
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="html">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -270,7 +282,7 @@ br_li]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="0" y="0" width="47" height="42" isPrintWhenDetailOverflows="true" uuid="94dd8453-052e-407d-92b0-a624d609e8ab"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{station}]]></textFieldExpression>
@@ -295,7 +307,7 @@ br_li]]></text>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" hyperlinkType="Reference">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="94" y="0" width="64" height="42" isPrintWhenDetailOverflows="true" uuid="3f779ff8-80b8-4c04-a3a0-6fb53b62b400"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{lagestatus}]]></textFieldExpression>
@@ -315,9 +327,9 @@ br_li]]></text>
 				</textElement>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" hyperlinkType="Reference">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="208" y="0" width="50" height="42" isPrintWhenDetailOverflows="true" uuid="ad1113a8-356a-4d5b-aff5-269216ca352b"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="208" y="14" width="50" height="28" isPrintWhenDetailOverflows="true" uuid="ad1113a8-356a-4d5b-aff5-269216ca352b"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{material_v}]]></textFieldExpression>
@@ -366,7 +378,7 @@ br_li]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="377" y="0" width="25" height="42" isPrintWhenDetailOverflows="true" uuid="efdee91b-8756-4369-bf81-05c1036257e6"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{esw}]]></textFieldExpression>
@@ -374,7 +386,7 @@ br_li]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="402" y="0" width="124" height="42" isPrintWhenDetailOverflows="true" uuid="dbf6fea1-f5ad-4d16-b0ee-d65f4cdc8d75"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{bemerkungen}]]></textFieldExpression>
@@ -384,7 +396,7 @@ br_li]]></text>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{br}]]></textFieldExpression>
@@ -395,7 +407,7 @@ br_li]]></text>
 					<topPen lineWidth="0.0"/>
 					<bottomPen lineWidth="0.0"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ho_so}]]></textFieldExpression>
@@ -405,7 +417,7 @@ br_li]]></text>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sz}]]></textFieldExpression>
@@ -433,7 +445,7 @@ br_li]]></text>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{az}]]></textFieldExpression>
@@ -479,7 +491,7 @@ br_li]]></text>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{br_li}]]></textFieldExpression>
@@ -523,6 +535,15 @@ br_li]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[($F{wbbl} != null ? $F{wbbl} :null)]]></textFieldExpression>
 				<hyperlinkReferenceExpression><![CDATA[$P{wbblPath} + $F{wbbl}.toString() + ".pdf"]]></hyperlinkReferenceExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" hyperlinkType="Reference">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="208" y="0" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="765bb324-0f56-437e-be2d-d5b1803645a3"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="Arial" size="8"/>
+				</textElement>
 			</textField>
 		</band>
 	</detail>

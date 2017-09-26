@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="802" pageHeight="595" orientation="Landscape" columnWidth="762" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.4641000000000013"/>
-	<property name="ireport.x" value="38"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -33,6 +33,10 @@
 	<field name="lage" class="java.lang.String"/>
 	<field name="datum" class="java.lang.String"/>
 	<field name="winkel" class="java.lang.String"/>
+	<field name="obj_nr" class="java.lang.String"/>
+	<field name="freigabe" class="java.lang.String"/>
+	<field name="beschreibung" class="java.lang.String"/>
+	<field name="zeit" class="java.lang.String"/>
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
 	</variable>
@@ -43,9 +47,9 @@
 		<band/>
 	</pageHeader>
 	<columnHeader>
-		<band height="42">
+		<band height="56">
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="0" y="14" width="47" height="28" backcolor="#DADADA" uuid="22d080c3-69cf-48d5-af4d-4bc4bcdccf43"/>
+				<reportElement style="column_header_style" mode="Opaque" x="0" y="14" width="47" height="42" backcolor="#DADADA" uuid="22d080c3-69cf-48d5-af4d-4bc4bcdccf43"/>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement verticalAlignment="Top">
 					<font fontName="Arial" size="8" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -53,14 +57,15 @@
 				<text><![CDATA[Station]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="111" y="14" width="50" height="28" backcolor="#DADADA" uuid="95c09c04-6b66-42f2-ae7f-879871eb2328"/>
-				<box leftPadding="2" rightPadding="2"/>
+				<reportElement style="column_header_style" mode="Opaque" x="111" y="14" width="50" height="14" backcolor="#DADADA" uuid="95c09c04-6b66-42f2-ae7f-879871eb2328"/>
+				<box leftPadding="2" rightPadding="2">
+					<bottomPen lineWidth="0.0"/>
+				</box>
 				<textElement verticalAlignment="Top">
 					<font fontName="Arial" size="8" isBold="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<text><![CDATA[Datum
-Winkel]]></text>
+				<text><![CDATA[Aufn.datum]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="47" y="14" width="64" height="14" backcolor="#DADADA" uuid="0f6add6a-a606-43b7-bf73-f53074601220"/>
@@ -88,19 +93,21 @@ Winkel]]></text>
 				<textFieldExpression><![CDATA["Fotos: " + $P{ba_cd}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="161" y="14" width="601" height="28" backcolor="#DADADA" uuid="493e400b-d8ff-4040-a807-fea1b55488da"/>
-				<box leftPadding="2" rightPadding="2"/>
+				<reportElement style="column_header_style" mode="Opaque" x="161" y="14" width="601" height="14" backcolor="#DADADA" uuid="493e400b-d8ff-4040-a807-fea1b55488da"/>
+				<box leftPadding="2" rightPadding="2">
+					<bottomPen lineWidth="0.0"/>
+				</box>
 				<textElement verticalAlignment="Top" markup="html">
 					<font fontName="Arial" size="8" isBold="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<text><![CDATA[Titel
-Bemerkungen]]></text>
+				<text><![CDATA[Titel]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="47" y="28" width="64" height="14" backcolor="#DADADA" uuid="02e26d22-24d3-406d-86de-a09990bd3e40"/>
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement verticalAlignment="Top" markup="html">
 					<font fontName="Arial" size="8" isBold="false"/>
@@ -108,14 +115,71 @@ Bemerkungen]]></text>
 				</textElement>
 				<text><![CDATA[Lage re/li]]></text>
 			</staticText>
+			<staticText>
+				<reportElement style="column_header_style" mode="Opaque" x="47" y="42" width="64" height="14" backcolor="#DADADA" uuid="ce414b2a-ee84-4bfd-bdce-ba2a3c90b9d4"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="html">
+					<font fontName="Arial" size="8" isBold="false"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<text><![CDATA[obj_nr(=Bild-ID)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="column_header_style" mode="Opaque" x="111" y="42" width="50" height="14" backcolor="#DADADA" uuid="0613cc26-0576-4c4f-b5ec-bf9e07d6248f"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="html">
+					<font fontName="Arial" size="8" isBold="false"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<text><![CDATA[Freigabe]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="column_header_style" mode="Opaque" x="111" y="28" width="50" height="14" backcolor="#DADADA" uuid="21977aa8-2ed6-4333-9404-3f6ddf4e7715"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="html">
+					<font fontName="Arial" size="8" isBold="false"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<text><![CDATA[Aufn.zeit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="column_header_style" mode="Opaque" x="161" y="28" width="601" height="14" backcolor="#DADADA" uuid="e0b56e57-80f0-4d56-af6b-bd3cc0ca542e"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="html">
+					<font fontName="Arial" size="8" isBold="false"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<text><![CDATA[Beschreibung]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="column_header_style" mode="Opaque" x="161" y="42" width="601" height="14" backcolor="#DADADA" uuid="818c23b6-4358-4fa1-83dd-a4592feb5749"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="html">
+					<font fontName="Arial" size="8" isBold="false"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<text><![CDATA[Bemerkungen]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="28">
+		<band height="42">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="0" y="0" width="47" height="28" isPrintWhenDetailOverflows="true" uuid="94dd8453-052e-407d-92b0-a624d609e8ab"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="0" y="0" width="47" height="42" isPrintWhenDetailOverflows="true" uuid="94dd8453-052e-407d-92b0-a624d609e8ab"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{station}]]></textFieldExpression>
@@ -149,7 +213,7 @@ Bemerkungen]]></text>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{bemerkungen}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{beschreibung}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="111" y="14" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="fda77494-97d3-4243-b1c1-97605d9f99ee"/>
@@ -159,7 +223,7 @@ Bemerkungen]]></text>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{winkel}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{zeit}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="0" width="64" height="14" isPrintWhenDetailOverflows="true" uuid="2d4d502d-72ea-4bdf-b5c4-893ab46bba6e"/>
@@ -180,6 +244,36 @@ Bemerkungen]]></text>
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{lage}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="28" width="64" height="14" isPrintWhenDetailOverflows="true" uuid="b9628bc3-7434-4a62-b18f-d81611317d44"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{obj_nr}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="111" y="28" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="89df68c2-de65-44bb-88ea-7926b278d5e6"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{freigabe}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="161" y="28" width="601" height="14" isPrintWhenDetailOverflows="true" uuid="88ec346f-10ea-4aec-9901-3ce68d2173da"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bemerkungen}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

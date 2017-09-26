@@ -154,6 +154,7 @@
       <cidsFeatureService name="Stationen" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="2" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_stat.pdf">
         <Attributes>
           <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
           <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
           <FeatureServiceAttribute type="8" name="ba_st_km" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
           <FeatureServiceAttribute type="12" name="ba_st_c" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
@@ -508,6 +509,7 @@
       <cidsFeatureService name="Schächte" type="de.cismet.cismap.cidslayer.CidsLayer" visible="true" enabled="true" translucency="0.2" maxFeatureCount="1000" layerPosition="13" isSelectable="true" metaDocumentLink="http://bender.cismet.de/watergis/dokumente/meta-dokumente/fg_ba_scha.pdf">
         <Attributes>
           <FeatureServiceAttribute type="10012" name="geom" alias="" isGeometry="true" isSelected="true" isVisible="true" isNameElement="false" />
+          <FeatureServiceAttribute type="4" name="ww_gr" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
           <FeatureServiceAttribute type="12" name="ba_cd" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
           <FeatureServiceAttribute type="8" name="ba_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />
           <FeatureServiceAttribute type="12" name="l_st" alias="" isGeometry="false" isSelected="true" isVisible="true" isNameElement="false" />

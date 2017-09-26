@@ -50,12 +50,14 @@ import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.cismap.linearreferencing.RouteCombo;
 
@@ -293,6 +295,8 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
             final List<FeatureServiceFeature> removedFeatures = ((SimpleAttributeTableModel)model).getRemovedFeature();
 
             if ((removedFeatures != null) && !removedFeatures.isEmpty()) {
+                final List<Feature> selectedFeaturesToRemove = new ArrayList<Feature>();
+
                 for (final FeatureServiceFeature feature : removedFeatures) {
                     try {
                         final CidsServerSearch nodesSearch = new RemoveUnnusedRoute(feature.getId(),
@@ -302,9 +306,31 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
                     } catch (Exception e) {
                         LOG.error("Error while removing unused stations", e);
                     }
+
+                    final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures();
+
+                    for (final Feature f : selectedFeatures) {
+                        if (f instanceof CidsLayerFeature) {
+                            final CidsLayerFeature clf = (CidsLayerFeature)f;
+
+                            if ((clf.getProperty("ba_cd") != null) && (feature.getProperty("ba_cd") != null)) {
+                                final String selectedFeatureBaCd = String.valueOf(clf.getProperty("ba_cd"));
+                                final String deletedFeatureBaCd = String.valueOf(feature.getProperty("ba_cd"));
+
+                                if (selectedFeatureBaCd.equals(deletedFeatureBaCd)) {
+                                    selectedFeaturesToRemove.add(f);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!selectedFeaturesToRemove.isEmpty()) {
+                    SelectionManager.getInstance().removeSelectedFeatures(selectedFeaturesToRemove);
                 }
             }
         }
+
 //        final Timer t = new Timer("reload");
 //
 //        t.schedule(new TimerTask() {
@@ -414,11 +440,7 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
             unique = true;
             try {
                 final Map<Integer, String> baCdMap = new HashMap<Integer, String>();
-                if (baCd != null) {
-                    baCd += ":1";
-                } else {
-                    baCd = prefix + ":" + String.valueOf(Math.abs(feature.hashCode()));
-                }
+                baCd = prefix + ":" + String.valueOf(Math.abs(RANDOM.nextInt()));
                 baCdMap.put(-1, baCd);
                 final User user = SessionManager.getSession().getUser();
                 final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()

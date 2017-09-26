@@ -1348,7 +1348,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
                     final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures(service);
                     if ((selectedFeatures != null) && !selectedFeatures.isEmpty()) {
-                        cmdDelete.setEnabled(true);
+                        boolean enable = false;
+
+                        for (final Feature f : selectedFeatures) {
+                            if (f instanceof FeatureServiceFeature) {
+                                if (((FeatureServiceFeature)f).isEditable()) {
+                                    enable = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (enable) {
+                            cmdDelete.setEnabled(true);
+                        }
                     }
 
                     final AttributeTable table = getAttributeTableByFeatureService(service);
@@ -5374,7 +5387,25 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     final AbstractFeatureService service = (AbstractFeatureService)paths[0].getLastPathComponent();
 
                     if (SelectionManager.getInstance().getEditableServices().contains(service)) {
-                        return !SelectionManager.getInstance().getSelectedFeatures(service).isEmpty();
+                        final List<Feature> selectedFeatures = SelectionManager.getInstance()
+                                    .getSelectedFeatures(service);
+
+                        if ((selectedFeatures != null) && !selectedFeatures.isEmpty()) {
+                            boolean enable = false;
+
+                            for (final Feature f : selectedFeatures) {
+                                if (f instanceof FeatureServiceFeature) {
+                                    if (((FeatureServiceFeature)f).isEditable()) {
+                                        enable = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (enable) {
+                                return true;
+                            }
+                        }
                     }
                 }
             }

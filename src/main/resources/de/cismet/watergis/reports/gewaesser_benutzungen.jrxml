@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="802" pageHeight="595" orientation="Landscape" columnWidth="762" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.3310000000000008"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="206"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -26,18 +26,13 @@
 		<defaultValueExpression><![CDATA["/home/jruiz/NetBeansProjects/svn/cids-custom-wrrl-db-mv/src/main/resources/de/cismet/cids/custom/reports/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ba_cd" class="java.lang.String"/>
+	<parameter name="wbblPath" class="java.lang.String"/>
 	<field name="station" class="java.lang.String"/>
 	<field name="kurzbeschreibung" class="java.lang.String"/>
 	<field name="wbbl" class="java.lang.String"/>
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
 	</variable>
-	<background>
-		<band/>
-	</background>
-	<pageHeader>
-		<band/>
-	</pageHeader>
 	<columnHeader>
 		<band height="28">
 			<staticText>
@@ -99,7 +94,7 @@
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="0" y="0" width="47" height="14" isPrintWhenDetailOverflows="true" uuid="94dd8453-052e-407d-92b0-a624d609e8ab"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{station}]]></textFieldExpression>
@@ -112,17 +107,15 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{kurzbeschreibung}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="713" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="b733aa71-7ed5-4d0a-b772-bce03fccf3bc"/>
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true" hyperlinkType="Reference" hyperlinkTarget="Blank">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="713" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" forecolor="#0B6CDA" uuid="b733aa71-7ed5-4d0a-b772-bce03fccf3bc"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{wbbl}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{wbbl} != null ? $F{wbbl} :null)]]></textFieldExpression>
+				<hyperlinkReferenceExpression><![CDATA[$P{wbblPath} + $F{wbbl}.toString() + ".pdf"]]></hyperlinkReferenceExpression>
 			</textField>
 		</band>
 	</detail>
-	<columnFooter>
-		<band/>
-	</columnFooter>
 </jasperReport>

@@ -15,9 +15,10 @@ import org.apache.log4j.Logger;
 
 import org.openide.util.NbBundle;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
@@ -36,10 +37,12 @@ import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreatedEvent;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreatedListener;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.attributetable.creator.WithoutGeometryCreator;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.rasterservice.MapService;
 import de.cismet.cismap.commons.retrieval.RetrievalEvent;
 import de.cismet.cismap.commons.retrieval.RetrievalListener;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -84,11 +87,17 @@ public class NewObjectAction extends AbstractAction {
             final AttributeTableRuleSet ruleSet = service.getLayerProperties().getAttributeTableRuleSet();
             final FeatureCreator creator = ruleSet.getFeatureCreator();
             final FeatureServiceFeature feature = service.getFeatureFactory().createNewFeature();
-            ruleSet.beforeSave(feature);
-            final CustomCreatedListener listener = new CustomCreatedListener(service, feature);
-            creator.addFeatureCreatedListener(listener);
-            creator.createFeature(CismapBroker.getInstance().getMappingComponent(), feature);
-            AppBroker.getInstance().setActiveFeatureCreator(creator);
+            final FeatureCreator activeCreator = AppBroker.getInstance().getActiveFeatureCreator();
+
+            if ((activeCreator != null) && activeCreator.getService().equals(service)) {
+                activeCreator.resume();
+            } else {
+                ruleSet.beforeSave(feature);
+                final CustomCreatedListener listener = new CustomCreatedListener(service, feature);
+                creator.addFeatureCreatedListener(listener);
+                creator.createFeature(CismapBroker.getInstance().getMappingComponent(), feature);
+                AppBroker.getInstance().setActiveFeatureCreator(creator);
+            }
         }
 
         firstCall = false;
@@ -142,6 +151,7 @@ public class NewObjectAction extends AbstractAction {
 
         //~ Instance fields ----------------------------------------------------
 
+        private List<FeatureServiceFeature> createdFeatures = new ArrayList<FeatureServiceFeature>();
         private final AbstractFeatureService service;
         private final FeatureServiceFeature feature;
 
@@ -156,6 +166,23 @@ public class NewObjectAction extends AbstractAction {
         public CustomCreatedListener(final AbstractFeatureService service, final FeatureServiceFeature feature) {
             this.service = service;
             this.feature = feature;
+            this.createdFeatures.add(feature);
+        }
+
+        /**
+         * Creates a new CustomCreatedListener object.
+         *
+         * @param  service          DOCUMENT ME!
+         * @param  feature          DOCUMENT ME!
+         * @param  createdFeatures  DOCUMENT ME!
+         */
+        public CustomCreatedListener(final AbstractFeatureService service,
+                final FeatureServiceFeature feature,
+                final List<FeatureServiceFeature> createdFeatures) {
+            this.service = service;
+            this.feature = feature;
+            this.createdFeatures.addAll(createdFeatures);
+            this.createdFeatures.add(feature);
         }
 
         //~ Methods ------------------------------------------------------------
@@ -209,6 +236,7 @@ public class NewObjectAction extends AbstractAction {
                             @Override
                             public void retrievalComplete(final RetrievalEvent e) {
                                 AppBroker.getInstance().getWatergisApp().addFeatureToAttributeTable(feature);
+                                SelectionManager.getInstance().addSelectedFeatures(createdFeatures);
                                 service.removeRetrievalListener(this);
                             }
 
@@ -232,7 +260,7 @@ public class NewObjectAction extends AbstractAction {
                                             .getRasterServices();
 
                                 for (final MapService mapService : services.values()) {
-                                    if (!mapService.equals(service)) {
+                                    if (!mapService.equals(service) && mapService.isVisible()) {
                                         mapService.retrieve(true);
                                     }
                                 }
@@ -244,9 +272,14 @@ public class NewObjectAction extends AbstractAction {
             // Preparations for new creation
             final AttributeTableRuleSet ruleSet = service.getLayerProperties().getAttributeTableRuleSet();
             final FeatureCreator creator = ruleSet.getFeatureCreator();
+            if (creator instanceof WithoutGeometryCreator) {
+                CismapBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
+                AppBroker.getInstance().setActiveFeatureCreator(null);
+                return;
+            }
             final FeatureServiceFeature feature = service.getFeatureFactory().createNewFeature();
             ruleSet.beforeSave(feature);
-            final CustomCreatedListener listener = new CustomCreatedListener(service, feature);
+            final CustomCreatedListener listener = new CustomCreatedListener(service, feature, createdFeatures);
             creator.addFeatureCreatedListener(listener);
             creator.createFeature(CismapBroker.getInstance().getMappingComponent(), feature);
             AppBroker.getInstance().setActiveFeatureCreator(creator);

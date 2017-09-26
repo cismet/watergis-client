@@ -16,6 +16,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import java.sql.Date;
+
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
 
@@ -114,6 +116,54 @@ public class PhotoWrapper implements PropertyChangeListener {
     public void setBemerkung(final String bem) {
         if (feature != null) {
             feature.setProperty("bemerkung", bem);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Double getBast() {
+        if (feature != null) {
+            return (Double)feature.getProperty("ba_st");
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  bast  bem winkel DOCUMENT ME!
+     */
+    public void setBast(final Double bast) {
+        if (feature != null) {
+            feature.setProperty("ba_st", bast);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Date getAufndatum() {
+        if (feature != null) {
+            return (Date)feature.getProperty("aufn_datum");
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  aufn_datum  bem winkel DOCUMENT ME!
+     */
+    public void setAufndatum(final Date aufn_datum) {
+        if (feature != null) {
+            feature.setProperty("aufn_datum", aufn_datum);
         }
     }
 

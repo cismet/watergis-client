@@ -31,6 +31,8 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -129,9 +131,16 @@ public class SplitAction extends AbstractAction {
                                                     }
 
                                                     try {
+                                                        if (validFeature instanceof CidsLayerFeature) {
+                                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(true);
+                                                        }
                                                         ((ModifiableFeature)validFeature).saveChangesWithoutReload();
                                                         validFeature.setEditable(false);
                                                         validFeature.setEditable(true);
+                                                        if (validFeature instanceof CidsLayerFeature) {
+                                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(
+                                                                false);
+                                                        }
                                                     } catch (Exception ex) {
                                                         LOG.error("Error while saving changes", ex);
                                                     }
@@ -164,6 +173,9 @@ public class SplitAction extends AbstractAction {
                                                             SelectionManager.getInstance()
                                                                         .addSelectedFeatures(
                                                                             Arrays.asList(newFeatures));
+                                                            SelectionManager.getInstance()
+                                                                        .addSelectedFeatures(
+                                                                            Collections.nCopies(1, validFeature));
                                                         }
                                                     } else {
                                                         LOG.error("Feature is not modifiable");
@@ -210,6 +222,8 @@ public class SplitAction extends AbstractAction {
                                     return sf;
                                 }
                             }
+                        } else {
+                            continue;
                         }
 
                         return feature;
