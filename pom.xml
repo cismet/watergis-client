@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>5.4.3</version>
+                <version>5.4.6</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -95,7 +95,7 @@
             <dependency>
                 <groupId>de.cismet.cismap</groupId>
                 <artifactId>cismap-plugin</artifactId>
-                <version>5.0.10</version>
+                <version>5.0.12</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
