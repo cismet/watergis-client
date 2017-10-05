@@ -702,7 +702,7 @@ public class GewaesserReport {
             feature.put("gwk", toString(cidsFeature.getProperty("la_cd")));
             feature.put("gwk_kurz", toString(cidsFeature.getProperty("la_cd_k")));
             feature.put("name", toString(cidsFeature.getProperty("la_gn")));
-            feature.put("wrrl", toString(cidsFeature.getProperty("la_wrrl")));
+            feature.put("wrrl", toX(cidsFeature.getProperty("la_wrrl")));
 
             features.add(feature);
         }
@@ -960,13 +960,13 @@ public class GewaesserReport {
                     featureIt.remove();
                 }
 
-                cidsFeature.setProperty("bak_st_von", convertStation(from));
-                cidsFeature.setProperty("bak_st_bis", convertStation(till));
+//                cidsFeature.setProperty("bak_st_von", convertStation(from));
+//                cidsFeature.setProperty("bak_st_bis", convertStation(till));
                 cidsFeature.setProperty("laenge", toString(Math.abs(till - from)));
             }
         }
 
-        if (featureListGn1 != null) {
+        if (featureListGn2 != null) {
             featureIt = featureListGn2.iterator();
 
             while (featureIt.hasNext()) {
@@ -979,13 +979,13 @@ public class GewaesserReport {
                     featureIt.remove();
                 }
 
-                cidsFeature.setProperty("bak_st_von", convertStation(from));
-                cidsFeature.setProperty("bak_st_bis", convertStation(till));
+//                cidsFeature.setProperty("bak_st_von", convertStation(from));
+//                cidsFeature.setProperty("bak_st_bis", convertStation(till));
                 cidsFeature.setProperty("laenge", toString(Math.abs(till - from)));
             }
         }
 
-        if (featureListGn1 != null) {
+        if (featureListGn3 != null) {
             featureIt = featureListGn3.iterator();
 
             while (featureIt.hasNext()) {
@@ -998,8 +998,8 @@ public class GewaesserReport {
                     featureIt.remove();
                 }
 
-                cidsFeature.setProperty("bak_st_von", convertStation(from));
-                cidsFeature.setProperty("bak_st_bis", convertStation(till));
+//                cidsFeature.setProperty("bak_st_von", convertStation(from));
+//                cidsFeature.setProperty("bak_st_bis", convertStation(till));
                 cidsFeature.setProperty("laenge", toString(Math.abs(till - from)));
             }
         }
@@ -1141,7 +1141,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("profil", toString(cidsFeature.getProperty("profil")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1191,7 +1191,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("sbef", toString(cidsFeature.getProperty("sbef")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1202,7 +1202,7 @@ public class GewaesserReport {
             feature.put("gefaelle", toString(cidsFeature.getProperty("gefaelle")));
             feature.put("ho_d_e", toString(cidsFeature.getProperty("ho_d_e")));
             feature.put("ho_d_a", toString(cidsFeature.getProperty("ho_d_a")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("material", toString(cidsFeature.getProperty("material")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
 
@@ -1237,7 +1237,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("bbef", toString(cidsFeature.getProperty("bbef")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1246,7 +1246,7 @@ public class GewaesserReport {
             feature.put("ho_d_o", toString(cidsFeature.getProperty("ho_d_o")));
             feature.put("ho_d_u", toString(cidsFeature.getProperty("ho_d_u")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("material", toString(cidsFeature.getProperty("material")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
 
@@ -1281,7 +1281,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("ubef", toString(cidsFeature.getProperty("ubef")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1289,7 +1289,7 @@ public class GewaesserReport {
             feature.put("br", toString(cidsFeature.getProperty("br")));
             feature.put("ho_d_o", toString(cidsFeature.getProperty("ho_d_o")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("material", toString(cidsFeature.getProperty("material")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
 
@@ -1324,7 +1324,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("profil", toString(cidsFeature.getProperty("profil")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1379,7 +1379,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("profil", toString(cidsFeature.getProperty("profil")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1434,7 +1434,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("profil", toString(cidsFeature.getProperty("profil")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1490,7 +1490,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("scha", toString(cidsFeature.getProperty("scha")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1529,7 +1529,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("wehr", toString(cidsFeature.getProperty("wehr")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1541,7 +1541,7 @@ public class GewaesserReport {
             feature.put("az", toString(cidsFeature.getProperty("az")));
             feature.put("wehr_v", toString(cidsFeature.getProperty("wehr_v")));
             feature.put("wehr_av", toString(cidsFeature.getProperty("wehr_av")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("material_v", toString(cidsFeature.getProperty("material_v")));
 
             features.add(feature);
@@ -1574,7 +1574,7 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("schw", toString(cidsFeature.getProperty("schw")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
@@ -1587,7 +1587,7 @@ public class GewaesserReport {
             feature.put("v_fl", toString(cidsFeature.getProperty("v_fl")));
             feature.put("pu", toString(cidsFeature.getProperty("pu")));
             feature.put("pu_foel", toString(cidsFeature.getProperty("pu_foel")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
 
             features.add(feature);
         }
@@ -1619,14 +1619,14 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("anlp", toString(cidsFeature.getProperty("anlp")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
 
             features.add(feature);
         }
@@ -1658,14 +1658,14 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("kr", toString(cidsFeature.getProperty("kr")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
             feature.put("lage", toString(cidsFeature.getProperty("l_oiu")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
 
             features.add(feature);
         }
@@ -1697,14 +1697,14 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("ea", toString(cidsFeature.getProperty("ea")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("lage_og", toString(cidsFeature.getProperty("l_og")));
             feature.put("ho_ea", toString(cidsFeature.getProperty("ho_ea")));
             feature.put("ho_d_ea", toString(cidsFeature.getProperty("ho_d_ea")));
@@ -1740,13 +1740,13 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("ughz", toString(cidsFeature.getProperty("ughz")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("ho_d_o", toString(cidsFeature.getProperty("ho_d_o")));
             feature.put("ho_d_u", toString(cidsFeature.getProperty("ho_d_u")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
@@ -1784,7 +1784,7 @@ public class GewaesserReport {
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
 
             features.add(feature);
@@ -1819,7 +1819,7 @@ public class GewaesserReport {
             feature.put("tech", toString(cidsFeature.getProperty("tech")));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
 
             features.add(feature);
@@ -1853,20 +1853,20 @@ public class GewaesserReport {
             feature.put("km_von", toString(cidsFeature.getProperty("km_von")));
             feature.put("km_bis", toString(cidsFeature.getProperty("km_bis")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("lage_bd", toString(cidsFeature.getProperty("l_fk")));
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("deich", toString(cidsFeature.getProperty("deich")));
             feature.put("ord", toString(cidsFeature.getProperty("ord")));
             feature.put("sg", toString(cidsFeature.getProperty("schgr")));
-            feature.put("berme_w", toString(cidsFeature.getProperty("berme_w")));
-            feature.put("berme_b", toString(cidsFeature.getProperty("berme_b")));
+            feature.put("berme_w", toX(cidsFeature.getProperty("berme_w")));
+            feature.put("berme_b", toX(cidsFeature.getProperty("berme_b")));
             feature.put("material_f", toString(cidsFeature.getProperty("material_f")));
             feature.put("material_w", toString(cidsFeature.getProperty("material_w")));
             feature.put("material_k", toString(cidsFeature.getProperty("material_k")));
@@ -1953,13 +1953,13 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("anll", toString(cidsFeature.getProperty("anll")));
             feature.put("traeger", toString(cidsFeature.getProperty("traeger")));
-            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr")));
+            feature.put("jahr", toString(cidsFeature.getProperty("ausbaujahr"), false));
             feature.put("zk", toString(cidsFeature.getProperty("zust_kl"), false));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
             feature.put("wbbl", toString(cidsFeature.getProperty("wbbl")));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("br", toString(cidsFeature.getProperty("br")));
-            feature.put("esw", toString(cidsFeature.getProperty("esw")));
+            feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
 
             features.add(feature);
@@ -2119,6 +2119,22 @@ public class GewaesserReport {
      */
     private String toString(final Object o) {
         return toString(o, true);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   o  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String toX(final Object o) {
+        if (o instanceof Number) {
+            if (((Number)o).intValue() == 1) {
+                return "X";
+            }
+        }
+        return "";
     }
 
     /**
