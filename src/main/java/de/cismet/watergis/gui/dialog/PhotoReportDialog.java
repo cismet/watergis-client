@@ -29,6 +29,7 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.gui.RestrictedFileSystemView;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -47,7 +48,7 @@ public class PhotoReportDialog extends javax.swing.JDialog {
     //~ Instance fields --------------------------------------------------------
 
     private boolean cancelled = false;
-    private String lastPath = WatergisApp.getDIRECTORYPATH_WATERGIS();
+    private String lastPath = null;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;
@@ -321,10 +322,13 @@ public class PhotoReportDialog extends javax.swing.JDialog {
         JFileChooser fc;
 
         try {
-            fc = new JFileChooser(lastPath);
+            fc = new JFileChooser((lastPath == null) ? DownloadManager.instance().getDestinationDirectory().toString()
+                                                     : lastPath);
         } catch (Exception bug) {
             // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(lastPath, new RestrictedFileSystemView());
+            fc = new JFileChooser((lastPath == null) ? DownloadManager.instance().getDestinationDirectory().toString()
+                                                     : lastPath,
+                    new RestrictedFileSystemView());
         }
 
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

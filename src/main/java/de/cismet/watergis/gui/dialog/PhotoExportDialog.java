@@ -26,6 +26,7 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -45,7 +46,7 @@ public class PhotoExportDialog extends javax.swing.JDialog {
     //~ Instance fields --------------------------------------------------------
 
     private boolean cancelled = false;
-    private String lastPath = WatergisApp.getDIRECTORYPATH_WATERGIS();
+    private String lastPath = null;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;
@@ -412,7 +413,7 @@ public class PhotoExportDialog extends javax.swing.JDialog {
      */
     private void butFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butFileActionPerformed
         final File file = StaticSwingTools.chooseFile(
-                lastPath,
+                (lastPath == null) ? DownloadManager.instance().getDestinationDirectory().toString() : lastPath,
                 true,
                 new String[] { "zip" },
                 org.openide.util.NbBundle.getMessage(
