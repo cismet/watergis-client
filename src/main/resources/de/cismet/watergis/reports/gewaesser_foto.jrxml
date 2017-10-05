@@ -208,6 +208,7 @@
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="161" y="14" width="601" height="14" isPrintWhenDetailOverflows="true" uuid="df9a7b85-f6a3-4f71-acf9-a55168bc5e4d"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<bottomPen lineWidth="0.0"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -218,7 +219,7 @@
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="111" y="14" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="fda77494-97d3-4243-b1c1-97605d9f99ee"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
@@ -238,7 +239,7 @@
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="14" width="64" height="14" isPrintWhenDetailOverflows="true" uuid="cf35b0c1-b553-4d3b-a5dd-e449f366471e"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
-					<bottomPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
