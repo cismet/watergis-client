@@ -78,7 +78,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
         typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
@@ -363,7 +363,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("ho_mw_pn")).doubleValue()) {
                     showMessage("Das Attribute ho_bhw_pn muss größer ho_mw_pn sein.");
-                    return false;
+                    return oldValue;
                 }
             }
         }
@@ -373,7 +373,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                 if (((Number)feature.getProperty("ho_bhw_pn")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
                     showMessage("Das Attribute ho_bhw_pn muss größer ho_mw_pn sein.");
-                    return false;
+                    return oldValue;
                 }
             }
             if ((feature.getProperty("ho_k_pn") != null) && (newValue != null)) {
