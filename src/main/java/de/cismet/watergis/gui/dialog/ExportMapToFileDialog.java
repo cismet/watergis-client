@@ -79,7 +79,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
     private PixelDPICalculator pixelDPICalculator;
 
     private DpiChangedDocumentListener dpiChangedDocumentListener = new DpiChangedDocumentListener();
-    private String lastPath = WatergisApp.getDIRECTORYPATH_WATERGIS();
+    private String lastPath = null;
     private int lastDpi = -1;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -390,7 +390,7 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
                             "ExportMapToFileDialog.btnSaveActionPerformed().fileExists.title"),
                         JOptionPane.YES_NO_OPTION);
 
-                if (ans != JOptionPane.NO_OPTION) {
+                if (ans != JOptionPane.YES_OPTION) {
                     return;
                 }
             }
@@ -437,8 +437,8 @@ public class ExportMapToFileDialog extends javax.swing.JDialog implements Compon
      * @param  evt  DOCUMENT ME!
      */
     private void butFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butFileActionPerformed
-        final File file = StaticSwingTools.chooseFile(
-                lastPath,
+        final File file = StaticSwingTools.chooseFile((lastPath == null)
+                    ? DownloadManager.instance().getDestinationDirectory().toString() : lastPath,
                 true,
                 new String[] { "jpg", "jpeg" },
                 org.openide.util.NbBundle.getMessage(
