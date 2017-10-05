@@ -143,7 +143,7 @@ public class ExportAction extends AbstractAction implements Configurable {
     private List<AbstractCheckAction> checks;
     private Map<Integer, CidsBean> wwGrBeans = null;
     private List<DefaultFeatureServiceFeature> expFeatures = null;
-    private String path = WatergisApp.getDIRECTORYPATH_WATERGIS();
+    private String path = null;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -183,7 +183,7 @@ public class ExportAction extends AbstractAction implements Configurable {
     @Override
     public void actionPerformed(final ActionEvent e) {
         final File file = StaticSwingTools.chooseFile(
-                path,
+                (path == null) ? DownloadManager.instance().getDestinationDirectory().toString() : path,
                 true,
                 new String[] { "zip" },
                 org.openide.util.NbBundle.getMessage(

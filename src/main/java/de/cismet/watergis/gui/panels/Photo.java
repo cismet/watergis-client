@@ -1381,8 +1381,7 @@ public class Photo extends javax.swing.JPanel {
      * DOCUMENT ME!
      */
     public void dispose() {
-        final CidsLayerFeature lastSelectedFeature = selectedFeature;
-        selectedFeature = null;
+        setEditorFeature(null);
         editor.dispose();
         final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
                 "foto");
