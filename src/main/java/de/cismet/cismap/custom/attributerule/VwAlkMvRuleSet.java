@@ -128,7 +128,7 @@ public class VwAlkMvRuleSet extends WatergisDefaultRuleSet {
     @Override
     public String getAdditionalFieldFormula(final String propertyName) {
         if (propertyName.equals("flaeche")) {
-            return "st_area(geom)";
+            return "round(st_area(geom))";
         } else {
             return null;
         }
