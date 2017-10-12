@@ -37,6 +37,8 @@ import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
 
+import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
+
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.server.cidslayer.CidsLayerInfo;
@@ -385,6 +387,34 @@ public abstract class AbstractCheckAction extends AbstractAction {
         } else {
             return null;
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   owner     DOCUMENT ME!
+     * @param   routeIds  DOCUMENT ME!
+     * @param   classIds  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    protected int getErrorObjectsFromTree(final String owner, final int[] routeIds, final int[] classIds)
+            throws Exception {
+        final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(SessionManager.getSession().getUser(),
+                            new RouteProblemsCount(owner, routeIds, classIds, false));
+
+        if ((problemCountList != null) && !problemCountList.isEmpty()) {
+            final ArrayList innerList = problemCountList.get(0);
+
+            if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
+                return ((Number)innerList.get(0)).intValue();
+            }
+        }
+
+        return 0;
     }
 
     /**

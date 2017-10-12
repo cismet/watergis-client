@@ -168,7 +168,7 @@ public class FgBaSbRuleSet extends WatergisDefaultRuleSet {
     @Override
     public String getAdditionalFieldFormula(final String propertyName) {
         if (propertyName.equals("laenge")) {
-            return "st_length(geom)";
+            return "round(st_length(geom)::numeric, 2)";
         } else {
             return null;
         }

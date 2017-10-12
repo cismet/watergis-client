@@ -1087,7 +1087,7 @@ public class ExportAction extends AbstractAction implements Configurable {
                         final JumpShapeWriter shapeWriter = new JumpShapeWriter();
                         shapeWriter.writeShpFile(featureArray,
                             new File(filename + ".shp"),
-                            null,
+                            attribList,
                             null);
 
                         if (emptyShape) {
@@ -1201,8 +1201,15 @@ public class ExportAction extends AbstractAction implements Configurable {
                             is = new FileInputStream(origFile);
                             os = new FileOutputStream(new File(fileName));
                             int content;
+                            int byteCounter = 0;
 
                             while ((content = is.read()) != -1) {
+                                ++byteCounter;
+                                if (byteCounter == 5) {
+                                    // set the object count to 0
+                                    os.write(0x0);
+                                    continue;
+                                }
                                 os.write(content);
                                 if (content == 0xd) { // 0xd is the last byte of the header
                                     break;
