@@ -41,6 +41,7 @@ import de.cismet.cids.custom.watergis.server.search.OverlappedProfWithR;
 import de.cismet.cids.custom.watergis.server.search.OverlappedSBefWithProf;
 import de.cismet.cids.custom.watergis.server.search.OverlappedSBefWithR;
 import de.cismet.cids.custom.watergis.server.search.OverlappedUbefWithR;
+import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -81,6 +82,24 @@ public class AusbauCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BA_PROF = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_ba_prof");
+    private static final MetaClass FG_BA_RL = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_ba_rl");
+    private static final MetaClass FG_BA_D = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_ba_d");
+    private static final MetaClass FG_BA_DUE = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_ba_due");
+    private static final int[] USED_CLASS_IDS = new int[] {
+            FG_BA_SBEF.getId(),
+            FG_BA_UBEF.getId(),
+            FG_BA_BBEF.getId(),
+            FG_BA_PROF.getId(),
+            FG_BA_RL.getId(),
+            FG_BA_D.getId(),
+            FG_BA_DUE.getId()
+        };
     private static String QUERY_PROF_ATTR;
     private static String QUERY_SBEF_ATTR;
     private static String QUERY_UBEF_ATTR;
@@ -158,7 +177,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (ho_e is not null and ho_a is not null and (ho_e < ho_a))\n"
                             + "or (kpr.profil = 're' and (bv_re is not null and bv_re <> 0))\n"
                             + "or (kpr.profil = 're' and ((bv_re is not null and bv_re <> 0) or (bv_li is not null and bv_li <> 0) ) )\n"
-                            + "or (kpr.profil = 'tr' and ((bv_re is null or bv_re = 0) and (bv_li is null or bv_li = 0) ) )\n"
+                            + "or (kpr.profil = 'tr' and ((bv_re is not null and bv_re = 0) and (bv_li is not null and bv_li = 0) ) )\n"
                             + ");";
             } else {
                 QUERY_PROF_ATTR = "select distinct " + FG_BA_PROF.getID() + ", bef." + FG_BA_PROF.getPrimaryKey()
@@ -514,7 +533,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                                         result.getProfOverlapsErrors(),
                                         result.getProfHoleErrors(),
                                         result.getSbefOverlapsAttrErrors(),
-                                        result.getBbefOverlapsAttrErrors()
+                                        result.getBbefOverlapsAttrErrors(),
+                                        result.getProblemTreeObjectCount()
                                     }),
                                 NbBundle.getMessage(
                                     AusbauCheckAction.class,
@@ -723,6 +743,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                 baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS));
+
         if (result.getBbefAttr() != null) {
             result.setBbefAttrErrors(result.getBbefAttr().getFeatureCount(null));
             successful = false;
@@ -816,6 +838,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
         private int profHoleErrors;
         private int sbefOverlapsAttrErrors;
         private int bbefOverlapsAttrErrors;
+        private int problemTreeObjectCount;
         private H2FeatureService profAttr;
         private H2FeatureService sbefAttr;
         private H2FeatureService bbefAttr;
@@ -830,6 +853,24 @@ public class AusbauCheckAction extends AbstractCheckAction {
         private H2FeatureService bbefOverlapsAttr;
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the problemTreeObjectCount
+         */
+        public int getProblemTreeObjectCount() {
+            return problemTreeObjectCount;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  problemTreeObjectCount  the problemTreeObjectCount to set
+         */
+        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+            this.problemTreeObjectCount = problemTreeObjectCount;
+        }
 
         /**
          * DOCUMENT ME!

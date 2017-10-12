@@ -111,6 +111,18 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BA_SCHW = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_ba_schw");
+    private static final int[] USED_CLASS_IDS = new int[] {
+            FG_BA_ANLL.getId(),
+            FG_BA_ANLP.getId(),
+            FG_BA_KR.getId(),
+            FG_BA_EA.getId(),
+            FG_BA_SCHA.getId(),
+            FG_BA_WEHR.getId(),
+            FG_BA_SCHW.getId(),
+            FG_BA_RL.getId(),
+            FG_BA_D.getId(),
+            FG_BA_DUE.getId()
+        };
     private static String QUERY_DUE_ATTR;
     private static String QUERY_D_ATTR;
     private static String QUERY_RL_ATTR;
@@ -125,7 +137,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
     private static String QUERY_SCHW_DISTANCE;
     private static String QUERY_WEHR_DISTANCE;
     private static String QUERY_KR_DISTANCE;
-    private static String QUERY_EA_DISTANCE;
+//    private static String QUERY_EA_DISTANCE;
     private static String QUERY_SCHA_OFFEN;
     private static String QUERY_ANLP_OFFEN;
     private static String QUERY_ANLP_GESCHL;
@@ -156,7 +168,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         "Prüfungen->Bauwerke->Wehr->Wehr: auf geschlossenem Gerinne";
     private static final String CHECKS_BAUWERKE_SCHA_SCHA_AUF_OFFENEM__GER =
         "Prüfungen->Bauwerke->Scha->Scha: auf offenem Gerinne";
-    private static final String CHECKS_BAUWERKE_EA_EA_DOPPELTZU_NAH = "Prüfungen->Bauwerke->Ea->Ea: doppelt/zu nah";
+//    private static final String CHECKS_BAUWERKE_EA_EA_DOPPELTZU_NAH = "Prüfungen->Bauwerke->Ea->Ea: doppelt/zu nah";
     private static final String CHECKS_BAUWERKE_KR_KR_DOPPELTZU_NAH = "Prüfungen->Bauwerke->Kr->Kr: doppelt/zu nah";
     private static final String CHECKS_BAUWERKE_KR_KEIN_FG_BA = "Prüfungen->Bauwerke->Kr->Kr: keine Kreuzung";
     private static final String CHECKS_BAUWERKE_KR_INVALID = "Prüfungen->Bauwerke->Kr->Kr: unzulässige Profillage";
@@ -166,8 +178,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         "Prüfungen->Bauwerke->Wehr->Wehr: doppelt/zu nah";
     private static final String CHECKS_BAUWERKE_SCHA_SCHA_DOPPELTZU_NAH =
         "Prüfungen->Bauwerke->Scha->Scha: doppelt/zu nah";
-    private static final String CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG = "Prüfungen->Bauwerke->RL/D/Dü->RL: Überlappung";
-    private static final String CHECKS_BAUWERKE_RL_RL__LUECKE = "Prüfungen->Bauwerke->RL/D/Dü->RL: Lücke";
+    private static final String CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG =
+        "Prüfungen->Bauwerke->RL/D/Dü->RL/D/Dü: Überlappung";
+    private static final String CHECKS_BAUWERKE_RL_RL__LUECKE = "Prüfungen->Bauwerke->RL/D/Dü->RL/D/Dü: Lücke";
     private static final String CHECKS_BAUWERKE_DD__ATTRIBUTE = "Prüfungen->Bauwerke->RL/D/Dü->D: Attribute";
     private static final String CHECKS_BAUWERKE_WEHR_WEHR__ATTRIBUTE = "Prüfungen->Bauwerke->Wehr->Wehr: Attribute";
     private static final String CHECKS_BAUWERKE_SCHW_SCHW__ATTRIBUTE = "Prüfungen->Bauwerke->Schw->Schw: Attribute";
@@ -188,7 +201,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             CHECKS_BAUWERKE_DD__ATTRIBUTE,
             CHECKS_BAUWERKE_DUE_DUE__ATTRIBUTE,
             CHECKS_BAUWERKE_EA_EA_AUF_GESCHLOSSENEM_G,
-            CHECKS_BAUWERKE_EA_EA_DOPPELTZU_NAH,
+//            CHECKS_BAUWERKE_EA_EA_DOPPELTZU_NAH,
             CHECKS_BAUWERKE_EA_EA__ATTRIBUTE,
             CHECKS_BAUWERKE_EA_EA__ESW_FUER_GESCHLOSSEN,
             CHECKS_BAUWERKE_KR_KR_DOPPELTE__MARKIERUNG,
@@ -903,50 +916,50 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 3";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_EA_DISTANCE = "select distinct " + FG_BA_EA.getID() + ", s1." + FG_BA_EA.getPrimaryKey()
-                            + " from (\n"
-                            + "select scha.id, st.route, st.wert\n"
-                            + "from dlm25w.fg_ba_ea scha\n"
-                            + "join dlm25w.fg_ba_punkt st on (scha.ba_st = st.id)\n"
-                            + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
-                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + ") s1,\n"
-                            + "(\n"
-                            + "select scha.id, st.route, st.wert\n"
-                            + "from dlm25w.fg_ba_ea scha\n"
-                            + "join dlm25w.fg_ba_punkt st on (scha.ba_st = st.id)\n"
-                            + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
-                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + ") s2\n"
-                            + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 0.5";
-            } else {
-                QUERY_EA_DISTANCE = "select distinct " + FG_BA_EA.getID() + ", s1." + FG_BA_EA.getPrimaryKey()
-                            + " from (\n"
-                            + "select scha.id, st.route, st.wert\n"
-                            + "from dlm25w.fg_ba_ea scha\n"
-                            + "join dlm25w.fg_ba_punkt st on (scha.ba_st = st.id)\n"
-                            + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
-                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + ") s1,\n"
-                            + "(\n"
-                            + "select scha.id, st.route, st.wert\n"
-                            + "from dlm25w.fg_ba_ea scha\n"
-                            + "join dlm25w.fg_ba_punkt st on (scha.ba_st = st.id)\n"
-                            + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
-                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
-                            + ") s2\n"
-                            + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 0.5";
-            }
+//            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
+//                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+//                QUERY_EA_DISTANCE = "select distinct " + FG_BA_EA.getID() + ", s1." + FG_BA_EA.getPrimaryKey()
+//                            + " from (\n"
+//                            + "select scha.id, st.route, st.wert\n"
+//                            + "from dlm25w.fg_ba_ea scha\n"
+//                            + "join dlm25w.fg_ba_punkt st on (scha.ba_st = st.id)\n"
+//                            + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
+//                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
+//                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+//                            + ") s1,\n"
+//                            + "(\n"
+//                            + "select scha.id, st.route, st.wert\n"
+//                            + "from dlm25w.fg_ba_ea scha\n"
+//                            + "join dlm25w.fg_ba_punkt st on (scha.ba_st = st.id)\n"
+//                            + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
+//                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
+//                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+//                            + ") s2\n"
+//                            + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 0.5";
+//            } else {
+//                QUERY_EA_DISTANCE = "select distinct " + FG_BA_EA.getID() + ", s1." + FG_BA_EA.getPrimaryKey()
+//                            + " from (\n"
+//                            + "select scha.id, st.route, st.wert\n"
+//                            + "from dlm25w.fg_ba_ea scha\n"
+//                            + "join dlm25w.fg_ba_punkt st on (scha.ba_st = st.id)\n"
+//                            + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
+//                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
+//                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+//                            + "WHERE gr.owner = '"
+//                            + user.getUserGroup().getName() + "'"
+//                            + ") s1,\n"
+//                            + "(\n"
+//                            + "select scha.id, st.route, st.wert\n"
+//                            + "from dlm25w.fg_ba_ea scha\n"
+//                            + "join dlm25w.fg_ba_punkt st on (scha.ba_st = st.id)\n"
+//                            + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
+//                            + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
+//                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+//                            + "WHERE gr.owner = '"
+//                            + user.getUserGroup().getName() + "'"
+//                            + ") s2\n"
+//                            + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 0.5";
+//            }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -1269,7 +1282,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + "left join dlm25w.k_anll ka on (ka.id = a.anll)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and ka.anll <> 'WKA' and \n"
+                            + "where (%1$s is null or s.route = any(%1$s)) and ka.anll <> 'Wka' and \n"
                             + "((\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
@@ -1491,7 +1504,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 33;
+        return 32;
     }
 
     @Override
@@ -1510,12 +1523,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                     addService(result, cr.getAnlpGeschlossen());
                     addService(result, cr.getAnlpOffen());
                     addService(result, cr.getDueAttr());
-//                    addService(result, cr.getDueHole());
-//                    addService(result, cr.getDueOverlapps());
                     addService(result, cr.getEaAttr());
-                    addService(result, cr.getEaDistance());
                     addService(result, cr.getEaEsw());
-//                    addService(result, cr.getEaGeschl());
                     addService(result, cr.getKrAttr());
                     addService(result, cr.getKrDistance());
                     addService(result, cr.getKrEsw());
@@ -1530,10 +1539,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                     addService(result, cr.getSchwDistance());
                     addService(result, cr.getWehrAttr());
                     addService(result, cr.getWehrDistance());
-//                    addService(result, cr.getWehrGeschlossen());
                     addService(result, cr.getdAttr());
-//                    addService(result, cr.getdHole());
-//                    addService(result, cr.getdOverlapps());
                 }
             } catch (Exception e) {
                 LOG.error("Error while performing check", e);
@@ -1600,9 +1606,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                                                 + result.getKrMarkedTwiceError()
                                                 + result.getKrFgBaError()
                                                 + result.getKrInvalidError(),
-                                        result.getEaDistanceError()
-                                                + result.getEaEswError()
-                                                // + result.getEaGeschlError()
+                                        result.getEaEswError(),
+                                        result.getProblemTreeObjectCount()
                                     }),
                                 NbBundle.getMessage(
                                     BauwerkeCheckAction.class,
@@ -1612,12 +1617,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             if (result.getEaEsw() != null) {
                                 showService(result.getEaEsw());
                             }
-                            if (result.getEaDistance() != null) {
-                                showService(result.getEaDistance());
-                            }
-//                            if (result.getEaGeschl() != null) {
-//                                showService(result.getEaGeschl());
-//                            }
                             if (result.getEaAttr() != null) {
                                 showService(result.getEaAttr());
                             }
@@ -1678,17 +1677,17 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             if (result.getSchaAttr() != null) {
                                 showService(result.getSchaAttr());
                             }
-                            if (result.getDueAttr() != null) {
-                                showService(result.getDueAttr());
-                            }
-                            if (result.getdAttr() != null) {
-                                showService(result.getdAttr());
-                            }
                             if (result.getRlOverlapps() != null) {
                                 showService(result.getRlOverlapps());
                             }
                             if (result.getRlHole() != null) {
                                 showService(result.getRlHole());
+                            }
+                            if (result.getDueAttr() != null) {
+                                showService(result.getDueAttr());
+                            }
+                            if (result.getdAttr() != null) {
+                                showService(result.getdAttr());
                             }
                             if (result.getRlAttr() != null) {
                                 showService(result.getRlAttr());
@@ -1789,6 +1788,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         final CidsServerSearch mergeEa = new MergeBaEa(user);
         SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeEa);
         increaseProgress(wd, 1);
+
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS));
 
         final List<FeatureServiceAttribute> serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
         FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
@@ -1948,11 +1949,11 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 CHECKS_BAUWERKE_KR_INVALID));
         increaseProgress(wd, 1);
 
-        result.setEaDistance(analyseByQuery(
-                FG_BA_EA,
-                String.format(QUERY_EA_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)),
-                CHECKS_BAUWERKE_EA_EA_DOPPELTZU_NAH));
-        increaseProgress(wd, 1);
+//        result.setEaDistance(analyseByQuery(
+//                FG_BA_EA,
+//                String.format(QUERY_EA_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)),
+//                CHECKS_BAUWERKE_EA_EA_DOPPELTZU_NAH));
+//        increaseProgress(wd, 1);
 
         result.setSchaOffen(analyseByQuery(
                 FG_BA_SCHA,
@@ -2063,30 +2064,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             successful = false;
         }
 
-//        if (result.getdHole() != null) {
-//            result.setdHoleErrors(result.getdHole().getFeatureCount(null));
-//            successful = false;
-//        }
-//
-//        if (result.getDueHole() != null) {
-//            result.setDueHoleErrors(result.getDueHole().getFeatureCount(null));
-//            successful = false;
-//        }
-
         if (result.getRlOverlapps() != null) {
             result.setRlOverlappsErrors(result.getRlOverlapps().getFeatureCount(null));
             successful = false;
         }
-
-//        if (result.getdOverlapps() != null) {
-//            result.setdOverlappsErrors(result.getdOverlapps().getFeatureCount(null));
-//            successful = false;
-//        }
-//
-//        if (result.getDueOverlapps() != null) {
-//            result.setDueOverlappsErrors(result.getDueOverlapps().getFeatureCount(null));
-//            successful = false;
-//        }
 
         if (result.getSchaDistance() != null) {
             result.setSchaDistanceError(result.getSchaDistance().getFeatureCount(null));
@@ -2118,20 +2099,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             successful = false;
         }
 
-        if (result.getEaDistance() != null) {
-            result.setEaDistanceError(result.getEaDistance().getFeatureCount(null));
-            successful = false;
-        }
-
         if (result.getSchaOffen() != null) {
             result.setSchaOffenError(result.getSchaOffen().getFeatureCount(null));
             successful = false;
         }
-
-//        if (result.getWehrGeschlossen() != null) {
-//            result.setWehrGeschlossenError(result.getWehrGeschlossen().getFeatureCount(null));
-//            successful = false;
-//        }
 
         if (result.getAnlpGeschlossen() != null) {
             result.setAnlpGeschlossenError(result.getAnlpGeschlossen().getFeatureCount(null));
@@ -2147,11 +2118,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             result.setKrEswError(result.getKrEsw().getFeatureCount(null));
             successful = false;
         }
-
-//        if (result.getEaGeschl() != null) {
-//            result.setEaGeschlError(result.getEaGeschl().getFeatureCount(null));
-//            successful = false;
-//        }
 
         if (result.getEaEsw() != null) {
             result.setEaEswError(result.getEaEsw().getFeatureCount(null));
@@ -2212,7 +2178,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private int krDistanceError;
         private int krFgBaError;
         private int krInvalidError;
-        private int eaDistanceError;
         private int schaOffenError;
         private int anlpOffenError;
         private int anlpGeschlossenError;
@@ -2221,6 +2186,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private int eaEswError;
         private int anllGeschlError;
         private int krMarkedTwiceError;
+        private int problemTreeObjectCount;
         private H2FeatureService rlAttr;
         private H2FeatureService dAttr;
         private H2FeatureService dueAttr;
@@ -2239,7 +2205,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private H2FeatureService krDistance;
         private H2FeatureService krFgBa;
         private H2FeatureService krInvalid;
-        private H2FeatureService eaDistance;
         private H2FeatureService schaOffen;
         private H2FeatureService anlpOffen;
         private H2FeatureService anlpGeschlossen;
@@ -2250,6 +2215,24 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private H2FeatureService krMarkedTwice;
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the problemTreeObjectCount
+         */
+        public int getProblemTreeObjectCount() {
+            return problemTreeObjectCount;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  problemTreeObjectCount  the problemTreeObjectCount to set
+         */
+        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+            this.problemTreeObjectCount = problemTreeObjectCount;
+        }
 
         /**
          * DOCUMENT ME!
@@ -2848,24 +2831,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         /**
          * DOCUMENT ME!
          *
-         * @return  the eaDistance
-         */
-        public H2FeatureService getEaDistance() {
-            return eaDistance;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  eaDistance  the eaDistance to set
-         */
-        public void setEaDistance(final H2FeatureService eaDistance) {
-            this.eaDistance = eaDistance;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
          * @return  the schaDistanceError
          */
         public int getSchaDistanceError() {
@@ -2933,24 +2898,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
          */
         public void setKrDistanceError(final int krDistanceError) {
             this.krDistanceError = krDistanceError;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the eaDistanceError
-         */
-        public int getEaDistanceError() {
-            return eaDistanceError;
-        }
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @param  eaDistanceError  the eaDistanceError to set
-         */
-        public void setEaDistanceError(final int eaDistanceError) {
-            this.eaDistanceError = eaDistanceError;
         }
 
         /**

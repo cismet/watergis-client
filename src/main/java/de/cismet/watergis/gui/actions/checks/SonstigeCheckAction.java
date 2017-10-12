@@ -83,6 +83,15 @@ public class SonstigeCheckAction extends AbstractCheckAction {
     private static final MetaClass FOTO = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.foto");
+    private static final MetaClass FG_BA_RL = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_ba_rl");
+    private static final MetaClass FG_BA_D = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_ba_d");
+    private static final MetaClass FG_BA_DUE = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_ba_due");
     private static String QUERY_DEICH_HOLE;
     private static String QUERY_TECH_HOLE;
     private static String QUERY_DEICH_ATTR;
@@ -122,6 +131,17 @@ public class SonstigeCheckAction extends AbstractCheckAction {
     private static final String CHECK_SONSTIGES_DEICH_DEICH__ATTRIBUTE =
         "Prüfungen->Sonstiges->Deich->Deich: Attribute";
     private static final String CHECK_SONSTIGES_DEICH_DEICH__LUECKE = "Prüfungen->Sonstiges->Deich->Deich: Lücke";
+    private static final int[] USED_CLASS_IDS = new int[] {
+            FG_BA_DEICH.getId(),
+            GU_WIWE.getId(),
+            FG_BA_UGHZ.getId(),
+            FG_BA_LEIS.getId(),
+            FG_BA_TECH.getId(),
+            FOTO.getId(),
+            FG_BA_RL.getId(),
+            FG_BA_D.getId(),
+            FG_BA_DUE.getId()
+        };
 //    private static final String CHECK_SONSTIGES_DEICH_DEICH__UEBERLAPPUNG =
 //        "Prüfungen->Sonstiges->Deich->Deich: Überlappung";
     private static final String[] ALL_CHECKS = new String[] {
@@ -152,40 +172,29 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_DEICH_HOLE = "select " + FG_BA_DEICH.getID() + ", d1." + FG_BA_DEICH.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
+                            + "	from (select d.id, g.geo_field geo from \n"
                             + "	dlm25w.fg_ba_deich d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
+                            + "	join geom g on (d.geom = g.id)\n"
                             + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
+                            + "	(select d.id, g.geo_field geo from \n"
                             + "	dlm25w.fg_ba_deich d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
+                            + "	join geom g on (d.geom = g.id)\n"
                             + "	) as d2\n"
-                            + "where d1.route = d2.route and least(d2.von, d2.bis) - greatest(d1.von, d1.bis) < 0.5;";
+                            + "where d1.id <> d2.id and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) > 0.001 and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) < 0.5;";
             } else {
                 QUERY_DEICH_HOLE = "select " + FG_BA_DEICH.getID() + ", d1." + FG_BA_DEICH.getPrimaryKey()
-                            + "	from (select von.wert as von, bis.wert as bis, von.route, d.id from \n"
+                            + "	from (select d.id, g.geo_field geo from \n"
                             + "	dlm25w.fg_ba_deich d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)"
+                            + "	join geom g on (d.geom = g.id)\n"
+                            + " join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)"
                             + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName() + "' \n"
                             + "	) as d1,\n"
-                            + "	(select von.wert as von, bis.wert as bis, von.route, d.id from \n"
+                            + "	(select d.id, g.geo_field geo from \n"
                             + "	dlm25w.fg_ba_deich d\n"
-                            + "	join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
+                            + "	join geom g on (d.geom = g.id)\n"
                             + "	) as d2\n"
-                            + "where d1.route = d2.route and least(d2.von, d2.bis) - greatest(d1.von, d1.bis) < 0.5;";
+                            + "where d1.id <> d2.id and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) > 0.001 and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) < 0.5;";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -197,14 +206,15 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	left join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
                             + "	left join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)\n"
                             + "	left join dlm25w.k_deich_l_fk fk on (d.l_fk = fk.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (deich is null or ord is null or d.l_fk is null or obj_nr is null or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
+                            + "where (%1$s is null or von.route = any(%1$s)) and (deich is null or gr.ww_gr is null or ord is null or d.l_fk is null or obj_nr is null or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
                             + "or (br_f is not null and (fk.l_fk = 'fd' and (br_f < 2 or br_f > 50)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_f < 2 or br_f > 100)))\n"
                             + "or (br_k is not null and (fk.l_fk = 'fd' and (br_k < 0.5 or br_k > 10)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_k < 0.5 or br_k > 20)))\n"
                             + "or (ho_k_f is not null and (fk.l_fk = 'fd' and (ho_k_f < 0.5 or ho_k_f > 15)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_f < 1 or ho_k_f > 15)))\n"
                             + "or (ho_k_pn is not null and (fk.l_fk = 'fd' and (ho_k_pn < 2 or ho_k_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_pn < 1 or ho_k_pn > 20)))\n"
                             + "or (ho_bhw_pn is not null and (fk.l_fk = 'fd' and (ho_bhw_pn < 2 or ho_bhw_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_bhw_pn < 0 or ho_bhw_pn > 20)))\n"
-                            + "or (bv_w is not null and (bv_w < 3 or bv_w > 6))\n"
-                            + "or (bv_b is not null and (bv_b < 3 or bv_b > 6))\n"
+                            + "or (bv_w is not null and (bv_w < 1 or bv_w > 15))\n"
+                            + "or (bv_b is not null and (bv_b < 1 or bv_b > 15))\n"
+                            + "or ((fk.l_fk = 'fd') and (l_rl is null))\n"
                             + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (linie is not null))\n"
                             + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (l_rl is not null))\n"
                             + "or ((br_f is not null and br_k is not null) and br_f <= br_k)\n"
@@ -221,14 +231,15 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	left join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
                             + "	left join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)\n"
                             + "	left join dlm25w.k_deich_l_fk fk on (d.l_fk = fk.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (deich is null or ord is null or d.l_fk is null or obj_nr is null or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
+                            + "where (%1$s is null or von.route = any(%1$s)) and (deich is null or gr.ww_gr is null or ord is null or d.l_fk is null or obj_nr is null or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
                             + "or (br_f is not null and (fk.l_fk = 'fd' and (br_f < 2 or br_f > 50)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_f < 2 or br_f > 100)))\n"
                             + "or (br_k is not null and (fk.l_fk = 'fd' and (br_k < 0.5 or br_k > 10)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_k < 0.5 or br_k > 20)))\n"
                             + "or (ho_k_f is not null and (fk.l_fk = 'fd' and (ho_k_f < 0.5 or ho_k_f > 15)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_f < 1 or ho_k_f > 15)))\n"
                             + "or (ho_k_pn is not null and (fk.l_fk = 'fd' and (ho_k_pn < 2 or ho_k_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_pn < 1 or ho_k_pn > 20)))\n"
                             + "or (ho_bhw_pn is not null and (fk.l_fk = 'fd' and (ho_bhw_pn < 2 or ho_bhw_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_bhw_pn < 0 or ho_bhw_pn > 20)))\n"
-                            + "or (bv_w is not null and (bv_w < 3 or bv_w > 6))\n"
-                            + "or (bv_b is not null and (bv_b < 3 or bv_b > 6))\n"
+                            + "or (bv_w is not null and (bv_w < 1 or bv_w > 15))\n"
+                            + "or (bv_b is not null and (bv_b < 1 or bv_b > 15))\n"
+                            + "or ((fk.l_fk = 'fd') and (l_rl is null))\n"
                             + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (linie is not null))\n"
                             + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (l_rl is not null))\n"
                             + "or ((br_f is not null and br_k is not null) and br_f <= br_k)\n"
@@ -259,44 +270,12 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             // geschl_gerinne.geo_field) and gr.owner = '" + user.getUserGroup().getName() + "'"; }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_DEICH_GESCHL = "select " + FG_BA_DEICH.getID() + ", t." + FG_BA_DEICH.getPrimaryKey()
-                            + " from dlm25w.fg_ba_deich t\n"
-                            + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
-                            + "((\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") + \n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") +\n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) < (abs(von.wert - bis.wert))";
+                QUERY_DEICH_GESCHL = "select distinct " + FG_BA_DEICH.getID() + ", "
+                            + " unnest(dlm25w.determine_crossed_deich(null, %1$s)) as id";
             } else {
-                QUERY_DEICH_GESCHL = "select " + FG_BA_DEICH.getID() + ", t." + FG_BA_DEICH.getPrimaryKey()
-                            + " from dlm25w.fg_ba_deich t\n"
-                            + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and \n"
-                            + "((\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") + \n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") +\n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) < (abs(von.wert - bis.wert)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                QUERY_DEICH_GESCHL = "select distinct " + FG_BA_DEICH.getID() + ", "
+                            + " unnest(dlm25w.determine_crossed_deich('" + user.getUserGroup().getName()
+                            + "', %1$s)) as id";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -330,37 +309,29 @@ public class SonstigeCheckAction extends AbstractCheckAction {
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_WIWE_HOLE = "select " + GU_WIWE.getID() + ", w1." + GU_WIWE.getPrimaryKey()
-                            + " from (\n"
-                            + "select w.id, st_startpoint(g.geo_field) sp, st_endpoint(g.geo_field) ep from\n"
-                            + "dlm25w.gu_wiwe  w\n"
-                            + "join geom g on (w.geom = g.id)\n"
-                            + "join dlm25w.k_ww_gr gr on (w.ww_gr = gr.id)\n"
-                            + ") w1,\n"
-                            + "(\n"
-                            + "select w.id, st_startpoint(g.geo_field) sp, st_endpoint(g.geo_field) ep from\n"
-                            + "dlm25w.gu_wiwe  w\n"
-                            + "join geom g on (w.geom = g.id)\n"
-                            + "join dlm25w.k_ww_gr gr on (w.ww_gr = gr.id)\n"
-                            + ") w2\n"
-                            + "where w1.id <> w2.id and (st_distance(w1.sp, w2.sp) < 0.5 or st_distance(w1.ep, w2.sp) < 0.5 or st_distance(w1.ep, w2.ep) < 0.5 or st_distance(w1.sp, w2.ep) < 0.5)";
+                QUERY_WIWE_HOLE = "select distinct " + GU_WIWE.getID() + ", d1." + GU_WIWE.getPrimaryKey()
+                            + "	from (select d.id, g.geo_field geo from \n"
+                            + "	dlm25w.gu_wiwe d\n"
+                            + "	join geom g on (d.geom = g.id)\n"
+                            + "	) as d1,\n"
+                            + "	(select d.id, g.geo_field geo from \n"
+                            + "	dlm25w.gu_wiwe d\n"
+                            + "	join geom g on (d.geom = g.id)\n"
+                            + "	) as d2\n"
+                            + "where d1.id <> d2.id and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) > 0.001 and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) < 0.5;";
             } else {
-                QUERY_WIWE_HOLE = "select " + GU_WIWE.getID() + ", w1." + GU_WIWE.getPrimaryKey()
-                            + " from (\n"
-                            + "select w.id, st_startpoint(g.geo_field) sp, st_endpoint(g.geo_field) ep from\n"
-                            + "dlm25w.gu_wiwe  w\n"
-                            + "join geom g on (w.geom = g.id)\n"
-                            + "join dlm25w.k_ww_gr gr on (w.ww_gr = gr.id)"
+                QUERY_WIWE_HOLE = "select distinct " + GU_WIWE.getID() + ", d1." + GU_WIWE.getPrimaryKey()
+                            + "	from (select d.id, g.geo_field geo from \n"
+                            + "	dlm25w.gu_wiwe d\n"
+                            + "	join geom g on (d.geom = g.id)\n"
+                            + "join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)"
                             + " where gr.owner = '" + user.getUserGroup().getName() + "'\n"
-                            + ") w1,\n"
-                            + "(\n"
-                            + "select w.id, st_startpoint(g.geo_field) sp, st_endpoint(g.geo_field) ep from\n"
-                            + "dlm25w.gu_wiwe  w\n"
-                            + "join geom g on (w.geom = g.id)\n"
-                            + "join dlm25w.k_ww_gr gr on (w.ww_gr = gr.id)"
-                            + " where gr.owner = '" + user.getUserGroup().getName() + "'\n"
-                            + ") w2\n"
-                            + "where w1.id <> w2.id and (st_distance(w1.sp, w2.sp) < 0.5 or st_distance(w1.ep, w2.sp) < 0.5 or st_distance(w1.ep, w2.ep) < 0.5 or st_distance(w1.sp, w2.ep) < 0.5)";
+                            + "	) as d1,\n"
+                            + "	(select d.id, g.geo_field geo from \n"
+                            + "	dlm25w.gu_wiwe d\n"
+                            + "	join geom g on (d.geom = g.id)\n"
+                            + "	) as d2\n"
+                            + "where d1.id <> d2.id and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) > 0.001 and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) < 0.5;";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -618,19 +589,19 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_FOTO_ATTR = "select " + FOTO.getID() + ", f." + FOTO.getPrimaryKey()
                             + " from dlm25w.foto f\n"
-                            + "	join dlm25w.fg_ba_punkt von on (f.ba_st = von.id)\n"
-                            + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "	join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
+                            + "	left join dlm25w.fg_ba_punkt von on (f.ba_st = von.id)\n"
+                            + "	left join dlm25w.fg_ba ba on (von.route = ba.id)\n"
+                            + "	left join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "	left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and (foto_nr is null or winkel < 0 or winkel > 360 or foto is null \n"
                             + "or freigabe is null or upl_name is null or upl_datum is null or upl_zeit is null or (aufn_datum is not null and ( date_part('year', aufn_datum) < 1900 or date_part('year', aufn_datum) > date_part('year', now()) ) ))";
             } else {
                 QUERY_FOTO_ATTR = "select " + FOTO.getID() + ", f." + FOTO.getPrimaryKey()
                             + " from dlm25w.foto f\n"
-                            + "	join dlm25w.fg_ba_punkt von on (f.ba_st = von.id)\n"
-                            + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "	join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
+                            + "	left join dlm25w.fg_ba_punkt von on (f.ba_st = von.id)\n"
+                            + "	left join dlm25w.fg_ba ba on (von.route = ba.id)\n"
+                            + "	left join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+                            + "	left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and (foto_nr is null or winkel < 0 or winkel > 360 or foto is null \n"
                             + "or freigabe is null or upl_name is null or upl_datum is null or upl_zeit is null or (aufn_datum is not null and ( date_part('year', aufn_datum) < 1900 or date_part('year', aufn_datum) > date_part('year', now()) ) ))  and gr.owner = '"
                             + user.getUserGroup().getName() + "'";
@@ -825,7 +796,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                                                 + result.getOffGerinneTechErrors()
                                                 + result.getGeschGerinneTechErrors()
                                                 + result.getdTechErrors()
-                                                + result.getvTechErrors()
+                                                + result.getvTechErrors(),
+                                        result.getProblemTreeObjectCount()
                                     }),
                                 NbBundle.getMessage(
                                     SonstigeCheckAction.class,
@@ -1020,6 +992,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             increaseProgress(wd, 6);
         }
 
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS));
+
         result.setAttributesLeis(analyseByQuery(
                 FG_BA_LEIS,
                 String.format(QUERY_LEIS_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
@@ -1211,6 +1185,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         private int offGerinneTechErrors;
         private int dTechErrors;
         private int vTechErrors;
+        private int problemTreeObjectCount;
 
         private H2FeatureService attributesDeich;
         private H2FeatureService gapDeich;
@@ -1232,6 +1207,24 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         private H2FeatureService vTech;
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the problemTreeObjectCount
+         */
+        public int getProblemTreeObjectCount() {
+            return problemTreeObjectCount;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  problemTreeObjectCount  the problemTreeObjectCount to set
+         */
+        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+            this.problemTreeObjectCount = problemTreeObjectCount;
+        }
 
         /**
          * DOCUMENT ME!

@@ -72,6 +72,9 @@ public class LawaCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BAK_GBK = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_bak_gbk");
+    private static final MetaClass FG_BA_GBK_DELTA = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_ba_gbk_delta");
     private static final MetaClass FG_BAK_GWK = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_bak_gwk");
@@ -90,6 +93,11 @@ public class LawaCheckAction extends AbstractCheckAction {
             CHECK_GBK_CAT_GWK,
             CHECK_GBK_CAT_LAWA,
             CHECK_BAK_OHNE_GBK
+        };
+    private static final int[] USED_CLASS_IDS = new int[] {
+            FG_BAK_GBK.getId(),
+            FG_BAK_GWK.getId(),
+            FG_BA_GBK_DELTA.getId()
         };
 
     static {
@@ -300,17 +308,13 @@ public class LawaCheckAction extends AbstractCheckAction {
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("ww_gr", String.valueOf(Types.INTEGER), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("ba_gn", String.valueOf(Types.VARCHAR), true);
+                    serviceAttribute = new FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("wdm", String.valueOf(Types.INTEGER), true);
+                    serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("gu_zust", String.valueOf(Types.VARCHAR), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("gu_cd", String.valueOf(Types.VARCHAR), true);
+                    serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.VARCHAR), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
@@ -324,6 +328,8 @@ public class LawaCheckAction extends AbstractCheckAction {
                             CHECKEZG_DELTA_GBK,
                             serviceAttributeDefinitionFgBa));
                     increaseProgress(wd, 1);
+
+                    result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS));
 
                     if (result.getFgBakWithoutGbk() != null) {
                         result.setFgBakWithoutGbkErrors(result.getFgBakWithoutGbk().getFeatureCount(null));
@@ -374,7 +380,8 @@ public class LawaCheckAction extends AbstractCheckAction {
                                     result.getGbkCatErrors(),
                                     result.getGwkCatErrors(),
                                     result.getGwkGbkErrors(),
-                                    result.getGbkInIncorrectEzgErrors()
+                                    result.getGbkInIncorrectEzgErrors(),
+                                    result.getProblemTreeObjectCount()
                                 }),
                             NbBundle.getMessage(
                                 LawaCheckAction.class,
@@ -438,6 +445,7 @@ public class LawaCheckAction extends AbstractCheckAction {
         private int gwkGbkErrors;
         private int bakCount;
         private int gbkInIncorrectEzgErrors;
+        private int problemTreeObjectCount;
         private H2FeatureService fgBakWithoutGbk;
         private H2FeatureService gbkCat;
         private H2FeatureService gwkCat;
@@ -445,6 +453,24 @@ public class LawaCheckAction extends AbstractCheckAction {
         private H2FeatureService gbkInIncorrectEzg;
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the problemTreeObjectCount
+         */
+        public int getProblemTreeObjectCount() {
+            return problemTreeObjectCount;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  problemTreeObjectCount  the problemTreeObjectCount to set
+         */
+        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+            this.problemTreeObjectCount = problemTreeObjectCount;
+        }
 
         /**
          * DOCUMENT ME!
