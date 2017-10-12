@@ -65,6 +65,18 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
     private static final MetaClass LAK_AE_MC = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_lak_ae");
+    private static final MetaClass FG_BAK_GWK = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_bak_gwk");
+    private static final MetaClass FG_BAK_GN1 = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_bak_gn1");
+    private static final MetaClass FG_BAK_GN2 = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_bak_gn2");
+    private static final MetaClass FG_BAK_GN3 = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_bak_gn3");
     private static String QUERY_AE = null;
     private static final String CHECK_LAWA_ROUTEN_AUS_EINLEITUNG = "Prüfungen->LAWA-Routen->Aus-/Einleitung";
     private static final String CHECK_LAWA_ROUTEN_GERICHTETHEIT = "Prüfungen->LAWA-Routen->Gerichtetheit";
@@ -73,6 +85,13 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
             CHECK_LAWA_ROUTEN_AUS_EINLEITUNG,
             CHECK_LAWA_ROUTEN_GERICHTETHEIT,
             CHECK_LAWA_ROUTEN_KONNEKTIVITAET
+        };
+    private static final int[] USED_CLASS_IDS = new int[] {
+            LAK_AE_MC.getId(),
+            FG_BAK_GWK.getId(),
+            FG_BAK_GN1.getId(),
+            FG_BAK_GN2.getId(),
+            FG_BAK_GN3.getId()
         };
 
     static {
@@ -150,8 +169,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                     SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), search);
                     increaseProgress(wd, 1);
 
-                    final List<FeatureServiceAttribute> serviceAttributeDefinition =
-                        new ArrayList<FeatureServiceAttribute>();
+                    List<FeatureServiceAttribute> serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
 
                     FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
                             "id",
@@ -172,6 +190,16 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                             CHECK_LAWA_ROUTEN_KONNEKTIVITAET,
                             serviceAttributeDefinition));
                     increaseProgress(wd, 1);
+
+                    serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
+
+                    serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+                    serviceAttributeDefinition.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute(
+                            "la_cd",
+                            String.valueOf(Types.VARCHAR),
+                            true);
+                    serviceAttributeDefinition.add(serviceAttribute);
 
                     result.setDirectionService(analyseByCustomSearch(
                             new LawaDirection(user),
@@ -245,6 +273,8 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                     }
                     increaseProgress(wd, 1);
 
+                    result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS));
+
                     if (result.getLakAeService() != null) {
                         result.setLakAeErrors(result.getLakAeService().getFeatureCount(null));
                         successful = false;
@@ -272,7 +302,8 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                                     result.getLawaCount(),
                                     result.getConnectionErrors(),
                                     result.getDirectionErrors(),
-                                    result.getLakAeErrors()
+                                    result.getLakAeErrors(),
+                                    result.getProblemTreeObjectCount()
                                 }),
                             NbBundle.getMessage(
                                 GWKConnectionCheckAction.class,
@@ -323,11 +354,30 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
         private int directionErrors;
         private int lakAeErrors;
         private int lawaCount;
+        private int problemTreeObjectCount;
         private H2FeatureService directionService;
         private H2FeatureService connectionService;
         private H2FeatureService lakAeService;
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the problemTreeObjectCount
+         */
+        public int getProblemTreeObjectCount() {
+            return problemTreeObjectCount;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  problemTreeObjectCount  the problemTreeObjectCount to set
+         */
+        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+            this.problemTreeObjectCount = problemTreeObjectCount;
+        }
 
         /**
          * DOCUMENT ME!

@@ -394,11 +394,11 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
     @Override
     public String getAdditionalFieldFormula(final String propertyName) {
         if (propertyName.equals("laenge")) {
-            return "st_length(geom)";
+            return "round(st_length(geom)::numeric, 2)";
         } else if (propertyName.equals("bak_st_von")) {
             return "0";
         } else if (propertyName.equals("bak_st_bis")) {
-            return "st_length(geom)";
+            return "round(st_length(geom)::numeric, 2)";
         }
 
         return null;

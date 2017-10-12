@@ -109,6 +109,12 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
             CHECK_VERWALTUNG_GB_LUECKE,
             CHECK_VERWALTUNG_GMD_LUECKE
         };
+    private static final int[] USED_CLASS_IDS = new int[] {
+            FG_BA_SB.getId(),
+            FG_BA_GB.getId(),
+            FG_BA_GMD.getId(),
+            FG_BA_EXP.getId()
+        };
 
     static {
         if ((FG_BA_SB != null) && (FG_BA_GB != null) && (FG_BA_GMD != null) && (FG_BAK != null)
@@ -360,7 +366,8 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                                         result.getOverlappedGmdErrors(),
                                         result.getOverlappedGbErrors(),
                                         result.getOverlappedSbErrors(),
-                                        result.getExpErrors()
+                                        result.getExpErrors(),
+                                        result.getProblemTreeObjectCount()
                                     }),
                                 NbBundle.getMessage(
                                     VerwaltungCheckAction.class,
@@ -623,6 +630,8 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                 baSbServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS));
+
         if (result.getIncompleteGb() != null) {
             result.setIncompleteGbErrors(result.getIncompleteGb().getFeatureCount(null));
             successful = false;
@@ -716,6 +725,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         private int overlappedSbErrors;
         private int stGbErrors;
         private int stGmdErrors;
+        private int problemTreeObjectCount;
         private H2FeatureService incompleteGb;
         private H2FeatureService incompleteSb;
         private H2FeatureService incompleteGmd;
@@ -730,6 +740,24 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         private H2FeatureService stGmd;
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the problemTreeObjectCount
+         */
+        public int getProblemTreeObjectCount() {
+            return problemTreeObjectCount;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  problemTreeObjectCount  the problemTreeObjectCount to set
+         */
+        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+            this.problemTreeObjectCount = problemTreeObjectCount;
+        }
 
         /**
          * DOCUMENT ME!

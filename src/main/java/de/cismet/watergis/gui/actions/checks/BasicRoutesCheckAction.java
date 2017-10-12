@@ -88,6 +88,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
             CHECK_BASISROUTEN_GEWAESSER_SCHNEIDEND,
             CHECK_BASISROUTEN_GEWAESSER_ZU_KURZ
         };
+    private static final int[] USED_CLASS_IDS = new int[] { BAK_AE_MC.getId() };
 
     static {
         if ((BAK_AE_MC != null) && (BAK_MC != null)) {
@@ -459,7 +460,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
 
         final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(SessionManager.getSession().getUser(),
-                            new RouteProblemsCount(owner, selectedIds));
+                            new RouteProblemsCount(owner, selectedIds, USED_CLASS_IDS, true));
 
         if ((problemCountList != null) && !problemCountList.isEmpty()) {
             final ArrayList innerList = problemCountList.get(0);
