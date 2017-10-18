@@ -385,10 +385,10 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
         final CidsBean geomBean = MC_GEOM.getEmptyInstance().getBean();
 
         try {
-            toBean.setProperty(
-                PROP_STATION_VALUE,
-                ((Geometry)((CidsBean)routeBean.getProperty(PROP_ROUTE_GEOM)).getProperty(PROP_GEOM_GEOFIELD))
-                            .getLength());
+//            toBean.setProperty(
+//                PROP_STATION_VALUE,
+//                ((Geometry)((CidsBean)routeBean.getProperty(PROP_ROUTE_GEOM)).getProperty(PROP_GEOM_GEOFIELD))
+//                            .getLength());
 
             linieBean.setProperty(PROP_STATIONLINIE_FROM, fromBean);
             linieBean.setProperty(PROP_STATIONLINIE_TO, toBean);
