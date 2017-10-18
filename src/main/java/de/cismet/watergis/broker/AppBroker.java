@@ -45,6 +45,8 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
 
+import edu.umd.cs.piccolo.nodes.PPath;
+
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
 import net.infonode.gui.componentpainter.GradientComponentPainter;
@@ -82,6 +84,8 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.piccolo.CustomFixedWidthStroke;
+import de.cismet.cismap.commons.gui.piccolo.FixedWidthStroke;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.MessenGeometryListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.RubberBandZoomListener;
 
@@ -102,6 +106,8 @@ import de.cismet.watergis.gui.components.RefreshMenuItem;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 import de.cismet.watergis.utils.BookmarkManager;
+
+import static de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface.LINESTRING;
 
 /**
  * DOCUMENT ME!
@@ -248,7 +254,33 @@ public class AppBroker implements Configurable {
     public void setMappingComponent(final MappingComponent aMappingComponent) {
         mappingComponent = aMappingComponent;
         mappingComponent.setReadOnly(false);
-        setMeasureListener(new MessenGeometryListener(mappingComponent));
+//        setMeasureListener(new MessenGeometryListener(mappingComponent));
+        setMeasureListener(new MessenGeometryListener(mappingComponent) {
+
+                /**
+                 * DOCUMENT ME!
+                 *
+                 * @param   filled  DOCUMENT ME!
+                 *
+                 * @return  DOCUMENT ME!
+                 */
+                @Override
+                protected PPath initTempFeature(final boolean filled) {
+                    final PPath newTempFeaturePath = new PPath();
+                    newTempFeaturePath.setStroke(new FixedWidthStroke());
+
+                    if (filled) {
+                        final Color fillingColor = new Color(1f, 0f, 0f, 0.5f);
+                        newTempFeaturePath.setStrokePaint(fillingColor.darker());
+                        newTempFeaturePath.setPaint(fillingColor);
+                    } else {
+                        final Color fillingColor = new Color(1f, 0f, 0f, 0.5f);
+                        newTempFeaturePath.setStroke(new CustomFixedWidthStroke(3));
+                        newTempFeaturePath.setStrokePaint(fillingColor);
+                    }
+                    return newTempFeaturePath;
+                }
+            });
         mappingComponent.addInputListener(MEASURE_MODE, getMeasureListener());
     }
 
