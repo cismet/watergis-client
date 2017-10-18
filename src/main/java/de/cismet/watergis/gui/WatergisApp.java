@@ -3951,7 +3951,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         if (routeModelInitialised && (selectedObject instanceof RouteElement)) {
             final RouteElement selectedRoute = (RouteElement)cbRoute.getSelectedItem();
-            final XBoundingBox bbox = selectedRoute.getEnvelope();
+            final XBoundingBox bbox = (XBoundingBox)selectedRoute.getEnvelope().clone();
             bbox.increase(10);
             final int id = selectedRoute.getId();
 
@@ -4262,6 +4262,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                             } else if (ans == JOptionPane.NO_OPTION) {
                                 attrTable.unlockAll();
                             } else {
+                                setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
                                 return;
                             }
                         }
@@ -4295,6 +4296,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         }
 
         LOG.info("Dispose(): exit");
+        // without the following line, the application will sometimes not close correctly
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         System.exit(0);
     }
 

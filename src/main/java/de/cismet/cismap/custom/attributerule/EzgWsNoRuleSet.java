@@ -70,6 +70,6 @@ public class EzgWsNoRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING);
     }
 }
