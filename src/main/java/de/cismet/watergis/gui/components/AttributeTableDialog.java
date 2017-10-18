@@ -20,9 +20,17 @@ import org.jdesktop.swingx.JXTable;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Paint;
 
+import java.lang.reflect.Method;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,15 +41,22 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.features.JDBCFeature;
 import de.cismet.cismap.commons.features.PureNewFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.style.BasicStyle;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
@@ -58,6 +73,7 @@ public class AttributeTableDialog extends javax.swing.JDialog {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(AttributeTableDialog.class);
+    private static final int MAX_COLUMN_SIZE = 200;
 
     //~ Instance fields --------------------------------------------------------
 
@@ -98,8 +114,8 @@ public class AttributeTableDialog extends javax.swing.JDialog {
         super(parent, title, modal);
         initComponents();
         attrTab.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        attrTab.setDefaultRenderer(Object.class, new ColoredCellRenderer());
-        attrTab.setDefaultRenderer(Number.class, new ColoredCellRenderer());
+//        attrTab.setDefaultRenderer(Object.class, new ColoredCellRenderer());
+//        attrTab.setDefaultRenderer(Number.class, new ColoredCellRenderer());
 
         attrTab.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -159,7 +175,61 @@ public class AttributeTableDialog extends javax.swing.JDialog {
                 (List<FeatureServiceFeature>)featureList,
                 service.getLayerProperties().getAttributeTableRuleSet());
         attrTab.setModel(model);
+
+        attrTab.setDefaultRenderer(String.class, new AttributeTableCellRenderer());
+        attrTab.setDefaultRenderer(Boolean.class, new AttributeTableCellRenderer());
+        attrTab.setDefaultRenderer(Date.class, new AttributeTableCellRenderer());
+        attrTab.setDefaultRenderer(Number.class, new NumberCellRenderer());
+        AttributeTableRuleSet tableRuleSet = null;
+
+        if (service.getLayerProperties() != null) {
+            tableRuleSet = service.getLayerProperties().getAttributeTableRuleSet();
+        }
+
+        if (tableRuleSet != null) {
+            for (int i = 0; i < attrTab.getColumnCount(); ++i) {
+                final String columnName = model.getColumnAttributeName(i);
+                final TableCellRenderer renderer = tableRuleSet.getCellRenderer(columnName);
+
+                if (renderer != null) {
+                    attrTab.getColumn(columnName).setCellRenderer(renderer);
+                }
+            }
+        }
+        setTableSize();
 //        removeSelectionOnAllFeatures();
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void setTableSize() {
+        final TableColumnModel columnModel = attrTab.getColumnModel();
+        final FontMetrics fmetrics = attrTab.getFontMetrics(attrTab.getFont());
+        final TableModel model = attrTab.getModel();
+        final int columnCount = model.getColumnCount();
+        int totalSize = 0;
+        attrTab.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        for (int i = 0; i < columnCount; ++i) {
+            int size = (int)fmetrics.getStringBounds(model.getColumnName(i), attrTab.getGraphics()).getWidth();
+
+            for (int row = 0; (row < model.getRowCount()) && (row < 50); ++row) {
+                final int tmpSize = (int)fmetrics.getStringBounds(String.valueOf(model.getValueAt(row, i)),
+                            attrTab.getGraphics()).getWidth();
+
+                if ((tmpSize > size) && (tmpSize < MAX_COLUMN_SIZE)) {
+                    size = tmpSize;
+                } else if ((tmpSize > size) && (tmpSize >= MAX_COLUMN_SIZE)) {
+                    size = MAX_COLUMN_SIZE;
+                }
+            }
+
+            totalSize += size + 30;
+            columnModel.getColumn(i).setPreferredWidth(size + 30);
+        }
+
+        attrTab.setMinimumSize(new Dimension(totalSize + 20, 50));
     }
 
     /**
@@ -471,6 +541,123 @@ public class AttributeTableDialog extends javax.swing.JDialog {
 //            }
 
             return oc;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class AttributeTableCellRenderer extends DefaultTableCellRenderer {
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   table       DOCUMENT ME!
+         * @param   value       DOCUMENT ME!
+         * @param   isSelected  DOCUMENT ME!
+         * @param   hasFocus    DOCUMENT ME!
+         * @param   row         DOCUMENT ME!
+         * @param   column      DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        @Override
+        public Component getTableCellRendererComponent(final JTable table,
+                final Object value,
+                final boolean isSelected,
+                final boolean hasFocus,
+                final int row,
+                final int column) {
+            Object formattedValue = value;
+
+            if (value instanceof java.sql.Date) {
+                final long dateInMillis = ((java.sql.Date)value).getTime();
+                formattedValue = DateFormat.getDateInstance().format(new Date(dateInMillis));
+            }
+
+            final Component c = super.getTableCellRendererComponent(
+                    table,
+                    formattedValue,
+                    isSelected,
+                    hasFocus,
+                    row,
+                    column);
+            final FeatureServiceFeature feature = model.getFeatureServiceFeature(table.convertRowIndexToModel(row));
+
+//            if (feature.isEditable() && feature.getClass().getName().endsWith("CidsLayerFeature")) {
+//                try {
+//                    final Method m = feature.getClass().getMethod("getBackgroundColor");
+//                    final Color backgroundColor = (Color)m.invoke(feature);
+//
+//                    if (backgroundColor != null) {
+//                        c.setBackground(backgroundColor);
+//                    }
+//                } catch (Exception e) {
+//                    LOG.error("Cannot determine the background color.", e);
+//                }
+//            } else if (feature.isEditable() && (feature instanceof JDBCFeature)) {
+//                final Color backgroundColor = ((JDBCFeature)feature).getBackgroundColor();
+//
+//                if (backgroundColor != null) {
+//                    c.setBackground(backgroundColor);
+//                }
+//            }
+
+            return c;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class NumberCellRenderer extends AttributeTableCellRenderer {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private DecimalFormat format;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new NumberCellRenderer object.
+         */
+        public NumberCellRenderer() {
+            format = new DecimalFormat();
+            format.setGroupingUsed(false);
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   table       DOCUMENT ME!
+         * @param   value       DOCUMENT ME!
+         * @param   isSelected  DOCUMENT ME!
+         * @param   hasFocus    DOCUMENT ME!
+         * @param   row         DOCUMENT ME!
+         * @param   column      DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        @Override
+        public Component getTableCellRendererComponent(final JTable table,
+                Object value,
+                final boolean isSelected,
+                final boolean hasFocus,
+                final int row,
+                final int column) {
+            if (value instanceof Number) {
+                value = format.format(value);
+            }
+
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 }

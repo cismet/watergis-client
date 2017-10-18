@@ -75,8 +75,6 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
 
     //~ Instance fields --------------------------------------------------------
 
-    private Map<ServiceLayer, Integer> services = new HashMap<ServiceLayer, Integer>();
-    private Collection<ServiceLayer> erroneousServices = new HashSet<ServiceLayer>();
     private JPanel servicesBusyPanel = new ServicesBusyPanel();
     private JPanel servicesRetrievedPanel = new ServicesRetrievedPanel();
     private JPanel servicesErrorPanel = new ServicesErrorPanel();
@@ -273,121 +271,34 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
             // do nothing
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_STARTED)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Entered RETRIEVAL_STARTED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                if (erroneousServices.contains(service)) {
-                    erroneousServices.remove(service);
-                }
-                addService(service);
-            }
-
-            if (LOG.isDebugEnabled()) {
                 LOG.debug("RETRIEVAL_STARTED (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + services.size() + ", erroneous services: "
-                            + erroneousServices.size());
+                            + ")");
             }
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_COMPLETED)) {
             // use repaintComplete instead
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_ABORTED)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Entered RETRIEVAL_ABORTED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                removeService(service);
-            }
-
-            if (LOG.isDebugEnabled()) {
                 LOG.debug("RETRIEVAL_ABORTED (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + services.size() + ", erroneous services: "
-                            + erroneousServices.size());
+                            + ")");
             }
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_ERROR)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Entered RETRIEVAL_ERROR: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                removeService(service);
-                erroneousServices.add(service);
-            }
-
-            if (LOG.isDebugEnabled()) {
                 LOG.debug("RETRIEVAL_ERROR (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + services.size() + ", erroneous services: "
-                            + erroneousServices.size());
+                            + ")");
             }
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_REMOVED)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Entered RETRIEVAL_REMOVED: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            if (e.getValue() instanceof ServiceLayer) {
-                final ServiceLayer service = (ServiceLayer)e.getValue();
-                removeService(service);
-                if (erroneousServices.contains(service)) {
-                    erroneousServices.remove(service);
-                }
-            }
-
-            if (LOG.isDebugEnabled()) {
                 LOG.debug("RETRIEVAL_REMOVED (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + services.size() + ", erroneous services: "
-                            + erroneousServices.size());
+                            + ")");
             }
         } else if (e.getName().equals(StatusEvent.RETRIEVAL_RESET)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Entered RETRIEVAL_RESET: " + e.getValue() + " (" + System.currentTimeMillis() + ")");
-            }
-
-            services.clear();
-            erroneousServices.clear();
-
-            if (LOG.isDebugEnabled()) {
                 LOG.debug("RETRIEVAL_RESET (" + e.getValue() + ", " + System.currentTimeMillis()
-                            + ") - services started: " + services.size() + ", erroneous services: "
-                            + erroneousServices.size());
+                            + ")");
             }
         }
 
         refreshControls(e);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  service  DOCUMENT ME!
-     */
-    private void addService(final ServiceLayer service) {
-        Integer count = services.get(service);
-
-        if (count == null) {
-            services.put(service, 1);
-        } else {
-            services.put(service, ++count);
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  service  DOCUMENT ME!
-     */
-    private void removeService(final ServiceLayer service) {
-        Integer count = services.get(service);
-
-        if (count != null) {
-            if (count < 2) {
-                services.remove(service);
-            } else {
-                services.put(service, --count);
-            }
-        }
     }
 
     /**
@@ -685,17 +596,10 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
                         + System.currentTimeMillis() + ")");
         }
 
-        if (e.getRetrievalEvent().getRetrievalService() instanceof ServiceLayer) {
-            final ServiceLayer service = (ServiceLayer)e.getRetrievalEvent().getRetrievalService();
-            removeService(service);
-            erroneousServices.remove(service);
-        }
-
         if (LOG.isDebugEnabled()) {
             LOG.debug("RETRIEVAL_COMPLETED (" + e.getRetrievalEvent().getRetrievalService() + ", "
                         + System.currentTimeMillis()
-                        + ") - services started: " + services.size() + ", erroneous services: "
-                        + erroneousServices.size());
+                        + ")");
         }
 
         refreshControls(null);
@@ -709,15 +613,6 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
         if (LOG.isDebugEnabled()) {
             LOG.debug("Entered RETRIEVAL_ERROR: " + e.getRetrievalEvent().getRetrievalService() + " ("
                         + System.currentTimeMillis() + ")");
-        }
-
-//        if (e.getRetrievalEvent().isInitialisationEvent()) {
-//            return;
-//        }
-        if (e.getRetrievalEvent().getRetrievalService() instanceof ServiceLayer) {
-            final ServiceLayer service = (ServiceLayer)e.getRetrievalEvent().getRetrievalService();
-            removeService(service);
-            erroneousServices.add(service);
         }
 
         refreshControls(null);
