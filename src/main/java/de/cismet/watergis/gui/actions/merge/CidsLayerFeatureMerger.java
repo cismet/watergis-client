@@ -86,6 +86,12 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
 
             if (lineMerger.getMergedLineStrings().size() == 1) {
                 mergedGeom = (Geometry)lineMerger.getMergedLineStrings().toArray(new Geometry[1])[0];
+
+                if ((mergedGeom.getCoordinates()[0] != g.getCoordinates()[0])
+                            && (mergedGeom.getCoordinates()[mergedGeom.getCoordinates().length - 1]
+                                != g.getCoordinates()[g.getCoordinates().length - 1])) {
+                    mergedGeom = mergedGeom.reverse();
+                }
             } else {
                 final Geometry mergedGeomReverseOrder = masterFeature.getGeometry()
                             .union(childFeature.getGeometry().reverse());
