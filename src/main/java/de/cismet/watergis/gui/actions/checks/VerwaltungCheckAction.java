@@ -109,14 +109,22 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
             CHECK_VERWALTUNG_GB_LUECKE,
             CHECK_VERWALTUNG_GMD_LUECKE
         };
-    private static final int[] USED_CLASS_IDS = new int[] {
+    private static int[] USED_CLASS_IDS = new int[] {
             FG_BA_SB.getId(),
             FG_BA_GB.getId(),
-            FG_BA_GMD.getId(),
-            FG_BA_EXP.getId()
+            FG_BA_GMD.getId()
         };
 
     static {
+        if (FG_BA_EXP != null) {
+            USED_CLASS_IDS = new int[] {
+                    FG_BA_SB.getId(),
+                    FG_BA_GB.getId(),
+                    FG_BA_GMD.getId(),
+                    FG_BA_EXP.getId()
+                };
+        }
+
         if ((FG_BA_SB != null) && (FG_BA_GB != null) && (FG_BA_GMD != null) && (FG_BAK != null)
                     && (FG_BA_EXP != null)) {
             final User user = SessionManager.getSession().getUser();
