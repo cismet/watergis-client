@@ -114,6 +114,7 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         final Object result = super.afterEdit(feature, column, row, oldValue, newValue);
         if (column.equals("kz")) {
             Object catObject = newValue;
@@ -202,6 +203,7 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             final Object kz = feature.getProperty("kz");
 
             if (kz instanceof FeatureServiceFeature) {

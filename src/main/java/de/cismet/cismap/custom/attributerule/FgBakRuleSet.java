@@ -111,6 +111,7 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (column.equals("ba_cd")) {
             if (changedBaCdObjects == null) {
                 changedBaCdObjects = new TreeSet<FeatureServiceFeature>();
@@ -208,6 +209,7 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
         final Map<Integer, String> baCdMap = new HashMap<Integer, String>();
 
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if ((changedBaCdObjects != null) && changedBaCdObjects.contains(feature)) {
                 final String baCd = (String)feature.getProperty("ba_cd");
 

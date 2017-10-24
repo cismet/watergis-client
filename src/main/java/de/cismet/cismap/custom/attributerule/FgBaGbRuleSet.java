@@ -88,6 +88,7 @@ public class FgBaGbRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                 "Das Attribut "
@@ -170,6 +171,7 @@ public class FgBaGbRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (feature.getProperty("gb") == null) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut gb darf nicht leer sein");

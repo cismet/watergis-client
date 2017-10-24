@@ -73,6 +73,7 @@ public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (column.equals("ba_cd")) {
             final Object o = (Number)feature.getProperty("ba_st");
             Double baSt;
