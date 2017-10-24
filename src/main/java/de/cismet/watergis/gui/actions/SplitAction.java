@@ -48,6 +48,8 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.util.SelectionManager;
 
+import de.cismet.tools.gui.WaitingDialogThread;
+
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.split.FeatureSplitter;
@@ -99,92 +101,7 @@ public class SplitAction extends AbstractAction {
 
                         final SplitGeometryListener listener = new SplitGeometryListener(
                                 mc,
-                                new GeometryFinishedListener() {
-
-                                    @Override
-                                    public void geometryFinished(final Geometry g) {
-                                        mc.setInteractionMode(oldInteractionMode);
-                                        final FeatureSplitterFactory factory = new FeatureSplitterFactory();
-
-                                        final FeatureSplitter splitter = factory.getFeatureMergerForFeature(
-                                                validFeature);
-
-                                        if (splitter != null) {
-                                            final Feature[] newFeatures = splitter.split(validFeature, (LineString)g);
-
-                                            if ((newFeatures != null) && (newFeatures.length > 0)) {
-                                                AttributeTableRuleSet ruleSet = null;
-
-                                                if (validFeature instanceof ModifiableFeature) {
-                                                    if (validFeature instanceof DefaultFeatureServiceFeature) {
-                                                        final DefaultFeatureServiceFeature dfsf =
-                                                            (DefaultFeatureServiceFeature)validFeature;
-
-                                                        if ((dfsf.getLayerProperties() != null)
-                                                                    && (dfsf.getLayerProperties()
-                                                                        .getAttributeTableRuleSet() != null)) {
-                                                            ruleSet = dfsf.getLayerProperties()
-                                                                            .getAttributeTableRuleSet();
-
-                                                            ruleSet.beforeSave(validFeature);
-                                                        }
-                                                    }
-
-                                                    try {
-                                                        if (validFeature instanceof CidsLayerFeature) {
-                                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(true);
-                                                        }
-                                                        ((ModifiableFeature)validFeature).saveChangesWithoutReload();
-                                                        validFeature.setEditable(false);
-                                                        validFeature.setEditable(true);
-                                                        if (validFeature instanceof CidsLayerFeature) {
-                                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(
-                                                                false);
-                                                        }
-                                                    } catch (Exception ex) {
-                                                        LOG.error("Error while saving changes", ex);
-                                                    }
-                                                }
-                                                for (final Feature newFeature : newFeatures) {
-                                                    if ((newFeature instanceof ModifiableFeature)) {
-                                                        if ((newFeature instanceof DefaultFeatureServiceFeature)
-                                                                    && (ruleSet != null)) {
-                                                            ruleSet.beforeSave(
-                                                                (DefaultFeatureServiceFeature)newFeature);
-                                                        }
-                                                        // Save the splitted feature
-                                                        try {
-                                                            ((ModifiableFeature)newFeature).saveChangesWithoutReload();
-                                                            AppBroker.getInstance()
-                                                                        .getWatergisApp()
-                                                                        .addFeatureToAttributeTable(
-                                                                            (FeatureServiceFeature)newFeature);
-                                                            if (LOG.isDebugEnabled()) {
-                                                                LOG.debug("Splitted features saved");
-                                                            }
-                                                        } catch (Exception ex) {
-                                                            LOG.error("Error while saving changes", ex);
-                                                        }
-
-                                                        if (validFeature instanceof FeatureServiceFeature) {
-                                                            ((FeatureServiceFeature)validFeature).getLayerProperties()
-                                                                        .getFeatureService()
-                                                                        .retrieve(true);
-                                                            SelectionManager.getInstance()
-                                                                        .addSelectedFeatures(
-                                                                            Arrays.asList(newFeatures));
-                                                            SelectionManager.getInstance()
-                                                                        .addSelectedFeatures(
-                                                                            Collections.nCopies(1, validFeature));
-                                                        }
-                                                    } else {
-                                                        LOG.error("Feature is not modifiable");
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
+                                new SplitFinishedListener(mc, oldInteractionMode, validFeature));
 
                         mc.addInputListener(SplitGeometryListener.LISTENER_KEY, listener);
                         mc.putCursor(SplitGeometryListener.LISTENER_KEY, new Cursor(Cursor.CROSSHAIR_CURSOR));
@@ -265,5 +182,152 @@ public class SplitAction extends AbstractAction {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class SplitFinishedListener implements GeometryFinishedListener {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private final MappingComponent mc;
+        private final String oldInteractionMode;
+        private final FeatureServiceFeature validFeature;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new SplitFinishedListener object.
+         *
+         * @param  mc                  DOCUMENT ME!
+         * @param  oldInteractionMode  DOCUMENT ME!
+         * @param  validFeature        DOCUMENT ME!
+         */
+        public SplitFinishedListener(final MappingComponent mc,
+                final String oldInteractionMode,
+                final FeatureServiceFeature validFeature) {
+            this.mc = mc;
+            this.oldInteractionMode = oldInteractionMode;
+            this.validFeature = validFeature;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void geometryFinished(final Geometry g) {
+            final WaitingDialogThread<Feature[]> wdt = new WaitingDialogThread<Feature[]>(AppBroker.getInstance()
+                            .getWatergisApp(),
+                    true,
+                    "Teile",
+                    null,
+                    500) {
+
+                    @Override
+                    protected Feature[] doInBackground() throws Exception {
+                        mc.setInteractionMode(oldInteractionMode);
+                        final FeatureSplitterFactory factory = new FeatureSplitterFactory();
+
+                        final FeatureSplitter splitter = factory.getFeatureMergerForFeature(
+                                validFeature);
+
+                        if (splitter != null) {
+                            final Feature[] newFeatures = splitter.split(validFeature, (LineString)g);
+
+                            if ((newFeatures != null) && (newFeatures.length > 0)) {
+                                AttributeTableRuleSet ruleSet = null;
+                                int progress = 0;
+                                wd.setMax(newFeatures.length + 1);
+
+                                if (validFeature instanceof ModifiableFeature) {
+                                    if (validFeature instanceof DefaultFeatureServiceFeature) {
+                                        final DefaultFeatureServiceFeature dfsf = (DefaultFeatureServiceFeature)
+                                            validFeature;
+
+                                        if ((dfsf.getLayerProperties() != null)
+                                                    && (dfsf.getLayerProperties().getAttributeTableRuleSet() != null)) {
+                                            ruleSet = dfsf.getLayerProperties().getAttributeTableRuleSet();
+
+                                            ruleSet.beforeSave(validFeature);
+                                        }
+                                    }
+
+                                    try {
+                                        if (validFeature instanceof CidsLayerFeature) {
+                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(true);
+                                        }
+                                        ((ModifiableFeature)validFeature).saveChangesWithoutReload();
+                                        validFeature.setEditable(false);
+                                        validFeature.setEditable(true);
+                                        if (validFeature instanceof CidsLayerFeature) {
+                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(
+                                                false);
+                                        }
+                                        wd.setProgress(++progress);
+                                    } catch (Exception ex) {
+                                        LOG.error("Error while saving changes", ex);
+                                    }
+                                }
+                                for (final Feature newFeature : newFeatures) {
+                                    if ((newFeature instanceof ModifiableFeature)) {
+                                        if ((newFeature instanceof DefaultFeatureServiceFeature)
+                                                    && (ruleSet != null)) {
+                                            ruleSet.beforeSave((DefaultFeatureServiceFeature)newFeature);
+                                        }
+                                        // Save the splitted feature
+                                        try {
+                                            ((ModifiableFeature)newFeature).saveChangesWithoutReload();
+                                            AppBroker.getInstance()
+                                                    .getWatergisApp()
+                                                    .addFeatureToAttributeTable((FeatureServiceFeature)newFeature);
+                                            if (LOG.isDebugEnabled()) {
+                                                LOG.debug("Splitted features saved");
+                                            }
+                                            wd.setProgress(++progress);
+                                        } catch (Exception ex) {
+                                            LOG.error("Error while saving changes", ex);
+                                            wd.setProgress(++progress);
+                                        }
+
+                                        return newFeatures;
+                                    } else {
+                                        LOG.error("Feature is not modifiable");
+                                    }
+                                }
+                            }
+                        }
+
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            final Feature[] newFeatures = get();
+
+                            if (newFeatures != null) {
+                                if (validFeature instanceof FeatureServiceFeature) {
+                                    ((FeatureServiceFeature)validFeature).getLayerProperties()
+                                            .getFeatureService()
+                                            .retrieve(true);
+                                    SelectionManager.getInstance().addSelectedFeatures(
+                                        Arrays.asList(newFeatures));
+                                    SelectionManager.getInstance()
+                                            .addSelectedFeatures(
+                                                Collections.nCopies(1, validFeature));
+                                }
+                            }
+                        } catch (Exception e) {
+                            LOG.error("Error during split operation", e);
+                        }
+                    }
+                };
+
+            wdt.start();
+        }
     }
 }

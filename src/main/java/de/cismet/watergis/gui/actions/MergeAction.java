@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import org.openide.util.NbBundle;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import de.cismet.cismap.commons.util.SelectionManager;
 import de.cismet.math.geometry.StaticGeometryFunctions;
 
 import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -99,113 +101,133 @@ public class MergeAction extends AbstractAction {
                 return;
             }
 
-            Feature resultedFeature = masterFeature;
-            allValidFeatures.remove(masterFeature);
-            Collections.sort(allValidFeatures, new DistanceComparator(masterFeature));
+            final WaitingDialogThread wdt = new WaitingDialogThread(AppBroker.getInstance().getWatergisApp(),
+                    true,
+                    "Zusammenfügen",
+                    null,
+                    500) {
 
-            final FeatureMerger merger = (new FeatureMergerFactory()).getFeatureMergerForFeature(resultedFeature);
-            final String geometryType = resultedFeature.getGeometry().getGeometryType();
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        Feature resultedFeature = masterFeature;
+                        allValidFeatures.remove(masterFeature);
+                        Collections.sort(allValidFeatures, new DistanceComparator(masterFeature));
 
-            try {
-                for (final Feature f : allValidFeatures) {
-                    resultedFeature = merger.merge(resultedFeature, f);
+                        final FeatureMerger merger = (new FeatureMergerFactory()).getFeatureMergerForFeature(
+                                resultedFeature);
+                        final String geometryType = resultedFeature.getGeometry().getGeometryType();
 
-                    if (resultedFeature == null) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            NbBundle.getMessage(MergeAction.class, "MergeAction.actionPerformed.mergeFailed"),
-                            NbBundle.getMessage(MergeAction.class, "MergeAction.actionPerformed.mergeFailed.title"),
-                            JOptionPane.ERROR_MESSAGE);
-                        break;
-                    }
-                }
-            } catch (MergeException ex) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    ex.getMessage(),
-                    "Fehler",
-                    JOptionPane.ERROR_MESSAGE);
+                        try {
+                            for (final Feature f : allValidFeatures) {
+                                resultedFeature = merger.merge(resultedFeature, f);
 
-                if (resultedFeature instanceof ModifiableFeature) {
-                    ((ModifiableFeature)resultedFeature).undoAll();
-                }
-
-                return;
-            }
-
-            if (resultedFeature != null) {
-                if (geometryType.toLowerCase().startsWith("multi")
-                            && !geometryType.equals(resultedFeature.getGeometry().getGeometryType())) {
-                    final Geometry g = resultedFeature.getGeometry();
-                    resultedFeature.setGeometry(StaticGeometryFunctions.toMultiGeometry(g));
-                }
-
-                if (geometryType.equals(resultedFeature.getGeometry().getGeometryType())
-                            && (resultedFeature instanceof ModifiableFeature)) {
-                    final ModifiableFeature serviceFeature = (ModifiableFeature)resultedFeature;
-
-                    // Save the merged feature
-                    try {
-                        if (serviceFeature instanceof DefaultFeatureServiceFeature) {
-                            final DefaultFeatureServiceFeature dfsf = (DefaultFeatureServiceFeature)serviceFeature;
-
-                            if ((dfsf.getLayerProperties() != null)
-                                        && (dfsf.getLayerProperties().getAttributeTableRuleSet() != null)) {
-                                final AttributeTableRuleSet ruleSet = dfsf.getLayerProperties()
-                                            .getAttributeTableRuleSet();
-
-                                ruleSet.beforeSave(dfsf);
-                                final List<FeatureServiceFeature> list = new ArrayList<FeatureServiceFeature>();
-                                list.add(dfsf);
-
-                                if (!ruleSet.prepareForSave(list)) {
-                                    return;
+                                if (resultedFeature == null) {
+                                    JOptionPane.showMessageDialog(
+                                        wd,
+                                        NbBundle.getMessage(
+                                            MergeAction.class,
+                                            "MergeAction.actionPerformed.mergeFailed"),
+                                        NbBundle.getMessage(
+                                            MergeAction.class,
+                                            "MergeAction.actionPerformed.mergeFailed.title"),
+                                        JOptionPane.ERROR_MESSAGE);
+                                    break;
                                 }
+                            }
+                        } catch (MergeException ex) {
+                            JOptionPane.showMessageDialog(wd,
+                                ex.getMessage(),
+                                "Fehler",
+                                JOptionPane.ERROR_MESSAGE);
+
+                            if (resultedFeature instanceof ModifiableFeature) {
+                                ((ModifiableFeature)resultedFeature).undoAll();
+                            }
+
+                            return null;
+                        }
+
+                        if (resultedFeature != null) {
+                            if (geometryType.toLowerCase().startsWith("multi")
+                                        && !geometryType.equals(resultedFeature.getGeometry().getGeometryType())) {
+                                final Geometry g = resultedFeature.getGeometry();
+                                resultedFeature.setGeometry(StaticGeometryFunctions.toMultiGeometry(g));
+                            }
+
+                            if (geometryType.equals(resultedFeature.getGeometry().getGeometryType())
+                                        && (resultedFeature instanceof ModifiableFeature)) {
+                                final ModifiableFeature serviceFeature = (ModifiableFeature)resultedFeature;
+
+                                // Save the merged feature
+                                try {
+                                    if (serviceFeature instanceof DefaultFeatureServiceFeature) {
+                                        final DefaultFeatureServiceFeature dfsf = (DefaultFeatureServiceFeature)
+                                            serviceFeature;
+
+                                        if ((dfsf.getLayerProperties() != null)
+                                                    && (dfsf.getLayerProperties().getAttributeTableRuleSet() != null)) {
+                                            final AttributeTableRuleSet ruleSet = dfsf.getLayerProperties()
+                                                        .getAttributeTableRuleSet();
+
+                                            ruleSet.beforeSave(dfsf);
+                                            final List<FeatureServiceFeature> list =
+                                                new ArrayList<FeatureServiceFeature>();
+                                            list.add(dfsf);
+
+                                            if (!ruleSet.prepareForSave(list)) {
+                                                return null;
+                                            }
+                                        }
+                                    }
+
+                                    for (final Feature f : allValidFeatures) {
+                                        if (f instanceof ModifiableFeature) {
+                                            final AttributeTable table = AppBroker.getInstance()
+                                                        .getWatergisApp()
+                                                        .getAttributeTableByFeature((FeatureServiceFeature)f);
+
+                                            if (table != null) {
+                                                table.removeFeature((FeatureServiceFeature)f);
+                                            } else {
+                                                ((ModifiableFeature)f).delete();
+                                            }
+
+                                            SelectionManager.getInstance().removeSelectedFeatures(f);
+                                        }
+                                    }
+
+                                    serviceFeature.saveChangesWithoutReload();
+                                    serviceFeature.setEditable(false);
+                                    serviceFeature.setEditable(true);
+                                } catch (Exception ex) {
+                                    LOG.error("Error while saving changes", ex);
+                                }
+
+                                AppBroker.getInstance().getMappingComponent().refresh();
+                            } else if (!geometryType.equals(resultedFeature.getGeometry().getGeometryType())) {
+                                // The geometry type has changed during the merge process
+                                JOptionPane.showMessageDialog(
+                                    wd,
+                                    NbBundle.getMessage(
+                                        MergeAction.class,
+                                        "MergeAction.actionPerformed.dataTypeChanged"),
+                                    NbBundle.getMessage(
+                                        MergeAction.class,
+                                        "MergeAction.actionPerformed.dataTypeChanged.title"),
+                                    JOptionPane.ERROR_MESSAGE);
+
+                                if (resultedFeature instanceof ModifiableFeature) {
+                                    ((ModifiableFeature)resultedFeature).undoAll();
+                                }
+                            } else {
+                                LOG.error("Feature is not modifiable " + resultedFeature.getClass().getName());
                             }
                         }
 
-                        for (final Feature f : allValidFeatures) {
-                            if (f instanceof ModifiableFeature) {
-                                final AttributeTable table = AppBroker.getInstance()
-                                            .getWatergisApp()
-                                            .getAttributeTableByFeature((FeatureServiceFeature)f);
-
-                                if (table != null) {
-                                    table.removeFeature((FeatureServiceFeature)f);
-                                } else {
-                                    ((ModifiableFeature)f).delete();
-                                }
-
-                                SelectionManager.getInstance().removeSelectedFeatures(f);
-                            }
-                        }
-
-                        serviceFeature.saveChangesWithoutReload();
-                        serviceFeature.setEditable(false);
-                        serviceFeature.setEditable(true);
-                    } catch (Exception ex) {
-                        LOG.error("Error while saving changes", ex);
+                        return null;
                     }
-
-                    AppBroker.getInstance().getMappingComponent().refresh();
-
-//                    if (resultedFeature instanceof FeatureServiceFeature) {
-//                        ((FeatureServiceFeature)resultedFeature).getLayerProperties()
-//                                .getFeatureService()
-//                                .retrieve(true);
-//                    }
-                } else if (!geometryType.equals(resultedFeature.getGeometry().getGeometryType())) {
-                    // The geometry type has changed during the merge process
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        NbBundle.getMessage(MergeAction.class, "MergeAction.actionPerformed.dataTypeChanged"),
-                        NbBundle.getMessage(MergeAction.class, "MergeAction.actionPerformed.dataTypeChanged.title"),
-                        JOptionPane.ERROR_MESSAGE);
-
-                    if (resultedFeature instanceof ModifiableFeature) {
-                        ((ModifiableFeature)resultedFeature).undoAll();
-                    }
-                } else {
-                    LOG.error("Feature is not modifiable " + resultedFeature.getClass().getName());
-                }
-            }
+                };
+            wdt.start();
         }
     }
 
