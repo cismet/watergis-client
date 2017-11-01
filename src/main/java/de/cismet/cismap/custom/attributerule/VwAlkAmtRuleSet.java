@@ -62,6 +62,8 @@ public class VwAlkAmtRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
+
         if ((column.equals("kreis_nr") || column.equals("amt_nr"))
                     && (newValue instanceof String)) {
             try {

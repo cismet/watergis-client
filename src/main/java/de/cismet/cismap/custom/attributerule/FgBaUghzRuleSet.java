@@ -96,6 +96,7 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (column.equals("ausbaujahr")
                     && !checkRange(
                         column,
@@ -234,6 +235,7 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (!checkRange("ausbaujahr", feature.getProperty("ausbaujahr"), 1950, 2100, true, true, true)) {
                 return false;
             }

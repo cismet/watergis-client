@@ -162,6 +162,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (column.equals("ba_cd")) {
             final Object o = (Number)feature.getProperty("ba_st");
             Double baSt;
@@ -226,7 +227,11 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
                 }
 
                 if ((d.getYear() >= 0) && (d.getYear() < 50)) {
-                    if (!showSecurityQuestion("Wert außerhalb Standardbereich (01.01.1950 .. heute) --> verwenden ?")) {
+                    if (
+                        !showSecurityQuestion(
+                                    "Wert außerhalb Standardbereich (01.01.1950 .. heute) --> verwenden ?",
+                                    column,
+                                    newValue)) {
                         return oldValue;
                     }
                 }
@@ -347,6 +352,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (!checkRange("winkel", feature.getProperty("winkel"), 0, 360, true, true, false)) {
                 return false;
             }

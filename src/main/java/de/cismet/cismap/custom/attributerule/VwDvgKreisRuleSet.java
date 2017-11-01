@@ -58,6 +58,8 @@ public class VwDvgKreisRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
+
         if ((column.equals("kreis_nr"))
                     && (newValue instanceof String)) {
             try {

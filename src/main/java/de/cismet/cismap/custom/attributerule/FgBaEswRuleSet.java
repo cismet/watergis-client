@@ -66,6 +66,7 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("eswa") || column.equals("lage")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -163,6 +164,7 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("eswa"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut eswa darf nicht leer sein");

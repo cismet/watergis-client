@@ -101,6 +101,8 @@ public class FgBaDRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
+
         if (isValueEmpty(newValue)) {
             if (column.equals("profil")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -242,7 +244,7 @@ public class FgBaDRuleSet extends WatergisDefaultRuleSet {
                 final double hoa = toNumber(newValue).doubleValue();
 
                 if (hoe < hoa) {
-                    if (!showSecurityQuestion("ho_e >= ho_a nicht eingehalten. Fortsetzen?")) {
+                    if (!showSecurityQuestion("ho_e >= ho_a nicht eingehalten. Fortsetzen?", column, newValue)) {
                         return oldValue;
                     }
                 }
@@ -251,7 +253,7 @@ public class FgBaDRuleSet extends WatergisDefaultRuleSet {
                 final double hoe = toNumber(newValue).doubleValue();
 
                 if (hoe < hoa) {
-                    if (!showSecurityQuestion("ho_e >= ho_a nicht eingehalten. Fortsetzen?")) {
+                    if (!showSecurityQuestion("ho_e >= ho_a nicht eingehalten. Fortsetzen?", column, newValue)) {
                         return oldValue;
                     }
                 }
@@ -392,6 +394,7 @@ public class FgBaDRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("profil"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut Profil darf nicht leer sein");

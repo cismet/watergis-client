@@ -90,6 +90,7 @@ public class FgBaGmdRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                 "Das Attribut "
@@ -171,6 +172,7 @@ public class FgBaGmdRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("gmd_nr"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut gmd_nr darf nicht leer sein");

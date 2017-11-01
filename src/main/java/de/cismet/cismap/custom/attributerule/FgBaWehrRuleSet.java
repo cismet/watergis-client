@@ -128,6 +128,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("wehr") || column.equals("wehr_v") || column.equals("wehr_av")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -498,6 +499,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("wehr"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut wehr darf nicht leer sein");

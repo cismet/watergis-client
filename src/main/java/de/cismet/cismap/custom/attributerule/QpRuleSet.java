@@ -145,6 +145,7 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (column.equals("aufn_datum")) {
             if ((newValue != null) && (newValue instanceof Date)) {
                 final Date d = (Date)newValue;
@@ -156,7 +157,11 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
                 }
 
                 if ((d.getYear() >= 0) && (d.getYear() < 50)) {
-                    if (!showSecurityQuestion("Wert außerhalb Standardbereich (01.01.1950 .. heute) --> verwenden ?")) {
+                    if (
+                        !showSecurityQuestion(
+                                    "Wert außerhalb Standardbereich (01.01.1950 .. heute) --> verwenden ?",
+                                    column,
+                                    newValue)) {
                         return oldValue;
                     }
                 }
@@ -256,11 +261,6 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
-        return super.prepareForSave(features);
     }
 
     @Override

@@ -83,6 +83,7 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("titel") || column.equals("doc")) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -144,6 +145,7 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("titel"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut titel darf nicht leer sein");

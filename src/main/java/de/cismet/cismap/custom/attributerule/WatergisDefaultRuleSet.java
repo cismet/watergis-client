@@ -41,8 +41,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
 
@@ -138,7 +140,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
     //~ Instance fields --------------------------------------------------------
 
+    protected int idOfCurrentlyCheckedFeature = -1;
+
     protected final Map<String, DataType> typeMap = new HashMap<String, DataType>();
+    private HashMap<ConfirmedValueKey, Object> confirmedValues = new HashMap<ConfirmedValueKey, Object>();
     private final Map<DataType, TreeSet<FeatureServiceFeature>> changedObjectMap =
         new HashMap<DataType, TreeSet<FeatureServiceFeature>>();
 
@@ -600,7 +605,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean checkRangeBetweenOrEqual(final String columnName,
+    protected boolean checkRangeBetweenOrEqual(final String columnName,
             final Object newValue,
             final double from,
             final double to,
@@ -829,7 +834,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean checkRange(final String columnName,
+    protected boolean checkRange(final String columnName,
             Object newValue,
             final double from,
             final double to,
@@ -864,7 +869,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     || (!fromEqualAllowed && ((newDoubleValue <= from) && (newDoubleValue > fromMax)))
                     || (toEqualAllowed && ((newDoubleValue <= toMax) && (newDoubleValue > to)))
                     || (!toEqualAllowed && ((newDoubleValue < toMax) && (newDoubleValue >= to)))) {
-            return showSecurityQuestion("Wert außerhalb Standardbereich (" + from + ", " + to + ") --> verwenden ?");
+            return showSecurityQuestion("Wert außerhalb Standardbereich (" + from + ", " + to + ") --> verwenden ?",
+                    columnName,
+                    newValue);
         } else if ((fromEqualAllowed && (newDoubleValue < fromMax))
                     || (!fromEqualAllowed && (newDoubleValue <= fromMax))
                     || (toEqualAllowed && (newDoubleValue > toMax))
@@ -896,7 +903,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean checkRange(final String columnName,
+    protected boolean checkRange(final String columnName,
             Object newValue,
             final int from,
             final int to,
@@ -933,7 +940,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     || (!fromEqualAllowed && ((newDoubleValue <= from) && (newDoubleValue > fromMax)))
                     || (toEqualAllowed && ((newDoubleValue <= toMax) && (newDoubleValue > to)))
                     || (!toEqualAllowed && ((newDoubleValue < toMax) && (newDoubleValue >= to)))) {
-            return showSecurityQuestion("Wert außerhalb Standardbereich (" + from + ", " + to + ") --> verwenden ?");
+            return showSecurityQuestion("Wert außerhalb Standardbereich (" + from + ", " + to + ") --> verwenden ?",
+                    columnName,
+                    newValue);
         } else if ((fromEqualAllowed && (newDoubleValue < fromMax))
                     || (!fromEqualAllowed && (newDoubleValue <= fromMax))
                     || (toEqualAllowed && (newDoubleValue > toMax))
@@ -964,17 +973,50 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     /**
      * DOCUMENT ME!
      *
-     * @param   text  DOCUMENT ME!
+     * @param   text      DOCUMENT ME!
+     * @param   field     DOCUMENT ME!
+     * @param   newValue  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean showSecurityQuestion(final String text) {
-        final int answ = JOptionPane.showConfirmDialog(AppBroker.getInstance().getWatergisApp(),
-                text,
-                "Bestätigung",
-                JOptionPane.YES_NO_OPTION);
+    protected boolean showSecurityQuestion(final String text, final String field, final Object newValue) {
+        final ConfirmedValueKey key = new ConfirmedValueKey(
+                idOfCurrentlyCheckedFeature,
+                field);
 
-        return answ == JOptionPane.YES_OPTION;
+        if ((confirmedValues.get(key) == null) || !confirmedValues.get(key).equals(roundIfDouble(newValue))) {
+            final int answ = JOptionPane.showConfirmDialog(AppBroker.getInstance().getWatergisApp(),
+                    text,
+                    "Bestätigung ID: "
+                            + idOfCurrentlyCheckedFeature
+                            + " Feld: "
+                            + field,
+                    JOptionPane.YES_NO_OPTION);
+
+            confirmedValues.put(key, roundIfDouble(newValue));
+            return answ == JOptionPane.YES_OPTION;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   value  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Object roundIfDouble(final Object value) {
+        if (value instanceof Double) {
+            BigDecimal bd = new BigDecimal((Double)value);
+            bd = bd.stripTrailingZeros();
+            final int tmpScale = bd.scale();
+            final int digitsOnTheLeft = bd.precision() - tmpScale;
+
+            return bd.round(new MathContext(digitsOnTheLeft + 8, RoundingMode.HALF_UP)).doubleValue();
+        }
+        return value;
     }
 
     /**
@@ -1411,6 +1453,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         final DataType type = typeMap.get(column);
 
         if (type != null) {
@@ -1532,6 +1575,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             }
 
             for (final FeatureServiceFeature feature : features) {
+                idOfCurrentlyCheckedFeature = feature.getId();
                 if (type.isUnique()) {
                     final TreeSet<FeatureServiceFeature> changedObjects = changedObjectMap.get(type);
 
@@ -1637,6 +1681,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (minBaLength != null) {
                 final Double from = (Double)feature.getProperty("ba_st_von");
                 final Double till = (Double)feature.getProperty("ba_st_bis");
@@ -2974,6 +3019,53 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             }
 
             return null;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private static class ConfirmedValueKey {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private final int id;
+        private final String field;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new ConfirmedValueKey object.
+         *
+         * @param  id     DOCUMENT ME!
+         * @param  field  DOCUMENT ME!
+         */
+        public ConfirmedValueKey(final int id, final String field) {
+            this.id = id;
+            this.field = field;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj instanceof ConfirmedValueKey) {
+                final ConfirmedValueKey key = (ConfirmedValueKey)obj;
+
+                return ((key.id == id) && key.field.equals(field));
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = (29 * hash) + this.id;
+            hash = (29 * hash) + Objects.hashCode(this.field);
+            return hash;
         }
     }
 }

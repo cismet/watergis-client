@@ -84,15 +84,6 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return super.afterEdit(feature, column, row, oldValue, newValue);
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("chart_s1") || columnName.equals("chart_m1")) {
             return new LinkTableCellRenderer();
@@ -109,6 +100,7 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature f : features) {
+            idOfCurrentlyCheckedFeature = f.getId();
             if (isValueEmpty(f.getProperty("ms_nr"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut ms_nr darf nicht null sein");

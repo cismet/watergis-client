@@ -66,6 +66,8 @@ public class VwAlkFlstFnRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
+
         if ((column.equals("fl_nr") || column.equals("gmk_nr") || column.equals("gmd_nr") || column.equals("flst")
                         || column.equals("fn"))
                     && (newValue instanceof String)) {
