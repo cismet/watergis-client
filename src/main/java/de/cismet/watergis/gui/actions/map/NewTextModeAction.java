@@ -50,7 +50,7 @@ public class NewTextModeAction extends AbstractNewGeometryModeAction implements 
                 "NewTextModeAction.text");
         putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/newPolygon.png"));
+                    "/de/cismet/watergis/res/icons16/newText.png"));
         putValue(SMALL_ICON, icon);
     }
 

@@ -75,7 +75,7 @@ public class SelectionModeAction extends AbstractAction {
         }
         AppBroker.getInstance().getMappingComponent().setInteractionMode(MappingComponent.SELECT);
         putValue(SELECTED_KEY, Boolean.TRUE);
-
+        AppBroker.getInstance().getMappingComponent().getHandleLayer().moveToFront();
         if (button != null) {
             button.setSelected(true);
         }
