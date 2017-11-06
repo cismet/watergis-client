@@ -891,7 +891,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 //        mappingComponent.setSnappingEnabled(true);
 //        mappingComponent.setSnappingOnLineEnabled(true);
 //        mappingComponent.setVisualizeSnappingRectEnabled(true);
-
+        mappingComponent.setSnappingRectSize(80);
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
     }
 
@@ -3889,7 +3889,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUndomniUndoPerformed
+    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdUndomniUndoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemUndo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -3907,14 +3907,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }//GEN-LAST:event_cmdUndomniUndoPerformed
+    }                                                              //GEN-LAST:event_cmdUndomniUndoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeMoveActionPerformed
+    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3926,14 +3926,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    }//GEN-LAST:event_cmdNodeMoveActionPerformed
+    } //GEN-LAST:event_cmdNodeMoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeAddActionPerformed
+    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeAddActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3945,14 +3945,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    }//GEN-LAST:event_cmdNodeAddActionPerformed
+    } //GEN-LAST:event_cmdNodeAddActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRemoveActionPerformed
+    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRemoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3964,14 +3964,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    }//GEN-LAST:event_cmdNodeRemoveActionPerformed
+    } //GEN-LAST:event_cmdNodeRemoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRouteActionPerformed
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
         final Object selectedObject = cbRoute.getSelectedItem();
 
         if (routeModelInitialised && (selectedObject instanceof RouteElement)) {
@@ -4007,16 +4007,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
             watergisSingleThreadExecutor.execute(t);
         }
-    }//GEN-LAST:event_cbRouteActionPerformed
+    } //GEN-LAST:event_cbRouteActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdGoToActionPerformed
+    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdGoToActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cmdGoToActionPerformed
+    } //GEN-LAST:event_cmdGoToActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -5023,7 +5023,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 }
                 features = SelectionManager.getInstance().getSelectedFeatures(afs);
 
-                if ( !((features != null) && !features.isEmpty()) ) {
+                if (!((features != null) && !features.isEmpty())) {
                     features = null;
                 }
 
