@@ -492,7 +492,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (an.anlp in ('P', 'P-Gr', 'P-Steg', 'P-Gr-Steg', 'P-Lat', 'Sta') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li')))\n"
                             + "or (an.anlp in ('Steg', 'Vt', 'Wes') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'bs')))\n"
                             + "or (a.esw is not null and (a.esw < 0 or a.esw > 1)) "
-                            + ") and gr.owner = '"
+                            + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName()
                             + "'";
             }

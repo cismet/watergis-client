@@ -339,7 +339,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private String infoURL;
     private boolean isInit = true;
     private Executor watergisSingleThreadExecutor = CismetExecutors.newSingleThreadExecutor();
-    private String lastExportPath = DIRECTORYPATH_WATERGIS;
+    private String lastExportPath = null;
     private String currentLayoutFile = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.watergis.gui.actions.AnnexAction annexAction;
@@ -881,7 +881,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mappingComponent.setInternalLayerWidgetAvailable(true);
         ((Observable)mappingComponent.getMemUndo()).addObserver(this);
         ((Observable)mappingComponent.getMemRedo()).addObserver(this);
-//        mappingComponent.getFeatureCollection().addFeatureCollectionListener(this);
+        mappingComponent.getFeatureCollection().addFeatureCollectionListener(this);
         mappingComponent.getInputEventListener().put(PhotoInfoListener.MODE, new PhotoInfoListener(mappingComponent));
         mappingComponent.getInputEventListener().put(PhotoAngleListener.MODE, new PhotoAngleListener(mappingComponent));
         mappingComponent.getInputEventListener().put(GafInfoListener.MODE, new GafInfoListener(mappingComponent));
@@ -891,7 +891,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 //        mappingComponent.setSnappingEnabled(true);
 //        mappingComponent.setSnappingOnLineEnabled(true);
 //        mappingComponent.setVisualizeSnappingRectEnabled(true);
-
+        mappingComponent.setSnappingRectSize(80);
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
     }
 
@@ -3889,7 +3889,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUndomniUndoPerformed
+    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdUndomniUndoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemUndo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -3907,14 +3907,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }//GEN-LAST:event_cmdUndomniUndoPerformed
+    }                                                              //GEN-LAST:event_cmdUndomniUndoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeMoveActionPerformed
+    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3926,14 +3926,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    }//GEN-LAST:event_cmdNodeMoveActionPerformed
+    } //GEN-LAST:event_cmdNodeMoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeAddActionPerformed
+    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeAddActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3945,14 +3945,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    }//GEN-LAST:event_cmdNodeAddActionPerformed
+    } //GEN-LAST:event_cmdNodeAddActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRemoveActionPerformed
+    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRemoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -3964,14 +3964,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    }//GEN-LAST:event_cmdNodeRemoveActionPerformed
+    } //GEN-LAST:event_cmdNodeRemoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRouteActionPerformed
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
         final Object selectedObject = cbRoute.getSelectedItem();
 
         if (routeModelInitialised && (selectedObject instanceof RouteElement)) {
@@ -4007,16 +4007,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
             watergisSingleThreadExecutor.execute(t);
         }
-    }//GEN-LAST:event_cbRouteActionPerformed
+    } //GEN-LAST:event_cbRouteActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdGoToActionPerformed
+    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdGoToActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cmdGoToActionPerformed
+    } //GEN-LAST:event_cmdGoToActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -4637,7 +4637,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
     @Override
     public void featureSelectionChanged(final FeatureCollectionEvent fce) {
-//        selectedFeaturesChanged();
+        selectedFeaturesChanged();
     }
 
     @Override
@@ -5021,31 +5021,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     afs.getLayerProperties().getAttributeTableRuleSet().exportFeatures();
                     return;
                 }
-                int option = 0;
                 features = SelectionManager.getInstance().getSelectedFeatures(afs);
 
-                if ((features != null) && !features.isEmpty()) {
-                    option = JOptionPane.showOptionDialog(
-                            this,
-                            "Alle Objekte exportieren oder nur die ausgewählten ?",
-                            "Export",
-                            JOptionPane.DEFAULT_OPTION,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            new Object[] { "alle Objekte", "ausgewählte Objekte" },
-                            "alle Objekte");
-                }
-                if (option == -1) {
-                    // The dialog was closed
-                    return;
-                } else if (option == 0) {
+                if (!((features != null) && !features.isEmpty())) {
                     features = null;
-                    // export all features final Geometry g = ZoomToLayerWorker.getServiceBounds(afs); final
-                    // XBoundingBox bb = new XBoundingBox(g);
-                    //
-                    // try { features = new ArrayList<Feature>();
-                    // features.addAll(afs.getFeatureFactory().createFeatures(afs.getQuery(), bb, null, 0, 0, null));
-                    // } catch (Exception ex) { LOG.error("Error while retrieving features", ex); }
                 }
 
                 DefaultFeatureServiceFeature[] featureArray = null;
@@ -5057,6 +5036,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         featureArray[i] = (DefaultFeatureServiceFeature)features.get(i);
                     }
                 }
+                if (lastExportPath == null) {
+                    if (DownloadManager.instance().getDestinationDirectory() != null) {
+                        lastExportPath = DownloadManager.instance().getDestinationDirectory().toString();
+                    }
+
+                    if (lastExportPath == null) {
+                        lastExportPath = DIRECTORYPATH_WATERGIS;
+                    }
+                }
+
                 final File outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
                         lastExportPath,
                         true,

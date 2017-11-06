@@ -15,6 +15,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.openide.util.NbBundle;
 
+import de.cismet.watergis.utils.GeometryUtils;
+
 /**
  * This is the reverse method of the CompletelyContainSourceSpatialMethod.
  *
@@ -30,9 +32,16 @@ public class CompletelyWithinSourceSpatialMethod implements SpatialSelectionMeth
     public boolean featureGeometryFulfilsRequirements(final Geometry source,
             final Geometry featureGeometry,
             final double distance) {
+        final boolean onlyPointsOrLines = GeometryUtils.isLineOrPoint(source)
+                    && GeometryUtils.isLineOrPoint(featureGeometry);
+
         if ((featureGeometry != null) && (source != null)) {
             if (distance == 0.0) {
-                return featureGeometry.within(source);
+                if (onlyPointsOrLines) {
+                    return featureGeometry.within(source.buffer(0.001));
+                } else {
+                    return featureGeometry.within(source);
+                }
             } else {
                 return featureGeometry.within(source.buffer(distance));
             }

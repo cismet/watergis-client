@@ -877,20 +877,22 @@ public class GewaesserReport {
 
         final List<Map<String, String>> features = new ArrayList<Map<String, String>>();
 
-        for (final ArrayList featurePops : propList) {
-            if ((Boolean)featurePops.get(4)) {
-                continue;
-            }
-            final Map<String, String> feature = new HashMap<String, String>();
-            feature.put("station", convertStation((Double)featurePops.get(0)));
-            feature.put("einm", toString(featurePops.get(1)));
-            feature.put("entsp", toString(featurePops.get(2)));
-            feature.put(
-                "seite",
-                ((featurePops.get(1) != null) ? flipSide(toString(featurePops.get(3)))
-                                              : toString(featurePops.get(3))));
+        if (propList != null) {
+            for (final ArrayList featurePops : propList) {
+                if ((Boolean)featurePops.get(4)) {
+                    continue;
+                }
+                final Map<String, String> feature = new HashMap<String, String>();
+                feature.put("station", convertStation((Double)featurePops.get(0)));
+                feature.put("einm", toString(featurePops.get(1)));
+                feature.put("entsp", toString(featurePops.get(2)));
+                feature.put(
+                    "seite",
+                    ((featurePops.get(1) != null) ? flipSide(toString(featurePops.get(3)))
+                                                  : toString(featurePops.get(3))));
 
-            features.add(feature);
+                features.add(feature);
+            }
         }
 
         return new FeatureDataSource(features);

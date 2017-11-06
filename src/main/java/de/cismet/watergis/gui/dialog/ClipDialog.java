@@ -8,6 +8,9 @@
 package de.cismet.watergis.gui.dialog;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.index.strtree.STRtree;
 
 import org.apache.log4j.Logger;
@@ -36,6 +39,8 @@ import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+
+import de.cismet.math.geometry.StaticGeometryFunctions;
 
 import de.cismet.tools.gui.WaitingDialogThread;
 
@@ -573,6 +578,7 @@ public class ClipDialog extends javax.swing.JDialog {
                     wd.setText(NbBundle.getMessage(
                             ClipDialog.class,
                             "ClipDialog.butOkActionPerformed.doInBackground.createFeatures"));
+                    boolean hasMultiPolygon = false;
 
                     for (final FeatureServiceFeature f : featureList) {
                         Geometry clipGeometry = null;
@@ -593,6 +599,9 @@ public class ClipDialog extends javax.swing.JDialog {
 
                                 if ((newGeom != null) && !newGeom.isEmpty()) {
                                     if (ckbMultiPart.isSelected()) {
+                                        hasMultiPolygon = hasMultiPolygon || (newGeom instanceof MultiPolygon)
+                                                    || (newGeom instanceof MultiPoint)
+                                                    || (newGeom instanceof MultiLineString);
                                         f.setGeometry(newGeom);
                                         resultedFeatures.add(f);
                                     } else {
@@ -613,6 +622,12 @@ public class ClipDialog extends javax.swing.JDialog {
                         if (progress < (10 + (count * 80 / featureList.size()))) {
                             progress = 10 + (count * 80 / featureList.size());
                             wd.setProgress(progress);
+                        }
+                    }
+
+                    if (ckbMultiPart.isSelected() && hasMultiPolygon) {
+                        for (final FeatureServiceFeature f : resultedFeatures) {
+                            f.setGeometry(StaticGeometryFunctions.toMultiGeometry(f.getGeometry()));
                         }
                     }
 

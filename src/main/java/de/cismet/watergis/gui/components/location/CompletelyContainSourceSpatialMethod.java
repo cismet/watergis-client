@@ -15,6 +15,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.openide.util.NbBundle;
 
+import de.cismet.watergis.utils.GeometryUtils;
+
 /**
  * This class checks, if the target geometry completely contains the source geometry.
  *
@@ -41,9 +43,16 @@ public class CompletelyContainSourceSpatialMethod implements SpatialSelectionMet
     public boolean featureGeometryFulfilsRequirements(final Geometry source,
             final Geometry featureGeometry,
             final double distance) {
+        final boolean onlyPointsOrLines = GeometryUtils.isLineOrPoint(source)
+                    && GeometryUtils.isLineOrPoint(featureGeometry);
+
         if ((featureGeometry != null) && (source != null)) {
             if (distance == 0.0) {
-                return featureGeometry.contains(source);
+                if (onlyPointsOrLines) {
+                    return featureGeometry.buffer(0.001).contains(source);
+                } else {
+                    return featureGeometry.contains(source);
+                }
             } else {
                 return featureGeometry.contains(source.buffer(distance));
             }

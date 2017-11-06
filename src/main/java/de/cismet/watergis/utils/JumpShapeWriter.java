@@ -18,10 +18,11 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
+import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.DriverProperties;
-import com.vividsolutions.jump.io.ShapefileWriter;
+//import com.vividsolutions.jump.io.ShapefileWriter;
 
 import org.apache.log4j.Logger;
 
@@ -47,6 +48,7 @@ import java.util.Map;
 import de.cismet.cismap.cidslayer.CidsLayer;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.features.PersistentFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.tools.FeatureTools;
@@ -152,7 +154,7 @@ public class JumpShapeWriter implements ShapeWriter {
             final List<String[]> aliasAttributeList,
             final String charset) throws Exception {
         final ShapefileWriter writer = new ShapefileWriter();
-        final List<BasicFeature> basicFeatures = cidsFeatures2BasicFeature(features, aliasAttributeList);
+        final List<Feature> basicFeatures = cidsFeatures2BasicFeature(features, aliasAttributeList);
         final FeatureSchema schema = basicFeatures.get(0).getSchema();
         final FeatureDataset set = new FeatureDataset(basicFeatures, schema);
         final DriverProperties properties = new DriverProperties();
@@ -165,7 +167,11 @@ public class JumpShapeWriter implements ShapeWriter {
             properties.set("charset", charset);
         }
 
-        writer.write(set, properties);
+        if (features[0] instanceof PersistentFeature) {
+            writer.writePersistentFeatures(set, properties);
+        } else {
+            writer.write(set, properties);
+        }
     }
 
     /**
@@ -248,9 +254,9 @@ public class JumpShapeWriter implements ShapeWriter {
      *
      * @return  DOCUMENT ME!
      */
-    private List<BasicFeature> cidsFeatures2BasicFeature(final FeatureServiceFeature[] features,
+    private List<Feature> cidsFeatures2BasicFeature(final FeatureServiceFeature[] features,
             final List<String[]> aliasAttributeList) {
-        final List<BasicFeature> featureList = new ArrayList<BasicFeature>();
+        final List<Feature> featureList = new ArrayList<Feature>();
         final Map<String, FeatureServiceAttribute> attributesMap = features[0].getLayerProperties()
                     .getFeatureService()
                     .getFeatureServiceAttributes();
@@ -265,26 +271,32 @@ public class JumpShapeWriter implements ShapeWriter {
         }
 
         for (final FeatureServiceFeature f : features) {
-            final BasicFeature bf = new BasicFeature(schema);
+            Feature bf = null;
 
-            for (final String[] name : names) {
-                Object value = f.getProperty(name[1]);
+            if (f instanceof PersistentFeature) {
+                bf = new JumpFeature(f, schema);
+            } else {
+                bf = new BasicFeature(schema);
 
-                if (value instanceof Boolean) {
-                    value = String.valueOf(value);
-                } else if (DATE_AS_STRING && ((value instanceof Timestamp) || (value instanceof Date))) {
-                    value = String.valueOf(value);
+                for (final String[] name : names) {
+                    Object value = f.getProperty(name[1]);
+
+                    if (value instanceof Boolean) {
+                        value = String.valueOf(value);
+                    } else if (DATE_AS_STRING && ((value instanceof Timestamp) || (value instanceof Date))) {
+                        value = String.valueOf(value);
+                    }
+
+                    if ((schema.getAttributeType(name[0]) == AttributeType.DOUBLE) && (value instanceof Integer)) {
+                        value = ((Integer)value).doubleValue();
+                    }
+
+                    bf.setAttribute(name[0], value);
                 }
 
-                if ((schema.getAttributeType(name[0]) == AttributeType.DOUBLE) && (value instanceof Integer)) {
-                    value = ((Integer)value).doubleValue();
+                if (!hasGeometry) {
+                    bf.setAttribute(DEFAULT_GEOM_PROPERTY_NAME, defaultGeom);
                 }
-
-                bf.setAttribute(name[0], value);
-            }
-
-            if (!hasGeometry) {
-                bf.setAttribute(DEFAULT_GEOM_PROPERTY_NAME, defaultGeom);
             }
 
             featureList.add(bf);
