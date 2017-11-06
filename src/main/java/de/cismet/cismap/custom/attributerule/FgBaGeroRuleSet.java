@@ -90,15 +90,6 @@ public class FgBaGeroRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return super.afterEdit(feature, column, row, oldValue, newValue);
-    }
-
-    @Override
     public TableCellEditor getCellEditor(final String columnName) {
         return super.getCellEditor(columnName);
     }

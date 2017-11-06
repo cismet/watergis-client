@@ -104,6 +104,7 @@ public class MnOwPegelRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (column.equals("ms_nr") && (isValueEmpty(newValue)) && (isValueEmpty(feature.getProperty("ms_nr_wsa")))) {
             JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                 "Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.");
@@ -164,6 +165,7 @@ public class MnOwPegelRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if ((isValueEmpty(feature.getProperty("ms_nr"))) && (isValueEmpty(feature.getProperty("ms_nr_wsa")))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.");

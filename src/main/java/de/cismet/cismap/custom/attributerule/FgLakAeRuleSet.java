@@ -73,6 +73,7 @@ public class FgLakAeRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
@@ -90,11 +91,6 @@ public class FgLakAeRuleSet extends WatergisDefaultRuleSet {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
-        return super.prepareForSave(features);
     }
 
     @Override

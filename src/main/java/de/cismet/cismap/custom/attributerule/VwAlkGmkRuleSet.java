@@ -60,6 +60,8 @@ public class VwAlkGmkRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
+
         if ((column.equals("gmk_nr") || column.equals("gmd_nr"))
                     && (newValue instanceof String)) {
             try {

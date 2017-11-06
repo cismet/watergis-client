@@ -49,15 +49,6 @@ public class FgBaStatRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object afterEdit(final FeatureServiceFeature feature,
-            final String column,
-            final int row,
-            final Object oldValue,
-            final Object newValue) {
-        return newValue;
-    }
-
-    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         return super.getCellRenderer(columnName);
     }

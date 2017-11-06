@@ -80,6 +80,7 @@ public class MnGwPegelRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature f : features) {
+            idOfCurrentlyCheckedFeature = f.getId();
             if (isNumberOrNull(f.getProperty("pn")) && (f.getProperty("pn") != null)) {
                 if (((Number)f.getProperty("pn")).intValue() == 0) {
                     if ((f.getProperty("pn_von") != null) || (f.getProperty("pn_bis") != null)

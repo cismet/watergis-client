@@ -15,6 +15,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.openide.util.NbBundle;
 
+import de.cismet.watergis.utils.GeometryUtils;
+
 /**
  * Unlike CompletelyContainSourceSpatialMethod, this method does not distinguish between points in the boundary and in
  * the interior of geometries.
@@ -31,12 +33,19 @@ public class ContainSourceSpatialMethod implements SpatialSelectionMethodInterfa
     public boolean featureGeometryFulfilsRequirements(final Geometry source,
             final Geometry featureGeometry,
             final double distance) {
+        final boolean onlyPointsOrLines = GeometryUtils.isLineOrPoint(source)
+                    && GeometryUtils.isLineOrPoint(featureGeometry);
+
         if ((featureGeometry != null) && (source != null)) {
             if (distance == 0.0) {
                 // The difference between covers and contains - covers is a more inclusive relation. In particular,
                 // unlike contains it does not distinguish between points in the boundary and in the interior of
                 // geometries.
-                return featureGeometry.covers(source);
+                if (onlyPointsOrLines) {
+                    return featureGeometry.buffer(0.001).covers(source);
+                } else {
+                    return featureGeometry.covers(source);
+                }
             } else {
                 return featureGeometry.covers(source.buffer(distance));
             }

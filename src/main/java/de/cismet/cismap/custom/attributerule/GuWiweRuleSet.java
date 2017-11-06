@@ -112,6 +112,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         if (column.equals("ausbaujahr")
                     && !checkRange(
                         column,
@@ -291,6 +292,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
             if (
                 !checkRange(
                             "ausbaujahr",

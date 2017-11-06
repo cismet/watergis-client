@@ -70,6 +70,7 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import org.jdom.Element;
 
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 
 import java.awt.BorderLayout;
@@ -338,7 +339,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private String infoURL;
     private boolean isInit = true;
     private Executor watergisSingleThreadExecutor = CismetExecutors.newSingleThreadExecutor();
-    private String lastExportPath = DIRECTORYPATH_WATERGIS;
+    private String lastExportPath = null;
     private String currentLayoutFile = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.cismet.watergis.gui.actions.AnnexAction annexAction;
@@ -880,7 +881,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mappingComponent.setInternalLayerWidgetAvailable(true);
         ((Observable)mappingComponent.getMemUndo()).addObserver(this);
         ((Observable)mappingComponent.getMemRedo()).addObserver(this);
-//        mappingComponent.getFeatureCollection().addFeatureCollectionListener(this);
+        mappingComponent.getFeatureCollection().addFeatureCollectionListener(this);
         mappingComponent.getInputEventListener().put(PhotoInfoListener.MODE, new PhotoInfoListener(mappingComponent));
         mappingComponent.getInputEventListener().put(PhotoAngleListener.MODE, new PhotoAngleListener(mappingComponent));
         mappingComponent.getInputEventListener().put(GafInfoListener.MODE, new GafInfoListener(mappingComponent));
@@ -890,7 +891,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 //        mappingComponent.setSnappingEnabled(true);
 //        mappingComponent.setSnappingOnLineEnabled(true);
 //        mappingComponent.setVisualizeSnappingRectEnabled(true);
-
+        mappingComponent.setSnappingRectSize(80);
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
     }
 
@@ -1687,6 +1688,30 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 final AttributeTable attrTable = (AttributeTable)c;
 
                 attrTable.changeProcessingMode(forceSave);
+                if (attrTable.isProcessingModeActive() && attrTable.isLoading()) {
+                    final WaitingDialogThread wdt = new WaitingDialogThread(
+                            this,
+                            true,
+                            "Bearbeitungsmodus wird gestartet",
+                            null,
+                            500) {
+
+                            @Override
+                            protected Object doInBackground() throws Exception {
+                                while (attrTable.isLoading()) {
+                                    try {
+                                        Thread.sleep(100);
+                                    } catch (InterruptedException ex) {
+                                        LOG.warn("interrupted", ex);
+                                    }
+                                }
+
+                                return null;
+                            }
+                        };
+                    wdt.start();
+                }
+
                 return true;
             }
         }
@@ -4612,7 +4637,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
     @Override
     public void featureSelectionChanged(final FeatureCollectionEvent fce) {
-//        selectedFeaturesChanged();
+        selectedFeaturesChanged();
     }
 
     @Override
@@ -4996,31 +5021,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     afs.getLayerProperties().getAttributeTableRuleSet().exportFeatures();
                     return;
                 }
-                int option = 0;
                 features = SelectionManager.getInstance().getSelectedFeatures(afs);
 
-                if ((features != null) && !features.isEmpty()) {
-                    option = JOptionPane.showOptionDialog(
-                            this,
-                            "Alle Objekte exportieren oder nur die ausgewählten ?",
-                            "Export",
-                            JOptionPane.DEFAULT_OPTION,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            new Object[] { "alle Objekte", "ausgewählte Objekte" },
-                            "alle Objekte");
-                }
-                if (option == -1) {
-                    // The dialog was closed
-                    return;
-                } else if (option == 0) {
+                if (!((features != null) && !features.isEmpty())) {
                     features = null;
-                    // export all features final Geometry g = ZoomToLayerWorker.getServiceBounds(afs); final
-                    // XBoundingBox bb = new XBoundingBox(g);
-                    //
-                    // try { features = new ArrayList<Feature>();
-                    // features.addAll(afs.getFeatureFactory().createFeatures(afs.getQuery(), bb, null, 0, 0, null));
-                    // } catch (Exception ex) { LOG.error("Error while retrieving features", ex); }
                 }
 
                 DefaultFeatureServiceFeature[] featureArray = null;
@@ -5032,6 +5036,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         featureArray[i] = (DefaultFeatureServiceFeature)features.get(i);
                     }
                 }
+                if (lastExportPath == null) {
+                    if (DownloadManager.instance().getDestinationDirectory() != null) {
+                        lastExportPath = DownloadManager.instance().getDestinationDirectory().toString();
+                    }
+
+                    if (lastExportPath == null) {
+                        lastExportPath = DIRECTORYPATH_WATERGIS;
+                    }
+                }
+
                 final File outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
                         lastExportPath,
                         true,

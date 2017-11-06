@@ -15,6 +15,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,20 +48,32 @@ public class SimpleFeatureSplitter implements FeatureSplitter {
 
             final Geometry geom = dfsf.getGeometry();
 
-            if (geom.getNumGeometries() > 1) {
-                final List<Feature> newFeatures = new ArrayList<Feature>();
-                final Geometry[] splittedGeom = GeometryUtils.splitGeom(geom, splitLine);
+            final Geometry[] splittedGeom = GeometryUtils.splitGeom(geom, splitLine);
 
-                if (isMulti) {
-                    for (int i = 0; i < splittedGeom.length; ++i) {
-                        splittedGeom[i] = StaticGeometryFunctions.toMultiGeometry(splittedGeom[i]);
-                        splittedGeom[i].setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
-                    }
+            if (isMulti) {
+                for (int i = 0; i < splittedGeom.length; ++i) {
+                    splittedGeom[i] = StaticGeometryFunctions.toMultiGeometry(splittedGeom[i]);
+                    splittedGeom[i].setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
                 }
+            } else {
+                if (splittedGeom[0] instanceof LineString) {
+                    // the longest line should be the first, because the longest Geometry
+                    // should still contain its ba_cd (theme FG_BA).
+                    Arrays.sort(splittedGeom, new Comparator<Geometry>() {
 
+                            @Override
+                            public int compare(final Geometry o1, final Geometry o2) {
+                                return (int)Math.signum(o2.getLength() - o1.getLength());
+                            }
+                        });
+                }
+            }
+            final List<Feature> newFeatures = new ArrayList<Feature>();
+
+            if (splittedGeom.length > 1) {
                 masterFeature.setGeometry(splittedGeom[0]);
 
-                for (int i = 0; i < splittedGeom.length; ++i) {
+                for (int i = 1; i < splittedGeom.length; ++i) {
                     final FeatureServiceFeature newFeature;
 
                     if ((masterFeature instanceof DefaultFeatureServiceFeature)

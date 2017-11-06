@@ -16,6 +16,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -242,6 +244,18 @@ public class GeometryUtils {
             geom = ((GeometryCollection)geom).union();
         }
         return geom;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   geom  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static boolean isLineOrPoint(final Geometry geom) {
+        return ((geom instanceof LineString) || (geom instanceof Point) || (geom instanceof MultiLineString)
+                        || (geom instanceof MultiPoint));
     }
 
     /**

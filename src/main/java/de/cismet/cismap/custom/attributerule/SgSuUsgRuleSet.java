@@ -328,6 +328,7 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
             final int row,
             final Object oldValue,
             final Object newValue) {
+        idOfCurrentlyCheckedFeature = feature.getId();
         refreshDerivedFields(feature);
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
