@@ -35,6 +35,8 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.download.QpDownload;
 
+import de.cismet.watergis.gui.actions.gaf.ReportAction;
+
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
@@ -173,18 +175,20 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
             final int clickCount) {
         if (columnName.equals("qp_nr")) {
             if ((value instanceof Integer) && (clickCount == 1) && (feature instanceof CidsLayerFeature)) {
-                if (DownloadManagerDialog.showAskingForUserTitle(AppBroker.getInstance().getRootWindow())) {
-                    final String jobname = DownloadManagerDialog.getJobname();
-                    final String filename = value.toString();
-                    final String extension = ".pdf";
-
-                    DownloadManager.instance().add(new QpDownload(
-                            filename,
-                            extension,
-                            jobname,
-                            (Integer)value,
-                            null));
-                }
+//                if (DownloadManagerDialog.showAskingForUserTitle(AppBroker.getInstance().getRootWindow())) {
+//                    final String jobname = DownloadManagerDialog.getJobname();
+//                    final String filename = value.toString();
+//                    final String extension = ".pdf";
+//
+//                    DownloadManager.instance().add(new QpDownload(
+//                            filename,
+//                            extension,
+//                            jobname,
+//                            (Integer)value,
+//                            null));
+//                }
+                final ReportAction action = new ReportAction();
+                action.actionPerformed(null);
             }
         }
     }

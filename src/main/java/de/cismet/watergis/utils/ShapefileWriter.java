@@ -373,11 +373,20 @@ public class ShapefileWriter implements JUMPWriter {
         if (charsetName == null) {
             charsetName = Charset.defaultCharset().name();
         }
+        if (Thread.interrupted()) {
+            return;
+        }
         writeDbf(featureCollection, dbffname, Charset.forName(charsetName));
+        if (Thread.interrupted()) {
+            return;
+        }
 
         // this gc will be a collection of either multi-points, multi-polygons, or multi-linestrings
         // polygons will have the rings in the correct order
         gc = makePersistentSHAPEGeometryCollection(featureCollection);
+        if (Thread.interrupted() || gc == null) {
+            return;
+        }
 
         shapeType = 2; // x,y
 
@@ -407,6 +416,9 @@ public class ShapefileWriter implements JUMPWriter {
         final URL url = new URL("file", "localhost", shpfileName);
         final Shapefile myshape = new Shapefile(url);
         myshape.write(gc, shapeType);
+        if (Thread.interrupted()) {
+            return;
+        }
 
         shxfname = path + fname_withoutextention + ".shx";
 
@@ -1007,6 +1019,9 @@ public class ShapefileWriter implements JUMPWriter {
         final List features = fc.getFeatures();
         final FilePersistenceManager pm = ((JumpFeature)features.get(0)).getPersistenceManager();
         for (int t = 0; t < features.size(); t++) {
+            if (Thread.interrupted()) {
+                return null;
+            }
             final Geometry geom = ((Feature)features.get(t)).getGeometry();
 
             switch (geomtype) {

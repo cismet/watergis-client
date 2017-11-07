@@ -18,6 +18,9 @@ import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.newuser.User;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.apache.log4j.Logger;
 
 import org.openide.util.NbBundle;
@@ -87,6 +90,8 @@ import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
 import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.check.CrossedLinesCheck;
 
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -311,7 +316,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected String getWbblPath() {
+    public static String getWbblPath() {
         if (hasAccessToProtectedWbbl()) {
             return PROTECTEC_WBBL_PATH;
         } else {
@@ -456,7 +461,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    private static boolean hasAccessToProtectedWbbl() {
+    public static boolean hasAccessToProtectedWbbl() {
         if (accessToProtectedWbbl == null) {
             try {
                 final String attr = SessionManager.getProxy()
@@ -1720,6 +1725,41 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 }
             }
         }
+
+        final CrossedLinesCheck check = new CrossedLinesCheck();
+
+        for (final FeatureServiceFeature feature : features) {
+            final Geometry geo = feature.getGeometry();
+            if (!check.check(geo, null, false)) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Die Geometrie des Objektes mit der id "
+                            + feature.getId()
+                            + " überschneidet sich ",
+                    "Ungültiger Wert",
+                    JOptionPane.ERROR_MESSAGE);
+
+                return false;
+            } else {
+                final Coordinate[] coords = geo.getCoordinates();
+                Coordinate lastCoord = null;
+
+                for (final Coordinate c : coords) {
+                    if ((lastCoord != null) && lastCoord.equals(c)) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Die Geometrie des Objektes mit der id "
+                                    + feature.getId()
+                                    + " besitzt doppelte Punkte",
+                            "Ungültiger Wert",
+                            JOptionPane.ERROR_MESSAGE);
+
+                        return false;
+                    }
+
+                    lastCoord = c;
+                }
+            }
+        }
+
         return true;
     }
 

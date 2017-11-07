@@ -34,6 +34,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.LinearReferencingInfo;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
@@ -45,6 +46,10 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
 import de.cismet.cismap.commons.tools.FeatureTools;
 
 import de.cismet.cismap.linearreferencing.tools.StationTableCellEditorInterface;
+
+import de.cismet.watergis.utils.LinkTableCellRenderer;
+
+import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.minBaLength;
 
 /**
  * DOCUMENT ME!
@@ -65,10 +70,93 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
 
     //~ Instance fields --------------------------------------------------------
 
+    protected final Map<String, WatergisDefaultRuleSet.DataType> typeMap =
+        new HashMap<String, WatergisDefaultRuleSet.DataType>();
+
     private List<LinearReferencingInfo> refInfos = null;
     private Map<String, LinearReferencingInfo> refInfoMap = null;
     private String geometryType = null;
-    private final Map<String, FeatureServiceAttribute> attributesMap = new HashMap<String, FeatureServiceAttribute>();
+    private Map<String, FeatureServiceAttribute> attributesMap = new HashMap<String, FeatureServiceAttribute>();
+    private boolean isCheckTable = false;
+
+    //~ Instance initializers --------------------------------------------------
+
+    {
+        typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
+        typeMap.put("ww_gr", new WatergisDefaultRuleSet.Catalogue("k_ww_gr", false, false));
+        typeMap.put("ba_cd", new WatergisDefaultRuleSet.Varchar(50, false, false));
+        typeMap.put("ba_st_von", new WatergisDefaultRuleSet.Numeric(10, 2, false, true));
+        typeMap.put("ba_st_bis", new WatergisDefaultRuleSet.Numeric(10, 2, false, true));
+        typeMap.put("bak_st_von", new WatergisDefaultRuleSet.Numeric(10, 2, false, true));
+        typeMap.put("bak_st_bis", new WatergisDefaultRuleSet.Numeric(10, 2, false, true));
+        typeMap.put("obj_nr", new WatergisDefaultRuleSet.Numeric(20, 0, false, false));
+        typeMap.put("ausbaujahr", new WatergisDefaultRuleSet.Numeric(4, 0, false, true));
+        typeMap.put("bemerkung", new WatergisDefaultRuleSet.Varchar(250, false, true));
+        typeMap.put("br_dm_li", new WatergisDefaultRuleSet.Numeric(7, 3, false, true));
+        typeMap.put("ho_li", new WatergisDefaultRuleSet.Numeric(7, 3, false, true));
+        typeMap.put("br_tr_o_li", new WatergisDefaultRuleSet.Numeric(5, 3, false, true));
+        typeMap.put("ho_e", new WatergisDefaultRuleSet.Numeric(6, 2, false, true));
+        typeMap.put("ho_a", new WatergisDefaultRuleSet.Numeric(6, 2, false, true));
+        typeMap.put("gefaelle", new WatergisDefaultRuleSet.Numeric(6, 2, false, true));
+        typeMap.put("ho_d_e", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("ho_d_a", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("ho_d_m", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("laenge", new WatergisDefaultRuleSet.Numeric(10, 2, false, false));
+        typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
+        typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
+        typeMap.put("ba_gn", new WatergisDefaultRuleSet.Varchar(50, false, false));
+        typeMap.put("km_von", new WatergisDefaultRuleSet.Numeric(10, 2, false, true));
+        typeMap.put("km_bis", new WatergisDefaultRuleSet.Numeric(10, 2, false, true));
+        typeMap.put("nr", new WatergisDefaultRuleSet.Varchar(50, false, true));
+        typeMap.put("name", new WatergisDefaultRuleSet.Varchar(50, false, true));
+        typeMap.put("berme_w", new WatergisDefaultRuleSet.BooleanAsInteger(false, true));
+        typeMap.put("berme_b", new WatergisDefaultRuleSet.BooleanAsInteger(false, true));
+        typeMap.put("esw", new WatergisDefaultRuleSet.BooleanAsInteger(false, true));
+        typeMap.put("br_f", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("br_k", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("ho_k_f", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("ho_k_pn", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("ho_bhw_pn", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("ho_mw_pn", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("bv_w", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("bv_b", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("br", new WatergisDefaultRuleSet.Numeric(6, 2, false, true));
+        typeMap.put("ho_d_o", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("ho_d_u", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("ho_ea", new WatergisDefaultRuleSet.Numeric(6, 2, false, true));
+        typeMap.put("ho_d_ea", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("ba_st", new WatergisDefaultRuleSet.Numeric(10, 2, false, true));
+        typeMap.put("ho_so", new WatergisDefaultRuleSet.Numeric(6, 2, false, true));
+        typeMap.put("ho_d_so_ok", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("sz", new WatergisDefaultRuleSet.Numeric(6, 2, false, true));
+        typeMap.put("az", new WatergisDefaultRuleSet.Numeric(6, 2, false, true));
+        typeMap.put("ezg_fl", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("v_fl", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("pu", new WatergisDefaultRuleSet.Numeric(1, 0, false, true));
+        typeMap.put("pu_foel", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("br_li", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("wbbl", new WatergisDefaultRuleSet.WbblLink(WatergisDefaultRuleSet.getWbblPath(), 10, false, true));
+        typeMap.put("bv_re", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("bh_re", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("bl_re", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("bv_li", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("bh_li", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("bl_li", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("mw", new WatergisDefaultRuleSet.Numeric(4, 2, false, true));
+        typeMap.put("la_cd", new WatergisDefaultRuleSet.Numeric(15, 0, true, false));
+        typeMap.put("la_st_von", new WatergisDefaultRuleSet.Numeric(10, 2, false, false));
+        typeMap.put("la_st_bis", new WatergisDefaultRuleSet.Numeric(10, 2, false, false));
+        typeMap.put("lak_st_von", new WatergisDefaultRuleSet.Numeric(10, 2, false, false));
+        typeMap.put("lak_st_bis", new WatergisDefaultRuleSet.Numeric(10, 2, false, false));
+        typeMap.put("la_cd_k", new WatergisDefaultRuleSet.Numeric(20, 0, true, false));
+        typeMap.put("la_gn", new WatergisDefaultRuleSet.Varchar(75, true, false));
+        typeMap.put("la_gn_t", new WatergisDefaultRuleSet.Numeric(1, 0, true, false));
+        typeMap.put("la_lage", new WatergisDefaultRuleSet.Varchar(1, true, false));
+        typeMap.put("la_ordn", new WatergisDefaultRuleSet.Numeric(2, 0, true, false));
+        typeMap.put("la_wrrl", new WatergisDefaultRuleSet.Numeric(1, 0, true, false));
+        typeMap.put("gbk_lawa", new WatergisDefaultRuleSet.Numeric(15, 0, true, true));
+        typeMap.put("gbk_lawa_k", new WatergisDefaultRuleSet.Numeric(4, 0, true, true));
+    }
 
     //~ Constructors -----------------------------------------------------------
 
@@ -86,13 +174,16 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
      * @param  refInfos      DOCUMENT ME!
      * @param  geometryType  DOCUMENT ME!
      * @param  attributes    DOCUMENT ME!
+     * @param  tableName     DOCUMENT ME!
      */
     @Override
     public void init(final List<LinearReferencingInfo> refInfos,
             final String geometryType,
-            final List<FeatureServiceAttribute> attributes) {
+            final List<FeatureServiceAttribute> attributes,
+            final String tableName) {
         this.refInfos = refInfos;
         this.geometryType = geometryType;
+        isCheckTable = tableName.startsWith("Prüfungen->");
 
         if (attributes != null) {
             for (final FeatureServiceAttribute attribute : attributes) {
@@ -182,6 +273,10 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
+        if (isCheckTable) {
+            return getSpecialRenderer(columnName);
+        }
+
         final LinearReferencingInfo refInfo = getInfoForColumn(columnName);
 
         if (refInfo != null) {
@@ -337,6 +432,164 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
         return null;
     }
 
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("wbbl")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                WatergisDefaultRuleSet.downloadDocumentFromWebDav(WatergisDefaultRuleSet.getWbblPath(),
+                    WatergisDefaultRuleSet.addExtension(value.toString(), "pdf"));
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   columnName  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private TableCellRenderer getSpecialRenderer(final String columnName) {
+        final WatergisDefaultRuleSet.DataType type = typeMap.get(columnName);
+
+        if (columnName.equals("id") || columnName.equals("ww_gr")) {
+            return new DefaultTableCellRenderer() {
+
+                    @Override
+                    public Component getTableCellRendererComponent(final JTable table,
+                            final Object value,
+                            final boolean isSelected,
+                            final boolean hasFocus,
+                            final int row,
+                            final int column) {
+                        final Component c = super.getTableCellRendererComponent(
+                                table,
+                                value,
+                                isSelected,
+                                hasFocus,
+                                row,
+                                column);
+
+                        if (c instanceof JLabel) {
+                            ((JLabel)c).setHorizontalAlignment(JLabel.RIGHT);
+                            ((JLabel)c).setBorder(new EmptyBorder(0, 0, 0, 2));
+                        }
+
+                        return c;
+                    }
+                };
+        }
+
+        if (type != null) {
+            if (type instanceof WatergisDefaultRuleSet.Numeric) {
+                return new DefaultTableCellRenderer() {
+
+                        DecimalFormat format = new DecimalFormat();
+                        DecimalFormat formatWithOutdecimals = new DecimalFormat();
+
+                        {
+                            format.setGroupingUsed(false);
+                            format.setMaximumFractionDigits(((WatergisDefaultRuleSet.Numeric)type).getScale());
+                            format.setMinimumFractionDigits(((WatergisDefaultRuleSet.Numeric)type).getScale());
+                            formatWithOutdecimals.setGroupingUsed(false);
+                            formatWithOutdecimals.setMaximumFractionDigits(0);
+                        }
+
+                        @Override
+                        public Component getTableCellRendererComponent(final JTable table,
+                                final Object value,
+                                final boolean isSelected,
+                                final boolean hasFocus,
+                                final int row,
+                                final int column) {
+                            Object val = value;
+
+                            if (value instanceof Number) {
+                                val = format.format(value);
+                            } else if (value instanceof String) {
+                                try {
+                                    val = Double.parseDouble((String)value);
+                                    val = format.format(val);
+                                } catch (NumberFormatException e) {
+                                    // should not happen
+                                    LOG.error("Numeric field does not contain a numeric value", e);
+                                }
+                            }
+
+                            if ((val != null) && ((WatergisDefaultRuleSet.Numeric)type).isShowDecimalsOnlyIfExists()) {
+                                try {
+                                    final double doubleVal = format.parse(val.toString()).doubleValue();
+                                    final long longVal = (long)doubleVal;
+
+                                    if (doubleVal == longVal) {
+                                        val = formatWithOutdecimals.format(longVal);
+                                    }
+                                } catch (final Exception e) {
+                                    // should not happen
+                                    LOG.error("Numeric field does not contain a numeric value", e);
+                                }
+                            }
+
+                            final Component c = super.getTableCellRendererComponent(
+                                    table,
+                                    val,
+                                    isSelected,
+                                    hasFocus,
+                                    row,
+                                    column);
+
+                            if (c instanceof JLabel) {
+                                ((JLabel)c).setHorizontalAlignment(JLabel.RIGHT);
+                                ((JLabel)c).setBorder(new EmptyBorder(0, 0, 0, 2));
+                            }
+
+                            return c;
+                        }
+                    };
+            }
+
+            if ((type instanceof WatergisDefaultRuleSet.BooleanAsInteger)
+                        || ((type instanceof WatergisDefaultRuleSet.Catalogue)
+                            && ((WatergisDefaultRuleSet.Catalogue)type).isRightAlignment())) {
+                return new DefaultTableCellRenderer() {
+
+                        @Override
+                        public Component getTableCellRendererComponent(final JTable table,
+                                final Object value,
+                                final boolean isSelected,
+                                final boolean hasFocus,
+                                final int row,
+                                final int column) {
+                            final Component c = super.getTableCellRendererComponent(
+                                    table,
+                                    value,
+                                    isSelected,
+                                    hasFocus,
+                                    row,
+                                    column);
+
+                            if (c instanceof JLabel) {
+                                ((JLabel)c).setHorizontalAlignment(JLabel.RIGHT);
+                                ((JLabel)c).setBorder(new EmptyBorder(0, 0, 0, 2));
+                            }
+
+                            return c;
+                        }
+                    };
+            }
+
+            if (((type instanceof WatergisDefaultRuleSet.Link)
+                            && ((WatergisDefaultRuleSet.Link)type).isRightAlignment())) {
+                return new LinkTableCellRenderer(JLabel.RIGHT);
+            }
+        }
+
+        return null;
+    }
+
     /**
      * DOCUMENT ME!
      *
@@ -360,5 +613,17 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
     @Override
     public List<LinearReferencingInfo> getAllLinRefInfos() {
         return refInfos;
+    }
+
+    @Override
+    public H2AttributeTableRuleSet clone() {
+        final DefaultWatergisH2AttributeTableRuleSet ruleSet = new DefaultWatergisH2AttributeTableRuleSet();
+        ruleSet.refInfos = refInfos;
+        ruleSet.refInfoMap = refInfoMap;
+        ruleSet.attributesMap = attributesMap;
+        ruleSet.geometryType = geometryType;
+        ruleSet.isCheckTable = isCheckTable;
+
+        return ruleSet;
     }
 }
