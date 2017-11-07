@@ -58,6 +58,7 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.download.QpDownload;
 
+import de.cismet.watergis.gui.actions.gaf.ReportAction;
 import de.cismet.watergis.gui.panels.GafProf;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
@@ -351,19 +352,21 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
             final int clickCount) {
         if (columnName.equals("qp_nr")) {
             if ((value instanceof Integer) && (clickCount == 1) && (feature instanceof CidsLayerFeature)) {
-                if (DownloadManagerDialog.showAskingForUserTitle(AppBroker.getInstance().getRootWindow())) {
-                    final String jobname = DownloadManagerDialog.getJobname();
-                    final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
-                    final String filename = value.toString();
-                    final String extension = ".pdf";
-
-                    DownloadManager.instance().add(new QpDownload(
-                            filename,
-                            extension,
-                            jobname,
-                            null,
-                            cidsFeature));
-                }
+//                if (DownloadManagerDialog.showAskingForUserTitle(AppBroker.getInstance().getRootWindow())) {
+//                    final String jobname = DownloadManagerDialog.getJobname();
+//                    final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
+//                    final String filename = value.toString();
+//                    final String extension = ".pdf";
+//
+//                    DownloadManager.instance().add(new QpDownload(
+//                            filename,
+//                            extension,
+//                            jobname,
+//                            null,
+//                            cidsFeature));
+//                }
+                final ReportAction action = new ReportAction();
+                action.actionPerformed(null);
             }
         }
     }

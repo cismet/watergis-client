@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Paint;
+import java.awt.Stroke;
 
 import java.lang.reflect.Method;
 
@@ -58,6 +59,7 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
+import de.cismet.cismap.commons.gui.piccolo.CustomFixedWidthStroke;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
@@ -133,13 +135,19 @@ public class AttributeTableDialog extends javax.swing.JDialog {
                                             highlightingGeometry,
                                             30);
                                 }
-                                final PureNewFeature highligtingFeature = new PureNewFeature(highlightingGeometry);
+                                final PureNewFeature highligtingFeature = new PureNewFeature(highlightingGeometry) {
+
+                                        @Override
+                                        public Stroke getLineStyle() {
+                                            return new CustomFixedWidthStroke(3);
+                                        }
+                                    };
 
                                 highligtingFeature.setFillingPaint(Color.decode("#EEC506"));
 
                                 CismapBroker.getInstance()
                                         .getMappingComponent()
-                                        .highlightFeature(highligtingFeature, 1500);
+                                        .highlightFeature(highligtingFeature, 1500, Color.RED);
                             }
                         }
                     }
