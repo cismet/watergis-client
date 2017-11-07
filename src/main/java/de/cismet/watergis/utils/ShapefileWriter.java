@@ -384,7 +384,7 @@ public class ShapefileWriter implements JUMPWriter {
         // this gc will be a collection of either multi-points, multi-polygons, or multi-linestrings
         // polygons will have the rings in the correct order
         gc = makePersistentSHAPEGeometryCollection(featureCollection);
-        if (Thread.interrupted() || gc == null) {
+        if (Thread.interrupted() || (gc == null)) {
             return;
         }
 
