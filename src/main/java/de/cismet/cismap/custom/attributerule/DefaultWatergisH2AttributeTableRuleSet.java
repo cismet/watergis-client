@@ -333,6 +333,7 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
         if (attr != null) {
             if (FeatureTools.getH2DataType(attr).equalsIgnoreCase("double")
                         || FeatureTools.getH2DataType(attr).equalsIgnoreCase("integer")
+                        || FeatureTools.getH2DataType(attr).equalsIgnoreCase("bigint")
                         || FeatureTools.getH2DataType(attr).equalsIgnoreCase("numeric")) {
                 if (columnName.equals("ba_st_von") || columnName.equals("ba_st_bis") || columnName.equals("laenge")
                             || columnName.equals("bak_st_von") || columnName.equals("bak_st_bis")

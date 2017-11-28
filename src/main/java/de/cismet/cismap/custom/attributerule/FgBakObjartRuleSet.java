@@ -50,7 +50,7 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 
 /**
- * DOCUMENT ME!
+ * Not used.
  *
  * @author   therter
  * @version  $Revision$, $Date$
