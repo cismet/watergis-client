@@ -48,6 +48,8 @@ import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.ZoomToLayerWorker;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
+import de.cismet.math.geometry.StaticGeometryFunctions;
+
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -497,7 +499,7 @@ public class DissolveDialog extends javax.swing.JDialog {
                         }
 
                         if (ckbMultiPart.isSelected()) {
-                            f.setGeometry(geom);
+                            f.setGeometry(StaticGeometryFunctions.toMultiGeometry(geom));
                             dissolvedFeatures.add(f);
                         } else {
                             for (int geomIndex = 0; geomIndex < geom.getNumGeometries(); ++geomIndex) {
