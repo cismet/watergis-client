@@ -370,23 +370,45 @@ public class LawaCheckAction extends AbstractCheckAction {
                             return;
                         }
 
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            NbBundle.getMessage(
-                                LawaCheckAction.class,
-                                "LawaCheckAction.actionPerformed().result.text",
-                                new Object[] {
-                                    result.getBakCount(),
-                                    result.getFgBakWithoutGbkErrors(),
-                                    result.getGbkCatErrors(),
-                                    result.getGwkCatErrors(),
-                                    result.getGwkGbkErrors(),
-                                    result.getGbkInIncorrectEzgErrors(),
-                                    result.getProblemTreeObjectCount()
-                                }),
-                            NbBundle.getMessage(
-                                LawaCheckAction.class,
-                                "LawaCheckAction.actionPerformed().result.title"),
-                            JOptionPane.INFORMATION_MESSAGE);
+                        if ((result.getProblemTreeObjectCount() == null)
+                                    || (result.getProblemTreeObjectCount().getCount() == 0)) {
+                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                NbBundle.getMessage(
+                                    LawaCheckAction.class,
+                                    "LawaCheckAction.actionPerformed().result.text.withoutProblems",
+                                    new Object[] {
+                                        result.getBakCount(),
+                                        result.getFgBakWithoutGbkErrors(),
+                                        result.getGbkCatErrors(),
+                                        result.getGwkCatErrors(),
+                                        result.getGwkGbkErrors(),
+                                        result.getGbkInIncorrectEzgErrors(),
+                                        0
+                                    }),
+                                NbBundle.getMessage(
+                                    LawaCheckAction.class,
+                                    "LawaCheckAction.actionPerformed().result.title"),
+                                JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                NbBundle.getMessage(
+                                    LawaCheckAction.class,
+                                    "LawaCheckAction.actionPerformed().result.text",
+                                    new Object[] {
+                                        result.getBakCount(),
+                                        result.getFgBakWithoutGbkErrors(),
+                                        result.getGbkCatErrors(),
+                                        result.getGwkCatErrors(),
+                                        result.getGwkGbkErrors(),
+                                        result.getGbkInIncorrectEzgErrors(),
+                                        result.getProblemTreeObjectCount().getCount(),
+                                        result.getProblemTreeObjectCount().getClasses()
+                                    }),
+                                NbBundle.getMessage(
+                                    LawaCheckAction.class,
+                                    "LawaCheckAction.actionPerformed().result.title"),
+                                JOptionPane.INFORMATION_MESSAGE);
+                        }
 
                         if (result.getGbkInIncorrectEzg() != null) {
                             showService(result.getGbkInIncorrectEzg(),
@@ -445,7 +467,7 @@ public class LawaCheckAction extends AbstractCheckAction {
         private int gwkGbkErrors;
         private int bakCount;
         private int gbkInIncorrectEzgErrors;
-        private int problemTreeObjectCount;
+        private ProblemCountAndClasses problemTreeObjectCount;
         private H2FeatureService fgBakWithoutGbk;
         private H2FeatureService gbkCat;
         private H2FeatureService gwkCat;
@@ -459,7 +481,7 @@ public class LawaCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
-        public int getProblemTreeObjectCount() {
+        public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
 
@@ -468,7 +490,7 @@ public class LawaCheckAction extends AbstractCheckAction {
          *
          * @param  problemTreeObjectCount  the problemTreeObjectCount to set
          */
-        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+        public void setProblemTreeObjectCount(final ProblemCountAndClasses problemTreeObjectCount) {
             this.problemTreeObjectCount = problemTreeObjectCount;
         }
 

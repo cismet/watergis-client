@@ -357,31 +357,59 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                                 return;
                             }
 
-                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                                NbBundle.getMessage(
-                                    VerwaltungCheckAction.class,
-                                    "VerwaltungCheckAction.actionPerformed().result.text",
-                                    new Object[] {
-                                        result.getBakCount(),
-                                        result.getIncompleteGmdErrors(),
-                                        result.getIncompleteGbErrors(),
-                                        result.getIncompleteSbErrors(),
-                                        result.getInvalidAttributeGmdErrors(),
-                                        result.getInvalidAttributeGbErrors(),
-                                        result.getInvalidAttributeSbErrors(),
-                                        result.getStGmdErrors(),
-                                        result.getStGbErrors(),
-                                        result.getOverlappedGmdErrors(),
-                                        result.getOverlappedGbErrors(),
-                                        result.getOverlappedSbErrors(),
-                                        result.getExpErrors(),
-                                        result.getProblemTreeObjectCount()
-                                    }),
-                                NbBundle.getMessage(
-                                    VerwaltungCheckAction.class,
-                                    "VerwaltungCheckAction.actionPerformed().result.title"),
-                                JOptionPane.INFORMATION_MESSAGE);
-
+                            if ((result.getProblemTreeObjectCount() == null)
+                                        || (result.getProblemTreeObjectCount().getCount() == 0)) {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        VerwaltungCheckAction.class,
+                                        "VerwaltungCheckAction.actionPerformed().result.text.withoutProblems",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getIncompleteGmdErrors(),
+                                            result.getIncompleteGbErrors(),
+                                            result.getIncompleteSbErrors(),
+                                            result.getInvalidAttributeGmdErrors(),
+                                            result.getInvalidAttributeGbErrors(),
+                                            result.getInvalidAttributeSbErrors(),
+                                            result.getStGmdErrors(),
+                                            result.getStGbErrors(),
+                                            result.getOverlappedGmdErrors(),
+                                            result.getOverlappedGbErrors(),
+                                            result.getOverlappedSbErrors(),
+                                            result.getExpErrors(),
+                                            0
+                                        }),
+                                    NbBundle.getMessage(
+                                        VerwaltungCheckAction.class,
+                                        "VerwaltungCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        VerwaltungCheckAction.class,
+                                        "VerwaltungCheckAction.actionPerformed().result.text",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getIncompleteGmdErrors(),
+                                            result.getIncompleteGbErrors(),
+                                            result.getIncompleteSbErrors(),
+                                            result.getInvalidAttributeGmdErrors(),
+                                            result.getInvalidAttributeGbErrors(),
+                                            result.getInvalidAttributeSbErrors(),
+                                            result.getStGmdErrors(),
+                                            result.getStGbErrors(),
+                                            result.getOverlappedGmdErrors(),
+                                            result.getOverlappedGbErrors(),
+                                            result.getOverlappedSbErrors(),
+                                            result.getExpErrors(),
+                                            result.getProblemTreeObjectCount().getCount(),
+                                            result.getProblemTreeObjectCount().getClasses()
+                                        }),
+                                    NbBundle.getMessage(
+                                        VerwaltungCheckAction.class,
+                                        "VerwaltungCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            }
                             if (result.getExp() != null) {
                                 showService(result.getExp(),
                                     "Prüfungen->Verwaltung->EXP");
@@ -638,7 +666,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                 baSbServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS));
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS));
 
         if (result.getIncompleteGb() != null) {
             result.setIncompleteGbErrors(result.getIncompleteGb().getFeatureCount(null));
@@ -733,7 +761,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         private int overlappedSbErrors;
         private int stGbErrors;
         private int stGmdErrors;
-        private int problemTreeObjectCount;
+        private ProblemCountAndClasses problemTreeObjectCount;
         private H2FeatureService incompleteGb;
         private H2FeatureService incompleteSb;
         private H2FeatureService incompleteGmd;
@@ -754,7 +782,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
-        public int getProblemTreeObjectCount() {
+        public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
 
@@ -763,7 +791,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
          *
          * @param  problemTreeObjectCount  the problemTreeObjectCount to set
          */
-        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+        public void setProblemTreeObjectCount(final ProblemCountAndClasses problemTreeObjectCount) {
             this.problemTreeObjectCount = problemTreeObjectCount;
         }
 

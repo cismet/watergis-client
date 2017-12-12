@@ -41,7 +41,6 @@ import de.cismet.cids.custom.watergis.server.search.OverlappedProfWithR;
 import de.cismet.cids.custom.watergis.server.search.OverlappedSBefWithProf;
 import de.cismet.cids.custom.watergis.server.search.OverlappedSBefWithR;
 import de.cismet.cids.custom.watergis.server.search.OverlappedUbefWithR;
-import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -516,30 +515,59 @@ public class AusbauCheckAction extends AbstractCheckAction {
                                 return;
                             }
 
-                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                                NbBundle.getMessage(
-                                    AusbauCheckAction.class,
-                                    "AusbauCheckAction.actionPerformed().result.text",
-                                    new Object[] {
-                                        result.getBakCount(),
-                                        result.getProfAttrErrors(),
-                                        result.getSbefAttrErrors(),
-                                        result.getUbefAttrErrors(),
-                                        result.getBbefAttrErrors(),
-                                        result.getProfGeschlErrors(),
-                                        result.getSbefGeschlErrors(),
-                                        result.getUbefGeschlErrors(),
-                                        result.getBbefGeschlErrors(),
-                                        result.getProfOverlapsErrors(),
-                                        result.getProfHoleErrors(),
-                                        result.getSbefOverlapsAttrErrors(),
-                                        result.getBbefOverlapsAttrErrors(),
-                                        result.getProblemTreeObjectCount()
-                                    }),
-                                NbBundle.getMessage(
-                                    AusbauCheckAction.class,
-                                    "AusbauCheckAction.actionPerformed().result.title"),
-                                JOptionPane.INFORMATION_MESSAGE);
+                            if ((result.getProblemTreeObjectCount() == null)
+                                        || (result.getProblemTreeObjectCount().getCount() == 0)) {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        AusbauCheckAction.class,
+                                        "AusbauCheckAction.actionPerformed().result.text.withoutProblems",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getProfAttrErrors(),
+                                            result.getSbefAttrErrors(),
+                                            result.getUbefAttrErrors(),
+                                            result.getBbefAttrErrors(),
+                                            result.getProfGeschlErrors(),
+                                            result.getSbefGeschlErrors(),
+                                            result.getUbefGeschlErrors(),
+                                            result.getBbefGeschlErrors(),
+                                            result.getProfOverlapsErrors(),
+                                            result.getProfHoleErrors(),
+                                            result.getSbefOverlapsAttrErrors(),
+                                            result.getBbefOverlapsAttrErrors(),
+                                            0
+                                        }),
+                                    NbBundle.getMessage(
+                                        AusbauCheckAction.class,
+                                        "AusbauCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        AusbauCheckAction.class,
+                                        "AusbauCheckAction.actionPerformed().result.text",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getProfAttrErrors(),
+                                            result.getSbefAttrErrors(),
+                                            result.getUbefAttrErrors(),
+                                            result.getBbefAttrErrors(),
+                                            result.getProfGeschlErrors(),
+                                            result.getSbefGeschlErrors(),
+                                            result.getUbefGeschlErrors(),
+                                            result.getBbefGeschlErrors(),
+                                            result.getProfOverlapsErrors(),
+                                            result.getProfHoleErrors(),
+                                            result.getSbefOverlapsAttrErrors(),
+                                            result.getBbefOverlapsAttrErrors(),
+                                            result.getProblemTreeObjectCount().getCount(),
+                                            result.getProblemTreeObjectCount().getClasses()
+                                        }),
+                                    NbBundle.getMessage(
+                                        AusbauCheckAction.class,
+                                        "AusbauCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            }
 
                             if (result.getBbefOverlapsAttr() != null) {
                                 showService(result.getBbefOverlapsAttr());
@@ -838,7 +866,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
         private int profHoleErrors;
         private int sbefOverlapsAttrErrors;
         private int bbefOverlapsAttrErrors;
-        private int problemTreeObjectCount;
+        private ProblemCountAndClasses problemTreeObjectCount;
         private H2FeatureService profAttr;
         private H2FeatureService sbefAttr;
         private H2FeatureService bbefAttr;
@@ -859,7 +887,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
-        public int getProblemTreeObjectCount() {
+        public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
 
@@ -868,7 +896,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
          *
          * @param  problemTreeObjectCount  the problemTreeObjectCount to set
          */
-        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+        public void setProblemTreeObjectCount(final ProblemCountAndClasses problemTreeObjectCount) {
             this.problemTreeObjectCount = problemTreeObjectCount;
         }
 
