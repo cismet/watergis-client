@@ -27,8 +27,6 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 
 import de.cismet.cids.custom.watergis.server.search.DetermineClosestRoute;
-import de.cismet.cids.custom.watergis.server.search.DetermineSourceSink;
-import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -86,12 +84,6 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
 
             if (lineMerger.getMergedLineStrings().size() == 1) {
                 mergedGeom = (Geometry)lineMerger.getMergedLineStrings().toArray(new Geometry[1])[0];
-
-                if ((mergedGeom.getCoordinates()[0] != g.getCoordinates()[0])
-                            && (mergedGeom.getCoordinates()[mergedGeom.getCoordinates().length - 1]
-                                != g.getCoordinates()[g.getCoordinates().length - 1])) {
-                    mergedGeom = mergedGeom.reverse();
-                }
             } else {
                 final Geometry mergedGeomReverseOrder = masterFeature.getGeometry()
                             .union(childFeature.getGeometry().reverse());
@@ -102,6 +94,12 @@ public class CidsLayerFeatureMerger implements FeatureMerger {
                 if (reverseOrderLineMerger.getMergedLineStrings().size() == 1) {
                     mergedGeom = (Geometry)reverseOrderLineMerger.getMergedLineStrings().toArray(new Geometry[1])[0];
                 }
+            }
+            // check if the direction has changed
+            if ((!mergedGeom.getCoordinates()[0].equals(g.getCoordinates()[0]))
+                        && (!mergedGeom.getCoordinates()[mergedGeom.getCoordinates().length - 1].equals(
+                                g.getCoordinates()[g.getCoordinates().length - 1]))) {
+                mergedGeom = mergedGeom.reverse();
             }
         }
 
