@@ -105,8 +105,10 @@ import java.io.ObjectOutputStream;
 
 import java.lang.reflect.InvocationTargetException;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,6 +141,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import de.cismet.cids.custom.watergis.server.search.DeleteInvalidFgBaExp;
+import de.cismet.cids.custom.watergis.server.search.RemoveOldLocks;
 import de.cismet.cids.custom.watergis.server.search.RouteEnvelopes;
 import de.cismet.cids.custom.watergis.server.search.ValidLawaCodes;
 
@@ -720,6 +724,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         UIManager.put("Table.selectionBackground", new Color(195, 212, 232));
         UIManager.put("Tree.selectionBackground", new Color(195, 212, 232));
         initCismap();
+        removeOldLocks();
         configManager.addConfigurable(OptionsClient.getInstance());
         configManager.configure(OptionsClient.getInstance());
         routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
@@ -837,6 +842,21 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void removeOldLocks() {
+        try {
+            final String user = SessionManager.getSession().getUser().getName();
+            final InetAddress addr = InetAddress.getLocalHost();
+            final String computerName = addr.getHostName();
+            final CidsServerSearch removeLocks = new RemoveOldLocks(user, computerName);
+            SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), removeLocks);
+        } catch (Exception e) {
+            LOG.error("cannot remove old locks", e);
+        }
+    }
 
     /**
      * DOCUMENT ME!
@@ -1437,6 +1457,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 @Override
                 public void processingModeChanged(final AbstractFeatureService service, final boolean active) {
                     SelectionManager.getInstance().switchProcessingMode(service);
+
+                    if (!active) {
+                        splitAction.undo(service);
+                    }
                     topicTreeSelectionChanged(null);
 
                     if (tbtNewObject.isSelected()) {

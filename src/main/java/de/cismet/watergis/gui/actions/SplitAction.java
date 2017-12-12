@@ -11,11 +11,15 @@
  */
 package de.cismet.watergis.gui.actions;
 
+import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.exception.ConnectionException;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 
 import org.apache.log4j.Logger;
 
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 
 import java.awt.Cursor;
@@ -25,26 +29,32 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+
+import de.cismet.cids.custom.watergis.server.search.MoveFgBaAfterSplit;
+import de.cismet.cids.custom.watergis.server.search.MoveFgBakAfterSplit;
+import de.cismet.cids.custom.watergis.server.search.RecoverFgBaAfterSplit;
+import de.cismet.cids.custom.watergis.server.search.RecoverFgBakAfterSplit;
+import de.cismet.cids.custom.watergis.server.search.RouteProblemsCountAndClasses;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.features.FeatureWithId;
 import de.cismet.cismap.commons.features.ModifiableFeature;
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.creator.GeometryFinishedListener;
-import de.cismet.cismap.commons.gui.piccolo.PFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.LinearReferencedLineFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.LinearReferencedPointFeature;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.util.SelectionManager;
 
@@ -52,6 +62,7 @@ import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.actions.checks.AbstractCheckAction;
 import de.cismet.watergis.gui.actions.split.FeatureSplitter;
 import de.cismet.watergis.gui.actions.split.FeatureSplitterFactory;
 
@@ -68,6 +79,12 @@ public class SplitAction extends AbstractAction {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(SplitAction.class);
+    private static final Map<AbstractFeatureService, List<FeatureSplitter>> undoMap =
+        new HashMap<AbstractFeatureService, List<FeatureSplitter>>();
+    private static final Map<AbstractFeatureService, List<FgBaAndStations>> undoStationMap =
+        new HashMap<AbstractFeatureService, List<FgBaAndStations>>();
+    private static final Map<AbstractFeatureService, List<FgBaAndStations>> undoBakStationMap =
+        new HashMap<AbstractFeatureService, List<FgBaAndStations>>();
 
     //~ Constructors -----------------------------------------------------------
 
@@ -108,6 +125,107 @@ public class SplitAction extends AbstractAction {
                         mc.setInteractionMode(SplitGeometryListener.LISTENER_KEY);
                     }
                 });
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  service  DOCUMENT ME!
+     */
+    public static void undo(final AbstractFeatureService service) {
+        final WaitingDialogThread wdt = new WaitingDialogThread(AppBroker.getInstance().getWatergisApp(),
+                true,
+                "Mache Teilen Rückgängig",
+                null,
+                100) {
+
+                @Override
+                protected Object doInBackground() throws Exception {
+                    final List<FeatureSplitter> splitterList = undoMap.get(service);
+
+                    if ((splitterList != null) && !splitterList.isEmpty()) {
+                        for (int i = splitterList.size() - 1; i >= 0; --i) {
+                            splitterList.get(i).undo();
+                        }
+                    }
+
+                    undoMap.remove(service);
+
+                    final List<FgBaAndStations> stationList = undoStationMap.get(service);
+
+                    if ((stationList != null) && !stationList.isEmpty()) {
+                        for (int i = stationList.size() - 1; i >= 0; --i) {
+                            final FgBaAndStations stations = stationList.get(i);
+                            final int[] stationArray = new int[stations.getStations().size()];
+
+                            for (int index = 0; index < stations.getStations().size(); ++index) {
+                                stationArray[index] = stations.getStations().get(index);
+                            }
+                            try {
+                                SessionManager.getProxy()
+                                        .customServerSearch(SessionManager.getSession().getUser(),
+                                            new RecoverFgBaAfterSplit(stations.getFgBaId(), stationArray));
+                            } catch (ConnectionException ex) {
+                                LOG.error("Error during undo process", ex);
+                            }
+                        }
+                        undoStationMap.remove(service);
+                    }
+
+                    final List<FgBaAndStations> bakStationList = undoBakStationMap.get(service);
+
+                    if ((bakStationList != null) && !bakStationList.isEmpty()) {
+                        for (int i = bakStationList.size() - 1; i >= 0; --i) {
+                            final FgBaAndStations stations = bakStationList.get(i);
+                            final int[] stationArray = new int[stations.getStations().size()];
+
+                            for (int index = 0; index < stations.getStations().size(); ++index) {
+                                stationArray[index] = stations.getStations().get(index);
+                            }
+                            try {
+                                SessionManager.getProxy()
+                                        .customServerSearch(SessionManager.getSession().getUser(),
+                                            new RecoverFgBakAfterSplit(stations.getFgBaId(), stationArray));
+                            } catch (ConnectionException ex) {
+                                LOG.error("Error during undo process", ex);
+                            }
+                        }
+                        undoBakStationMap.remove(service);
+                    }
+
+                    return null;
+                }
+            };
+
+        wdt.start();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  service  DOCUMENT ME!
+     */
+    public static void commit(final AbstractFeatureService service) {
+        final List<FeatureSplitter> splitterList = undoMap.get(service);
+
+        if ((splitterList != null) && !splitterList.isEmpty()) {
+            for (final FeatureSplitter splitter : splitterList) {
+                splitter.unlockObjects();
+            }
+            undoMap.remove(service);
+        }
+
+        final List<FgBaAndStations> stationList = undoStationMap.get(service);
+
+        if ((stationList != null) && !stationList.isEmpty()) {
+            undoStationMap.remove(service);
+        }
+
+        final List<FgBaAndStations> bakStationList = undoBakStationMap.get(service);
+
+        if ((bakStationList != null) && !bakStationList.isEmpty()) {
+            undoBakStationMap.remove(service);
         }
     }
 
@@ -239,39 +357,24 @@ public class SplitAction extends AbstractAction {
                             final Feature[] newFeatures = splitter.split(validFeature, (LineString)g);
 
                             if ((newFeatures != null) && (newFeatures.length > 0)) {
-                                AttributeTableRuleSet ruleSet = null;
+                                final AttributeTableRuleSet ruleSet = getRuleSet(validFeature);
                                 int progress = 0;
-                                wd.setMax(newFeatures.length + 1);
+                                wd.setMax(newFeatures.length + 1 + splitter.getAdditionalFeaturesToSave().size());
 
-                                if (validFeature instanceof ModifiableFeature) {
-                                    if (validFeature instanceof DefaultFeatureServiceFeature) {
-                                        final DefaultFeatureServiceFeature dfsf = (DefaultFeatureServiceFeature)
-                                            validFeature;
+                                if ((splitter.getAdditionalFeaturesToSave().size() > 0)
+                                            && (validFeature.getLayerProperties() != null)
+                                            && (validFeature.getLayerProperties().getFeatureService() != null)) {
+                                    List<FeatureSplitter> list = undoMap.get(validFeature.getLayerProperties()
+                                                    .getFeatureService());
 
-                                        if ((dfsf.getLayerProperties() != null)
-                                                    && (dfsf.getLayerProperties().getAttributeTableRuleSet() != null)) {
-                                            ruleSet = dfsf.getLayerProperties().getAttributeTableRuleSet();
-
-                                            ruleSet.beforeSave(validFeature);
-                                        }
+                                    if (list == null) {
+                                        list = new ArrayList<FeatureSplitter>();
+                                        undoMap.put(validFeature.getLayerProperties().getFeatureService(), list);
                                     }
 
-                                    try {
-                                        if (validFeature instanceof CidsLayerFeature) {
-                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(true);
-                                        }
-                                        ((ModifiableFeature)validFeature).saveChangesWithoutReload();
-                                        validFeature.setEditable(false);
-                                        validFeature.setEditable(true);
-                                        if (validFeature instanceof CidsLayerFeature) {
-                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(
-                                                false);
-                                        }
-                                        wd.setProgress(++progress);
-                                    } catch (Exception ex) {
-                                        LOG.error("Error while saving changes", ex);
-                                    }
+                                    list.add(splitter);
                                 }
+
                                 for (final Feature newFeature : newFeatures) {
                                     if ((newFeature instanceof ModifiableFeature)) {
                                         if ((newFeature instanceof DefaultFeatureServiceFeature)
@@ -292,12 +395,155 @@ public class SplitAction extends AbstractAction {
                                             LOG.error("Error while saving changes", ex);
                                             wd.setProgress(++progress);
                                         }
-
-                                        return newFeatures;
                                     } else {
                                         LOG.error("Feature is not modifiable");
                                     }
                                 }
+
+                                for (final FeatureServiceFeature newFeature : splitter.getAdditionalFeaturesToSave()) {
+                                    if ((newFeature instanceof ModifiableFeature)) {
+                                        final AttributeTableRuleSet featureRuleSet = getRuleSet(newFeature);
+                                        if ((newFeature instanceof DefaultFeatureServiceFeature)
+                                                    && (featureRuleSet != null)) {
+                                            featureRuleSet.beforeSave((DefaultFeatureServiceFeature)newFeature);
+                                        }
+                                        // Save the splitted feature
+                                        try {
+                                            ((ModifiableFeature)newFeature).saveChangesWithoutReload();
+//                                            AppBroker.getInstance()
+//                                                    .getWatergisApp()
+//                                                    .addFeatureToAttributeTable((FeatureServiceFeature)newFeature);
+                                            if (LOG.isDebugEnabled()) {
+                                                LOG.debug("Splitted features saved");
+                                            }
+                                            wd.setProgress(++progress);
+                                        } catch (Exception ex) {
+                                            LOG.error("Error while saving changes", ex);
+                                            wd.setProgress(++progress);
+                                        }
+                                    } else {
+                                        LOG.error("Feature is not modifiable");
+                                    }
+                                }
+
+                                if (validFeature instanceof CidsLayerFeature) {
+                                    if (((CidsLayerFeature)validFeature).getBean().getMetaObject().getMetaClass()
+                                                .getTableName().equalsIgnoreCase("dlm25w.fg_bak")) {
+                                        for (final Feature newFeature : newFeatures) {
+                                            // moved ba stations
+                                            final ArrayList<ArrayList> stationList = (ArrayList<ArrayList>)
+                                                SessionManager.getProxy()
+                                                        .customServerSearch(SessionManager.getSession().getUser(),
+                                                                new MoveFgBaAfterSplit(
+                                                                    validFeature.getId(),
+                                                                    ((FeatureWithId)newFeature).getId()));
+
+                                            final List<Integer> classes = toIntegerList(stationList);
+
+                                            if (!classes.isEmpty()) {
+                                                if ((validFeature.getLayerProperties() != null)
+                                                            && (validFeature.getLayerProperties().getFeatureService()
+                                                                != null)) {
+                                                    List<FgBaAndStations> list = undoStationMap.get(
+                                                            validFeature.getLayerProperties().getFeatureService());
+
+                                                    if (list == null) {
+                                                        list = new ArrayList<FgBaAndStations>();
+                                                        undoStationMap.put(validFeature.getLayerProperties()
+                                                                    .getFeatureService(),
+                                                            list);
+                                                    }
+
+                                                    list.add(new FgBaAndStations(classes, validFeature.getId()));
+                                                }
+                                            }
+
+                                            // moved bak stations
+                                            final ArrayList<ArrayList> bakStationList = (ArrayList<ArrayList>)
+                                                SessionManager.getProxy()
+                                                        .customServerSearch(SessionManager.getSession().getUser(),
+                                                                new MoveFgBakAfterSplit(
+                                                                    validFeature.getId(),
+                                                                    ((FeatureWithId)newFeature).getId()));
+                                            final List<Integer> bakClasses = toIntegerList(bakStationList);
+
+                                            if (!bakClasses.isEmpty()) {
+                                                if ((validFeature.getLayerProperties() != null)
+                                                            && (validFeature.getLayerProperties().getFeatureService()
+                                                                != null)) {
+                                                    List<FgBaAndStations> list = undoBakStationMap.get(
+                                                            validFeature.getLayerProperties().getFeatureService());
+
+                                                    if (list == null) {
+                                                        list = new ArrayList<FgBaAndStations>();
+                                                        undoBakStationMap.put(validFeature.getLayerProperties()
+                                                                    .getFeatureService(),
+                                                            list);
+                                                    }
+
+                                                    list.add(new FgBaAndStations(bakClasses, validFeature.getId()));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                // merge serverseitig ausführen
+
+                                if (validFeature instanceof ModifiableFeature) {
+                                    try {
+                                        if (ruleSet != null) {
+                                            ruleSet.beforeSave(validFeature);
+                                        }
+                                        if (validFeature instanceof CidsLayerFeature) {
+                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(true);
+                                        }
+                                        ((ModifiableFeature)validFeature).saveChangesWithoutReload();
+                                        validFeature.setEditable(false);
+                                        validFeature.setEditable(true);
+                                        if (validFeature instanceof CidsLayerFeature) {
+                                            ((CidsLayerFeature)validFeature).setDoNotChangeBackup(
+                                                false);
+                                        }
+                                        wd.setProgress(++progress);
+                                    } catch (Exception ex) {
+                                        LOG.error("Error while saving changes", ex);
+                                    }
+                                }
+
+                                AppBroker.getInstance().getMappingComponent().refresh();
+
+                                return newFeatures;
+                            }
+                        }
+
+                        return null;
+                    }
+
+                    private List<Integer> toIntegerList(final ArrayList<ArrayList> stationList) {
+                        final List<Integer> classes = new ArrayList<Integer>();
+
+                        if ((stationList != null) && !stationList.isEmpty()) {
+                            ArrayList innerList;
+
+                            for (int i = 0; i < stationList.size(); ++i) {
+                                innerList = stationList.get(i);
+
+                                if ((innerList != null) && !innerList.isEmpty()) {
+                                    classes.add((Integer)innerList.get(0));
+                                }
+                            }
+                        }
+
+                        return classes;
+                    }
+
+                    private AttributeTableRuleSet getRuleSet(final Feature f) {
+                        if (f instanceof DefaultFeatureServiceFeature) {
+                            final DefaultFeatureServiceFeature dfsf = (DefaultFeatureServiceFeature)f;
+
+                            if ((dfsf.getLayerProperties() != null)
+                                        && (dfsf.getLayerProperties().getAttributeTableRuleSet() != null)) {
+                                return dfsf.getLayerProperties().getAttributeTableRuleSet();
                             }
                         }
 
@@ -328,6 +574,52 @@ public class SplitAction extends AbstractAction {
                 };
 
             wdt.start();
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class FgBaAndStations {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private List<Integer> stations;
+        private int fgBaId;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new FgBaAndStations object.
+         *
+         * @param  stations  DOCUMENT ME!
+         * @param  fgBaId    DOCUMENT ME!
+         */
+        public FgBaAndStations(final List<Integer> stations, final int fgBaId) {
+            this.stations = stations;
+            this.fgBaId = fgBaId;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        public List<Integer> getStations() {
+            return stations;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        public int getFgBaId() {
+            return fgBaId;
         }
     }
 }

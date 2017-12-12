@@ -29,6 +29,8 @@ import javax.swing.SwingWorker;
 
 import de.cismet.cids.search.QuerySearch;
 
+import de.cismet.cismap.cidslayer.CidsLayer;
+
 import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.RetrievalServiceLayer;
 import de.cismet.cismap.commons.XBoundingBox;
@@ -106,13 +108,27 @@ public abstract class AbstractSearchAndSelectThread extends SwingWorker<List<Fea
             }
         } else if (layer instanceof AbstractFeatureService) {
             final AbstractFeatureService fs = (AbstractFeatureService)layer;
+            int limit = 0;
+
+            if (layer instanceof CidsLayer) {
+                final int maxPageSize = ((CidsLayer)layer).getMaxFeaturesPerPage();
+
+                if (maxPageSize > 0) {
+                    limit = maxPageSize + 1;
+                }
+            }
+
             features = fs.getFeatureFactory().createFeatures(
                     query,
                     getServiceBounds(),
                     null,
                     0,
-                    0,
+                    limit,
                     null);
+
+            if ((limit > 0) && (features.size() == limit)) {
+                throw new TooManyResultsException();
+            }
         }
 
         return features;

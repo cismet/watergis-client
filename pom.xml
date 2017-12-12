@@ -55,7 +55,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-commons</artifactId>
-                <version>5.1.2</version>
+                <version>5.1.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>5.5.2</version>
+                <version>5.5.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -95,7 +95,7 @@
             <dependency>
                 <groupId>de.cismet.cismap</groupId>
                 <artifactId>cismap-plugin</artifactId>
-                <version>5.0.13</version>
+                <version>5.0.16</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>de.cismet.watergis</groupId>
                 <artifactId>watergis-server</artifactId>
-                <version>5.0.8</version>
+                <version>5.0.13</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -111,7 +111,7 @@
             <dependency>
                 <groupId>de.cismet</groupId>
                 <artifactId>Jump-sld-editor</artifactId>
-                <version>5.0.1</version>
+                <version>5.1-SNAPSHOT</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>

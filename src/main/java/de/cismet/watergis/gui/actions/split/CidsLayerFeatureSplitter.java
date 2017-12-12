@@ -12,6 +12,7 @@
 package de.cismet.watergis.gui.actions.split;
 
 import Sirius.server.middleware.types.MetaClass;
+import Sirius.server.middleware.types.MetaObject;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -24,12 +25,21 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.swing.JOptionPane;
 
 import de.cismet.cids.custom.wrrl_db_mv.util.CidsBeanSupport;
 
 import de.cismet.cids.dynamics.CidsBean;
 
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.LineAndStationCreator;
 
@@ -38,12 +48,17 @@ import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.attributetable.FeatureLockerFactory;
+import de.cismet.cismap.commons.gui.attributetable.FeatureLockingInterface;
+import de.cismet.cismap.commons.gui.attributetable.LockAlreadyExistsException;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.cismap.linearreferencing.FeatureRegistry;
 import de.cismet.cismap.linearreferencing.LinearReferencingHelper;
 
 import de.cismet.math.geometry.StaticGeometryFunctions;
+
+import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.merge.CidsLayerFeatureMerger;
 
@@ -61,8 +76,15 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
 
     private static final Logger LOG = Logger.getLogger(CidsLayerFeatureSplitter.class);
     private static final String[] POSSIBLE_LINE_PROP_NAMES = { "ba_st", "bak_st", "la_st", "lak_st", "sg_su_stat" };
+    private static int stationId = -1;
+    private static Set<Feature> lockedFeatures = new TreeSet<Feature>();
 
     //~ Instance fields --------------------------------------------------------
+
+    private final List<FeatureServiceFeature> additionalFeaturesToSave = new ArrayList<FeatureServiceFeature>();
+    private List<FeatureServiceFeature> originalFeature = new ArrayList<FeatureServiceFeature>();
+    private List<FeatureServiceFeature> featuresToRemove = new ArrayList<FeatureServiceFeature>();
+    private Map<FeatureLockingInterface, List<Object>> lockMap = new HashMap<FeatureLockingInterface, List<Object>>();
 
     private LinearReferencingHelper linearReferencingHelper = FeatureRegistry.getInstance()
                 .getLinearReferencingSolver();
@@ -109,6 +131,16 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
             final List<Feature> newFeatures = new ArrayList<Feature>();
 
             if (splittedGeom.length > 1) {
+                final CidsLayer layer = (CidsLayer)((CidsLayerFeature)masterFeature).getLayerProperties()
+                            .getFeatureService();
+
+                if (layer.getMetaClass().getTableName().equalsIgnoreCase("dlm25w.fg_bak")) {
+                    try {
+                        splitCat2((CidsLayerFeature)masterFeature, splitLine);
+                    } catch (LockAlreadyExistsException ex) {
+                        return null;
+                    }
+                }
                 masterFeature.setGeometry(splittedGeom[0]);
 
                 for (int i = 1; i < splittedGeom.length; ++i) {
@@ -191,6 +223,221 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
     }
 
     /**
+     * DOCUMENT ME!
+     *
+     * @param   fgBak      DOCUMENT ME!
+     * @param   splitLine  DOCUMENT ME!
+     *
+     * @throws  LockAlreadyExistsException  DOCUMENT ME!
+     */
+    private void splitCat2(final CidsLayerFeature fgBak, final LineString splitLine) throws LockAlreadyExistsException {
+        final List<MetaClass> cat2Classes = new ArrayList<MetaClass>();
+
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_anll"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_bbef"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_d"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_deich"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_due"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_gbk_delta"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_leis"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_prof"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_rl"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_sb"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_sbef"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_tech"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_ubef"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_ughz"));
+
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_ae"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gbk"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gn1"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gn2"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gn3"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gwk"));
+
+        for (final MetaClass cl : cat2Classes) {
+            try {
+                final CidsLayer layer = new CidsLayer(cl);
+
+                layer.initAndWait();
+                String query;
+                if (cl.getTableName().toLowerCase().contains("fg_bak")) {
+                    query = "dlm25w.fg_bak.ba_cd = '" + fgBak.getProperty("ba_cd") + "'";
+                } else {
+                    query = "dlm25w.fg_ba.ba_cd = '" + fgBak.getProperty("ba_cd") + "'";
+                }
+                final List<Feature> features = layer.getFeatureFactory().createFeatures(query, null, null, 0, 0, null);
+
+                if ((features != null) && !features.isEmpty()) {
+                    final FeatureLockingInterface locker = FeatureLockerFactory.getInstance()
+                                .getLockerForFeatureService(layer);
+
+                    if (locker != null) {
+                        try {
+                            List<Object> locks = lockMap.get(locker);
+                            final List<Feature> featuresToLock = new ArrayList<Feature>();
+
+                            if (locks == null) {
+                                locks = new ArrayList<Object>();
+                                lockMap.put(locker, locks);
+                            }
+
+                            for (final Feature f : features) {
+                                if (!lockedFeatures.contains(f)) {
+                                    featuresToLock.add(f);
+                                }
+                            }
+                            locks.add(locker.lock(featuresToLock, false));
+                            lockedFeatures.addAll(featuresToLock);
+                        } catch (Exception e) {
+                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                "Es können aufgesetzte Objekte aus "
+                                        + layer.getName()
+                                        + " nicht gesperrt werden",
+                                "Sperre",
+                                JOptionPane.ERROR_MESSAGE);
+                            unlockObjects();
+                            throw new LockAlreadyExistsException(e.getMessage(), "Object already locked");
+                        }
+                    }
+                }
+
+                for (final Feature f : features) {
+                    final FeatureServiceFeature feature = (FeatureServiceFeature)f;
+                    if (feature.getGeometry().intersects(splitLine)) {
+                        final AttributeTableRuleSet ruleSet = ((DefaultFeatureServiceFeature)feature)
+                                    .getLayerProperties().getAttributeTableRuleSet();
+
+                        final FeatureServiceFeature clonedFeature = ruleSet.cloneFeature(feature);
+                        clonedFeature.setId(feature.getId());
+                        clonedFeature.setProperty("id", feature.getId());
+                        ((CidsLayerFeature)clonedFeature).getBean();
+                        originalFeature.add(clonedFeature);
+                        final Feature[] splittedFeatures = split(feature, splitLine);
+
+                        if ((splittedFeatures != null) && (splittedFeatures.length > 0)) {
+                            additionalFeaturesToSave.add(feature);
+
+                            for (final Feature splittedFeature : splittedFeatures) {
+                                if ((splittedFeature.getGeometry() != null)
+                                            && (splittedFeature.getGeometry() instanceof LineString)
+                                            && (((LineString)splittedFeature.getGeometry()).getLength() > 0.0)) {
+                                    featuresToRemove.add((FeatureServiceFeature)splittedFeature);
+
+                                    additionalFeaturesToSave.add((FeatureServiceFeature)splittedFeature);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (LockAlreadyExistsException e) {
+                throw e;
+            } catch (Exception e) {
+                LOG.error("Error while splitting features");
+            }
+        }
+    }
+
+    @Override
+    public List<FeatureServiceFeature> getAdditionalFeaturesToSave() {
+        return additionalFeaturesToSave;
+    }
+
+    @Override
+    public void undo() {
+        try {
+            for (final FeatureServiceFeature feature : originalFeature) {
+                try {
+                    final CidsBean bean = ((CidsLayerFeature)feature).getBean();
+                    bean.getMetaObject().setStatus(MetaObject.MODIFIED);
+                    if (((CidsBean)bean.getProperty("ba_st")) != null) {
+                        bean.getMetaObject().setStatus(MetaObject.MODIFIED);
+                        bean.getMetaObject().getAttribute("ba_st").setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st")).getMetaObject().setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("ba_st")).getMetaObject().getAttribute("von").setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st")).getMetaObject().getAttribute("bis").setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st")).getMetaObject().getAttribute("geom").setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st.geom")).getMetaObject().setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("ba_st.geom")).getMetaObject()
+                                .getAttribute("GEO_STRING")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st.von")).getMetaObject().setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("ba_st.von")).getMetaObject().getAttribute("wert").setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st.von")).getMetaObject()
+                                .getAttribute("real_point")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st.von.real_point")).getMetaObject()
+                                .setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("ba_st.von.real_point")).getMetaObject()
+                                .getAttribute("GEO_STRING")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st.bis")).getMetaObject().setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("ba_st.bis")).getMetaObject().getAttribute("wert").setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st.bis")).getMetaObject()
+                                .getAttribute("real_point")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("ba_st.bis.real_point")).getMetaObject()
+                                .setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("ba_st.bis.real_point")).getMetaObject()
+                                .getAttribute("GEO_STRING")
+                                .setChanged(true);
+                    }
+                    if (((CidsBean)bean.getProperty("bak_st")) != null) {
+                        bean.getMetaObject().setStatus(MetaObject.MODIFIED);
+                        bean.getMetaObject().getAttribute("bak_st").setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st")).getMetaObject().setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("bak_st")).getMetaObject().getAttribute("von").setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st")).getMetaObject().getAttribute("bis").setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st")).getMetaObject().getAttribute("geom").setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st.geom")).getMetaObject().setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("bak_st.geom")).getMetaObject()
+                                .getAttribute("GEO_STRING")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st.von")).getMetaObject().setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("bak_st.von")).getMetaObject()
+                                .getAttribute("wert")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st.von")).getMetaObject()
+                                .getAttribute("real_point")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st.von.real_point")).getMetaObject()
+                                .setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("bak_st.von.real_point")).getMetaObject()
+                                .getAttribute("GEO_STRING")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st.bis")).getMetaObject().setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("bak_st.bis")).getMetaObject()
+                                .getAttribute("wert")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st.bis")).getMetaObject()
+                                .getAttribute("real_point")
+                                .setChanged(true);
+                        ((CidsBean)bean.getProperty("bak_st.bis.real_point")).getMetaObject()
+                                .setStatus(MetaObject.MODIFIED);
+                        ((CidsBean)bean.getProperty("bak_st.bis.real_point")).getMetaObject()
+                                .getAttribute("GEO_STRING")
+                                .setChanged(true);
+                    }
+                    bean.persist();
+                } catch (Exception e) {
+                    ((CidsLayerFeature)feature).getBean().getMetaObject().setStatus(2);
+                    LOG.error("Cannot undo split change", e);
+                }
+                ((CidsLayerFeature)feature).getBean().getMetaObject().setStatus(0);
+            }
+            for (final FeatureServiceFeature feature : featuresToRemove) {
+                try {
+                    ((CidsLayerFeature)feature).delete();
+                } catch (Exception e) {
+                    LOG.error("Cannot undo split change", e);
+                }
+            }
+        } finally {
+            unlockObjects();
+        }
+    }
+
+    /**
      * Adjusts the given stationLine bean so that it uses the given line geometry.
      *
      * @param   master         station line cidsBean
@@ -208,9 +455,15 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
 
         if (cloneStations && (fromStation != null)) {
             fromStation = CidsBeanSupport.cloneStation(fromStation);
+            final int newId = --stationId;
+            fromStation.getMetaObject().setID(newId);
+            fromStation.setProperty("id", newId);
         }
         if (cloneStations && (tillStation != null)) {
             tillStation = CidsBeanSupport.cloneStation(tillStation);
+            final int newId = --stationId;
+            tillStation.getMetaObject().setID(newId);
+            tillStation.setProperty("id", newId);
             master = linearReferencingHelper.createLineBeanFromStationBean(fromStation, tillStation);
         }
         final Geometry routGeom = linearReferencingHelper.getRouteGeometryFromStationBean(fromStation);
@@ -240,5 +493,22 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
         linearReferencingHelper.setGeometryToLineBean(lineGeometry, master);
 
         return master;
+    }
+
+    @Override
+    public void unlockObjects() {
+        for (final FeatureLockingInterface locker : lockMap.keySet()) {
+            final List<Object> lockList = lockMap.get(locker);
+
+            for (final Object lock : lockList) {
+                try {
+                    locker.unlock(lock);
+                } catch (Exception e) {
+                    LOG.error("Cannot unlock object", e);
+                }
+            }
+        }
+
+        lockedFeatures.clear();
     }
 }

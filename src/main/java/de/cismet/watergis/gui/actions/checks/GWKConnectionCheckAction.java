@@ -294,21 +294,41 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                             return;
                         }
 
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            NbBundle.getMessage(
-                                GWKConnectionCheckAction.class,
-                                "GWKConnectionCheckAction.actionPerformed().result.text",
-                                new Object[] {
-                                    result.getLawaCount(),
-                                    result.getConnectionErrors(),
-                                    result.getDirectionErrors(),
-                                    result.getLakAeErrors(),
-                                    result.getProblemTreeObjectCount()
-                                }),
-                            NbBundle.getMessage(
-                                GWKConnectionCheckAction.class,
-                                "GWKConnectionCheckAction.actionPerformed().result.title"),
-                            JOptionPane.INFORMATION_MESSAGE);
+                        if ((result.getProblemTreeObjectCount() == null)
+                                    || (result.getProblemTreeObjectCount().getCount() == 0)) {
+                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                NbBundle.getMessage(
+                                    GWKConnectionCheckAction.class,
+                                    "GWKConnectionCheckAction.actionPerformed().result.text.withoutProblems",
+                                    new Object[] {
+                                        result.getLawaCount(),
+                                        result.getConnectionErrors(),
+                                        result.getDirectionErrors(),
+                                        result.getLakAeErrors(),
+                                        0
+                                    }),
+                                NbBundle.getMessage(
+                                    GWKConnectionCheckAction.class,
+                                    "GWKConnectionCheckAction.actionPerformed().result.title"),
+                                JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                NbBundle.getMessage(
+                                    GWKConnectionCheckAction.class,
+                                    "GWKConnectionCheckAction.actionPerformed().result.text",
+                                    new Object[] {
+                                        result.getLawaCount(),
+                                        result.getConnectionErrors(),
+                                        result.getDirectionErrors(),
+                                        result.getLakAeErrors(),
+                                        result.getProblemTreeObjectCount().getCount(),
+                                        result.getProblemTreeObjectCount().getClasses()
+                                    }),
+                                NbBundle.getMessage(
+                                    GWKConnectionCheckAction.class,
+                                    "GWKConnectionCheckAction.actionPerformed().result.title"),
+                                JOptionPane.INFORMATION_MESSAGE);
+                        }
 
                         if (result.getLakAeService() != null) {
                             showService(result.getLakAeService(), "Prüfungen->LAWA-Routen");
@@ -354,7 +374,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
         private int directionErrors;
         private int lakAeErrors;
         private int lawaCount;
-        private int problemTreeObjectCount;
+        private ProblemCountAndClasses problemTreeObjectCount;
         private H2FeatureService directionService;
         private H2FeatureService connectionService;
         private H2FeatureService lakAeService;
@@ -366,7 +386,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
-        public int getProblemTreeObjectCount() {
+        public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
 
@@ -375,7 +395,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
          *
          * @param  problemTreeObjectCount  the problemTreeObjectCount to set
          */
-        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+        public void setProblemTreeObjectCount(final ProblemCountAndClasses problemTreeObjectCount) {
             this.problemTreeObjectCount = problemTreeObjectCount;
         }
 
