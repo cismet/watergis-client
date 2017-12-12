@@ -92,7 +92,19 @@ public class JumpShapeWriter implements ShapeWriter {
     public void writeShape(final FeatureServiceFeature[] features,
             final List<String[]> aliasAttributeList,
             final File fileToSaveTo) throws Exception {
-        writeShpFile(features, fileToSaveTo, aliasAttributeList, null);
+        if (Thread.interrupted()) {
+            return;
+        }
+        try {
+            writeShpFile(features, fileToSaveTo, aliasAttributeList, null);
+        } catch (InterruptedException e) {
+            clear(fileToSaveTo);
+            return;
+        }
+        if (Thread.interrupted()) {
+            clear(fileToSaveTo);
+            return;
+        }
         if (WRITE_PRJ) {
             writePrjFile(fileToSaveTo);
         }
@@ -103,6 +115,36 @@ public class JumpShapeWriter implements ShapeWriter {
                 writeMetaPdf(fileToSaveTo, features[0].getLayerProperties().getFeatureService());
             }
         }
+        if (Thread.interrupted()) {
+            clear(fileToSaveTo);
+            return;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  fileToSaveTo  DOCUMENT ME!
+     */
+    private void clear(final File fileToSaveTo) {
+        String fileNameWithoutExt = fileToSaveTo.getAbsolutePath();
+
+        if (fileToSaveTo.getAbsolutePath().contains(".")) {
+            fileNameWithoutExt = fileToSaveTo.getAbsolutePath()
+                        .substring(0, fileToSaveTo.getAbsolutePath().lastIndexOf("."));
+        }
+
+        String fileName = fileNameWithoutExt + ".shp";
+
+        deleteFileIfExists(fileName);
+        fileName = fileNameWithoutExt + ".shx";
+        deleteFileIfExists(fileName);
+        fileName = fileNameWithoutExt + ".prj";
+        deleteFileIfExists(fileName);
+        fileName = fileNameWithoutExt + ".dbf";
+        deleteFileIfExists(fileName);
+        fileName = fileNameWithoutExt + ".pdf";
+        deleteFileIfExists(fileName);
     }
 
     @Override
@@ -123,6 +165,10 @@ public class JumpShapeWriter implements ShapeWriter {
         }
         writeShape(features, aliasAttributeList, tmpFile);
 
+        if (Thread.interrupted()) {
+            clear(fileToSaveTo);
+            return;
+        }
         String fileNameWithoutExt = fileToSaveTo.getAbsolutePath();
 
         if (fileToSaveTo.getAbsolutePath().contains(".")) {
@@ -137,6 +183,11 @@ public class JumpShapeWriter implements ShapeWriter {
         deleteFileIfExists(fileName);
         fileName = fileNameWithoutExt + ".prj";
         deleteFileIfExists(fileName);
+
+        if (Thread.interrupted()) {
+            clear(fileToSaveTo);
+            return;
+        }
     }
 
     /**

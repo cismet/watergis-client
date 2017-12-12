@@ -13,7 +13,7 @@
 
     <groupId>de.cismet.watergis</groupId>
     <artifactId>watergis-client</artifactId>
-    <version>5.0.16</version>
+    <version>5.0.17</version>
     <packaging>jar</packaging>
 
     <name>WaterGIS Client</name>
@@ -35,7 +35,7 @@
         <connection>https://github.com/cismet/watergis-client.git</connection>
         <developerConnection>scm:git:git@github.com:cismet/watergis-client.git</developerConnection>
         <url>https://github.com/cismet/s-client</url>
-      <tag>v5.0.16</tag>
+      <tag>v5.0.17</tag>
   </scm>
 
     
@@ -55,7 +55,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-commons</artifactId>
-                <version>5.1.2</version>
+                <version>5.1.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>5.5.2</version>
+                <version>5.5.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -95,7 +95,7 @@
             <dependency>
                 <groupId>de.cismet.cismap</groupId>
                 <artifactId>cismap-plugin</artifactId>
-                <version>5.0.13</version>
+                <version>5.0.16</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>de.cismet.watergis</groupId>
                 <artifactId>watergis-server</artifactId>
-                <version>5.0.8</version>
+                <version>5.0.13</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>

@@ -110,4 +110,17 @@ public class SimpleFeatureSplitter implements FeatureSplitter {
 
         return null;
     }
+
+    @Override
+    public List<FeatureServiceFeature> getAdditionalFeaturesToSave() {
+        return new ArrayList<FeatureServiceFeature>();
+    }
+
+    @Override
+    public void undo() {
+    }
+
+    @Override
+    public void unlockObjects() {
+    }
 }

@@ -320,9 +320,10 @@ public class ShapefileWriter implements JUMPWriter {
      *
      * @throws  IllegalParametersException  DOCUMENT ME!
      * @throws  Exception                   DOCUMENT ME!
+     * @throws  InterruptedException        DOCUMENT ME!
      */
     public void writePersistentFeatures(final FeatureCollection featureCollection, final DriverProperties dp)
-            throws IllegalParametersException, Exception {
+            throws IllegalParametersException, Exception, InterruptedException {
         String shpfileName;
         final String dbffname;
         final String shxfname;
@@ -374,18 +375,18 @@ public class ShapefileWriter implements JUMPWriter {
             charsetName = Charset.defaultCharset().name();
         }
         if (Thread.interrupted()) {
-            return;
+            throw new InterruptedException();
         }
         writeDbf(featureCollection, dbffname, Charset.forName(charsetName));
         if (Thread.interrupted()) {
-            return;
+            throw new InterruptedException();
         }
 
         // this gc will be a collection of either multi-points, multi-polygons, or multi-linestrings
         // polygons will have the rings in the correct order
         gc = makePersistentSHAPEGeometryCollection(featureCollection);
         if (Thread.interrupted() || (gc == null)) {
-            return;
+            throw new InterruptedException();
         }
 
         shapeType = 2; // x,y
@@ -417,7 +418,7 @@ public class ShapefileWriter implements JUMPWriter {
         final Shapefile myshape = new Shapefile(url);
         myshape.write(gc, shapeType);
         if (Thread.interrupted()) {
-            return;
+            throw new InterruptedException();
         }
 
         shxfname = path + fname_withoutextention + ".shx";
@@ -582,7 +583,7 @@ public class ShapefileWriter implements JUMPWriter {
                     final Object a = feature.getAttribute(u);
 
                     if (a == null) {
-                        DBFrow.add(new Integer(0));
+                        DBFrow.add(null);
                     } else {
                         if (a instanceof Integer) {
                             DBFrow.add((Integer)a);
@@ -594,7 +595,7 @@ public class ShapefileWriter implements JUMPWriter {
                     final Object a = feature.getAttribute(u);
 
                     if (a == null) {
-                        DBFrow.add(new Double(0.0));
+                        DBFrow.add(null);
                     } else {
                         DBFrow.add((Double)a);
                     }

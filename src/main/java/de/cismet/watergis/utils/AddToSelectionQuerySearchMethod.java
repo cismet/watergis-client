@@ -12,6 +12,9 @@ import org.apache.log4j.Logger;
 import org.openide.util.NbBundle;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.JOptionPane;
 
 import de.cismet.cids.search.QuerySearch;
 import de.cismet.cids.search.QuerySearchMethod;
@@ -23,6 +26,10 @@ import de.cismet.cismap.commons.featureservice.factory.FeatureFactory;
 import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.commons.concurrency.CismetExecutors;
+
+import de.cismet.watergis.broker.AppBroker;
+
+import static de.cismet.watergis.utils.AbstractSearchAndSelectThread.LOG;
 
 /**
  * DOCUMENT ME!
@@ -118,6 +125,14 @@ public class AddToSelectionQuerySearchMethod implements QuerySearchMethod {
                 if ((features != null) && (layer instanceof AbstractFeatureService)) {
                     SelectionManager.getInstance().addSelectedFeatures(features);
                 }
+            } catch (ExecutionException e) {
+                if (e.getCause() instanceof TooManyResultsException) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        e.getCause().getMessage(),
+                        "Hinweis",
+                        JOptionPane.WARNING_MESSAGE);
+                }
+                LOG.error("Error while selecting features", e);
             } catch (Exception e) {
                 LOG.error("Error while selecting features", e);
             }

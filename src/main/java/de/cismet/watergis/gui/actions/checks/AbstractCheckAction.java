@@ -38,6 +38,7 @@ import java.util.TreeSet;
 import javax.swing.AbstractAction;
 
 import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
+import de.cismet.cids.custom.watergis.server.search.RouteProblemsCountAndClasses;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -400,21 +401,41 @@ public abstract class AbstractCheckAction extends AbstractAction {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    protected int getErrorObjectsFromTree(final String owner, final int[] routeIds, final int[] classIds)
-            throws Exception {
+    protected ProblemCountAndClasses getErrorObjectsFromTree(final String owner,
+            final int[] routeIds,
+            final int[] classIds) throws Exception {
         final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(SessionManager.getSession().getUser(),
-                            new RouteProblemsCount(owner, routeIds, classIds, false));
+                            new RouteProblemsCountAndClasses(owner, routeIds, classIds, false));
+        String count = null;
+        final List<String> classes = new ArrayList<String>();
 
         if ((problemCountList != null) && !problemCountList.isEmpty()) {
-            final ArrayList innerList = problemCountList.get(0);
+            ArrayList innerList;
 
-            if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
-                return ((Number)innerList.get(0)).intValue();
+            for (int i = 0; i < (problemCountList.size() - 1); ++i) {
+                innerList = problemCountList.get(i);
+
+                if ((innerList != null) && !innerList.isEmpty()) {
+                    classes.add((String)innerList.get(0));
+                }
+            }
+            innerList = problemCountList.get(problemCountList.size() - 1);
+
+            if ((innerList != null) && !innerList.isEmpty()) {
+                count = (String)innerList.get(0);
             }
         }
 
-        return 0;
+        if (count != null) {
+            final ProblemCountAndClasses problems = new ProblemCountAndClasses(
+                    count,
+                    classes.toArray(new String[classes.size()]));
+
+            return problems;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -712,6 +733,69 @@ public abstract class AbstractCheckAction extends AbstractAction {
         if (capComponent instanceof CapabilityWidget) {
             final CapabilityWidget cap = (CapabilityWidget)capComponent;
             cap.refreshJdbcTrees();
+        }
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    protected static class ProblemCountAndClasses {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private int count;
+        private String classes;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new ProblemCountAndClasses object.
+         *
+         * @param  count    DOCUMENT ME!
+         * @param  classes  DOCUMENT ME!
+         */
+        public ProblemCountAndClasses(final String count, final String[] classes) {
+            try {
+                this.count = Integer.parseInt(count);
+            } catch (NumberFormatException ex) {
+                LOG.error("Cannot parse problem count", ex);
+            }
+
+            if ((classes == null) || (classes.length == 0)) {
+                this.classes = "";
+            } else {
+                for (final String cl : classes) {
+                    if (this.classes == null) {
+                        this.classes = cl;
+                    } else {
+                        this.classes += ", " + cl;
+                    }
+                }
+            }
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the count
+         */
+        public int getCount() {
+            return count;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the classes
+         */
+        public String getClasses() {
+            return classes;
         }
     }
 }

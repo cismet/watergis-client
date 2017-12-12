@@ -31,6 +31,7 @@ import de.cismet.cids.custom.watergis.server.search.FgBakIdsByFgBaIds;
 import de.cismet.cids.custom.watergis.server.search.MergeBakAe;
 import de.cismet.cids.custom.watergis.server.search.RemoveDuplicatedNodesFromFgBak;
 import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
+import de.cismet.cids.custom.watergis.server.search.RouteProblemsCountAndClasses;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -289,25 +290,49 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                                 return;
                             }
 
-                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                                NbBundle.getMessage(
-                                    BasicRoutesCheckAction.class,
-                                    "BasicRoutesCheckAction.actionPerformed().result.text",
-                                    new Object[] {
-                                        result.getBakCount(),
-                                        result.getShortErrors(),
-                                        result.getCrossedErrors(),
-                                        result.getMissingCodeErrors(),
-                                        result.getNotUniqueCodeErrors(),
-                                        result.getAusEinleitungErrors(),
-                                        result.getPrefixErrors(),
-                                        result.getWwGrErrors(),
-                                        result.getErrorTree()
-                                    }),
-                                NbBundle.getMessage(
-                                    BasicRoutesCheckAction.class,
-                                    "BasicRoutesCheckAction.actionPerformed().result.title"),
-                                JOptionPane.INFORMATION_MESSAGE);
+                            if ((result.getErrorTree() == null)
+                                        || (result.getErrorTree().getCount() == 0)) {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        BasicRoutesCheckAction.class,
+                                        "BasicRoutesCheckAction.actionPerformed().result.text.withoutProblems",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getShortErrors(),
+                                            result.getCrossedErrors(),
+                                            result.getMissingCodeErrors(),
+                                            result.getNotUniqueCodeErrors(),
+                                            result.getAusEinleitungErrors(),
+                                            result.getPrefixErrors(),
+                                            result.getWwGrErrors(),
+                                            0
+                                        }),
+                                    NbBundle.getMessage(
+                                        BasicRoutesCheckAction.class,
+                                        "BasicRoutesCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        BasicRoutesCheckAction.class,
+                                        "BasicRoutesCheckAction.actionPerformed().result.text",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getShortErrors(),
+                                            result.getCrossedErrors(),
+                                            result.getMissingCodeErrors(),
+                                            result.getNotUniqueCodeErrors(),
+                                            result.getAusEinleitungErrors(),
+                                            result.getPrefixErrors(),
+                                            result.getWwGrErrors(),
+                                            result.getErrorTree().getCount(),
+                                            result.getErrorTree().getClasses()
+                                        }),
+                                    NbBundle.getMessage(
+                                        BasicRoutesCheckAction.class,
+                                        "BasicRoutesCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            }
 
                             if (result.getWwGrService() != null) {
                                 showService(result.getWwGrService(), "Prüfungen->Basisrouten");
@@ -453,21 +478,41 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
             }
         }
 
-        String owner = "null";
+        String owner = null;
         if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")) {
             owner = "'" + AppBroker.getInstance().getOwner() + "'";
         }
 
         final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(SessionManager.getSession().getUser(),
-                            new RouteProblemsCount(owner, selectedIds, USED_CLASS_IDS, true));
+                            new RouteProblemsCountAndClasses(owner, selectedIds, USED_CLASS_IDS, true));
+
+        String count = null;
+        final List<String> classes = new ArrayList<String>();
 
         if ((problemCountList != null) && !problemCountList.isEmpty()) {
-            final ArrayList innerList = problemCountList.get(0);
+            ArrayList innerList;
 
-            if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
-                result.setErrorTree(((Number)innerList.get(0)).intValue());
+            for (int i = 0; i < (problemCountList.size() - 1); ++i) {
+                innerList = problemCountList.get(i);
+
+                if ((innerList != null) && !innerList.isEmpty()) {
+                    classes.add((String)innerList.get(0));
+                }
             }
+            innerList = problemCountList.get(problemCountList.size() - 1);
+
+            if ((innerList != null) && !innerList.isEmpty()) {
+                count = (String)innerList.get(0);
+            }
+        }
+
+        if (count != null) {
+            final ProblemCountAndClasses problems = new ProblemCountAndClasses(
+                    count,
+                    classes.toArray(new String[classes.size()]));
+
+            result.setErrorTree(problems);
         }
 
         if (result.getAusEinleitungService() != null) {
@@ -526,7 +571,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
         private int ausEinleitungErrors;
         private int prefixErrors;
         private int wwGrErrors;
-        private int errorTree;
+        private ProblemCountAndClasses errorTree;
         private int bakCount;
         private H2FeatureService shortService;
         private H2FeatureService crossedService;
@@ -669,7 +714,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
          *
          * @return  the errorTree
          */
-        public int getErrorTree() {
+        public ProblemCountAndClasses getErrorTree() {
             return errorTree;
         }
 
@@ -678,7 +723,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
          *
          * @param  errorTree  the errorTree to set
          */
-        public void setErrorTree(final int errorTree) {
+        public void setErrorTree(final ProblemCountAndClasses errorTree) {
             this.errorTree = errorTree;
         }
 

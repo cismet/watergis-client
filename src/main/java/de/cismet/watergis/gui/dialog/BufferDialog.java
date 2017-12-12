@@ -13,6 +13,9 @@
 package de.cismet.watergis.gui.dialog;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.index.strtree.STRtree;
 
 import org.apache.log4j.Logger;
@@ -49,6 +52,8 @@ import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.tools.FeatureTools;
+
+import de.cismet.math.geometry.StaticGeometryFunctions;
 
 import de.cismet.tools.gui.WaitingDialogThread;
 
@@ -322,8 +327,10 @@ public class BufferDialog extends javax.swing.JDialog {
         rbFixBuffer.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             rbFixBuffer,
-            org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.rbFixBuffer.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                BufferDialog.class,
+                "BufferDialog.rbFixBuffer.text",
+                new Object[] {})); // NOI18N
         rbFixBuffer.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -453,8 +460,10 @@ public class BufferDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbSelected,
-            org.openide.util.NbBundle.getMessage(BufferDialog.class, "BufferDialog.ckbSelected.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                BufferDialog.class,
+                "BufferDialog.ckbSelected.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -524,7 +533,7 @@ public class BufferDialog extends javax.swing.JDialog {
                         return null;
                     }
 
-                    // initialise variables for the geoperation
+                    // initialise variables for the geo operation
                     double buffer = 0;
                     final List<FeatureServiceFeature> resultedFeatures = new ArrayList<FeatureServiceFeature>();
                     if ((featureList == null) || (featureList.size() == 0)) {
@@ -578,11 +587,18 @@ public class BufferDialog extends javax.swing.JDialog {
                     wd.setText(NbBundle.getMessage(
                             BufferDialog.class,
                             "BufferDialog.butOkActionPerformed.doInBackground.createFeatures"));
+                    Boolean isFeatureMulti = null;
 
                     // buffer geometries
                     for (final FeatureServiceFeature f : featureList) {
                         Geometry geom = f.getGeometry();
                         ++count;
+
+                        if (isFeatureMulti == null) {
+                            isFeatureMulti = (geom instanceof MultiPolygon)
+                                        || (geom instanceof MultiPoint)
+                                        || (geom instanceof MultiLineString);
+                        }
 
                         if (geom != null) {
                             if (rbFixBuffer.isSelected()) {
@@ -593,7 +609,11 @@ public class BufferDialog extends javax.swing.JDialog {
                             }
                         }
 
-                        if (ckbIndividual.isSelected() && (geom.getNumGeometries() > 1)) {
+                        if (geom == null) {
+                            continue;
+                        }
+
+                        if (ckbIndividual.isSelected()) {
                             for (int geomIndex = 0; geomIndex < geom.getNumGeometries(); ++geomIndex) {
                                 final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
                                 newFeature.setLayerProperties(newLayerProperties);
@@ -603,7 +623,11 @@ public class BufferDialog extends javax.swing.JDialog {
                         } else {
                             if (!geom.isEmpty()) {
                                 final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
-                                newFeature.setGeometry(geom);
+                                if (isFeatureMulti) {
+                                    newFeature.setGeometry(StaticGeometryFunctions.toMultiGeometry(geom));
+                                } else {
+                                    newFeature.setGeometry(geom);
+                                }
                                 resultedFeatures.add(newFeature);
                             }
                         }

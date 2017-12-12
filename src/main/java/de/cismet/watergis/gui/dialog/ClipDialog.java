@@ -558,6 +558,7 @@ public class ClipDialog extends javax.swing.JDialog {
                     if (Thread.interrupted()) {
                         return null;
                     }
+                    String geometryTypeName = null;
                     final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
                             service,
                             ckbSelected.isSelected());
@@ -584,6 +585,10 @@ public class ClipDialog extends javax.swing.JDialog {
                         Geometry clipGeometry = null;
                         ++count;
 
+                        if (geometryTypeName == null) {
+                            geometryTypeName = f.getGeometry().getClass().getName();
+                        }
+
                         final Geometry searchGeom = f.getGeometry();
 
                         final List<FeatureServiceFeature> intersectingFeatures = featureTree.query(
@@ -599,13 +604,28 @@ public class ClipDialog extends javax.swing.JDialog {
 
                                 if ((newGeom != null) && !newGeom.isEmpty()) {
                                     if (ckbMultiPart.isSelected()) {
-                                        hasMultiPolygon = hasMultiPolygon || (newGeom instanceof MultiPolygon)
+                                        final boolean isMulti = (newGeom instanceof MultiPolygon)
                                                     || (newGeom instanceof MultiPoint)
                                                     || (newGeom instanceof MultiLineString);
+                                        hasMultiPolygon = hasMultiPolygon || isMulti;
+                                        if (!newGeom.getClass().getName().equals(geometryTypeName)
+                                                    && !(isMulti
+                                                        && newGeom.getGeometryN(0).getClass().getName().equals(
+                                                            geometryTypeName))) {
+                                            // do not change the geometry type, but allow to make multi part from
+                                            // single part
+                                            continue;
+                                        }
                                         f.setGeometry(newGeom);
                                         resultedFeatures.add(f);
                                     } else {
                                         for (int geomIndex = 0; geomIndex < newGeom.getNumGeometries(); ++geomIndex) {
+                                            if (
+                                                !newGeom.getGeometryN(geomIndex).getClass().getName().equals(
+                                                            geometryTypeName)) {
+                                                // do not change the geometry type
+                                                continue;
+                                            }
                                             final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
                                             newFeature.setGeometry(newGeom.getGeometryN(geomIndex));
                                             newFeature.setProperty("id", ++featureCount);

@@ -1574,46 +1574,89 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                                 return;
                             }
 
-                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                                NbBundle.getMessage(
-                                    BauwerkeCheckAction.class,
-                                    "BauwerkeCheckAction.actionPerformed().result.text",
-                                    new Object[] {
-                                        result.getBakCount(),
-                                        result.getRlAttrErrors(),
-                                        result.getdAttrErrors(),
-                                        result.getDueAttrErrors(),
-                                        result.getSchaAttrErrors(),
-                                        result.getWehrAttrErrors(),
-                                        result.getSchwAttrErrors(),
-                                        result.getAnlpAttrErrors(),
-                                        result.getAnllAttrErrors(),
-                                        result.getKrAttrErrors(),
-                                        result.getEaAttrErrors(),
-                                        result.getRlHoleErrors(),
-                                        result.getRlOverlappsErrors(),
-                                        result.getSchaDistanceError()
-                                                + result.getSchaOffenError(),
-                                        result.getWehrDistanceError(),
-//                                                + result.getWehrGeschlossenError(),
-                                        result.getSchwDistanceError(),
-                                        result.getAnlpEswError()
-                                                + result.getAnlpGeschlossenError()
-                                                + result.getAnlpOffenError(),
-                                        result.getAnllGeschlError(),
-                                        result.getKrDistanceError()
-                                                + result.getKrEswError()
-                                                + result.getKrMarkedTwiceError()
-                                                + result.getKrFgBaError()
-                                                + result.getKrInvalidError(),
-                                        result.getEaEswError(),
-                                        result.getProblemTreeObjectCount()
-                                    }),
-                                NbBundle.getMessage(
-                                    BauwerkeCheckAction.class,
-                                    "BauwerkeCheckAction.actionPerformed().result.title"),
-                                JOptionPane.INFORMATION_MESSAGE);
-
+                            if ((result.getProblemTreeObjectCount() == null)
+                                        || (result.getProblemTreeObjectCount().getCount() == 0)) {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        BauwerkeCheckAction.class,
+                                        "BauwerkeCheckAction.actionPerformed().result.text.withoutProblems",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getRlAttrErrors(),
+                                            result.getdAttrErrors(),
+                                            result.getDueAttrErrors(),
+                                            result.getSchaAttrErrors(),
+                                            result.getWehrAttrErrors(),
+                                            result.getSchwAttrErrors(),
+                                            result.getAnlpAttrErrors(),
+                                            result.getAnllAttrErrors(),
+                                            result.getKrAttrErrors(),
+                                            result.getEaAttrErrors(),
+                                            result.getRlHoleErrors(),
+                                            result.getRlOverlappsErrors(),
+                                            result.getSchaDistanceError()
+                                                    + result.getSchaOffenError(),
+                                            result.getWehrDistanceError(),
+                                            // + result.getWehrGeschlossenError(),
+                                            result.getSchwDistanceError(),
+                                            result.getAnlpEswError()
+                                                    + result.getAnlpGeschlossenError()
+                                                    + result.getAnlpOffenError(),
+                                            result.getAnllGeschlError(),
+                                            result.getKrDistanceError()
+                                                    + result.getKrEswError()
+                                                    + result.getKrMarkedTwiceError()
+                                                    + result.getKrFgBaError()
+                                                    + result.getKrInvalidError(),
+                                            result.getEaEswError(),
+                                            0
+                                        }),
+                                    NbBundle.getMessage(
+                                        BauwerkeCheckAction.class,
+                                        "BauwerkeCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        BauwerkeCheckAction.class,
+                                        "BauwerkeCheckAction.actionPerformed().result.text",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getRlAttrErrors(),
+                                            result.getdAttrErrors(),
+                                            result.getDueAttrErrors(),
+                                            result.getSchaAttrErrors(),
+                                            result.getWehrAttrErrors(),
+                                            result.getSchwAttrErrors(),
+                                            result.getAnlpAttrErrors(),
+                                            result.getAnllAttrErrors(),
+                                            result.getKrAttrErrors(),
+                                            result.getEaAttrErrors(),
+                                            result.getRlHoleErrors(),
+                                            result.getRlOverlappsErrors(),
+                                            result.getSchaDistanceError()
+                                                    + result.getSchaOffenError(),
+                                            result.getWehrDistanceError(),
+                                            // + result.getWehrGeschlossenError(),
+                                            result.getSchwDistanceError(),
+                                            result.getAnlpEswError()
+                                                    + result.getAnlpGeschlossenError()
+                                                    + result.getAnlpOffenError(),
+                                            result.getAnllGeschlError(),
+                                            result.getKrDistanceError()
+                                                    + result.getKrEswError()
+                                                    + result.getKrMarkedTwiceError()
+                                                    + result.getKrFgBaError()
+                                                    + result.getKrInvalidError(),
+                                            result.getEaEswError(),
+                                            result.getProblemTreeObjectCount().getCount(),
+                                            result.getProblemTreeObjectCount().getClasses()
+                                        }),
+                                    NbBundle.getMessage(
+                                        BauwerkeCheckAction.class,
+                                        "BauwerkeCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            }
                             if (result.getEaEsw() != null) {
                                 showService(result.getEaEsw());
                             }
@@ -2186,7 +2229,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private int eaEswError;
         private int anllGeschlError;
         private int krMarkedTwiceError;
-        private int problemTreeObjectCount;
+        private ProblemCountAndClasses problemTreeObjectCount;
         private H2FeatureService rlAttr;
         private H2FeatureService dAttr;
         private H2FeatureService dueAttr;
@@ -2221,7 +2264,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
-        public int getProblemTreeObjectCount() {
+        public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
 
@@ -2230,7 +2273,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
          *
          * @param  problemTreeObjectCount  the problemTreeObjectCount to set
          */
-        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+        public void setProblemTreeObjectCount(final ProblemCountAndClasses problemTreeObjectCount) {
             this.problemTreeObjectCount = problemTreeObjectCount;
         }
 

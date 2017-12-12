@@ -770,40 +770,77 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                                 return;
                             }
 
-                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                                NbBundle.getMessage(
-                                    SonstigeCheckAction.class,
-                                    "SonstigeCheckAction.actionPerformed().result.text",
-                                    new Object[] {
-                                        result.getBakCount(),
-                                        result.getAttributesDeichErrors(),
-                                        result.getAttributesWiweErrors(),
-                                        result.getAttributesUghzErrors(),
-                                        result.getAttributesFotoErrors(),
-                                        result.getAttributesLeisErrors(),
-                                        result.getAttributesTechErrors(),
-                                        result.getGapDeichErrors(),
-                                        result.getGapWiweErrors(),
-                                        result.getGapTechErrors(),
-                                        result.getOverlappedTechErrors(),
-                                        result.getGapDeichErrors()
-                                                + result.getGerinneDeichErrors(),
-                                        result.getGapWiweErrors()
-                                                + result.getGerinneWiweErrors(),
-                                        result.getGerinneLeisErrors(),
-                                        result.getGapTechErrors()
-                                                + result.getOverlappedTechErrors()
-                                                + result.getOffGerinneTechErrors()
-                                                + result.getGeschGerinneTechErrors()
-                                                + result.getdTechErrors()
-                                                + result.getvTechErrors(),
-                                        result.getProblemTreeObjectCount()
-                                    }),
-                                NbBundle.getMessage(
-                                    SonstigeCheckAction.class,
-                                    "SonstigeCheckAction.actionPerformed().result.title"),
-                                JOptionPane.INFORMATION_MESSAGE);
-
+                            if ((result.getProblemTreeObjectCount() == null)
+                                        || (result.getProblemTreeObjectCount().getCount() == 0)) {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        SonstigeCheckAction.class,
+                                        "SonstigeCheckAction.actionPerformed().result.text.withoutProblems",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getAttributesDeichErrors(),
+                                            result.getAttributesWiweErrors(),
+                                            result.getAttributesUghzErrors(),
+                                            result.getAttributesFotoErrors(),
+                                            result.getAttributesLeisErrors(),
+                                            result.getAttributesTechErrors(),
+                                            result.getGapDeichErrors(),
+                                            result.getGapWiweErrors(),
+                                            result.getGapTechErrors(),
+                                            result.getOverlappedTechErrors(),
+                                            result.getGapDeichErrors()
+                                                    + result.getGerinneDeichErrors(),
+                                            result.getGapWiweErrors()
+                                                    + result.getGerinneWiweErrors(),
+                                            result.getGerinneLeisErrors(),
+                                            result.getGapTechErrors()
+                                                    + result.getOverlappedTechErrors()
+                                                    + result.getOffGerinneTechErrors()
+                                                    + result.getGeschGerinneTechErrors()
+                                                    + result.getdTechErrors()
+                                                    + result.getvTechErrors(),
+                                            0
+                                        }),
+                                    NbBundle.getMessage(
+                                        SonstigeCheckAction.class,
+                                        "SonstigeCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                    NbBundle.getMessage(
+                                        SonstigeCheckAction.class,
+                                        "SonstigeCheckAction.actionPerformed().result.text",
+                                        new Object[] {
+                                            result.getBakCount(),
+                                            result.getAttributesDeichErrors(),
+                                            result.getAttributesWiweErrors(),
+                                            result.getAttributesUghzErrors(),
+                                            result.getAttributesFotoErrors(),
+                                            result.getAttributesLeisErrors(),
+                                            result.getAttributesTechErrors(),
+                                            result.getGapDeichErrors(),
+                                            result.getGapWiweErrors(),
+                                            result.getGapTechErrors(),
+                                            result.getOverlappedTechErrors(),
+                                            result.getGapDeichErrors()
+                                                    + result.getGerinneDeichErrors(),
+                                            result.getGapWiweErrors()
+                                                    + result.getGerinneWiweErrors(),
+                                            result.getGerinneLeisErrors(),
+                                            result.getGapTechErrors()
+                                                    + result.getOverlappedTechErrors()
+                                                    + result.getOffGerinneTechErrors()
+                                                    + result.getGeschGerinneTechErrors()
+                                                    + result.getdTechErrors()
+                                                    + result.getvTechErrors(),
+                                            result.getProblemTreeObjectCount().getCount(),
+                                            result.getProblemTreeObjectCount().getClasses()
+                                        }),
+                                    NbBundle.getMessage(
+                                        SonstigeCheckAction.class,
+                                        "SonstigeCheckAction.actionPerformed().result.title"),
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            }
                             if (result.getvTech() != null) {
                                 showService(result.getvTech());
                             }
@@ -992,7 +1029,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             increaseProgress(wd, 6);
         }
 
-        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS));
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS));
 
         result.setAttributesLeis(analyseByQuery(
                 FG_BA_LEIS,
@@ -1185,7 +1222,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         private int offGerinneTechErrors;
         private int dTechErrors;
         private int vTechErrors;
-        private int problemTreeObjectCount;
+        private ProblemCountAndClasses problemTreeObjectCount;
 
         private H2FeatureService attributesDeich;
         private H2FeatureService gapDeich;
@@ -1213,7 +1250,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
-        public int getProblemTreeObjectCount() {
+        public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
 
@@ -1222,7 +1259,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
          *
          * @param  problemTreeObjectCount  the problemTreeObjectCount to set
          */
-        public void setProblemTreeObjectCount(final int problemTreeObjectCount) {
+        public void setProblemTreeObjectCount(final ProblemCountAndClasses problemTreeObjectCount) {
             this.problemTreeObjectCount = problemTreeObjectCount;
         }
 
