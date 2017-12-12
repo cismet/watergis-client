@@ -14,7 +14,10 @@ package de.cismet.watergis.gui.actions.split;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 
+import java.util.List;
+
 import de.cismet.cismap.commons.features.Feature;
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
 /**
  * DOCUMENT ME!
@@ -35,4 +38,21 @@ public interface FeatureSplitter {
      * @return  DOCUMENT ME!
      */
     Feature[] split(Feature masterFeature, LineString splitLine);
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    List<FeatureServiceFeature> getAdditionalFeaturesToSave();
+
+    /**
+     * DOCUMENT ME!
+     */
+    void undo();
+
+    /**
+     * DOCUMENT ME!
+     */
+    void unlockObjects();
 }
