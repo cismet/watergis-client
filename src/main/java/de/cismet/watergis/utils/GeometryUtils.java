@@ -199,9 +199,7 @@ public class GeometryUtils {
             return null;
         }
 
-        final long start = System.currentTimeMillis();
         final Geometry g = unionGeometries2(geomList);
-        LOG.error("union2 time: " + (System.currentTimeMillis() - start));
         return g;
     }
 

@@ -480,7 +480,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
 
         String owner = null;
         if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")) {
-            owner = "'" + AppBroker.getInstance().getOwner() + "'";
+            owner = AppBroker.getInstance().getOwner();
         }
 
         final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager.getProxy()

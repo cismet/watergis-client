@@ -156,6 +156,7 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
         typeMap.put("la_wrrl", new WatergisDefaultRuleSet.Numeric(1, 0, true, false));
         typeMap.put("gbk_lawa", new WatergisDefaultRuleSet.Numeric(15, 0, true, true));
         typeMap.put("gbk_lawa_k", new WatergisDefaultRuleSet.Numeric(4, 0, true, true));
+        typeMap.put("ezg", new WatergisDefaultRuleSet.Numeric(15, 0, true, true));
     }
 
     //~ Constructors -----------------------------------------------------------
