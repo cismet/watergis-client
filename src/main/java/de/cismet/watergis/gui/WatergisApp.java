@@ -120,6 +120,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
@@ -143,6 +144,7 @@ import javax.swing.tree.TreePath;
 
 import de.cismet.cids.custom.watergis.server.search.DeleteInvalidFgBaExp;
 import de.cismet.cids.custom.watergis.server.search.RemoveOldLocks;
+import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
 import de.cismet.cids.custom.watergis.server.search.RouteEnvelopes;
 import de.cismet.cids.custom.watergis.server.search.ValidLawaCodes;
 
@@ -173,6 +175,7 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableListener;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.capabilitywidget.CapabilityWidget;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
@@ -1460,6 +1463,31 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
                     if (!active) {
                         splitAction.undo(service);
+                        final AttributeTable table = getAttributeTable(AttributeTableFactory.createId(service));
+
+                        if ((table != null) && (service.getLayerProperties() != null)
+                                    && (service.getLayerProperties().getFeatureService() != null)
+                                    && (service.getLayerProperties().getFeatureService() instanceof CidsLayer)
+                                    && ((CidsLayer)service.getLayerProperties().getFeatureService()).getMetaClass()
+                                    .getTableName().equalsIgnoreCase("dlm25w.fg_bak")) {
+                            final TreeSet<DefaultFeatureServiceFeature> rejectedFeatures =
+                                table.getRejectedNewFeatures();
+                            final TreeSet<DefaultFeatureServiceFeature> features =
+                                new TreeSet<DefaultFeatureServiceFeature>(
+                                    rejectedFeatures);
+
+                            if (!features.isEmpty()) {
+                                final Thread t = new Thread("removeFeaturesOnRoute") {
+
+                                        @Override
+                                        public void run() {
+                                            removeCat2ObjectsOnRoutes(features);
+                                        }
+                                    };
+
+                                t.start();
+                            }
+                        }
                     }
                     topicTreeSelectionChanged(null);
 
@@ -1489,6 +1517,87 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         }
 
                         AppBroker.getInstance().setActiveFeatureCreator(null);
+                    }
+                }
+
+                private void removeCat2ObjectsOnRoutes(final TreeSet<DefaultFeatureServiceFeature> features) {
+                    for (final FeatureServiceFeature feature : features) {
+                        try {
+                            final CidsServerSearch nodesSearch = new RemoveUnnusedRoute(
+                                    feature.getId(),
+                                    RemoveUnnusedRoute.FG_BAK);
+                            SessionManager.getProxy()
+                                    .customServerSearch(SessionManager.getSession().getUser(), nodesSearch);
+                        } catch (Exception e) {
+                            LOG.error("Error while removing unused stations", e);
+                        }
+
+                        final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures();
+                        final List<Feature> selectedFeaturesToRemove = new ArrayList<Feature>();
+
+                        for (final Feature f : selectedFeatures) {
+                            if (f instanceof CidsLayerFeature) {
+                                final CidsLayerFeature clf = (CidsLayerFeature)f;
+
+                                if ((clf.getProperty("ba_cd") != null) && (feature.getProperty("ba_cd") != null)) {
+                                    final String selectedFeatureBaCd = String.valueOf(clf.getProperty("ba_cd"));
+                                    final String deletedFeatureBaCd = String.valueOf(feature.getProperty("ba_cd"));
+
+                                    if (selectedFeatureBaCd.equals(deletedFeatureBaCd)) {
+                                        selectedFeaturesToRemove.add(f);
+                                    }
+                                }
+                            }
+                        }
+
+                        for (final String tableId : attributeTableMap.keySet()) {
+                            final AttributeTable table = getAttributeTable(tableId);
+                            final AbstractFeatureService service = table.getFeatureService();
+                            final Object masterBaCd = feature.getProperty("ba_cd");
+
+                            if (((CidsLayer)service.getLayerProperties().getFeatureService()).getMetaClass()
+                                        .getTableName().equalsIgnoreCase("dlm25w.fg_bak")) {
+                                continue;
+                            }
+
+                            if ((table != null) && (service instanceof CidsLayer)) {
+                                final AttributeTableRuleSet ruleSet = ((CidsLayer)service).getLayerProperties()
+                                            .getAttributeTableRuleSet();
+                                final FeatureServiceFeature f = table.getFeatureByRow(0);
+
+                                if (f.getProperty("ba_cd") != null) {
+                                    for (int i = 0; i < table.getFeatureCount(); ++i) {
+                                        final FeatureServiceFeature fe = table.getFeatureByRow(i);
+                                        final Object baCd = fe.getProperty("ba_cd");
+
+                                        if ((baCd != null) && baCd.equals(masterBaCd)) {
+                                            if ((ruleSet == null) || ruleSet.isCatThree()) {
+                                                fe.setProperty("ba_cd", null);
+                                                if (fe.getProperty("ba_st_von") != null) {
+                                                    fe.setProperty("ba_st_von", null);
+                                                }
+                                                if (fe.getProperty("ba_st_bis") != null) {
+                                                    fe.setProperty("ba_st_bis", null);
+                                                }
+                                                if (fe.getProperty("ba_st") != null) {
+                                                    fe.setProperty("ba_st", null);
+                                                }
+
+                                                if (fe.isEditable()) {
+                                                    ((CidsLayerFeature)fe).removeStations();
+                                                }
+                                            } else {
+                                                table.removeFeatureFromModel((DefaultFeatureServiceFeature)fe);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!selectedFeaturesToRemove.isEmpty()) {
+                            SelectionManager.getInstance().removeSelectedFeatures(selectedFeaturesToRemove);
+                        }
                     }
                 }
 

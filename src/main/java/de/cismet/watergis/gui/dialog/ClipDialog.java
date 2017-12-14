@@ -620,14 +620,18 @@ public class ClipDialog extends javax.swing.JDialog {
                                         resultedFeatures.add(f);
                                     } else {
                                         for (int geomIndex = 0; geomIndex < newGeom.getNumGeometries(); ++geomIndex) {
-                                            if (
-                                                !newGeom.getGeometryN(geomIndex).getClass().getName().equals(
-                                                            geometryTypeName)) {
-                                                // do not change the geometry type
-                                                continue;
+                                            Geometry newGeometryPart = newGeom.getGeometryN(geomIndex);
+                                            if (!newGeometryPart.getClass().getName().equals(geometryTypeName)) {
+                                                newGeometryPart = StaticGeometryFunctions.toMultiGeometry(
+                                                        newGeom.getGeometryN(geomIndex));
+
+                                                if (!newGeometryPart.getClass().getName().equals(geometryTypeName)) {
+                                                    // do not change the geometry type
+                                                    continue;
+                                                }
                                             }
                                             final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
-                                            newFeature.setGeometry(newGeom.getGeometryN(geomIndex));
+                                            newFeature.setGeometry(newGeometryPart);
                                             newFeature.setProperty("id", ++featureCount);
                                             resultedFeatures.add(newFeature);
                                         }
