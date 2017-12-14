@@ -36,8 +36,12 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.StaticDecimalTools;
 
+import de.cismet.tools.gui.StaticSwingTools;
+
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
+
+import de.cismet.watergis.gui.dialog.GotoDialog;
 
 /**
  * DOCUMENT ME!
@@ -90,27 +94,34 @@ public class GoToAction extends AbstractAction {
         final XBoundingBox c = (XBoundingBox)mappingComponent.getCurrentBoundingBoxFromCamera();
         final double x = (c.getX1() + c.getX2()) / 2;
         final double y = (c.getY1() + c.getY2()) / 2;
-        final String message = org.openide.util.NbBundle.getMessage(
-                GoToAction.class,
-                "GoToAction.actionPerformed().dialogMessage");
-        final String title = "Gehe zu xy";
+//        final String message = org.openide.util.NbBundle.getMessage(
+//                GoToAction.class,
+//                "GoToAction.actionPerformed().dialogMessage");
+//        final String title = "Gehe zu xy";
 
-        final Object s = JOptionPane.showInputDialog(
-                AppBroker.getInstance().getComponent(ComponentName.MAIN),
-                message,
-                title,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                null,
-                StaticDecimalTools.round(x)
-                        + ","
-                        + StaticDecimalTools.round(y));
+//        final Object s = JOptionPane.showInputDialog(
+//                AppBroker.getInstance().getComponent(ComponentName.MAIN),
+//                message,
+//                title,
+//                JOptionPane.PLAIN_MESSAGE,
+//                null,
+//                null,
+//                StaticDecimalTools.round(x).replace('.', ',')
+//                        + " "
+//                        + StaticDecimalTools.round(y).replace('.', ','));
 
-        if (s instanceof String) {
+        final GotoDialog dialog = new GotoDialog(StaticSwingTools.getParentFrame(
+                    AppBroker.getInstance().getComponent(ComponentName.MAIN)),
+                true);
+        dialog.setXVal(StaticDecimalTools.round(x).replace('.', ','));
+        dialog.setYVal(StaticDecimalTools.round(y).replace('.', ','));
+        StaticSwingTools.showDialog(dialog);
+
+        if (!dialog.isCancelled()) {
             try {
-                final String[] sa = ((String)s).split(",");
-                final Double gotoX = new Double(sa[0]);
-                final Double gotoY = new Double(sa[1]);
+//                final String[] sa = ((String)s).split(" ");
+                final Double gotoX = new Double(dialog.getXVal().replace(',', '.'));
+                final Double gotoY = new Double(dialog.getYVal().replace(',', '.'));
                 final String currentCrsCode = CismapBroker.getInstance().getSrs().getCode();
                 final XBoundingBox bb = new XBoundingBox(
                         gotoX,

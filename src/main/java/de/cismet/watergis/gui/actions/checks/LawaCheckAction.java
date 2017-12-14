@@ -314,6 +314,8 @@ public class LawaCheckAction extends AbstractCheckAction {
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
+                    serviceAttribute = new FeatureServiceAttribute("ezg", String.valueOf(Types.NUMERIC), true);
+                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.VARCHAR), true);
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
                     serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
