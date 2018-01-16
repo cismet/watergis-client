@@ -36,6 +36,7 @@ import java.util.TreeSet;
  * @version  $Revision$, $Date$
  */
 public class GeometryCollectionWrapper extends GeometryCollection {
+
     //~ Static fields/initializers ---------------------------------------------
 
 // With contributions from Markus Schaber [schabios@logi-track.com] 2004-03-26
