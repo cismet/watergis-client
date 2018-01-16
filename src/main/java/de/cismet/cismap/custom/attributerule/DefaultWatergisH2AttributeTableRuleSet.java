@@ -12,6 +12,11 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
+import Sirius.navigator.connection.SessionManager;
+
+import Sirius.server.middleware.types.MetaClass;
+import Sirius.server.middleware.types.MetaObject;
+
 import org.apache.log4j.Logger;
 
 import org.openide.util.Lookup;
@@ -34,7 +39,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import de.cismet.cids.dynamics.CidsBean;
+
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.features.JDBCFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.LinearReferencingInfo;
 import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
@@ -45,6 +55,10 @@ import de.cismet.cismap.commons.gui.attributetable.creator.WithoutGeometryCreato
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 import de.cismet.cismap.commons.tools.FeatureTools;
 
+import de.cismet.cismap.linearreferencing.FeatureRegistry;
+import de.cismet.cismap.linearreferencing.LinearReferencingHelper;
+import de.cismet.cismap.linearreferencing.TableLinearReferencedLineEditor;
+import de.cismet.cismap.linearreferencing.TableStationEditor;
 import de.cismet.cismap.linearreferencing.tools.StationTableCellEditorInterface;
 
 import de.cismet.watergis.utils.LinkTableCellRenderer;
@@ -627,5 +641,83 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
         ruleSet.isCheckTable = isCheckTable;
 
         return ruleSet;
+    }
+
+    @Override
+    public void startEditMode(final JDBCFeature feature) {
+        createEditor(feature);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  feature  DOCUMENT ME!
+     */
+    private void createEditor(final JDBCFeature feature) {
+        if ((refInfoMap == null) || (refInfos == null) || refInfos.isEmpty()) {
+            return;
+        }
+//        refInfoMap.get(columnName);
+        final LinearReferencingHelper linHelper = FeatureRegistry.getInstance().getLinearReferencingSolver();
+        final LinearReferencingInfo info = refInfos.get(0);
+        final MetaClass metaClass = ClassCacheMultiple.getMetaClass(info.getDomain(), info.getLinRefReferenceName());
+        if (metaClass != null) {
+            try {
+                final String query = "SELECT %s, %s FROM %s WHERE %s = '%s';";
+                final String routeQuery = String.format(
+                        query,
+                        metaClass.getID(),
+                        metaClass.getPrimaryKey(),
+                        metaClass.getTableName(),
+                        info.getTrgLinRefJoinField(),
+                        feature.getProperty(info.getSrcLinRefJoinField()));
+                final MetaObject[] mos = SessionManager.getProxy()
+                            .getMetaObjectByQuery(SessionManager.getSession().getUser(), routeQuery);
+
+                if ((mos != null) && (mos.length == 1)) {
+                    final MetaObject routeObject = mos[0];
+
+                    if ((info.getTillField() == null) || info.getTillField().isEmpty()) {
+                        // create station
+                        final CidsBean stationBean = linHelper.createStationBeanFromRouteBean(routeObject.getBean(),
+                                (Double)feature.getProperty(info.getFromField()));
+                        final TableStationEditor editor = new TableStationEditor(info.getLinRefReferenceName(),
+                                feature,
+                                info.getSrcLinRefJoinField());
+                        editor.setCidsBean(stationBean);
+                        editor.addPropertyChangeListener(feature.getPropertyChangeListener());
+                        feature.setStationEditor(info.getFromField(), editor);
+                    } else {
+                        // create line
+                        final CidsBean lineBean = linHelper.createLineBeanFromRouteBean(routeObject.getBean());
+                        linHelper.setGeometryToLineBean(feature.getGeometry(), lineBean);
+                        final CidsBean fromStation = linHelper.getStationBeanFromLineBean(lineBean, true);
+                        linHelper.setLinearValueToStationBean((Double)feature.getProperty(info.getFromField()),
+                            fromStation);
+                        final CidsBean toStation = linHelper.getStationBeanFromLineBean(lineBean, false);
+                        linHelper.setLinearValueToStationBean((Double)feature.getProperty(info.getTillField()),
+                            toStation);
+
+                        final TableLinearReferencedLineEditor st = new TableLinearReferencedLineEditor(
+                                info.getLinRefReferenceName(),
+                                feature,
+                                info.getSrcLinRefJoinField());
+                        st.setCidsBean(lineBean);
+
+                        final TableStationEditor fromEditor = st.getFromStation();
+                        final TableStationEditor toEditor = st.getToStation();
+
+                        st.addPropertyChangeListener(feature.getPropertyChangeListener());
+                        feature.setBackgroundColor(st.getLineColor());
+
+                        feature.setStationEditor(info.getGeomField(), st);
+                        feature.setStationEditor(info.getFromField(), fromEditor);
+                        feature.setStationEditor(info.getTillField(), toEditor);
+                    }
+                }
+            } catch (Exception ex) {
+                LOG.error("Error while creating station bean", ex);
+            }
+        }
     }
 }
