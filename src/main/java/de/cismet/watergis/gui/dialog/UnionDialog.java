@@ -297,8 +297,10 @@ public class UnionDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labTableName,
-            org.openide.util.NbBundle.getMessage(UnionDialog.class, "UnionDialog.labTableName.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                UnionDialog.class,
+                "UnionDialog.labTableName.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;

@@ -371,8 +371,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labEmpty,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labEmpty.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labEmpty.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -622,8 +624,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labHoehe.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labHoehe,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labHoehe.text", new Object[] {
-                }));                                          // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labHoehe.text",
+                new Object[] {}));                            // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -634,8 +638,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labStatLa.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labStatLa,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labStatLa.text", new Object[] {
-                }));                                           // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labStatLa.text",
+                new Object[] {}));                             // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -647,8 +653,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labStatBa.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labStatBa,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labStatBa.text", new Object[] {
-                }));                                           // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labStatBa.text",
+                new Object[] {}));                             // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -914,8 +922,10 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         labTitle.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labTitle,
-            org.openide.util.NbBundle.getMessage(GafProfEditor.class, "GafProfEditor.labTitle.text", new Object[] {
-                }));                                          // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                GafProfEditor.class,
+                "GafProfEditor.labTitle.text",
+                new Object[] {}));                            // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
