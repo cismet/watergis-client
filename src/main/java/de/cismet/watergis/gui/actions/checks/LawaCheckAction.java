@@ -78,6 +78,15 @@ public class LawaCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BAK_GWK = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_bak_gwk");
+    private static final MetaClass FG_BAK_GN1 = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_bak_gn1");
+    private static final MetaClass FG_BAK_GN2 = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_bak_gn2");
+    private static final MetaClass FG_BAK_GN3 = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_bak_gn3");
     private static String QUERY_GBK_CATALOGUE;
     private static String QUERY_GWK_CATALOGUE;
     private static final String CHECKEZG_DELTA_GBK = "Prüfungen->LAWA-Schlüssel->fg_bak_gbk vs EZG";
@@ -97,7 +106,10 @@ public class LawaCheckAction extends AbstractCheckAction {
     private static final int[] USED_CLASS_IDS = new int[] {
             FG_BAK_GBK.getId(),
             FG_BAK_GWK.getId(),
-            FG_BA_GBK_DELTA.getId()
+            FG_BA_GBK_DELTA.getId(),
+            FG_BAK_GN1.getId(),
+            FG_BAK_GN2.getId(),
+            FG_BAK_GN3.getId()
         };
 
     static {

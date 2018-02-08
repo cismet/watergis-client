@@ -188,6 +188,7 @@ import de.cismet.cismap.commons.gui.options.CapabilityWidgetOptionsPanel;
 import de.cismet.cismap.commons.gui.overviewwidget.OverviewComponent;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.SimpleMoveListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.actions.CustomAction;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.MapDnDListener;
@@ -198,6 +199,7 @@ import de.cismet.cismap.commons.tools.ExportDbfDownload;
 import de.cismet.cismap.commons.tools.ExportDownload;
 import de.cismet.cismap.commons.tools.ExportShapeDownload;
 import de.cismet.cismap.commons.tools.ExportTxtDownload;
+import de.cismet.cismap.commons.tools.PointReferencingDialog;
 import de.cismet.cismap.commons.util.DnDUtils;
 import de.cismet.cismap.commons.util.SelectionChangedEvent;
 import de.cismet.cismap.commons.util.SelectionChangedListener;
@@ -890,6 +892,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     .get(MappingComponent.SELECT);
         sl.setFeaturesFromServicesSelectable(true);
         sl.setSelectMultipleFeatures(true);
+        final SimpleMoveListener motion = (SimpleMoveListener)mappingComponent.getInputEventListener()
+                    .get(MappingComponent.MOTION);
+        motion.setUnderlyingObjectHalo(0.01);
         mappingModel.setInitalLayerConfigurationFromServer(false);
         configManager.addConfigurable((ActiveLayerModel)mappingModel);
         configManager.addConfigurable(mappingComponent);
@@ -916,6 +921,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 //        mappingComponent.setVisualizeSnappingRectEnabled(true);
         mappingComponent.setSnappingRectSize(80);
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
+        PointReferencingDialog.setMIN_X(33000000d);
+        PointReferencingDialog.setMAX_X(33999999d);
+        PointReferencingDialog.setMIN_Y(5600000d);
+        PointReferencingDialog.setMAX_Y(6399999d);
     }
 
     /**
@@ -4022,7 +4031,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdUndomniUndoPerformed
+    private void cmdUndomniUndoPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdUndomniUndoPerformed
         final CustomAction a = CismapBroker.getInstance().getMappingComponent().getMemUndo().getLastAction();
         if (LOG.isDebugEnabled()) {
             LOG.debug("... execute action: " + a.info());                        // NOI18N
@@ -4040,14 +4049,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.debug("... new action on REDO stack: " + inverse); // NOI18N
             LOG.debug("... completed");                            // NOI18N
         }
-    }                                                              //GEN-LAST:event_cmdUndomniUndoPerformed
+    }//GEN-LAST:event_cmdUndomniUndoPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeMoveActionPerformed
+    private void cmdNodeMoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeMoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -4059,14 +4068,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    } //GEN-LAST:event_cmdNodeMoveActionPerformed
+    }//GEN-LAST:event_cmdNodeMoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeAddActionPerformed
+    private void cmdNodeAddActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeAddActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -4078,14 +4087,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    } //GEN-LAST:event_cmdNodeAddActionPerformed
+    }//GEN-LAST:event_cmdNodeAddActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdNodeRemoveActionPerformed
+    private void cmdNodeRemoveActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNodeRemoveActionPerformed
         EventQueue.invokeLater(new Runnable() {
 
                 @Override
@@ -4097,14 +4106,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     selectionModeAction.actionPerformed(evt);
                 }
             });
-    } //GEN-LAST:event_cmdNodeRemoveActionPerformed
+    }//GEN-LAST:event_cmdNodeRemoveActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRouteActionPerformed
         final Object selectedObject = cbRoute.getSelectedItem();
 
         if (routeModelInitialised && (selectedObject instanceof RouteElement)) {
@@ -4140,16 +4149,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
             watergisSingleThreadExecutor.execute(t);
         }
-    } //GEN-LAST:event_cbRouteActionPerformed
+    }//GEN-LAST:event_cbRouteActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdGoToActionPerformed
+    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdGoToActionPerformed
         // TODO add your handling code here:
-    } //GEN-LAST:event_cmdGoToActionPerformed
+    }//GEN-LAST:event_cmdGoToActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -5179,12 +5188,30 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
                 }
 
-                final File outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
-                        lastExportPath,
-                        true,
-                        new String[] { "shp", "dbf", "csv", "txt" },
-                        new String[] { "shp", "dbf", "csv", "txt" },
-                        this);
+                File outputFile = null;
+                
+                try {
+                    afs.initAndWait();
+                } catch (Exception ex) {
+                    LOG.error("CAnnot initialise service.", ex);
+                }
+                
+                if ((afs.getGeometryType() == null) || afs.getGeometryType().equals(AbstractFeatureService.UNKNOWN)
+                            || afs.getGeometryType().equals(AbstractFeatureService.NONE)) {
+                    outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
+                            lastExportPath,
+                            true,
+                            new String[] { "dbf", "csv", "txt" },
+                            new String[] { "dbf", "csv", "txt" },
+                            this);
+                } else {
+                    outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
+                            lastExportPath,
+                            true,
+                            new String[] { "shp", "dbf", "csv", "txt" },
+                            new String[] { "shp", "dbf", "csv", "txt" },
+                            this);
+                }
 
                 if (outputFile != null) {
                     ExportDownload ed;
@@ -5232,7 +5259,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             for (final Object name : service.getOrderedFeatureServiceAttributes()) {
                 final FeatureServiceAttribute attr = attributeMap.get(name);
 
-                if ((attr != null) && (!attr.isVisible() || (!withGeometryColumn && attr.isGeometry()))) {
+                if ((attr != null)
+                            && ((!attr.isVisible() || (!withGeometryColumn && attr.isGeometry()))
+                                && !(withGeometryColumn && attr.isGeometry()))) {
                     continue;
                 }
 
