@@ -295,7 +295,11 @@ public class PhotoOptionsDialog extends javax.swing.JDialog {
      * @return  DOCUMENT ME!
      */
     private String getLaCd(final FeatureServiceFeature f) {
-        return (String)f.getProperty("la_cd");
+        if (f.getProperty("la_cd") == null) {
+            return null;
+        } else {
+            return String.valueOf(f.getProperty("la_cd"));
+        }
     }
 
     /**

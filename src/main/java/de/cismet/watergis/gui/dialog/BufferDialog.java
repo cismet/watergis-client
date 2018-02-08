@@ -861,6 +861,7 @@ public class BufferDialog extends javax.swing.JDialog {
      * DOCUMENT ME!
      */
     private void setLayerModel() {
+        final Object selectedObject = cbTheme.getSelectedItem();
         cbTheme.setModel(new DefaultComboBoxModel(
                 new String[] { NbBundle.getMessage(BufferDialog.class,
                         "BufferDialog.setlayerModel.searchServices") }));
@@ -874,10 +875,14 @@ public class BufferDialog extends javax.swing.JDialog {
                                 FeatureServiceHelper.getServices(null).toArray(
                                     new AbstractFeatureService[0])));
 
-                        if (cbTheme.getModel().getSize() > 0) {
-                            cbTheme.setSelectedIndex(0);
+                        if (selectedObject != null) {
+                            cbTheme.setSelectedItem(selectedObject);
                         } else {
-                            cbTheme.setSelectedItem(null);
+                            if (cbTheme.getModel().getSize() > 0) {
+                                cbTheme.setSelectedIndex(0);
+                            } else {
+                                cbTheme.setSelectedItem(null);
+                            }
                         }
                     }
                 });
