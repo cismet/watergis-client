@@ -68,15 +68,6 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BAK_GWK = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_bak_gwk");
-    private static final MetaClass FG_BAK_GN1 = ClassCacheMultiple.getMetaClass(
-            AppBroker.DOMAIN_NAME,
-            "dlm25w.fg_bak_gn1");
-    private static final MetaClass FG_BAK_GN2 = ClassCacheMultiple.getMetaClass(
-            AppBroker.DOMAIN_NAME,
-            "dlm25w.fg_bak_gn2");
-    private static final MetaClass FG_BAK_GN3 = ClassCacheMultiple.getMetaClass(
-            AppBroker.DOMAIN_NAME,
-            "dlm25w.fg_bak_gn3");
     private static String QUERY_AE = null;
     private static final String CHECK_LAWA_ROUTEN_AUS_EINLEITUNG = "Prüfungen->LAWA-Routen->Aus-/Einleitung";
     private static final String CHECK_LAWA_ROUTEN_GERICHTETHEIT = "Prüfungen->LAWA-Routen->Gerichtetheit";
@@ -89,9 +80,6 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
     private static final int[] USED_CLASS_IDS = new int[] {
             LAK_AE_MC.getId(),
             FG_BAK_GWK.getId(),
-            FG_BAK_GN1.getId(),
-            FG_BAK_GN2.getId(),
-            FG_BAK_GN3.getId()
         };
 
     static {

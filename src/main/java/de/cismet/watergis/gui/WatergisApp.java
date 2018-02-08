@@ -188,6 +188,7 @@ import de.cismet.cismap.commons.gui.options.CapabilityWidgetOptionsPanel;
 import de.cismet.cismap.commons.gui.overviewwidget.OverviewComponent;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.SimpleMoveListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.actions.CustomAction;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.MapDnDListener;
@@ -198,6 +199,7 @@ import de.cismet.cismap.commons.tools.ExportDbfDownload;
 import de.cismet.cismap.commons.tools.ExportDownload;
 import de.cismet.cismap.commons.tools.ExportShapeDownload;
 import de.cismet.cismap.commons.tools.ExportTxtDownload;
+import de.cismet.cismap.commons.tools.PointReferencingDialog;
 import de.cismet.cismap.commons.util.DnDUtils;
 import de.cismet.cismap.commons.util.SelectionChangedEvent;
 import de.cismet.cismap.commons.util.SelectionChangedListener;
@@ -890,6 +892,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     .get(MappingComponent.SELECT);
         sl.setFeaturesFromServicesSelectable(true);
         sl.setSelectMultipleFeatures(true);
+        final SimpleMoveListener motion = (SimpleMoveListener)mappingComponent.getInputEventListener()
+                    .get(MappingComponent.MOTION);
+        motion.setUnderlyingObjectHalo(0.01);
         mappingModel.setInitalLayerConfigurationFromServer(false);
         configManager.addConfigurable((ActiveLayerModel)mappingModel);
         configManager.addConfigurable(mappingComponent);
@@ -916,6 +921,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 //        mappingComponent.setVisualizeSnappingRectEnabled(true);
         mappingComponent.setSnappingRectSize(80);
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
+        PointReferencingDialog.setMIN_X(33000000d);
+        PointReferencingDialog.setMAX_X(33999999d);
+        PointReferencingDialog.setMIN_Y(5600000d);
+        PointReferencingDialog.setMAX_Y(6399999d);
     }
 
     /**
@@ -5179,12 +5188,30 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
                 }
 
-                final File outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
-                        lastExportPath,
-                        true,
-                        new String[] { "shp", "dbf", "csv", "txt" },
-                        new String[] { "shp", "dbf", "csv", "txt" },
-                        this);
+                File outputFile = null;
+
+                try {
+                    afs.initAndWait();
+                } catch (Exception ex) {
+                    LOG.error("CAnnot initialise service.", ex);
+                }
+
+                if ((afs.getGeometryType() == null) || afs.getGeometryType().equals(AbstractFeatureService.UNKNOWN)
+                            || afs.getGeometryType().equals(AbstractFeatureService.NONE)) {
+                    outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
+                            lastExportPath,
+                            true,
+                            new String[] { "dbf", "csv", "txt" },
+                            new String[] { "dbf", "csv", "txt" },
+                            this);
+                } else {
+                    outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
+                            lastExportPath,
+                            true,
+                            new String[] { "shp", "dbf", "csv", "txt" },
+                            new String[] { "shp", "dbf", "csv", "txt" },
+                            this);
+                }
 
                 if (outputFile != null) {
                     ExportDownload ed;
@@ -5232,7 +5259,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             for (final Object name : service.getOrderedFeatureServiceAttributes()) {
                 final FeatureServiceAttribute attr = attributeMap.get(name);
 
-                if ((attr != null) && (!attr.isVisible() || (!withGeometryColumn && attr.isGeometry()))) {
+                if ((attr != null)
+                            && ((!attr.isVisible() || (!withGeometryColumn && attr.isGeometry()))
+                                && !(withGeometryColumn && attr.isGeometry()))) {
                     continue;
                 }
 

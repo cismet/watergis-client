@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>6.0</version>
+                <version>6.0.1</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -149,10 +149,10 @@
             <artifactId>cids-custom-wrrl-db-mv</artifactId>
             <version>5.0</version>
         </dependency>
-<!--        <dependency>
+        <dependency>
             <groupId>de.cismet.custom</groupId>
             <artifactId>cismet-deegree</artifactId>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>de.cismet.commons</groupId>
             <artifactId>cismet-commons</artifactId>
@@ -408,13 +408,13 @@
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>de.cismet.custom</groupId>
             <artifactId>cismet-deegree</artifactId>
             <version>2.3.8</version>
             <scope>compile</scope>
             <type>jar</type>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.drewnoakes</groupId>
             <artifactId>metadata-extractor</artifactId>

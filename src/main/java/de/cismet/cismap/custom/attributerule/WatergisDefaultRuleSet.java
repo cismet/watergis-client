@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.openide.util.NbBundle;
 
 import java.awt.Component;
+import java.awt.EventQueue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,6 +77,9 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
+
+import de.cismet.cismap.linearreferencing.FeatureRegistry;
+import de.cismet.cismap.linearreferencing.LinearReferencingHelper;
 
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
@@ -1520,6 +1524,49 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 }
             }
             // end unique check
+
+            if ((column.equals("ba_st") || column.equals("bak_st") || column.equals("su_st")
+                            || column.equals("su_st_bis") || column.equals("su_st_von") || column.equals("la_st")
+                            || column.equals("la_st_bis") || column.equals("la_st_von") || column.equals("ba_st_bis")
+                            || column.equals("ba_st_von") || column.equals("bak_st_bis")
+                            || column.equals("bak_st_von"))
+                        && (newValue instanceof Double)) {
+                if ((feature instanceof CidsLayerFeature)
+                            && (((CidsLayerFeature)feature).getStationEditor(column) != null)) {
+                    final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
+                    final CidsBean lineBean = cidsFeature.getStationEditor(column).getLineBean();
+
+                    if (((Double)newValue).doubleValue() < 0) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Der Stationswert liegt außerhalb der Route.",
+                            "Fehlerhafte Eingabe",
+                            JOptionPane.ERROR_MESSAGE);
+                        return 0;
+                    }
+
+                    if (lineBean != null) {
+                        final LinearReferencingHelper helper = FeatureRegistry.getInstance()
+                                    .getLinearReferencingSolver();
+
+                        final Geometry routeGeom = helper.getRouteGeometryFromStationBean(
+                                helper.getStationBeanFromLineBean(lineBean, true));
+
+                        if ((routeGeom != null) && (((Double)newValue).doubleValue() > routeGeom.getLength())) {
+                            EventQueue.invokeLater(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        JOptionPane.showMessageDialog(
+                                            AppBroker.getInstance().getWatergisApp(),
+                                            "Der Stationswert liegt außerhalb der Route.",
+                                            "Fehlerhafte Eingabe",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    }
+                                });
+                        }
+                    }
+                }
+            }
 
             final ValidationResult result = type.isValidValue(newValue);
 

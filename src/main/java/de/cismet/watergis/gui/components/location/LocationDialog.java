@@ -258,9 +258,10 @@ public class LocationDialog extends javax.swing.JDialog {
      */
     private void setLayerModel() {
         final List<AbstractFeatureService> sourceLayer = FeatureServiceHelper.getServices(null);
-
+        final Object selectedItem = cboSource.getSelectedItem();
         cboSource.setModel(new DefaultComboBoxModel(
                 sourceLayer.toArray(new AbstractFeatureService[sourceLayer.size()])));
+        cboSource.setSelectedItem(selectedItem);
         refreshSelectedFeatureCount(false);
     }
 
