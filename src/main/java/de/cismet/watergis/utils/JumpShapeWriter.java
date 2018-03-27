@@ -51,8 +51,11 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.features.PersistentFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.tools.FeatureTools;
 import de.cismet.cismap.commons.tools.ShapeWriter;
+
+import de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet;
 
 import de.cismet.security.WebAccessManager;
 
@@ -216,6 +219,17 @@ public class JumpShapeWriter implements ShapeWriter {
 
         if (charset != null) {
             properties.set("charset", charset);
+        }
+
+        if ((features != null) && (features.length > 0)) {
+            final FeatureServiceFeature feature = features[0];
+            if ((feature != null) && (feature.getLayerProperties() != null)) {
+                final AttributeTableRuleSet ruleSet = feature.getLayerProperties().getAttributeTableRuleSet();
+
+                if (ruleSet instanceof WatergisDefaultRuleSet) {
+                    writer.setRuleSet((WatergisDefaultRuleSet)ruleSet);
+                }
+            }
         }
 
         if (features[0] instanceof PersistentFeature) {

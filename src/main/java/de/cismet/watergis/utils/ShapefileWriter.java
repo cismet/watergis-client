@@ -69,6 +69,8 @@ import javax.swing.JPanel;
 import de.cismet.cismap.commons.features.PersistentFeature;
 import de.cismet.cismap.commons.util.FilePersistenceManager;
 
+import de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet;
+
 /**
  * ShapefileWriter is a {@link JUMPWriter} specialized to write Shapefiles.
  *
@@ -190,6 +192,10 @@ public class ShapefileWriter implements JUMPWriter {
 
     protected static CGAlgorithms cga = new RobustCGAlgorithms();
 
+    //~ Instance fields --------------------------------------------------------
+
+    private WatergisDefaultRuleSet ruleSet = null;
+
     //~ Constructors -----------------------------------------------------------
 
     /**
@@ -309,6 +315,15 @@ public class ShapefileWriter implements JUMPWriter {
         if (truncate) {
             lastTimeTruncate = new Date().getTime();
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  ruleSet  DOCUMENT ME!
+     */
+    public void setRuleSet(final WatergisDefaultRuleSet ruleSet) {
+        this.ruleSet = ruleSet;
     }
 
     /**
@@ -490,17 +505,17 @@ public class ShapefileWriter implements JUMPWriter {
         int u;
         final int num;
 
-        HashMap fieldMap = null;
-        if (new File(fname).exists()) {
-            final DbfFile dbfFile = new DbfFile(fname);
-            final int numFields = dbfFile.getNumFields();
-            fieldMap = new HashMap(numFields);
-            for (int i = 0; i < numFields; i++) {
-                final String fieldName = dbfFile.getFieldName(i);
-                fieldMap.put(fieldName, dbfFile.fielddef[i]);
-            }
-            dbfFile.close();
-        }
+        final HashMap fieldMap = null;
+//        if (new File(fname).exists()) {
+//            final DbfFile dbfFile = new DbfFile(fname);
+//            final int numFields = dbfFile.getNumFields();
+//            fieldMap = new HashMap(numFields);
+//            for (int i = 0; i < numFields; i++) {
+//                final String fieldName = dbfFile.getFieldName(i);
+//                fieldMap.put(fieldName, dbfFile.fielddef[i]);
+//            }
+//            dbfFile.close();
+//        }
 
         fs = featureCollection.getFeatureSchema();
 
@@ -515,15 +530,35 @@ public class ShapefileWriter implements JUMPWriter {
             final String columnName = fs.getAttributeName(t);
 
             if (columnType == AttributeType.INTEGER) {
-                fields[f] = new DbfFieldDef(columnName, 'N', 11, 0); // LDB: previously 16
+                if ((ruleSet != null) && (ruleSet.getType(columnName) instanceof WatergisDefaultRuleSet.Numeric)) {
+                    final WatergisDefaultRuleSet.Numeric type = (WatergisDefaultRuleSet.Numeric)ruleSet.getType(
+                            columnName);
+                    fields[f] = new DbfFieldDef(columnName, 'N', type.getPrecision(), 0);               // LDB: previously 16
+                } else {
+                    fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);                                // LDB: previously 16
+                }
                 fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                 f++;
             } else if (columnType == AttributeType.DOUBLE) {
-                fields[f] = new DbfFieldDef(columnName, 'N', 33, 16);
+                if ((ruleSet != null) && (ruleSet.getType(columnName) instanceof WatergisDefaultRuleSet.Numeric)) {
+                    final WatergisDefaultRuleSet.Numeric type = (WatergisDefaultRuleSet.Numeric)ruleSet.getType(
+                            columnName);
+                    fields[f] = new DbfFieldDef(columnName, 'N', type.getPrecision(), type.getScale()); // LDB: previously 16
+                } else {
+                    fields[f] = new DbfFieldDef(columnName, 'N', 33, 16);
+                }
                 fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                 f++;
             } else if (columnType == AttributeType.STRING) {
-                int maxlength = findMaxStringLength(featureCollection, t);
+                int maxlength;
+
+                if ((ruleSet != null) && (ruleSet.getType(columnName) instanceof WatergisDefaultRuleSet.Varchar)) {
+                    final WatergisDefaultRuleSet.Varchar type = (WatergisDefaultRuleSet.Varchar)ruleSet.getType(
+                            columnName);
+                    maxlength = type.getMaxLength();
+                } else {
+                    maxlength = findMaxStringLength(featureCollection, t);
+                }
 
                 if (maxlength > 255) {
                     // If truncate option has been applied for less than 30 s
