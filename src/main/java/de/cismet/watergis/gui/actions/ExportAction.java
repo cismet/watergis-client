@@ -462,7 +462,7 @@ public class ExportAction extends AbstractAction implements Configurable {
                                     }
                                 }
                             });
-                    Collections.sort(errors);
+//                    Collections.sort(errors);
                     String lastErrorMessage = "";
                     final Map<String, FeatureServiceAttribute> attributeMap =
                         new HashMap<String, FeatureServiceAttribute>();
@@ -796,7 +796,9 @@ public class ExportAction extends AbstractAction implements Configurable {
                                     if ((bis != null) && (expBis != null) && (bis > expBis)) {
                                         feature.setProperty("ba_st_bis", expBis);
                                     }
-                                    // todo: Pruefungen sollen exp berücksichtigen
+
+                                    return false;
+                                        // todo: Pruefungen sollen exp berücksichtigen
                                 }
                             }
                         }
