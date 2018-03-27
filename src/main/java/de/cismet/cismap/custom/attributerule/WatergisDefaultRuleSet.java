@@ -192,6 +192,17 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     /**
      * DOCUMENT ME!
      *
+     * @param   columnName  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public DataType getType(final String columnName) {
+        return typeMap.get(columnName);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param  path  DOCUMENT ME!
      * @param  file  DOCUMENT ME!
      */
@@ -1831,7 +1842,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected abstract static class DataType {
+    public abstract static class DataType {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -1948,7 +1959,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class Numeric extends DataType {
+    public static class Numeric extends DataType {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -2286,7 +2297,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class BooleanAsInteger extends DataType {
+    public static class BooleanAsInteger extends DataType {
 
         //~ Constructors -------------------------------------------------------
 
@@ -2342,7 +2353,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class Varchar extends DataType {
+    public static class Varchar extends DataType {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -2437,7 +2448,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class Link extends Varchar {
+    public static class Link extends Varchar {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -2534,7 +2545,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class WbblLink extends Link {
+    public static class WbblLink extends Link {
 
         //~ Instance fields ----------------------------------------------------
 

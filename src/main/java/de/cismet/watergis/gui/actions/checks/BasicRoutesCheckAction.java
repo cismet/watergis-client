@@ -191,8 +191,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak_punkt bis on (linie.bis = bis.id)\n"
                             + "join dlm25w.fg_bak bak on (von.route = bak.id) \n"
                             + "join geom on (bak.geom = geom.id) \n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and ((von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
-                            + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1));";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and \n"
+                            + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 0.05);";
             } else {
                 QUERY_AE = "select " + BAK_AE_MC.getID() + ", ae." + BAK_AE_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak_ae ae \n"
@@ -202,8 +202,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (von.route = bak.id) \n"
                             + "left join dlm25w.k_ww_gr gr1 on (bak.ww_gr = gr1.id)\n"
                             + "join geom on (bak.geom = geom.id) \n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and ((von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
-                            + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1)) "
+                            + "where (%1$s is null or bak.id = any(%1$s)) and \n"
+                            + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 0.05);"
                             + "and gr1.owner = '" + user.getUserGroup().getName() + "';";
             }
         }
