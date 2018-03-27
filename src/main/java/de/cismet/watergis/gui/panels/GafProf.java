@@ -102,6 +102,7 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.features.ModifiableFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
@@ -1070,8 +1071,8 @@ public class GafProf extends javax.swing.JPanel {
             if (index >= 0) {
                 setEditorFeature((CidsLayerFeature)features.get(index));
             }
-            butNextProfile.setEnabled(index != (features.size() - 1));
-            butPrevProfile.setEnabled(index != 0);
+            butNextProfile.setEnabled(index < (features.size() - 1));
+            butPrevProfile.setEnabled(index > 0);
         } else {
             butNextProfile.setEnabled(false);
             butPrevProfile.setEnabled(false);
@@ -1097,7 +1098,7 @@ public class GafProf extends javax.swing.JPanel {
             }
 
             butNextProfile.setEnabled(index < (features.size() - 1));
-            butPrevProfile.setEnabled(index != 0);
+            butPrevProfile.setEnabled(index > 0);
         } else {
             butNextProfile.setEnabled(false);
             butPrevProfile.setEnabled(false);
@@ -1842,6 +1843,7 @@ public class GafProf extends javax.swing.JPanel {
                     newBeans.add(newFeature);
                 }
             }
+            addFeatures(newBeans);
             return newBeans;
         }
 
@@ -1855,7 +1857,7 @@ public class GafProf extends javax.swing.JPanel {
                             "qp");
                     SelectionManager.getInstance().removeSelectedFeatures(features);
                     SelectionManager.getInstance().addSelectedFeatures(newFeatures);
-                    newFeatures.addAll(newFeatures);
+                    GafProf.this.newFeatures.addAll(newFeatures);
 
                     reloadGafProfileServices();
                 }
@@ -1866,6 +1868,28 @@ public class GafProf extends javax.swing.JPanel {
                     editor.showEditor(false, false);
                 } else {
                     editor.showEditor(true, false);
+                }
+            }
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  features  DOCUMENT ME!
+         */
+        private void addFeatures(final List<? extends FeatureServiceFeature> features) {
+            final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                    "qp");
+
+            if ((services != null) && !services.isEmpty()) {
+                final AttributeTable tablePf = AppBroker.getInstance()
+                            .getWatergisApp()
+                            .getAttributeTableByFeatureService(services.get(0));
+
+                if (tablePf != null) {
+                    for (final FeatureServiceFeature f : features) {
+                        tablePf.addFeature(f);
+                    }
                 }
             }
         }
