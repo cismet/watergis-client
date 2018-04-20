@@ -26,6 +26,8 @@ import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import java.util.List;
+
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
@@ -200,7 +202,7 @@ public class PhotoInfoPHandle extends PPath {
      *
      * @param  feature  DOCUMENT ME!
      */
-    public void setFeature(final CidsLayerFeature feature) {
+    public void setFeature(final List<CidsLayerFeature> feature) {
         fotoInfoPanel.setFeature(feature);
     }
 
