@@ -70,6 +70,7 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_rl", new Catalogue("k_l_rl", true, true));
         typeMap.put("leis", new Catalogue("k_leis", true, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));

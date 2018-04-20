@@ -113,6 +113,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     private static final String PROTECTEC_WBBL_PATH = "http://fry.fis-wasser-mv.de/watergis_secure/wr_wbu_wbbl_g/";
     private static final String UNPROTECTEC_WBBL_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_wbu_wbbl_o/";
     private static final String SG_LINK_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/sg_link_tabelle/";
+    protected static final String WR_SG_WSG_uk_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_sg_wsg_uk/";
+    protected static final String WR_SG_WSG_lk_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_sg_wsg_lk/";
     private static final String PHOTO_PATH = "http://fry.fis-wasser-mv.de/watergis/";
     private static String WEB_DAV_PASSWORD = null;
     private static String WEB_DAV_USER = null;
@@ -234,7 +236,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 filename = filename.substring(filename.lastIndexOf("/") + 1);
             }
 
-            final WebDavClient webDavClient = new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD);
+            final WebDavClient webDavClient = new WebDavClient(Proxy.fromPreferences(),
+                    WEB_DAV_USER,
+                    WEB_DAV_PASSWORD,
+                    true);
 
             DownloadManager.instance()
                     .add(new WebDavDownload(
@@ -255,7 +260,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      * @return  DOCUMENT ME!
      */
     public static WebDavClient createWebDavClient() {
-        return new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD);
+        return new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD, true);
     }
 
     /**
@@ -276,7 +281,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             path = path + "/";
         }
 
-        final WebDavClient webDavClient = new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD);
+        final WebDavClient webDavClient = new WebDavClient(Proxy.fromPreferences(),
+                WEB_DAV_USER,
+                WEB_DAV_PASSWORD,
+                true);
 
         try {
             final int statusCode = webDavClient.getStatusCode(path + WebDavHelper.encodeURL(file));
@@ -288,7 +296,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 // workaround and test
                 final WebDavClient webDavClientDownload = new WebDavClient(Proxy.fromPreferences(),
                         WEB_DAV_USER,
-                        WEB_DAV_PASSWORD);
+                        WEB_DAV_PASSWORD,
+                        true);
                 final InputStream is = webDavClientDownload.getInputStream(path + WebDavHelper.encodeURL(file));
                 final byte[] tmp = new byte[1000];
 

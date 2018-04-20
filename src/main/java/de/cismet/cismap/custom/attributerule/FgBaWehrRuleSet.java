@@ -62,6 +62,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
     private static final Map<String, String[]> ALLOWED_WEHR_WEHR_V = new HashMap<String, String[]>();
     private static final Map<String, String[]> ALLOWED_WEHR_WEHR_AV = new HashMap<String, String[]>();
     private static final Map<String, String[]> WEHR_V_MATERIAL = new HashMap<String, String[]>();
+    private static final Map<String, String[]> WEHR_A_MATERIAL_A = new HashMap<String, String[]>();
 
     static {
         ALLOWED_WEHR_WEHR_V.put("s-kbw", new String[] { "bo", "bo-j", "schü" });
@@ -83,6 +84,9 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         WEHR_V_MATERIAL.put("bo", new String[] { "h", "k", "st" });
         WEHR_V_MATERIAL.put("bo-j", new String[] { "h", "k", "st" });
         WEHR_V_MATERIAL.put("schw", new String[] { "b", "k" });
+        WEHR_A_MATERIAL_A.put("PL", new String[] { "B" });
+        WEHR_A_MATERIAL_A.put("RL", new String[] { "B" });
+        WEHR_A_MATERIAL_A.put("SP", new String[] { "Ste" });
     }
 
     //~ Instance initializers --------------------------------------------------
@@ -97,8 +101,12 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("wehr_v", new Catalogue("k_wehr_v", true, true));
         typeMap.put("material_v", new Catalogue("k_material_v", false, true));
         typeMap.put("wehr_av", new Catalogue("k_wehr_av", true, true));
+        typeMap.put("wehr_a", new Catalogue("k_sbef", true, true));
+        typeMap.put("material_a", new Catalogue("k_material", true, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger_gu", new Varchar(50, false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
@@ -360,6 +368,59 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
+        if (column.equals("wehr_a") && (newValue != null) && (feature.getProperty("material_a") != null)) {
+            final String[] allowedMaterialAArray = WEHR_A_MATERIAL_A.get(newValue.toString().toLowerCase());
+
+            if (allowedMaterialAArray != null) {
+                if ((feature.getProperty("material_a") == null)
+                            || !arrayContains(
+                                allowedMaterialAArray,
+                                feature.getProperty("material_a").toString().toLowerCase())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr_a = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut material_a "
+                                + arrayToString(allowedMaterialAArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            } else {
+                if (feature.getProperty("material_a") != null) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr_a = "
+                                + newValue.toString()
+                                + ", dann muss das Attribut material_a null sein");
+                }
+            }
+        }
+
+        if (column.equals("material_a") && (newValue != null) && (feature.getProperty("material_a") != null)) {
+            final String[] allowedMaterialAArray = WEHR_A_MATERIAL_A.get(feature.getProperty("wehr_a").toString()
+                            .toLowerCase());
+
+            if (allowedMaterialAArray != null) {
+                if ((newValue == null)
+                            || !arrayContains(
+                                allowedMaterialAArray,
+                                newValue.toString().toLowerCase())) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr_a = "
+                                + feature.getProperty("wehr_a").toString()
+                                + ", dann muss das Attribut material_a "
+                                + arrayToString(allowedMaterialAArray)
+                                + " sein.");
+                    return oldValue;
+                }
+            } else {
+                if (newValue != null) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Wenn das Attribut wehr_a = "
+                                + feature.getProperty("wehr_a").toString()
+                                + ", dann muss das Attribut material_a null sein");
+                }
+            }
+        }
+
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
@@ -487,6 +548,46 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                     @Override
                     protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("material") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("material_a")) {
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("wehr_a");
+
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true),
+                    filter);
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return bean.getProperty("material") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("wehr_a")) {
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("fg_ba_wehr");
+
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true),
+                    filter);
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return bean.getProperty("sbef") + " - " + bean.getProperty("name");
                     }
                 });
 
@@ -631,6 +732,33 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             "Wenn das Attribut wehr_v = "
                                     + feature.getProperty("wehr_v").toString()
                                     + ", dann muss das Attribut material_v null sein");
+                    }
+                }
+            }
+
+            if (feature.getProperty("wehr_a") != null) {
+                final String[] allowedMaterialAArray = WEHR_A_MATERIAL_A.get(feature.getProperty("wehr_a").toString()
+                                .toLowerCase());
+
+                if (allowedMaterialAArray != null) {
+                    if ((feature.getProperty("material_a") == null)
+                                || !arrayContains(
+                                    allowedMaterialAArray,
+                                    feature.getProperty("material_a").toString().toLowerCase())) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Wenn das Attribut wehr_a = "
+                                    + feature.getProperty("wehr_a").toString()
+                                    + ", dann muss das Attribut material_a "
+                                    + arrayToString(allowedMaterialAArray)
+                                    + " sein.");
+                        return false;
+                    }
+                } else {
+                    if (feature.getProperty("material_a") != null) {
+                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            "Wenn das Attribut wehr_a = "
+                                    + feature.getProperty("wehr_a").toString()
+                                    + ", dann muss das Attribut material_a null sein");
                     }
                 }
             }

@@ -614,6 +614,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_wehr_v wv on (wv.id = wehr.wehr_v)\n"
                             + "left join dlm25w.k_wehr_av wav on (wav.id = wehr.wehr_av)\n"
                             + "left join dlm25w.k_material m on (m.id = wehr.material_v)\n"
+                            + "left join dlm25w.k_sbef sbef on (sbef.id = wehr.wehr_a)\n"
+                            + "left join dlm25w.k_material ma on (ma.id = wehr.material_a)\n"
                             + "where\n"
                             + "(wehr.wehr is null or wehr.wehr_v is null or wehr.wehr_av is null or obj_nr is null\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
@@ -639,6 +641,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (wv.wehr_v in ('Bo','Bo-J') and m.material not in ('H','K','St'))\n"
                             + "or (wv.wehr_v in ('Schw') and m.material not in ('B','K'))\n"
                             + "or (wv.wehr_v not in ('Bo', 'Bo-J', 'Schw') and m.material is not null)\n"
+                            + "or (sbef.sbef in ('PL', 'RL') and (ma.material is null or ma.material not in ('B')))\n"
+                            + "or (sbef.sbef in ('SP') and (ma.material is null or ma.material not in ('Ste')))\n"
                             + "or (wehr.esw is not null and (wehr.esw < 0 or wehr.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s));";
             } else {
@@ -652,6 +656,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_wehr_v wv on (wv.id = wehr.wehr_v)\n"
                             + "left join dlm25w.k_wehr_av wav on (wav.id = wehr.wehr_av)\n"
                             + "left join dlm25w.k_material m on (m.id = wehr.material_v)\n"
+                            + "left join dlm25w.k_sbef sbef on (sbef.id = wehr.wehr_a)\n"
+                            + "left join dlm25w.k_material ma on (ma.id = wehr.material_a)\n"
                             + "where\n"
                             + "(wehr.wehr is null or wehr.wehr_v is null or wehr.wehr_av is null or obj_nr is null\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
@@ -677,6 +683,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (wv.wehr_v in ('Bo','Bo-J') and m.material not in ('H','K','St'))\n"
                             + "or (wv.wehr_v in ('Schw') and m.material not in ('B','K'))\n"
                             + "or (wv.wehr_v not in ('Bo', 'Bo-J', 'Schw') and m.material is not null)\n"
+                            + "or (sbef.sbef in ('PL', 'RL') and (ma.material is null or ma.material not in ('B')))\n"
+                            + "or (sbef.sbef in ('SP') and (ma.material is null or ma.material not in ('Ste')))\n"
                             + "or (wehr.esw is not null and (wehr.esw < 0 or wehr.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
                             + user.getUserGroup().getName()
@@ -1504,7 +1512,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 32;
+        return 31;
     }
 
     @Override
@@ -1792,9 +1800,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         }
 
         // start auto correction
-        final CidsServerSearch mergeRl = new MergeBaRl(user);
-        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeRl);
-        increaseProgress(wd, 1);
+        // 5.4.18: this merge was removed
+// final CidsServerSearch mergeRl = new MergeBaRl(user);
+// SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeRl);
+// increaseProgress(wd, 1);
 
         final CidsServerSearch mergeD = new MergeBaD(user);
         SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeD);

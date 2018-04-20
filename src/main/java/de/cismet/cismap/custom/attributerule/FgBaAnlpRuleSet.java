@@ -69,8 +69,10 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_st", new Catalogue("k_l_st", false, true));
         typeMap.put("l_rl", new Catalogue("k_l_rl", false, true));
         typeMap.put("anlp", new Catalogue("k_anlp", true, true));
-        typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("obj_nr", new Numeric(20, 0, false, true));
+        typeMap.put("obj_nr_gu", new Varchar(50, false, false));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger_gu", new Varchar(50, false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
@@ -308,6 +310,46 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                     @Override
                     protected String toString(final CidsLayerFeature bean) {
                         return bean.getProperty("l_rl") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("material_a")) {
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("anlp_a");
+
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true),
+                    filter);
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return bean.getProperty("material") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("anlp_a")) {
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("fg_ba_anlp");
+
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true),
+                    filter);
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return bean.getProperty("sbef") + " - " + bean.getProperty("name");
                     }
                 });
 
