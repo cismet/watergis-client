@@ -96,6 +96,7 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("hw", hw);
         typeMap.put("rw", rw);
         typeMap.put("hyk", new Varchar(10, false, false));
+        typeMap.put("bemerkung", new Varchar(250, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }

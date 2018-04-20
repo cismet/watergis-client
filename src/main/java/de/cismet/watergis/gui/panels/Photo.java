@@ -159,7 +159,7 @@ public class Photo extends javax.swing.JPanel {
         WEB_DAV_USER = bundle.getString("username");
         WEB_DAV_DIRECTORY = bundle.getString("url");
 
-        webDavClient = new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD);
+        webDavClient = new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD, true);
     }
 
     //~ Instance fields --------------------------------------------------------
@@ -820,6 +820,9 @@ public class Photo extends javax.swing.JPanel {
             "upl_datum",
             dateTime2String(feature.getProperty("upl_datum"), (String)feature.getProperty("upl_zeit")));
         map.put("bild_id", String.valueOf(feature.getProperty("foto_nr")));
+        map.put(
+            "bild_id_gu",
+            ((feature.getProperty("foto_nr_gu") == null) ? "" : String.valueOf(feature.getProperty("foto_nr_gu"))));
 //        map.put("pos", number2String(feature.getProperty("re")) + " " + number2String(feature.getProperty("ho")));
         map.put(
             "pos",

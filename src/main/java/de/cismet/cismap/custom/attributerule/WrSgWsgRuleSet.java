@@ -13,6 +13,8 @@ package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
@@ -67,6 +69,9 @@ public class WrSgWsgRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("src_quelle", new Varchar(50, false, true));
         typeMap.put("recht", new Link(250, false, true));
         typeMap.put("info", new Link(250, false, true));
+        typeMap.put("flaeche", new Numeric(12, 0, false, false));
+        typeMap.put("uk", new Varchar(2, false, true));
+        typeMap.put("lk", new Varchar(2, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
@@ -76,13 +81,15 @@ public class WrSgWsgRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("id");
+                    && !columnName.equals("flaeche") && !columnName.equals("geom") && !columnName.equals("id");
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("info") || columnName.equals("recht")) {
             return new LinkTableCellRenderer();
+        } else if (columnName.equals("uk") || columnName.equals("lk")) {
+            return new LinkTableCellRenderer(JLabel.RIGHT);
         } else {
             return super.getCellRenderer(columnName);
         }
@@ -97,6 +104,24 @@ public class WrSgWsgRuleSet extends WatergisDefaultRuleSet {
             if ((value instanceof String) && (clickCount == 1)) {
                 try {
                     final URL u = new URL(value.toString());
+
+                    try {
+                        de.cismet.tools.BrowserLauncher.openURL(u.toString());
+                    } catch (Exception ex) {
+                        LOG.error("Cannot open the url:" + u, ex);
+                    }
+                } catch (MalformedURLException ex) {
+                    // nothing to do
+                }
+            }
+        } else if (columnName.equals("uk") || columnName.equals("lk")) {
+            final Object wbbl = feature.getProperty("wbbl");
+            if ((value instanceof String) && !value.equals("") && (wbbl instanceof String) && !wbbl.equals("")
+                        && (clickCount == 1)) {
+                try {
+                    final String linkBase = (columnName.equals("uk") ? WR_SG_WSG_uk_TABLE_PATH
+                                                                     : WR_SG_WSG_lk_TABLE_PATH);
+                    final URL u = new URL(linkBase + wbbl.toString() + ".zip");
 
                     try {
                         de.cismet.tools.BrowserLauncher.openURL(u.toString());
@@ -127,6 +152,47 @@ public class WrSgWsgRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
+    }
+
+    @Override
+    public String[] getAdditionalFieldNames() {
+        return new String[] { "flaeche" };
+    }
+
+    @Override
+    public int getIndexOfAdditionalFieldName(final String name) {
+        if (name.equals("flaeche")) {
+            return -5;
+        } else {
+            return super.getIndexOfAdditionalFieldName(name);
+        }
+    }
+
+    @Override
+    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
+        Long value = null;
+
+        final Geometry geom = ((Geometry)feature.getProperty("geom"));
+
+        if (geom != null) {
+            value = Math.round(geom.getArea());
+        }
+
+        return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("flaeche")) {
+            return "round(st_area(geom))";
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Class getAdditionalFieldClass(final int index) {
+        return Long.class;
     }
 
     @Override

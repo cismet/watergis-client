@@ -67,7 +67,9 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_st", new Catalogue("k_l_st", false, true));
         typeMap.put("schw", new Catalogue("k_schw", true, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger_gu", new Varchar(50, false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
@@ -78,8 +80,14 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("az", new Numeric(6, 2, false, true));
         typeMap.put("ezg_fl", new Numeric(4, 2, false, true));
         typeMap.put("v_fl", new Numeric(4, 2, false, true));
-        typeMap.put("pu", new Numeric(1, 0, false, true));
-        typeMap.put("pu_foel", new Numeric(4, 2, false, true));
+        typeMap.put("pu_anz1", new Numeric(1, 0, false, true));
+        typeMap.put("pu_typ1", new Varchar(10, false, false));
+        typeMap.put("pu_motl1", new Numeric(5, 1, false, true));
+        typeMap.put("pu_foel1", new Numeric(7, 1, false, true));
+        typeMap.put("pu_anz2", new Numeric(1, 0, false, true));
+        typeMap.put("pu_typ2", new Varchar(10, false, false));
+        typeMap.put("pu_motl2", new Numeric(5, 1, false, true));
+        typeMap.put("pu_foel2", new Numeric(7, 1, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
@@ -145,11 +153,27 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        if (column.equals("pu") && !checkRange(column, newValue, 1, 4, 1, 9, true, true, true)) {
+        if (column.equals("pu_anz1") && !checkRange(column, newValue, 1, 4, 1, 9, true, true, true)) {
             return oldValue;
         }
 
-        if (column.equals("pu_foel") && !checkRange(column, newValue, 0, 50, 0, 100, true, false, true)) {
+        if (column.equals("pu_motl1") && !checkRange(column, newValue, 0, 250, 0, 500, true, false, true)) {
+            return oldValue;
+        }
+
+        if (column.equals("pu_foel1") && !checkRange(column, newValue, 0, 50, 0, 100, true, false, true)) {
+            return oldValue;
+        }
+
+        if (column.equals("pu_anz2") && !checkRange(column, newValue, 1, 4, 1, 9, true, true, true)) {
+            return oldValue;
+        }
+
+        if (column.equals("pu_motl2") && !checkRange(column, newValue, 0, 250, 0, 500, true, false, true)) {
+            return oldValue;
+        }
+
+        if (column.equals("pu_foel2") && !checkRange(column, newValue, 0, 50, 0, 100, true, false, true)) {
             return oldValue;
         }
 
@@ -306,10 +330,23 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
             if (!checkRange("v_fl", feature.getProperty("v_fl"), 0, 100, true, false, true)) {
                 return false;
             }
-            if (!checkRange("pu", feature.getProperty("pu"), 1, 9, true, true, true)) {
+            if (!checkRange("pu_anz1", feature.getProperty("pu_anz1"), 1, 9, true, true, true)) {
                 return false;
             }
-            if (!checkRange("pu_foel", feature.getProperty("pu_foel"), 0, 100, true, false, true)) {
+            if (!checkRange("pu_motl1", feature.getProperty("pu_motl1"), 0, 500, true, false, true)) {
+                return false;
+            }
+            if (!checkRange("pu_foel1", feature.getProperty("pu_foel1"), 0, 100, true, false, true)) {
+                return false;
+            }
+
+            if (!checkRange("pu_anz2", feature.getProperty("pu_anz2"), 1, 9, true, true, true)) {
+                return false;
+            }
+            if (!checkRange("pu_motl2", feature.getProperty("pu_motl2"), 0, 500, true, false, true)) {
+                return false;
+            }
+            if (!checkRange("pu_foel2", feature.getProperty("pu_foel2"), 0, 100, true, false, true)) {
                 return false;
             }
 

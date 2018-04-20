@@ -86,8 +86,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("km_bis", new Numeric(10, 2, false, true));
         typeMap.put("l_st", new Catalogue("k_l_st", false, true));
         typeMap.put("l_rl", new Catalogue("k_l_rl", false, true));
-        typeMap.put("nr", new Varchar(50, false, true));
-        typeMap.put("name", new Varchar(50, false, true));
+        typeMap.put("name", new Varchar(250, false, true));
         typeMap.put("deich", new Catalogue("k_deich", true, true));
         typeMap.put("ord", new Catalogue("k_deich_ord", true, true));
         typeMap.put("l_fk", new Catalogue("k_deich_l_fk", true, true));
@@ -100,7 +99,9 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("berme_w", new BooleanAsInteger(false, true));
         typeMap.put("berme_b", new BooleanAsInteger(false, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger_gu", new Varchar(50, false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));

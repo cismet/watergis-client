@@ -14,19 +14,17 @@ import edu.umd.cs.piccolo.event.PInputEvent;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolox.util.PLocator;
 
-import java.awt.geom.Point2D;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.LinearReferencedPointMarkPHandle;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.tools.PFeatureTools;
 
@@ -218,7 +216,7 @@ public class PhotoInfoListener extends PBasicInputEventHandler {
                 new Class[] { PFeature.class },
                 0.001);
         boolean cursorIsVisible = false;
-        CidsLayerFeature fotoFeature = null;
+        final List<CidsLayerFeature> fotoFeature = new ArrayList<CidsLayerFeature>();
 
         for (final Object o : c) {
             if (o instanceof PFeature) {
@@ -231,8 +229,7 @@ public class PhotoInfoListener extends PBasicInputEventHandler {
                         if (((CidsLayer)cFeature.getLayerProperties().getFeatureService()).getMetaClass().getName()
                                     .equalsIgnoreCase("foto")) {
                             cursorIsVisible = true;
-                            fotoFeature = cFeature;
-                            break;
+                            fotoFeature.add(cFeature);
                         }
                     }
                 }

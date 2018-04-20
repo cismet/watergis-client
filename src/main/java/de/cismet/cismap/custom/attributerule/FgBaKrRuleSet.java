@@ -63,7 +63,9 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_oiu", new Catalogue("k_l_oiu", false, true));
         typeMap.put("kr", new Catalogue("k_kr", true, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger_gu", new Varchar(50, false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));

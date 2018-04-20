@@ -85,7 +85,9 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ubef", new Catalogue("k_ubef", true, true));
         typeMap.put("material", new Catalogue("k_material", false, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("obj_nr_gu", new Varchar(50, false, false));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger_gu", new Varchar(50, false, false));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
