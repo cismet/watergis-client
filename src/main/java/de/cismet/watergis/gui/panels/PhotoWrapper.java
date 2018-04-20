@@ -18,6 +18,9 @@ import java.beans.PropertyChangeSupport;
 
 import java.sql.Date;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
 
@@ -28,6 +31,17 @@ import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
  * @version  $Revision$, $Date$
  */
 public class PhotoWrapper implements PropertyChangeListener {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Map<String, String> featureName2WrapperName = new HashMap<String, String>();
+
+    static {
+        featureName2WrapperName.put("beschreib", "beschreibung");
+        featureName2WrapperName.put("aufn_datum", "aufndatum");
+        featureName2WrapperName.put("aufn_name", "aufnahmename");
+        featureName2WrapperName.put("foto_nr_gu", "fotonrgu");
+    }
 
     //~ Instance fields --------------------------------------------------------
 
@@ -159,11 +173,35 @@ public class PhotoWrapper implements PropertyChangeListener {
     /**
      * DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     */
+    public String getFotonrgu() {
+        if (feature != null) {
+            return (String)feature.getProperty("foto_nr_gu");
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param  aufn_datum  bem winkel DOCUMENT ME!
      */
     public void setAufndatum(final Date aufn_datum) {
         if (feature != null) {
             feature.setProperty("aufn_datum", aufn_datum);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  foto_nr_gu  aufn_datum bem winkel DOCUMENT ME!
+     */
+    public void setFotonrgu(final String foto_nr_gu) {
+        if (feature != null) {
+            feature.setProperty("foto_nr_gu", foto_nr_gu);
         }
     }
 
@@ -415,6 +453,12 @@ public class PhotoWrapper implements PropertyChangeListener {
             changeSupport.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), box.getSelectedItem());
         } else {
             changeSupport.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+
+            if (featureName2WrapperName.get(evt.getPropertyName()) != null) {
+                changeSupport.firePropertyChange(featureName2WrapperName.get(evt.getPropertyName()),
+                    evt.getOldValue(),
+                    evt.getNewValue());
+            }
         }
     }
 }

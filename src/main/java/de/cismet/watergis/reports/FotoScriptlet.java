@@ -75,7 +75,8 @@ public class FotoScriptlet extends JRDefaultScriptlet {
         webDavClient = new WebDavClient(
                 Proxy.fromPreferences(),
                 WEB_DAV_USER,
-                WEB_DAV_PASSWORD);
+                WEB_DAV_PASSWORD,
+                true);
     }
 
     //~ Constructors -----------------------------------------------------------
