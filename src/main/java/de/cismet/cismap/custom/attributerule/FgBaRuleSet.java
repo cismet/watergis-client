@@ -58,6 +58,7 @@ public class FgBaRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("wdm", new Numeric(4, 0, false));
         typeMap.put("gu_zust", new Varchar(2, false));
         typeMap.put("gu_cd", new Varchar(50, false));
+        typeMap.put("bemerkung", new Varchar(250, false));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));

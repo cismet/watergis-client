@@ -70,6 +70,7 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_rl", new Catalogue("k_l_rl", true, true));
         typeMap.put("leis", new Catalogue("k_leis", true, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
@@ -245,21 +246,21 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
                 "Basisgewässer (FG)",
                 new LinearReferencingWatergisHelper(),
                 0.5f);
-        creator.setProperties(getDefaultValues());
+//        creator.setProperties(getDefaultValues());
         creator.setCheck(check);
 
         return creator;
     }
 
-    @Override
-    public Map<String, Object> getDefaultValues() {
-        final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
-        } else {
-            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
-        }
-
-        return properties;
-    }
+//    @Override
+//    public Map<String, Object> getDefaultValues() {
+//        final Map properties = new HashMap();
+//        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+//            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
+//        } else {
+//            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
+//        }
+//
+//        return properties;
+//    }
 }

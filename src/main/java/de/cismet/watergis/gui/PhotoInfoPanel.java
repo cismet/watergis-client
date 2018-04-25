@@ -25,6 +25,8 @@ import java.lang.ref.SoftReference;
 
 import java.text.SimpleDateFormat;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
@@ -80,7 +82,8 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
         webDavClient = new WebDavClient(
                 Proxy.fromPreferences(),
                 WEB_DAV_USER,
-                WEB_DAV_PASSWORD);
+                WEB_DAV_PASSWORD,
+                true);
     }
 
     //~ Instance fields --------------------------------------------------------
@@ -88,6 +91,7 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
     private CidsLayerFeature feature;
     private BufferedImage image;
     private Timer timer;
+    private Timer slideShow;
     private ImageResizeWorker currentResizeWorker;
     private Dimension lastDims;
     private PhotoInfoPHandle handle;
@@ -227,7 +231,7 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
      */
     public void setPhotoSize() {
         this.setSize(PhotoOptionsDialog.getInstance().getPhotoSize());
-        setFeature(null);
+        setFeature(new ArrayList<CidsLayerFeature>());
     }
 
     /**
@@ -235,7 +239,43 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
      *
      * @param  feature  the feature to set
      */
-    public void setFeature(final CidsLayerFeature feature) {
+    public void setFeature(final List<CidsLayerFeature> feature) {
+        if (slideShow != null) {
+            slideShow.stop();
+            slideShow = null;
+        }
+        if (feature.size() == 1) {
+            setFeature(feature.get(0));
+        } else if (feature.size() == 0) {
+            setFeature((CidsLayerFeature)null);
+        } else {
+            setFeature(feature.get(0));
+
+            slideShow = new Timer(5000, new ActionListener() {
+
+                        int index = 0;
+
+                        @Override
+                        public void actionPerformed(final ActionEvent e) {
+                            ++index;
+                            if (index == feature.size()) {
+                                index = 0;
+                            }
+                            setFeature(feature.get(index));
+                        }
+                    });
+            slideShow.setRepeats(true);
+            slideShow.setDelay(5000);
+            slideShow.start();
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  feature  the feature to set
+     */
+    private void setFeature(final CidsLayerFeature feature) {
         if ((feature != null) && (this.feature != feature)) {
             this.feature = feature;
             jLabel1.setText("<html>" + obj2String(feature.getProperty("titel")) + "</html>");

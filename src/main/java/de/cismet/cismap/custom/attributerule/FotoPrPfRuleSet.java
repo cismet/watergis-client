@@ -67,6 +67,7 @@ public class FotoPrPfRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ho", new Numeric(10, 2, false, false));
         typeMap.put("winkel", new Numeric(5, 1, false, false));
         typeMap.put("foto_nr", new Numeric(15, 0, false, false));
+        typeMap.put("foto_nr_gu", new Varchar(50, false, false));
         typeMap.put("foto", new Varchar(250, false, false));
         typeMap.put("upl_name", new Varchar(50, false, false));
         typeMap.put("upl_datum", new Varchar(10, false, false));
@@ -126,7 +127,8 @@ public class FotoPrPfRuleSet extends WatergisDefaultRuleSet {
 
                     final WebDavClient webDavClient = new WebDavClient(Proxy.fromPreferences(),
                             Photo.WEB_DAV_USER,
-                            Photo.WEB_DAV_PASSWORD);
+                            Photo.WEB_DAV_PASSWORD,
+                            true);
 
                     DownloadManager.instance()
                             .add(new WebDavDownload(

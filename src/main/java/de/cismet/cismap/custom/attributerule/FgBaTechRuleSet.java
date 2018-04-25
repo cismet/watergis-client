@@ -22,8 +22,10 @@ import org.deegree.datatypes.Types;
 import java.sql.Timestamp;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -46,6 +48,8 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 
+import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.isValueEmpty;
+
 /**
  * DOCUMENT ME!
  *
@@ -65,7 +69,11 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_st", new Catalogue("k_l_st", false, true));
         typeMap.put("tech", new Catalogue("k_tech", true, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
+        typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
+        typeMap.put("na_gu", new Catalogue("k_na_gu", false, true));
+        typeMap.put("mahd_gu", new Catalogue("k_mahd_gu", false, true));
+        typeMap.put("gu_gu", new Catalogue("k_tech", false, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
@@ -80,6 +88,50 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
                     && !columnName.equals("laenge") && !columnName.equals("ba_cd")
                     && !columnName.equals("geom") && !columnName.equals("obj_nr") && !columnName.equals("id")
                     && !columnName.equals("ww_gr");
+    }
+
+    @Override
+    public Object afterEdit(final FeatureServiceFeature feature,
+            final String column,
+            final int row,
+            final Object oldValue,
+            final Object newValue) {
+        if (isValueEmpty(newValue)) {
+            if (column.equals("tech")) {
+                if (isValueEmpty(feature.getProperty("na_gu")) && isValueEmpty(feature.getProperty("mahd_gu"))
+                            && isValueEmpty(feature.getProperty("gu_gu"))) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
+                    return oldValue;
+                }
+            }
+            if (column.equals("na_gu")) {
+                if (isValueEmpty(feature.getProperty("tech")) && isValueEmpty(feature.getProperty("mahd_gu"))
+                            && isValueEmpty(feature.getProperty("gu_gu"))) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
+                    return oldValue;
+                }
+            }
+            if (column.equals("mahd_gu")) {
+                if (isValueEmpty(feature.getProperty("tech")) && isValueEmpty(feature.getProperty("na_gu"))
+                            && isValueEmpty(feature.getProperty("gu_gu"))) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
+                    return oldValue;
+                }
+            }
+            if (column.equals("gu_gu")) {
+                if (isValueEmpty(feature.getProperty("tech")) && isValueEmpty(feature.getProperty("na_gu"))
+                            && isValueEmpty(feature.getProperty("mahd_gu"))) {
+                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                        "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
+                    return oldValue;
+                }
+            }
+        }
+
+        return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
     @Override
@@ -136,11 +188,13 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
 
             return editor;
         } else if (columnName.equals("tech")) {
+            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("erlaubt");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         columnName,
                         String.valueOf(Types.VARCHAR),
-                        true));
+                        true),
+                    filter);
             editor.setNullable(false);
 
             editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
@@ -152,9 +206,76 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
                 });
 
             return editor;
+        } else if (columnName.equals("gu_gu")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return bean.getProperty("gu_gu") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("mahd_gu")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return bean.getProperty("mahd_gu") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("na_gu")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return bean.getProperty("na_gu") + " - " + bean.getProperty("name");
+                    }
+                });
+
+            return editor;
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        for (final FeatureServiceFeature feature : features) {
+            idOfCurrentlyCheckedFeature = feature.getId();
+            if (isValueEmpty(feature.getProperty("tech")) && isValueEmpty(feature.getProperty("na_gu"))
+                        && isValueEmpty(feature.getProperty("mahd_gu"))
+                        && isValueEmpty(feature.getProperty("gu_gu"))) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
+                return false;
+            }
+        }
+
+        return super.prepareForSave(features);
     }
 
     @Override
@@ -220,21 +341,21 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
                 new LinearReferencingWatergisHelper(),
                 0.5f);
 
-        creator.setProperties(getDefaultValues());
+//        creator.setProperties(getDefaultValues());
         creator.setCheck(check);
 
         return creator;
     }
 
-    @Override
-    public Map<String, Object> getDefaultValues() {
-        final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
-        } else {
-            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
-        }
-
-        return properties;
-    }
+//    @Override
+//    public Map<String, Object> getDefaultValues() {
+//        final Map properties = new HashMap();
+//        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+//            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
+//        } else {
+//            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
+//        }
+//
+//        return properties;
+//    }
 }

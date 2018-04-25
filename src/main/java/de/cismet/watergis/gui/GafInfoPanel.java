@@ -441,7 +441,7 @@ public class GafInfoPanel extends javax.swing.JPanel {
 
         @Override
         protected ImageIcon doInBackground() throws Exception {
-            if (gafFeatures != null) {
+            if ((gafFeatures != null) && (gafFeatures.size() > 0)) {
                 final GafReader reader = new GafReader(gafFeatures);
 
                 final BufferedImage image = (BufferedImage)reader.createImage(
