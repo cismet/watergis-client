@@ -28,7 +28,9 @@ import java.net.URL;
 
 import java.sql.Timestamp;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -262,6 +264,13 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
         final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
+//        final Map properties = new HashMap();
+//
+//        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+//            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
+//        } else {
+//            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
+//        }
 
         final StationLineCreator creator = new StationLineCreator(
                 "ba_st",
@@ -270,6 +279,7 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
                 new LinearReferencingWatergisHelper(),
                 0.5f);
         creator.setCheck(check);
+//        creator.setProperties(properties);
 
         return creator;
     }

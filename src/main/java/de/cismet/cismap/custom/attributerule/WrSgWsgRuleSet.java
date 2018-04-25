@@ -22,6 +22,9 @@ import java.net.URL;
 
 import java.sql.Timestamp;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.JLabel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -31,6 +34,8 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
+
+import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -118,19 +123,20 @@ public class WrSgWsgRuleSet extends WatergisDefaultRuleSet {
             final Object wbbl = feature.getProperty("wbbl");
             if ((value instanceof String) && !value.equals("") && (wbbl instanceof String) && !wbbl.equals("")
                         && (clickCount == 1)) {
-                try {
-                    final String linkBase = (columnName.equals("uk") ? WR_SG_WSG_uk_TABLE_PATH
-                                                                     : WR_SG_WSG_lk_TABLE_PATH);
-                    final URL u = new URL(linkBase + wbbl.toString() + ".zip");
-
-                    try {
-                        de.cismet.tools.BrowserLauncher.openURL(u.toString());
-                    } catch (Exception ex) {
-                        LOG.error("Cannot open the url:" + u, ex);
-                    }
-                } catch (MalformedURLException ex) {
-                    // nothing to do
-                }
+//                try {
+                final String linkBase = (columnName.equals("uk") ? WR_SG_WSG_uk_TABLE_PATH : WR_SG_WSG_lk_TABLE_PATH);
+                final String linkExt = (columnName.equals("uk") ? "_uk" : "_lk");
+                downloadDocumentFromWebDav(linkBase, wbbl.toString() + linkExt + ".zip");
+//                    final URL u = new URL(linkBase + wbbl.toString() + ".zip");
+//
+//                    try {
+//                        de.cismet.tools.BrowserLauncher.openURL(u.toString());
+//                    } catch (Exception ex) {
+//                        LOG.error("Cannot open the url:" + u, ex);
+//                    }
+//                } catch (MalformedURLException ex) {
+//                    // nothing to do
+//                }
             }
         } else if (columnName.equals("wbbl")) {
             if ((value instanceof String) && (clickCount == 1)) {

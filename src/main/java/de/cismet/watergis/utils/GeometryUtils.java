@@ -26,6 +26,7 @@ import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
+import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
 
 import org.apache.log4j.Logger;
 
@@ -183,12 +184,13 @@ public class GeometryUtils {
      */
     public static Geometry unionFeatureGeometries(final List<FeatureServiceFeature> sourceFeatures) {
         final List<Geometry> geomList = new ArrayList<Geometry>();
+        final PrecisionModel pm = new PrecisionModel(PrecisionModel.FIXED);
 
         for (final FeatureServiceFeature fsf : sourceFeatures) {
             final Geometry geom = fsf.getGeometry();
 
             if (geom != null) {
-                geomList.add(geom);
+                geomList.add(GeometryPrecisionReducer.reduce(geom, pm));
             }
         }
 
@@ -219,6 +221,8 @@ public class GeometryUtils {
             final Geometry g1 = unionGeometries(geom, from, from + ((to - from) / 2));
             final Geometry g2 = unionGeometries(geom, from + ((to - from) / 2) + 1, to);
 
+            System.out.print("valid: " + g1.isValid());
+            System.out.print("valid: " + g2.isValid());
             return g1.union(g2);
         }
     }
