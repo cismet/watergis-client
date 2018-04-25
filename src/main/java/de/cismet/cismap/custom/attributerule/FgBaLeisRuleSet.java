@@ -246,21 +246,21 @@ public class FgBaLeisRuleSet extends WatergisDefaultRuleSet {
                 "Basisgewässer (FG)",
                 new LinearReferencingWatergisHelper(),
                 0.5f);
-        creator.setProperties(getDefaultValues());
+//        creator.setProperties(getDefaultValues());
         creator.setCheck(check);
 
         return creator;
     }
 
-    @Override
-    public Map<String, Object> getDefaultValues() {
-        final Map properties = new HashMap();
-        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
-            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
-        } else {
-            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
-        }
-
-        return properties;
-    }
+//    @Override
+//    public Map<String, Object> getDefaultValues() {
+//        final Map properties = new HashMap();
+//        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+//            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
+//        } else {
+//            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
+//        }
+//
+//        return properties;
+//    }
 }

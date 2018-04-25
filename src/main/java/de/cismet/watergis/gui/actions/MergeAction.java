@@ -11,6 +11,8 @@
  */
 package de.cismet.watergis.gui.actions;
 
+import Sirius.navigator.connection.SessionManager;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
@@ -29,6 +31,12 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+
+import de.cismet.cids.custom.watergis.server.search.MergeBakAe;
+
+import de.cismet.cids.server.search.CidsServerSearch;
+
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.Feature;
@@ -199,6 +207,16 @@ public class MergeAction extends AbstractAction {
                                     serviceFeature.saveChangesWithoutReload();
                                     serviceFeature.setEditable(false);
                                     serviceFeature.setEditable(true);
+
+                                    if (serviceFeature instanceof CidsLayerFeature) {
+                                        final CidsLayerFeature clf = (CidsLayerFeature)serviceFeature;
+                                        if (clf.getBean().getMetaObject().getMetaClass().getTableName().endsWith(
+                                                        "fg_bak")) {
+                                            final CidsServerSearch search = new MergeBakAe(clf.getId());
+                                            SessionManager.getProxy()
+                                                    .customServerSearch(SessionManager.getSession().getUser(), search);
+                                        }
+                                    }
                                 } catch (Exception ex) {
                                     LOG.error("Error while saving changes", ex);
                                 }

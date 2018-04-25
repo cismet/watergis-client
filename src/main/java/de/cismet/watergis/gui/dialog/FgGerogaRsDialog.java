@@ -14,6 +14,7 @@ package de.cismet.watergis.gui.dialog;
 
 import Sirius.navigator.connection.SessionManager;
 
+import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.newuser.User;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -57,6 +58,8 @@ import javax.swing.event.TreeModelListener;
 
 import de.cismet.cids.custom.watergis.server.search.Buffer;
 import de.cismet.cids.custom.watergis.server.search.PreparedRandstreifenGeoms;
+
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
