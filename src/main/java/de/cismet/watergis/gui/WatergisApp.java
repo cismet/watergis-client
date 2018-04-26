@@ -100,6 +100,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -296,6 +297,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 + "pluginWatergis.layout";
     private static final String FILEPATH_DEFAULT_APP_DATA = DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.data";
     private static final String FILEPATH_SCREEN = DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.screen";
+    private static final String CONNECTION_PROPERTIES_FILE = "/serverConnection.properties";
     private static boolean routeModelInitialised = false;
 
     static {
@@ -4224,6 +4226,28 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         Thread.setDefaultUncaughtExceptionHandler(DefaultNavigatorExceptionHandler.getInstance());
         initLog4J();
         try {
+            final InputStream is = WatergisApp.class.getResourceAsStream(CONNECTION_PROPERTIES_FILE);
+
+            if (is != null) {
+                final Properties props = new Properties();
+                props.load(is);
+                final String callserverUrl = props.getProperty("CallserverUrl");
+
+                if (callserverUrl != null) {
+                    AppBroker.getInstance().setCallserverUrl(callserverUrl);
+                }
+                final String connectionClass = props.getProperty("ConnectionClass");
+
+                if (connectionClass != null) {
+                    AppBroker.getInstance().setConnectionClass(connectionClass);
+                }
+                final String domain = props.getProperty("Domain");
+
+                if (domain != null) {
+                    AppBroker.getInstance().setDomain(domain);
+                }
+            }
+
             LOG.warn("args: " + args.length);
             final Options options = new Options();
             options.addOption("u", true, "CallserverUrl");
@@ -4232,23 +4256,29 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             options.addOption("l", true, "Login");
             final PosixParser parser = new PosixParser();
             final CommandLine cmd = parser.parse(options, args);
-            if (cmd.hasOption("u")) {
+            if (cmd.hasOption("u") && (AppBroker.getInstance().getCallserverUrl() == null)) {
                 AppBroker.getInstance().setCallserverUrl(cmd.getOptionValue("u"));
             } else {
-                LOG.warn("No Callserverhost specified, please specify it with the option -u.");
-                System.exit(1);
+                if (AppBroker.getInstance().getCallserverUrl() == null) {
+                    LOG.warn("No Callserverhost specified, please specify it with the option -u.");
+                    System.exit(1);
+                }
             }
-            if (cmd.hasOption("c")) {
+            if (cmd.hasOption("c") && (AppBroker.getInstance().getConnectionClass() == null)) {
                 AppBroker.getInstance().setConnectionClass(cmd.getOptionValue("c"));
             } else {
-                LOG.warn("No ConnectionClass specified, please specify it with the option -c.");
-                System.exit(1);
+                if (AppBroker.getInstance().getConnectionClass() == null) {
+                    LOG.warn("No ConnectionClass specified, please specify it with the option -c.");
+                    System.exit(1);
+                }
             }
-            if (cmd.hasOption("d")) {
+            if (cmd.hasOption("d") && (AppBroker.getInstance().getDomain() == null)) {
                 AppBroker.getInstance().setDomain(cmd.getOptionValue("d"));
             } else {
-                LOG.error("No Domain specified, please specify it with the option -d.");
-                System.exit(1);
+                if (AppBroker.getInstance().getDomain() == null) {
+                    LOG.error("No Domain specified, please specify it with the option -d.");
+                    System.exit(1);
+                }
             }
             if (cmd.hasOption("l")) {
                 final String loginInfos = cmd.getOptionValue("l");
