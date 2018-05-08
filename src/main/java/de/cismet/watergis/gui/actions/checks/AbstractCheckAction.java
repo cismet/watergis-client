@@ -396,6 +396,7 @@ public abstract class AbstractCheckAction extends AbstractAction {
      * @param   owner     DOCUMENT ME!
      * @param   routeIds  DOCUMENT ME!
      * @param   classIds  DOCUMENT ME!
+     * @param   export    DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      *
@@ -403,10 +404,11 @@ public abstract class AbstractCheckAction extends AbstractAction {
      */
     protected ProblemCountAndClasses getErrorObjectsFromTree(final String owner,
             final int[] routeIds,
-            final int[] classIds) throws Exception {
+            final int[] classIds,
+            final boolean export) throws Exception {
         final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(SessionManager.getSession().getUser(),
-                            new RouteProblemsCountAndClasses(owner, routeIds, classIds, false));
+                            new RouteProblemsCountAndClasses(owner, routeIds, classIds, false, export));
         String count = null;
         final List<String> classes = new ArrayList<String>();
 
