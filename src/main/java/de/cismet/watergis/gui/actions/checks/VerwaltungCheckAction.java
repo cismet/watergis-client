@@ -150,9 +150,9 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (von.route = ba.id) "
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id) "
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null or name_li is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where gmd_nr = nr_li and gmd_name = name_li limit 1)) or ((nr_re is not null or name_re is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where gmd_nr = nr_re and gmd_name = name_re limit 1))) and gr.owner = '"
+                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null or name_li is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where gmd_nr = nr_li and gmd_name = name_li limit 1)) or ((nr_re is not null or name_re is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where gmd_nr = nr_re and gmd_name = name_re limit 1))) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -171,9 +171,9 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (von.route = ba.id) "
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id) "
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where kreis_nr = nr_li limit 1)) or ((nr_re is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_re limit 1))) and gr.owner = '"
+                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where kreis_nr = nr_li limit 1)) or ((nr_re is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_re limit 1))) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -192,9 +192,9 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (von.route = ba.id) "
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id) "
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where kreis_nr = nr_li limit 1)) or ((nr_re is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_re limit 1))) and gr.owner = '"
+                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where kreis_nr = nr_li limit 1)) or ((nr_re is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_re limit 1))) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -213,9 +213,9 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (von.route = ba.id) "
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id) "
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + "where (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -240,9 +240,9 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
                             + "join dlm25w.k_ww_gr sbgr on (k.ww_gr = sbgr.id) "
                             + "join dlm25w.k_ww_gr bagr on (ba.ww_gr = bagr.id)"
-                            + "where (%1$s is null or ba.id = any(%1$s)) and ((k.id is null and t.sb is not null) or sbgr.owner <> bagr.owner) and gr.owner = '"
+                            + "where (%1$s is null or ba.id = any(%1$s)) and ((k.id is null and t.sb is not null) or sbgr.owner <> bagr.owner) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -262,9 +262,9 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "join dlm25w.fg_ba ba on (von.route =  ba.id)\n"
                             + "join dlm25w.k_ww_gr gr on (exp.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + "where (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "' \n"
+                            + "' or %2$s) \n"
                             + "group by ba.id, exp.ww_gr\n"
                             + "having count(*) > 1";
             }
@@ -520,6 +520,11 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         increaseProgress(wd, 1);
 
         // start checks
+        final boolean useExpCond = user != null;
+        final boolean export = isExport && useExpCond;
+        final String expCondition = ((isExport && useExpCond)
+                ? (" exists(select id from dlm25w.fg_ba_exp_complete where owner = '" + user + "' and bak_id = bak.id)")
+                : "false");
         final List<FeatureServiceAttribute> baGmdServiceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
 
         FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
@@ -549,7 +554,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         baGmdServiceAttributeDefinition.add(serviceAttribute);
 
         result.setIncompleteGmd(analyseByCustomSearch(
-                new BakWithIncompleteGmdCoverage(user, selectedIds),
+                new BakWithIncompleteGmdCoverage(user, selectedIds, export),
                 CHECK_VERWALTUNG_GMD_LUECKE,
                 baGmdServiceAttributeDefinition));
         increaseProgress(wd, 1);
@@ -579,7 +584,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         baGbServiceAttributeDefinition.add(serviceAttribute);
 
         result.setIncompleteGb(analyseByCustomSearch(
-                new BakWithIncompleteGbCoverage(user, selectedIds),
+                new BakWithIncompleteGbCoverage(user, selectedIds, export),
                 CHECK_VERWALTUNG_GB_LUECKE,
                 baGbServiceAttributeDefinition));
         increaseProgress(wd, 1);
@@ -609,14 +614,17 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         baSbServiceAttributeDefinition.add(serviceAttribute);
 
         result.setIncompleteSb(analyseByCustomSearch(
-                new BakWithIncompleteSbCoverage(user, selectedIds),
+                new BakWithIncompleteSbCoverage(user, selectedIds, export),
                 CHECK_VERWALTUNG_SB_LUECKE,
                 baSbServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
+        String query = (useExpCond
+                ? String.format(QUERY_GB_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_GB_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setInvalidAttributeGb(analyseByQuery(
                 FG_BA_GB,
-                String.format(QUERY_GB_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_VERWALTUNG_GB_KATALOG));
         increaseProgress(wd, 1);
 
@@ -625,9 +633,12 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
 //                            "Prüfungen->Verwaltung->GB->Referenz Status"));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_GMD_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_GMD_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setInvalidAttributeGmd(analyseByQuery(
                 FG_BA_GMD,
-                String.format(QUERY_GMD_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_VERWALTUNG_GMD_KATALOG));
         increaseProgress(wd, 1);
 
@@ -636,37 +647,42 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
 //                            "Prüfungen->Verwaltung->GMD->Referenz Status"));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_SB_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_SB_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setInvalidAttributeSb(analyseByQuery(
                 FG_BA_SB,
-                String.format(QUERY_SB_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_VERWALTUNG_SB_KATALOG));
         increaseProgress(wd, 1);
 
+        query = (useExpCond ? String.format(QUERY_EXP, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                            : String.format(QUERY_EXP, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setExp(analyseByQuery(
                 FG_BA_EXP,
-                String.format(QUERY_EXP, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_VERWALTUNG_EXP_BELEGUNG));
         increaseProgress(wd, 1);
 
         result.setOverlappedGmd(analyseByCustomSearch(
-                new OverlappedGmd(user, selectedIds),
+                new OverlappedGmd(user, selectedIds, export),
                 CHECK_VERWALTUNG_GMD_UEBERLAPPUNG,
                 baGmdServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setOverlappedGb(analyseByCustomSearch(
-                new OverlappedGb(user, selectedIds),
+                new OverlappedGb(user, selectedIds, export),
                 CHECK_VERWALTUNG_GB_UEBERLAPPUNG,
                 baGbServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setOverlappedSb(analyseByCustomSearch(
-                new OverlappedSb(user, selectedIds),
+                new OverlappedSb(user, selectedIds, export),
                 CHECK_VERWALTUNG_SB_UEBERLAPPUNG,
                 baSbServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS));
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS, isExport));
 
         if (result.getIncompleteGb() != null) {
             result.setIncompleteGbErrors(result.getIncompleteGb().getFeatureCount(null));

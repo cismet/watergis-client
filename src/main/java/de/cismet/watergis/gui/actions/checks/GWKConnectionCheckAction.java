@@ -53,7 +53,8 @@ import static javax.swing.Action.SHORT_DESCRIPTION;
 import static javax.swing.Action.SMALL_ICON;
 
 /**
- * Anmerkung: Bei komplexen Prüfungen werden immer alle Objekte geprüft. Issue 237
+ * Anmerkung: Bei komplexen Prüfungen werden immer alle Objekte geprüft. Issue 237 Wird beim Export nicht ausgefuehrt
+ * und deshalb wird exp auchnicht beachtet.
  *
  * @author   therter
  * @version  $Revision$, $Date$
@@ -261,7 +262,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                     }
                     increaseProgress(wd, 1);
 
-                    result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS));
+                    result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS, isExport));
 
                     if (result.getLakAeService() != null) {
                         result.setLakAeErrors(result.getLakAeService().getFeatureCount(null));
