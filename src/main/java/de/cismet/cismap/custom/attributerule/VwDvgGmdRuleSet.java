@@ -34,15 +34,18 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class VwDvgOrtRuleSet extends WatergisDefaultRuleSet {
+public class VwDvgGmdRuleSet extends WatergisDefaultRuleSet {
 
     //~ Instance initializers --------------------------------------------------
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ort_name", new Varchar(50, true));
         typeMap.put("gmd_nr", new Numeric(8, 0, true));
         typeMap.put("gmd_name", new Varchar(50, true));
+        typeMap.put("amt_nr", new Numeric(4, 0, true));
+        typeMap.put("amt_name", new Varchar(50, true));
+        typeMap.put("kreis_nr", new Numeric(5, 0, true));
+        typeMap.put("kreis_name", new Varchar(50, true));
         typeMap.put("ort_fl", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
@@ -73,7 +76,7 @@ public class VwDvgOrtRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("ort_fl") && !columnName.equals("geom") && !columnName.equals("id");
+                    && !columnName.equals("gmd_fl") && !columnName.equals("geom") && !columnName.equals("id");
     }
 
     @Override
@@ -101,12 +104,12 @@ public class VwDvgOrtRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public String[] getAdditionalFieldNames() {
-        return new String[] { "ort_fl" };
+        return new String[] { "gmd_fl" };
     }
 
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("ort_fl")) {
+        if (name.equals("gmd_fl")) {
             return -3;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
@@ -128,7 +131,7 @@ public class VwDvgOrtRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public String getAdditionalFieldFormula(final String propertyName) {
-        if (propertyName.equals("flaeche")) {
+        if (propertyName.equals("gmd_fl")) {
             return "round(st_area(geom))";
         } else {
             return null;
