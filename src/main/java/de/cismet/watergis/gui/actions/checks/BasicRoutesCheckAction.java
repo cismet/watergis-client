@@ -106,8 +106,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + " from dlm25w.fg_bak bak \n"
                             + "join geom g on (bak.geom = g.id) \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and st_length(geo_field) < 0.5 and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                            + "where (%1$s is null or bak.id = any(%1$s)) and st_length(geo_field) < 0.5 and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -122,7 +122,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join geom g on (bak.geom = g.id) \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and not dlm25w.check_for_crossed_lines(geo_field) "
-                            + "and gr.owner = '" + user.getUserGroup().getName() + "'";
+                            + "and (gr.owner = '" + user.getUserGroup().getName() + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -134,9 +134,9 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                 QUERY_WITHOUT_BA_CD = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or bak.id = any(%1$s)) and (ba_cd is null OR ba_cd = '') and gr.owner = '"
+                            + "where (%1$s is null or bak.id = any(%1$s)) and (ba_cd is null OR ba_cd = '') and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -149,7 +149,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + " from dlm25w.fg_bak bak \n"
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and ba_cd in (select ba_cd from dlm25w.fg_bak group by ba_cd having count(ba_cd) > 1) "
-                            + "and gr.owner = '" + user.getUserGroup().getName() + "'";
+                            + "and (gr.owner = '" + user.getUserGroup().getName() + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -163,7 +163,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + " from dlm25w.fg_bak bak \n"
                             + "left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and (bak.ww_gr is null or  substr(ba_cd, 1, length(gr.praefix) + 1) <>  (gr.praefix || ':')) "
-                            + "and gr.owner = '" + user.getUserGroup().getName() + "'";
+                            + "and (gr.owner = '" + user.getUserGroup().getName() + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -179,7 +179,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.k_ww_gr gr on (substr(ba_cd, 1, length(gr.praefix) + 1) = (gr.praefix || ':'))\n"
                             + "left join dlm25w.k_ww_gr gr1 on (bak.ww_gr = gr1.id)\n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and (gr1.praefix is null or substr(ba_cd, 1, length(gr1.praefix) + 1) <>  (gr1.praefix || ':'))"
-                            + "and gr1.owner = '" + user.getUserGroup().getName() + "'";
+                            + "and (gr1.owner = '" + user.getUserGroup().getName() + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -192,7 +192,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (von.route = bak.id) \n"
                             + "join geom on (bak.geom = geom.id) \n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and \n"
-                            + "(von.wert > 0.05 and abs(bis.wert - st_length(geo_field)) >= 0.05);";
+                            + "(von.wert > 0.05 and abs(bis.wert - st_length(geo_field)) >= 0.05)";
             } else {
                 QUERY_AE = "select " + BAK_AE_MC.getID() + ", ae." + BAK_AE_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak_ae ae \n"
@@ -204,7 +204,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "join geom on (bak.geom = geom.id) \n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and \n"
                             + "(von.wert > 0.05 and abs(bis.wert - st_length(geo_field)) >= 0.05)"
-                            + "and gr1.owner = '" + user.getUserGroup().getName() + "';";
+                            + "and (gr1.owner = '" + user.getUserGroup().getName() + "' or %2$s)";
             }
         }
     }
@@ -385,7 +385,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
         String user = AppBroker.getInstance().getOwner();
         int[] selectedIds = null;
 
-        if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
+        if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
             user = null;
         }
 
@@ -422,50 +422,77 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
         final CidsServerSearch nodesSearch = new RemoveDuplicatedNodesFromFgBak(user);
         SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), nodesSearch);
         increaseProgress(wd, 1);
+        final boolean useExpCond = user != null;
+        final String expCondition = ((isExport && useExpCond)
+                ? (" exists(select id from dlm25w.fg_ba_exp_complete where owner = '" + user + "' and bak_id = bak.id)")
+                : "false");
 
         // start checks
+        String query = (useExpCond
+                ? String.format(QUERY_FG_BAK_LENGTH, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_FG_BAK_LENGTH, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setShortService(analyseByQuery(
                 BAK_MC,
-                String.format(QUERY_FG_BAK_LENGTH, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_BASISROUTEN_GEWAESSER_ZU_KURZ));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_CROSSING_LINES, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_CROSSING_LINES, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setCrossedService(analyseByQuery(
                 BAK_MC,
-                String.format(QUERY_CROSSING_LINES, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_BASISROUTEN_GEWAESSER_SCHNEIDEND));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_WITHOUT_BA_CD, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_WITHOUT_BA_CD, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setMissingCodeService(analyseByQuery(
                 BAK_MC,
-                String.format(QUERY_WITHOUT_BA_CD, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_BASISROUTEN_GEWAESSERCODE_FEHLT));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_DUPLICATED_BA_CD, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_DUPLICATED_BA_CD, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setNotUniqueCodeService(analyseByQuery(
                 BAK_MC,
-                String.format(QUERY_DUPLICATED_BA_CD, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_BASISROUTEN_GEWAESSERCODE_MEHRFACH));
         increaseProgress(wd, 1);
 
+        query = (useExpCond ? String.format(QUERY_AE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                            : String.format(QUERY_AE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAusEinleitungService(analyseByQuery(
                 BAK_AE_MC,
-                String.format(QUERY_AE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_BASISROUTEN_AUS_EINLEITUNG));
         increaseProgress(wd, 1);
 
+        query = (useExpCond ? String.format(QUERY_PREFIX, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                            : String.format(QUERY_PREFIX, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setPrefixService(analyseByQuery(
                 BAK_MC,
-                String.format(QUERY_PREFIX, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_BASISROUTEN_PRAEFIX));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(
+                    QUERY_PREFIX_ME_WW_GR_OTHER,
+                    SQLFormatter.createSqlArrayString(selectedIds),
+                    expCondition)
+                : String.format(QUERY_PREFIX_ME_WW_GR_OTHER, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setWwGrService(analyseByQuery(
                 BAK_MC,
-                String.format(QUERY_PREFIX_ME_WW_GR_OTHER, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_BASISROUTENWW_GR));
         increaseProgress(wd, 1);
 
+        // the bak count will not be considered during an export
         final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(SessionManager.getSession().getUser(),
                             new FgBakCount(user, null, selectedIds));
@@ -485,7 +512,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
 
         final ArrayList<ArrayList> problemCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(SessionManager.getSession().getUser(),
-                            new RouteProblemsCountAndClasses(owner, selectedIds, USED_CLASS_IDS, true));
+                            new RouteProblemsCountAndClasses(owner, selectedIds, USED_CLASS_IDS, true, isExport));
 
         String count = null;
         final List<String> classes = new ArrayList<String>();

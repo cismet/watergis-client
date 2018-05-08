@@ -3036,7 +3036,16 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     if ((wwGr != null) && wwGr.getProperty("owner").equals(u.getUserGroup().getName())) {
                         return true;
                     } else {
-                        return (wwGr != null) && wwGr.getProperty("ww_gr").equals(4000);
+                        if ((wwGr != null) && wwGr.getProperty("ww_gr").equals(4000)) {
+                            return true;
+                        } else {
+                            JOptionPane.showMessageDialog(StaticSwingTools.getParentFrame(
+                                    AppBroker.getInstance().getWatergisApp()),
+                                "Sie müssen genau eine eigene Route wählen",
+                                "Fehler Thema-/Gewässerwahl",
+                                JOptionPane.WARNING_MESSAGE);
+                            return false;
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(StaticSwingTools.getParentFrame(

@@ -55,7 +55,7 @@ import static javax.swing.Action.SHORT_DESCRIPTION;
 import static javax.swing.Action.SMALL_ICON;
 
 /**
- * Diese Prüfung bezieht sich auf Issue 240.
+ * Diese Prüfung bezieht sich auf Issue 240. Wird beim Export nicht ausgefuehrt und deshalb wird exp auchnicht beachtet.
  *
  * <p>Anmerkung: Bei komplexen Prüfungen werden immer alle Objekte geprüft.</p>
  *
@@ -270,7 +270,7 @@ public class LawaCheckAction extends AbstractCheckAction {
                     gbkServiceAttributeDefinition.add(serviceAttribute);
 
                     result.setFgBakWithoutGbk(analyseByCustomSearch(
-                            new BakWithIncompleteGbkCoverage(user, null),
+                            new BakWithIncompleteGbkCoverage(user, null, false),
                             CHECK_BAK_OHNE_GBK,
                             gbkServiceAttributeDefinition));
                     increaseProgress(wd, 1);
@@ -308,7 +308,7 @@ public class LawaCheckAction extends AbstractCheckAction {
                     serviceAttributeDefinition.add(serviceAttribute);
 
                     result.setGwkGbk(analyseByCustomSearch(
-                            new GwkLaCdFailure(user, null),
+                            new GwkLaCdFailure(user, null, false),
                             CHECK_GWK_DELTA_GWK,
                             serviceAttributeDefinition));
                     increaseProgress(wd, 1);
@@ -338,12 +338,12 @@ public class LawaCheckAction extends AbstractCheckAction {
                     serviceAttributeDefinitionFgBa.add(serviceAttribute);
 
                     result.setGbkInIncorrectEzg(analyseByCustomSearch(
-                            new GbkInIncorrectEzg(user, null),
+                            new GbkInIncorrectEzg(user, null, false),
                             CHECKEZG_DELTA_GBK,
                             serviceAttributeDefinitionFgBa));
                     increaseProgress(wd, 1);
 
-                    result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS));
+                    result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS, isExport));
 
                     if (result.getFgBakWithoutGbk() != null) {
                         result.setFgBakWithoutGbkErrors(result.getFgBakWithoutGbk().getFeatureCount(null));

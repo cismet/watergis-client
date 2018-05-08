@@ -86,6 +86,9 @@ public class NewObjectAction extends AbstractAction {
         if ((service != null) && !(!firstCall && e.getSource().equals(AppBroker.getInstance()))) {
             final AttributeTableRuleSet ruleSet = service.getLayerProperties().getAttributeTableRuleSet();
             final FeatureCreator creator = ruleSet.getFeatureCreator();
+            if (!creator.isCreationAllowed(CismapBroker.getInstance().getMappingComponent())) {
+                return;
+            }
             final FeatureServiceFeature feature = service.getFeatureFactory().createNewFeature();
             final FeatureCreator activeCreator = AppBroker.getInstance().getActiveFeatureCreator();
 

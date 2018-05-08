@@ -359,8 +359,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or von.route = any(%1$s)) and ("
                             + "(leis is null or obj_nr is null or l_rl is null or abs(von.wert - bis.wert) < 0.5) "
                             + " or (l.esw is not null and (l.esw < 0 or l.esw > 1)) "
-                            + ") and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                            + ") and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -400,8 +400,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "or\n"
                             + "exists (select 1 from dlm25w.fg_ba_due due join dlm25w.fg_ba_linie l on (due.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
-                            + ")) and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                            + ")) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -422,8 +422,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
                             + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "	join dlm25w.k_ww_gr gr on (t.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (tech is null or obj_nr is null or abs(von.wert - bis.wert) < 0.5) and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                            + "where (%1$s is null or von.route = any(%1$s)) and (tech is null or obj_nr is null or abs(von.wert - bis.wert) < 0.5) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -459,8 +459,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "(\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) <> (abs(von.wert - bis.wert)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                            + ")) <> (abs(von.wert - bis.wert)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -496,8 +496,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "(\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) <> (abs(von.wert - bis.wert)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                            + ")) <> (abs(von.wert - bis.wert)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -541,8 +541,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "(\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) < (abs(von.wert - bis.wert)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                            + ")) < (abs(von.wert - bis.wert)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -582,8 +582,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "or exists (select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
                             + ")\n"
-                            + ") and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                            + ") and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -641,8 +641,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "or (ho_d_u is not null and (ho_d_u < 0 or ho_d_u > 15))\n"
                             + "or abs(von.wert - bis.wert) < 0.5\n"
                             + " or (u.esw is not null and (u.esw < 0 or u.esw > 1)) "
-                            + "or (ho_d_o is not null and ho_d_u is not null and ho_d_o <= ho_d_u)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
+                            + "or (ho_d_o is not null and ho_d_u is not null and ho_d_o <= ho_d_u)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -671,8 +671,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
                             + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + " WHERE (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + "                            	) as t1,\n"
                             + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
                             + "                            	dlm25w.fg_ba_tech t\n"
@@ -680,8 +680,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
                             + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
-                            + " WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + " WHERE (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + "                            	) as t2\n"
                             + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and ((least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > -0.5 and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) < 0)";
             }
@@ -995,6 +995,12 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         serviceAttributeDefinition.add(serviceAttribute);
 
         // start checks
+        final boolean useExpCond = user != null;
+        final boolean export = isExport && useExpCond;
+        final String expCondition = ((isExport && useExpCond)
+                ? (" exists(select id from dlm25w.fg_ba_exp_complete where owner = '" + user + "' and bak_id = bak.id)")
+                : "false");
+
         if (!isExport) {
             result.setGapDeich(analyseByQuery(
                     FG_BA_DEICH,
@@ -1029,47 +1035,66 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             increaseProgress(wd, 6);
         }
 
-        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS));
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS, isExport));
 
+        String query = (useExpCond
+                ? String.format(QUERY_LEIS_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_LEIS_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAttributesLeis(analyseByQuery(
                 FG_BA_LEIS,
-                String.format(QUERY_LEIS_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_SONSTIGES_LEIS_LEIS__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_LEIS_GESCHL, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_LEIS_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setGerinneLeis(analyseByQuery(
                 FG_BA_LEIS,
-                String.format(QUERY_LEIS_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_SONSTIGES_LEIS_LEIS__ESW_FUER_GESCHL));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_TECH_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_TECH_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAttributesTech(analyseByQuery(
                 FG_BA_TECH,
-                String.format(QUERY_TECH_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_SONSTIGES_TECH_TECH__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond ? String.format(QUERY_TECH_V, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                            : String.format(QUERY_TECH_V, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setvTech(analyseByQuery(
                 FG_BA_TECH,
-                String.format(QUERY_TECH_V, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_SONSTIGES_TECH_TECH_V_NICHT_AUF_RL));
         increaseProgress(wd, 1);
 
+        query = (useExpCond ? String.format(QUERY_TECH_D, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                            : String.format(QUERY_TECH_D, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setdTech(analyseByQuery(
                 FG_BA_TECH,
-                String.format(QUERY_TECH_D, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_SONSTIGES_TECH_TECH_D_NICHT_AUF_DD));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_TECH_OFF, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_TECH_OFF, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setOffGerinneTech(analyseByQuery(
                 FG_BA_TECH,
-                String.format(QUERY_TECH_OFF, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_SONSTIGES_TECH_TECH_FALSCH_AUF_OFF));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_TECH_GESCH, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_TECH_GESCH, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setGeschGerinneTech(analyseByQuery(
                 FG_BA_TECH,
-                String.format(QUERY_TECH_GESCH, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_SONSTIGES_TECH_TECH_FALSCH_AUF_GES));
         increaseProgress(wd, 1);
 
@@ -1080,21 +1105,28 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                     CHECK_SONSTIGES_FOTO_FOTO__ATTRIBUTE));
         }
         increaseProgress(wd, 1);
+
+        query = (useExpCond
+                ? String.format(QUERY_UGHZ_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_UGHZ_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAttributesUghz(analyseByQuery(
                 FG_BA_UGHZ,
-                String.format(QUERY_UGHZ_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_SONSTIGES_UGHZ_UGHZ__ATTRIBUTE));
         increaseProgress(wd, 1);
 
         result.setOverlappedTech(analyseByCustomSearch(
-                new OverlappedTech(user, selectedIds),
+                new OverlappedTech(user, selectedIds, export),
                 CHECK_SONSTIGES_TECH_TECH__UEBERLAPPUNG,
                 serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_TECH_HOLE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_TECH_HOLE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setGapTech(analyseByQuery(
                 FG_BA_TECH,
-                String.format(QUERY_TECH_HOLE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_SONSTIGES_TECH_TECH__LUECKE));
         increaseProgress(wd, 1);
 

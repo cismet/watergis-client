@@ -182,7 +182,7 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("doc")) {
-            return new DokuLinkTableCellRenderer(JLabel.RIGHT);
+            return new DokuLinkTableCellRenderer(JLabel.LEFT);
         } else {
             return super.getCellRenderer(columnName);
         }

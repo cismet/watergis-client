@@ -286,9 +286,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or abs(von.wert - bis.wert) < 0.5\n"
                             + "or (p.profil = 'kr' and (ho_li is not null or br_tr_o_li is not null))\n"
                             + "or (p.profil in ('ei', 're') and br_tr_o_li is not null)\n"
-                            + "or (p.profil = 'tr' and (br_dm_li = br_tr_o_li))) and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + "or (p.profil = 'tr' and (br_dm_li = br_tr_o_li))) and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -345,9 +345,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or abs(von.wert - bis.wert) > 250\n"
                             + "or (p.profil = 'kr' and (ho_li is not null or br_tr_o_li is not null))\n"
                             + "or (p.profil in ('ei', 're') and br_tr_o_li is not null)\n"
-                            + "or (p.profil = 'tr' and (br_dm_li = br_tr_o_li))) and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + "or (p.profil = 'tr' and (br_dm_li = br_tr_o_li))) and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -408,9 +408,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or abs(von.wert - bis.wert) > 250\n"
                             + "or (p.profil = 'kr' and (ho_li is not null or br_tr_o_li is not null))\n"
                             + "or (p.profil in ('ei', 're') and br_tr_o_li is not null)\n"
-                            + "or (p.profil = 'tr' and (br_dm_li = br_tr_o_li))) and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + "or (p.profil = 'tr' and (br_dm_li = br_tr_o_li))) and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -449,9 +449,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (an.anll in ('Drte', 'Faa', 'Rb') and (abs(von.wert - bis.wert) < 5 or abs(von.wert - bis.wert) > 200))\n"
                             + "or (an.anll in ('Ds', 'Sf', 'Si', 'Sleu','Tosb','WKA') and (abs(von.wert - bis.wert) < 1 or abs(von.wert - bis.wert) > 200))\n"
                             + "or (a.esw is not null and (a.esw < 0 or a.esw > 1)) "
-                            + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + ") and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -492,9 +492,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (an.anlp in ('P', 'P-Gr', 'P-Steg', 'P-Gr-Steg', 'P-Lat', 'Sta') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li')))\n"
                             + "or (an.anlp in ('Steg', 'Vt', 'Wes') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'bs')))\n"
                             + "or (a.esw is not null and (a.esw < 0 or a.esw > 1)) "
-                            + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + ") and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -531,9 +531,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (k.kr in ('Br') and (oi.l_oiu <> 'o' ))\n"
                             + "or (k.kr in ('U') and (oi.l_oiu <> 'u' ))\n"
                             + "or (kr.esw is not null and (kr.esw < 0 or kr.esw > 1)) "
-                            + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + ") and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -566,9 +566,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (ho_ea  is not null and (ho_ea < -6 or ho_ea > 179))\n"
                             + "or (ho_d_ea is not null and (ho_d_ea < 0 or ho_d_ea > 15))\n"
                             + "or (ea.esw is not null and (ea.esw < 0 or ea.esw > 1)) "
-                            + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + ") and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -597,9 +597,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
                             + "or (ho_so  is not null and (ho_so < -6 or ho_so > 179))\n"
                             + "or (ho_d_so_ok is not null and (ho_d_so_ok <= 0 or ho_d_so_ok > 10))\n"
-                            + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + ") and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -686,9 +686,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (sbef.sbef in ('PL', 'RL') and (ma.material is null or ma.material not in ('B')))\n"
                             + "or (sbef.sbef in ('SP') and (ma.material is null or ma.material not in ('Ste')))\n"
                             + "or (wehr.esw is not null and (wehr.esw < 0 or wehr.esw > 1)) "
-                            + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + ") and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -733,9 +733,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (sz is not null and az is not null and (sz <= az))\n"
                             + "or (ezg_fl is not null and v_fl is not null and (ezg_fl < v_fl))\n"
                             + "or (schw.esw is not null and (schw.esw < 0 or schw.esw > 1)) "
-                            + ") and (%1$s is null or ba.id = any(%1$s)) and gr.owner = '"
+                            + ") and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "'";
+                            + "' or %2$s)";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -767,8 +767,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
                             + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + "WHERE (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + ") s1,\n"
                             + "(\n"
                             + "select scha.id, st.route, st.wert\n"
@@ -777,8 +777,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
                             + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + "WHERE (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + ") s2\n"
                             + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 0.5";
             }
@@ -812,8 +812,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
                             + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + "WHERE (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + ") s1,\n"
                             + "(\n"
                             + "select scha.id, st.route, st.wert\n"
@@ -822,8 +822,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
                             + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + "WHERE (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + ") s2\n"
                             + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 0.5";
             }
@@ -857,8 +857,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
                             + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + "WHERE (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + ") s1,\n"
                             + "(\n"
                             + "select scha.id, st.route, st.wert\n"
@@ -867,8 +867,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (ba.id = st.route)\n"
                             + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "WHERE gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + "WHERE (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + ") s2\n"
                             + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 20";
             }
@@ -907,8 +907,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + " left join dlm25w.k_kr k on (k.id = scha.kr)"
-                            + "WHERE k.kr in ('Br', 'Gew', 'U') and gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + "WHERE k.kr in ('Br', 'Gew', 'U') and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + ") s1,\n"
                             + "(\n"
                             + "select scha.id, st.route, st.wert\n"
@@ -918,8 +918,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (bak.id = ba.bak_id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + " left join dlm25w.k_kr k on (k.id = scha.kr)"
-                            + "WHERE k.kr in ('Br', 'Gew', 'U') and gr.owner = '"
-                            + user.getUserGroup().getName() + "'"
+                            + "WHERE k.kr in ('Br', 'Gew', 'U') and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)"
                             + ") s2\n"
                             + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 3";
             }
@@ -993,8 +993,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' and not\n"
+                            + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s) and not\n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
                             + "or\n"
@@ -1070,8 +1070,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + "left join dlm25w.k_anlp ka on (ka.id = a.anlp)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' and ka.anlp in ('Schi', 'Slu') and \n"
+                            + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s) and ka.anlp in ('Schi', 'Slu') and \n"
                             + "not (exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
                             + "or\n"
@@ -1110,9 +1110,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + "left join dlm25w.k_anlp ka on (ka.id = a.anlp)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and gr.owner = '"
+                            + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "' and ka.anlp in ('Fu', 'P', 'P-Grr', 'P-Steg', 'P-Grr-Steg', 'P-Lat', 'Steg', 'Stt', 'Vt') and \n"
+                            + "' or %2$s) and ka.anlp in ('Fu', 'P', 'P-Grr', 'P-Steg', 'P-Grr-Steg', 'P-Lat', 'Steg', 'Stt', 'Vt') and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
                             + "or\n"
@@ -1151,8 +1151,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + "left join dlm25w.k_anlp ka on (ka.id = a.anlp)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' and esw = 1 and \n"
+                            + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s) and esw = 1 and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
                             + "or\n"
@@ -1189,8 +1189,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' and esw = 1 and \n"
+                            + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s) and esw = 1 and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
                             + "or\n"
@@ -1266,8 +1266,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (s.route = ba.id)\n"
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' and esw = 1 and \n"
+                            + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s) and esw = 1 and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
                             + "or\n"
@@ -1313,8 +1313,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + "left join dlm25w.k_anll ka on (ka.id = a.anll)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' and ka.anll <> 'WKA' and \n"
+                            + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s) and ka.anll <> 'WKA' and \n"
                             + "((\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
@@ -1363,8 +1363,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + "left join dlm25w.k_anll ka on (ka.id = a.anll)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' and ka.anll <> 'WKA' and \n"
+                            + "where (%1$s is null or von.route = any(%1$s)) and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s) and ka.anll <> 'WKA' and \n"
                             + "((\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
@@ -1411,8 +1411,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)"
-                            + " where gr.owner = '"
-                            + user.getUserGroup().getName() + "') as k1,\n"
+                            + " where (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)) as k1,\n"
                             + "(select kr.id, g.geo_field, s.route , kkr.kr kr\n"
                             + "from dlm25w.fg_ba_kr kr\n"
                             + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
@@ -1421,8 +1421,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)"
-                            + " where gr.owner = '"
-                            + user.getUserGroup().getName() + "') as k2\n"
+                            + " where (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s)) as k2\n"
                             + "where (%1$s is null or k1.route = any(%1$s)) and k1.id <> k2.id and k1.kr = 'Gew' and k2.kr = 'Gew' and not st_isempty(st_intersection(k1.geo_field, st_buffer(k2.geo_field, 3)));";
             }
 
@@ -1446,9 +1446,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + " where gr.owner = '"
+                            + " where (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "' and (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and (select count(ba.id) from dlm25w.fg_ba ba join geom on (ba.geom = geom.id) where st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) ) < 2;";
+                            + "' or %2$s) and (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and (select count(ba.id) from dlm25w.fg_ba ba join geom on (ba.geom = geom.id) where st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) ) < 2;";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -1475,9 +1475,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_l_oiu koiu on (kr.l_oiu = koiu.id)\n"
                             + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + " where  gr.owner = '"
+                            + " where  (gr.owner = '"
                             + user.getUserGroup().getName()
-                            + "' and (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and koiu.l_oiu = 'i' and ( dlm25w.isgeschlossenesgerinne(st_buffer(g.geo_field, 0.01), ba.id)  or (dlm25w.isoffenesgerinne(st_buffer(g.geo_field, 0.01), ba.id) and dlm25w.isoffenesgerinne(\n"
+                            + "' or %2$s) and (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and koiu.l_oiu = 'i' and ( dlm25w.isgeschlossenesgerinne(st_buffer(g.geo_field, 0.01), ba.id)  or (dlm25w.isoffenesgerinne(st_buffer(g.geo_field, 0.01), ba.id) and dlm25w.isoffenesgerinne(\n"
                             + "(select st_buffer(ST_Line_Interpolate_Point(geo_field, ST_LineLocatePoint(geo_field, g.geo_field)), 0.01) from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1), \n"
                             + "(select b.id from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1)) ) );";
             }
@@ -1841,7 +1841,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeEa);
         increaseProgress(wd, 1);
 
-        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS));
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS, isExport));
 
         final List<FeatureServiceAttribute> serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
         FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
@@ -1869,68 +1869,105 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         // todo korrigiere berechnete Attribute
 
         // start checks
+        final boolean useExpCond = user != null;
+        final boolean export = isExport && useExpCond;
+        final String expCondition = ((isExport && useExpCond)
+                ? (" exists(select id from dlm25w.fg_ba_exp_complete where owner = '" + user + "' and bak_id = bak.id)")
+                : "false");
+        String query = (useExpCond
+                ? String.format(QUERY_ANLL_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_ANLL_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAnllAttr(analyseByQuery(
                 FG_BA_ANLL,
-                String.format(QUERY_ANLL_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_ANLL_ANLL__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_ANLP_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_ANLP_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAnlpAttr(analyseByQuery(
                 FG_BA_ANLP,
-                String.format(QUERY_ANLP_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_ANLP_ANLP__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_DUE_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_DUE_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setDueAttr(analyseByQuery(
                 FG_BA_DUE,
-                String.format(QUERY_DUE_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_DUE_DUE__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond ? String.format(
+                    QUERY_EA_ATTR,
+                    SQLFormatter.createSqlArrayString(selectedIds),
+                    expCondition) : String.format(QUERY_EA_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setEaAttr(analyseByQuery(
                 FG_BA_EA,
-                String.format(QUERY_EA_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_EA_EA__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond ? String.format(
+                    QUERY_KR_ATTR,
+                    SQLFormatter.createSqlArrayString(selectedIds),
+                    expCondition) : String.format(QUERY_KR_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setKrAttr(analyseByQuery(
                 FG_BA_KR,
-                String.format(QUERY_KR_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_KR_KR__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond ? String.format(
+                    QUERY_RL_ATTR,
+                    SQLFormatter.createSqlArrayString(selectedIds),
+                    expCondition) : String.format(QUERY_RL_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setRlAttr(analyseByQuery(
                 FG_BA_RL,
-                String.format(QUERY_RL_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_RL_RL__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_SCHA_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_SCHA_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setSchaAttr(analyseByQuery(
                 FG_BA_SCHA,
-                String.format(QUERY_SCHA_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_SCHA_SCHA__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_SCHW_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_SCHW_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setSchwAttr(analyseByQuery(
                 FG_BA_SCHW,
-                String.format(QUERY_SCHW_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_SCHW_SCHW__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_WEHR_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_WEHR_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setWehrAttr(analyseByQuery(
                 FG_BA_WEHR,
-                String.format(QUERY_WEHR_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_WEHR_WEHR__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond ? String.format(QUERY_D_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                            : String.format(QUERY_D_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setdAttr(analyseByQuery(
                 FG_BA_D,
-                String.format(QUERY_D_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_DD__ATTRIBUTE));
         increaseProgress(wd, 1);
 
         result.setRlHole(analyseByCustomSearch(
-                new RlWithHole(user, selectedIds),
+                new RlWithHole(user, selectedIds, export),
                 CHECKS_BAUWERKE_RL_RL__LUECKE,
                 serviceAttributeDefinition));
         increaseProgress(wd, 1);
@@ -1948,7 +1985,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 //        increaseProgress(wd, 1);
 
         result.setRlOverlapps(analyseByCustomSearch(
-                new OverlappedRlWithRDDue(user, selectedIds),
+                new OverlappedRlWithRDDue(user, selectedIds, export),
                 CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG,
                 serviceAttributeDefinition));
         increaseProgress(wd, 1);
@@ -1965,39 +2002,57 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 //                serviceAttributeDefinition));
 //        increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_SCHA_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_SCHA_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setSchaDistance(analyseByQuery(
                 FG_BA_SCHA,
-                String.format(QUERY_SCHA_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_SCHA_SCHA_DOPPELTZU_NAH));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_WEHR_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_WEHR_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setWehrDistance(analyseByQuery(
                 FG_BA_WEHR,
-                String.format(QUERY_WEHR_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_WEHR_WEHR_DOPPELTZU_NAH));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_SCHW_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_SCHW_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setSchwDistance(analyseByQuery(
                 FG_BA_SCHW,
-                String.format(QUERY_SCHW_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_SCHW_SCHW_DOPPELTZU_NAH));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_KR_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_KR_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setKrDistance(analyseByQuery(
                 FG_BA_KR,
-                String.format(QUERY_KR_DISTANCE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_KR_KR_DOPPELTZU_NAH));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_KR_KEIN_FG_BA, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_KR_KEIN_FG_BA, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setKrFgBa(analyseByQuery(
                 FG_BA_KR,
-                String.format(QUERY_KR_KEIN_FG_BA, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_KR_KEIN_FG_BA));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_KR_INVALID, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_KR_INVALID, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setKrInvalid(analyseByQuery(
                 FG_BA_KR,
-                String.format(QUERY_KR_INVALID, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_KR_INVALID));
         increaseProgress(wd, 1);
 
@@ -2007,9 +2062,12 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 //                CHECKS_BAUWERKE_EA_EA_DOPPELTZU_NAH));
 //        increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_SCHA_OFFEN, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_SCHA_OFFEN, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setSchaOffen(analyseByQuery(
                 FG_BA_SCHA,
-                String.format(QUERY_SCHA_OFFEN, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_SCHA_SCHA_AUF_OFFENEM__GER));
         increaseProgress(wd, 1);
 
@@ -2017,47 +2075,66 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 //                String.format(QUERY_WEHR_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)), CHECKS_BAUWERKE_WEHR_WEHR_AUF_GESCHLOSSEN));
 //        increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_ANLP_OFFEN, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_ANLP_OFFEN, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAnlpOffen(analyseByQuery(
                 FG_BA_ANLP,
-                String.format(QUERY_ANLP_OFFEN, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_ANLP_ANLP_AUF_OFFENEM__GER));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_ANLP_GESCHL, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_ANLP_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAnlpGeschlossen(analyseByQuery(
                 FG_BA_ANLP,
-                String.format(QUERY_ANLP_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_ANLP_ANLP_AUF_GESCHLOSSEN));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_ANLP_ESW, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_ANLP_ESW, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAnlpEsw(analyseByQuery(
                 FG_BA_ANLP,
-                String.format(QUERY_ANLP_ESW, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_ANLP_ANLP__ESW_FUER_GESCHLO));
 
+        query = (useExpCond ? String.format(QUERY_KR_ESW, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                            : String.format(QUERY_KR_ESW, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setKrEsw(analyseByQuery(
                 FG_BA_KR,
-                String.format(QUERY_KR_ESW, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_KR_KR__ESW_FUER_GESCHLOSSEN));
         increaseProgress(wd, 1);
 
 //        result.setEaGeschl(analyseByQuery(FG_BA_EA,
 //                String.format(QUERY_EA_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)), CHECKS_BAUWERKE_EA_EA_AUF_GESCHLOSSENEM_G));
 
+        query = (useExpCond ? String.format(QUERY_EA_ESW, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                            : String.format(QUERY_EA_ESW, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setEaEsw(analyseByQuery(
                 FG_BA_EA,
-                String.format(QUERY_EA_ESW, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_EA_EA__ESW_FUER_GESCHLOSSEN));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_ANLL_GESCHL, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_ANLL_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setAnllGeschl(analyseByQuery(
                 FG_BA_ANLL,
-                String.format(QUERY_ANLL_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_ANLL_ANLL_AUF_GESCHLOSSEN));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_KR_MARKED_TWICE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_KR_MARKED_TWICE, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setKrMarkedTwice(analyseByQuery(
                 FG_BA_KR,
-                String.format(QUERY_KR_MARKED_TWICE, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECKS_BAUWERKE_KR_KR_DOPPELTE__MARKIERUNG));
         increaseProgress(wd, 1);
 

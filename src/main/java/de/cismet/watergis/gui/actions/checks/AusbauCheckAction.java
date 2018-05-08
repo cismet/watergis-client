@@ -212,8 +212,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kpr.profil = 're' and (bv_re is not null and bv_re <> 0))\n"
                             + "or (kpr.profil = 're' and ((bv_re is not null and bv_re <> 0) or (bv_li is not null and bv_li <> 0) ) )\n"
                             + "or (kpr.profil = 'tr' and ((bv_re is null or bv_re = 0) and (bv_li is null or bv_li = 0) ) )\n"
-                            + ") and gr.owner = '"
-                            + user.getUserGroup().getName() + "';";
+                            + ") and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s);";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -282,8 +282,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.ubef = 'Spw' and km.material not in ('H', 'K', 'St', 'St-B', 'Ste-Gab'))\n"
                             + "or (kbef.ubef = 'Wistü' and km.material not in ('B', 'K', 'St', 'St-B'))\n"
                             + "or (bef.esw is not null and (bef.esw < 0 or bef.esw > 1)) "
-                            + ") and gr.owner = '"
-                            + user.getUserGroup().getName() + "';";
+                            + ") and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s);";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -356,8 +356,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.sbef in ('Sw-Gru', 'Sw-So', 'Sw-Stü') and km.material <> 'B')\n"
                             + "or (kbef.sbef = 'Wu' and km.material <> 'H')\n"
                             + "or (bef.esw is not null and (bef.esw < 0 or bef.esw > 1)) "
-                            + ") and gr.owner = '"
-                            + user.getUserGroup().getName() + "';";
+                            + ") and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s);";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -424,8 +424,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.bbef = 'Rin' and km.material not in ('B', 'St-B', 'Ste', 'Ste-Fs', 'Ste-Mw', 'Ste-Wb'))\n"
                             + "or (kbef.bbef = 'Spreit' and km.material <> 'H')\n"
                             + "or (bef.esw is not null and (bef.esw < 0 or bef.esw > 1)) "
-                            + ") and gr.owner = '"
-                            + user.getUserGroup().getName() + "';";
+                            + ") and (gr.owner = '"
+                            + user.getUserGroup().getName() + "' or %2$s);";
             }
         }
     }
@@ -635,7 +635,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
         String user = AppBroker.getInstance().getOwner();
         int[] selectedIds = null;
 
-        if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
+        if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
             user = null;
         }
 
@@ -699,79 +699,96 @@ public class AusbauCheckAction extends AbstractCheckAction {
         baProfServiceAttributeDefinition.add(serviceAttribute);
 
         // start checks
+        final boolean useExpCond = user != null;
+        final boolean export = isExport && useExpCond;
+        final String expCondition = ((isExport && useExpCond)
+                ? (" exists(select id from dlm25w.fg_ba_exp_complete where owner = '" + user + "' and bak_id = bak.id)")
+                : "false");
+        String query = (useExpCond
+                ? String.format(QUERY_BBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_BBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setBbefAttr(analyseByQuery(
                 FG_BA_BBEF,
-                String.format(QUERY_BBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_AUSBAU_BBEFBBEF__ATTRIBUTE));
         increaseProgress(wd, 1);
 
         result.setUbefGeschl(analyseByCustomSearch(
-                new OverlappedUbefWithR(user, selectedIds),
+                new OverlappedUbefWithR(user, selectedIds, export),
                 CHECK_AUSBAU_UBEFUBEF__UEBERLAPPUNG_MIT_R,
                 baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_PROF_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_PROF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setProfAttr(analyseByQuery(
                 FG_BA_PROF,
-                String.format(QUERY_PROF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_AUSBAU_PROFPROF__ATTRIBUTE));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_UBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_UBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setUbefAttr(analyseByQuery(
                 FG_BA_UBEF,
-                String.format(QUERY_UBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_AUSBAU_UBEFUBEF__ATTRIBUTE));
         increaseProgress(wd, 1);
 
         result.setProfHole(analyseByCustomSearch(
-                new BaWithIncompleteProfCoverage(user, selectedIds),
+                new BaWithIncompleteProfCoverage(user, selectedIds, export),
                 CHECK_AUSBAU_PROFPROF__LUECKE_IM__THEMA,
                 baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setProfOverlaps(analyseByCustomSearch(
-                new OverlappedProf(user, selectedIds),
+                new OverlappedProf(user, selectedIds, export),
                 CHECK_AUSBAU_PROFPROF__UEBERLAPPUNG__THEMA,
                 baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setProfGeschl(analyseByCustomSearch(
-                new OverlappedProfWithR(user, selectedIds),
+                new OverlappedProfWithR(user, selectedIds, export),
                 CHECK_AUSBAU_PROFPROF__UEBERLAPPUNG_MIT_R,
                 baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
+        query = (useExpCond
+                ? String.format(QUERY_SBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+                : String.format(QUERY_SBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)));
         result.setSbefAttr(analyseByQuery(
                 FG_BA_SBEF,
-                String.format(QUERY_SBEF_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+                query,
                 CHECK_AUSBAU_SBEFSBEF__ATTRIBUTE));
         increaseProgress(wd, 1);
 
         result.setSbefGeschl(analyseByCustomSearch(
-                new OverlappedSBefWithR(user, selectedIds),
+                new OverlappedSBefWithR(user, selectedIds, export),
                 CHECK_AUSBAU_SBEFSBEF__UEBERLAPPUNG_MIT_R,
                 baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setBbefGeschl(analyseByCustomSearch(
-                new OverlappedBBefWithR(user, selectedIds),
+                new OverlappedBBefWithR(user, selectedIds, export),
                 CHECK_AUSBAU_BBEFBBEF__UEBERLAPPUNG_MIT_R,
                 baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setSbefOverlapsAttr(analyseByCustomSearch(
-                new OverlappedSBefWithProf(user, selectedIds),
+                new OverlappedSBefWithProf(user, selectedIds, export),
                 CHECK_AUSBAU_SBEFPROFSBEF__UEBERLAPPUNG_AT,
                 baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setBbefOverlapsAttr(analyseByCustomSearch(
-                new OverlappedBBefWithProf(user, selectedIds),
+                new OverlappedBBefWithProf(user, selectedIds, export),
                 CHECK_AUSBAU_BBEFPROFBBEF__UEBERLAPPUNG_AT,
                 baProfServiceAttributeDefinition));
         increaseProgress(wd, 1);
 
-        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS));
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, selectedIds, USED_CLASS_IDS, isExport));
 
         if (result.getBbefAttr() != null) {
             result.setBbefAttrErrors(result.getBbefAttr().getFeatureCount(null));
