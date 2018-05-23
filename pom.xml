@@ -13,7 +13,7 @@
 
     <groupId>de.cismet.watergis</groupId>
     <artifactId>watergis-client</artifactId>
-    <version>6.0.6</version>
+    <version>6.0.7</version>
     <packaging>jar</packaging>
 
     <name>WaterGIS Client</name>
@@ -35,7 +35,7 @@
         <connection>https://github.com/cismet/watergis-client.git</connection>
         <developerConnection>scm:git:git@github.com:cismet/watergis-client.git</developerConnection>
         <url>https://github.com/cismet/s-client</url>
-      <tag>v6.0.6</tag>
+      <tag>v6.0.7</tag>
   </scm>
 
     
@@ -111,7 +111,7 @@
             <dependency>
                 <groupId>de.cismet</groupId>
                 <artifactId>Jump-sld-editor</artifactId>
-                <version>6.0</version>
+                <version>6.0.1</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
