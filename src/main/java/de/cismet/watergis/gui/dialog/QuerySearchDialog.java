@@ -30,6 +30,8 @@ import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.rasterservice.MapService;
 
+import de.cismet.connectioncontext.ConnectionContext;
+
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.components.location.SelectionMethodInterface;
@@ -98,6 +100,7 @@ public class QuerySearchDialog extends javax.swing.JDialog {
         choosenLayer = sourceLayer.toArray(new AbstractFeatureService[sourceLayer.size()]);
 
         initComponents();
+        querySearch1.initWithConnectionContext(ConnectionContext.createDummy());
         querySearch1.enableLineWrap(true);
     }
 
