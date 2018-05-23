@@ -111,7 +111,7 @@
             <dependency>
                 <groupId>de.cismet</groupId>
                 <artifactId>Jump-sld-editor</artifactId>
-                <version>6.0</version>
+                <version>6.0.1</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
