@@ -47,6 +47,7 @@ public class VwDvgGmdRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("kreis_nr", new Numeric(5, 0, true));
         typeMap.put("kreis_name", new Varchar(50, true));
         typeMap.put("ort_fl", new Numeric(12, 0, false, false));
+        typeMap.put("gmd_fl", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }

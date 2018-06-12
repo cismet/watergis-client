@@ -28,8 +28,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import de.cismet.cids.custom.helper.SQLFormatter;
-import de.cismet.cids.custom.watergis.server.search.DWithHole;
-import de.cismet.cids.custom.watergis.server.search.DueWithHole;
 import de.cismet.cids.custom.watergis.server.search.FgBakCount;
 import de.cismet.cids.custom.watergis.server.search.MergeBaAnll;
 import de.cismet.cids.custom.watergis.server.search.MergeBaAnlp;
@@ -37,14 +35,10 @@ import de.cismet.cids.custom.watergis.server.search.MergeBaD;
 import de.cismet.cids.custom.watergis.server.search.MergeBaDue;
 import de.cismet.cids.custom.watergis.server.search.MergeBaEa;
 import de.cismet.cids.custom.watergis.server.search.MergeBaKr;
-import de.cismet.cids.custom.watergis.server.search.MergeBaRl;
 import de.cismet.cids.custom.watergis.server.search.MergeBaScha;
 import de.cismet.cids.custom.watergis.server.search.MergeBaSchw;
 import de.cismet.cids.custom.watergis.server.search.MergeBaWehr;
-import de.cismet.cids.custom.watergis.server.search.OverlappedDWithRDDue;
-import de.cismet.cids.custom.watergis.server.search.OverlappedDueWithRDDue;
 import de.cismet.cids.custom.watergis.server.search.OverlappedRlWithRDDue;
-import de.cismet.cids.custom.watergis.server.search.OverlappedUbefWithR;
 import de.cismet.cids.custom.watergis.server.search.RlWithHole;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
