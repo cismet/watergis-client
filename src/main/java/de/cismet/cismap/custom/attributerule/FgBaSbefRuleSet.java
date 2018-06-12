@@ -278,7 +278,8 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
                     new FeatureServiceAttribute(
                         columnName,
                         String.valueOf(Types.VARCHAR),
-                        true));
+                        true),
+                    createCidsLayerFeatureFilter("fg_ba_sbef"));
             editor.setNullable(false);
 
             editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {

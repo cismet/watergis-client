@@ -211,7 +211,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (ho_e is not null and ho_a is not null and (ho_e < ho_a))\n"
                             + "or (kpr.profil = 're' and (bv_re is not null and bv_re <> 0))\n"
                             + "or (kpr.profil = 're' and ((bv_re is not null and bv_re <> 0) or (bv_li is not null and bv_li <> 0) ) )\n"
-                            + "or (kpr.profil = 'tr' and ((bv_re is null or bv_re = 0) and (bv_li is null or bv_li = 0) ) )\n"
+                            + "or (kpr.profil = 'tr' and ((bv_re is not null and bv_re = 0) and (bv_li is not null and bv_li = 0) ) )\n"
                             + ") and (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s);";
             }

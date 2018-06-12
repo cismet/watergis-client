@@ -13,6 +13,7 @@ package de.cismet.watergis.gui.actions;
 
 import Sirius.navigator.connection.SessionManager;
 
+import Sirius.server.localserver.attribute.ClassAttribute;
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.newuser.User;
@@ -286,13 +287,30 @@ public class ExportAction extends AbstractAction implements Configurable {
                             // export all features
                             wd.setText("Exportiere " + service.toString());
                             wd.setProgress(++checkSteps);
+                            String sortingColumn = null;
 
                             if (e.getActionCommand().equalsIgnoreCase("igm")
                                         && (service.getName().equalsIgnoreCase("Technologien")
                                             || service.getName().equalsIgnoreCase("Leistungen")
+                                            || service.getName().equalsIgnoreCase("Dokumente")
+                                            || service.getName().equalsIgnoreCase("Projekte")
+                                            || service.getName().equalsIgnoreCase("fg_ba_doku")
+                                            || service.getName().equalsIgnoreCase("fg_ba_proj")
                                             || service.getName().equalsIgnoreCase("k_leis")
-                                            || service.getName().equalsIgnoreCase("k_tech"))) {
+                                            || service.getName().equalsIgnoreCase("k_tech")
+                                            || service.getName().equalsIgnoreCase("k_gu_gu")
+                                            || service.getName().equalsIgnoreCase("k_mahd_gu")
+                                            || service.getName().equalsIgnoreCase("k_na_gu"))) {
                                 continue;
+                            }
+
+                            if (service instanceof CidsLayer) {
+                                final ClassAttribute ca = ((CidsLayer)service).getMetaClass()
+                                            .getClassAttribute("sortingColumn");
+
+                                if (ca != null) {
+                                    sortingColumn = String.valueOf(ca.getValue());
+                                }
                             }
 
                             try {
@@ -352,6 +370,35 @@ public class ExportAction extends AbstractAction implements Configurable {
                                     attrName[0] = attr;
                                     attrName[1] = attr;
                                     attribList.add(attrName);
+                                }
+
+                                if (sortingColumn != null) {
+                                    final String col = sortingColumn;
+
+                                    Collections.sort(features, new Comparator<DefaultFeatureServiceFeature>() {
+
+                                            @Override
+                                            public int compare(final DefaultFeatureServiceFeature o1,
+                                                    final DefaultFeatureServiceFeature o2) {
+                                                final Object attr1 = o1.getProperty(col);
+                                                final Object attr2 = o2.getProperty(col);
+
+                                                if ((attr1 == null) && (attr2 == null)) {
+                                                    return 0;
+                                                } else if (attr1 == null) {
+                                                    return 1;
+                                                } else if (attr2 == null) {
+                                                    return -1;
+                                                } else {
+                                                    if ((attr1 instanceof Comparable)
+                                                                && (attr2 instanceof Comparable)) {
+                                                        return ((Comparable)attr1).compareTo(((Comparable)attr2));
+                                                    } else {
+                                                        return 0;
+                                                    }
+                                                }
+                                            }
+                                        });
                                 }
 
                                 exportShp(String.valueOf(checkSteps),
@@ -636,6 +683,11 @@ public class ExportAction extends AbstractAction implements Configurable {
 
                     for (final FeatureServiceAttribute attr : attributes.values()) {
                         if (attr.getName().equals("ww_gr")) {
+                            hasWdm = true;
+                        }
+                    }
+                    if (!hasWdm) {
+                        if (features.get(0).getProperty("ww_gr") != null) {
                             hasWdm = true;
                         }
                     }

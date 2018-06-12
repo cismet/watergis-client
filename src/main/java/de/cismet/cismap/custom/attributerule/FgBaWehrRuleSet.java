@@ -84,7 +84,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         WEHR_V_MATERIAL.put("bo", new String[] { "h", "k", "st" });
         WEHR_V_MATERIAL.put("bo-j", new String[] { "h", "k", "st" });
         WEHR_V_MATERIAL.put("schw", new String[] { "b", "k" });
-        WEHR_A_MATERIAL_A.put("PL", new String[] { "B" });
+        WEHR_A_MATERIAL_A.put("Pl", new String[] { "B" });
         WEHR_A_MATERIAL_A.put("RL", new String[] { "B" });
         WEHR_A_MATERIAL_A.put("SP", new String[] { "Ste" });
     }
@@ -99,10 +99,10 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_st", new Catalogue("k_l_st", false, true));
         typeMap.put("wehr", new Catalogue("k_wehr", true, true));
         typeMap.put("wehr_v", new Catalogue("k_wehr_v", true, true));
-        typeMap.put("material_v", new Catalogue("k_material_v", false, true));
+        typeMap.put("material_v", new Catalogue("k_material", false, true));
         typeMap.put("wehr_av", new Catalogue("k_wehr_av", true, true));
-        typeMap.put("wehr_a", new Catalogue("k_sbef", true, true));
-        typeMap.put("material_a", new Catalogue("k_material", true, true));
+        typeMap.put("wehr_a", new Catalogue("k_sbef", false, true));
+        typeMap.put("material_a", new Catalogue("k_material", false, true));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
         typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true));
