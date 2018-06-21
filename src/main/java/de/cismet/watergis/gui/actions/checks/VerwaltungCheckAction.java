@@ -110,17 +110,17 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
             CHECK_VERWALTUNG_GMD_LUECKE
         };
     private static int[] USED_CLASS_IDS = new int[] {
-            FG_BA_SB.getId(),
-            FG_BA_GB.getId(),
-            FG_BA_GMD.getId()
+            ((FG_BA_SB != null) ? FG_BA_SB.getId() : -1),
+            ((FG_BA_GB != null) ? FG_BA_GB.getId() : -1),
+            ((FG_BA_GMD != null) ? FG_BA_GMD.getId() : -1),
         };
 
     static {
         if (FG_BA_EXP != null) {
             USED_CLASS_IDS = new int[] {
-                    FG_BA_SB.getId(),
-                    FG_BA_GB.getId(),
-                    FG_BA_GMD.getId(),
+                    ((FG_BA_SB != null) ? FG_BA_SB.getId() : -1),
+                    ((FG_BA_GB != null) ? FG_BA_GB.getId() : -1),
+                    ((FG_BA_GMD != null) ? FG_BA_GMD.getId() : -1),
                     FG_BA_EXP.getId()
                 };
         }

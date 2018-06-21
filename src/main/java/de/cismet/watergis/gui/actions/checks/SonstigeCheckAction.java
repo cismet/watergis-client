@@ -133,7 +133,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
     private static final String CHECK_SONSTIGES_DEICH_DEICH__LUECKE = "Prüfungen->Sonstiges->Deich->Deich: Lücke";
     private static final int[] USED_CLASS_IDS = new int[] {
             FG_BA_DEICH.getId(),
-            GU_WIWE.getId(),
+            ((GU_WIWE != null) ? GU_WIWE.getId() : -1),
             FG_BA_UGHZ.getId(),
             FG_BA_LEIS.getId(),
             FG_BA_TECH.getId(),
