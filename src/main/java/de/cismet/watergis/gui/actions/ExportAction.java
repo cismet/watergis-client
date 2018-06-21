@@ -228,9 +228,7 @@ public class ExportAction extends AbstractAction implements Configurable {
                         setWwGrBeans();
                     }
 
-                    if (expFeatures == null) {
-                        setFgBaExpBeans();
-                    }
+                    setFgBaExpBeans();
 
                     for (final AbstractCheckAction check : checks) {
                         try {
@@ -1256,6 +1254,8 @@ public class ExportAction extends AbstractAction implements Configurable {
                             os = new FileOutputStream(new File(fileName));
                             int content;
                             int byteCounter = 0;
+                            int tmpLength = 0;
+                            int length = 1000;
 
                             while ((content = is.read()) != -1) {
                                 ++byteCounter;
@@ -1264,8 +1264,18 @@ public class ExportAction extends AbstractAction implements Configurable {
                                     os.write(0x0);
                                     continue;
                                 }
+                                if (byteCounter == 9) {
+                                    // byte 9/10 contain the position of first data record
+                                    tmpLength = content;
+                                }
+                                if (byteCounter == 10) {
+                                    tmpLength += content
+                                                << 8;
+                                    length = tmpLength;
+                                }
                                 os.write(content);
-                                if (content == 0xd) { // 0xd is the last byte of the header
+                                if ((byteCounter >= (length - 1)) && (content == 0xd)) { // 0xd is the last byte of
+                                                                                         // the header
                                     break;
                                 }
                             }
@@ -1398,6 +1408,11 @@ public class ExportAction extends AbstractAction implements Configurable {
         checks = new ArrayList<AbstractCheckAction>();
 
         if (actionRootElement == null) {
+            return;
+        }
+
+        if (!AppBroker.getInstance().isWawiOrAdminUser()) {
+            // The export function should be disabled
             return;
         }
 

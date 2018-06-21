@@ -755,20 +755,28 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         }
         ((NewDrawingButton)cmdDrawingMode).setButtonGroup(btnGroupMapMode);
         exportIgmAction.setExport(exportAction1);
+        retrievePermissionbeans();
 
-        if (SessionManager.getSession().getUser().getUserGroup().getName().equalsIgnoreCase("anonymous")) {
-            mniIgmExport.setEnabled(false);
-            mniExport.setEnabled(false);
-            mniExportOption.setEnabled(false);
+        if (!SessionManager.getSession().getUser().getUserGroup().getName().equalsIgnoreCase("administratoren")
+                    && !SessionManager.getSession().getUser().getUserGroup().getName().toLowerCase().startsWith(
+                        "lung")) {
+            mniCheckLawa.setEnabled(false);
+            mniCheckLawaConnection.setEnabled(false);
+        }
+
+        if (!AppBroker.getInstance().isAdminOrLungUser() && !AppBroker.getInstance().isGu()) {
             mniCheckAusbau.setEnabled(false);
             mniCheckBasisRoutes.setEnabled(false);
             mniCheckBauwerke.setEnabled(false);
-            mniCheckLawa.setEnabled(false);
-            mniCheckLawaConnection.setEnabled(false);
             mniCheckSonstige.setEnabled(false);
             mniCheckVerwaltung.setEnabled(false);
         }
 
+        if (!AppBroker.getInstance().isWawiOrAdminUser()) {
+            mniIgmExport.setEnabled(false);
+            mniExport.setEnabled(false);
+            mniExportOption.setEnabled(false);
+        }
         ((MeasureButton)tbtnMeasure).setButtonGroup(btnGroupMapMode);
         ((SelectionButton)cmdSelectionMode).setButtonGroup(btnGroupMapMode);
         final boolean drawingsExists = DrawingManager.getInstance().featuresExists();
@@ -783,7 +791,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         initDefaultPanels();
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
-        retrievePermissionbeans();
         initRouteCombo();
         initInfoNode();
         initAttributeTable();
