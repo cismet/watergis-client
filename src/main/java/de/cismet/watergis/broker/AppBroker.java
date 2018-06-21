@@ -35,6 +35,7 @@ import Sirius.navigator.ui.tree.MetaCatalogueTree;
 import Sirius.navigator.ui.tree.SearchResultsTree;
 
 import Sirius.server.middleware.types.Node;
+import Sirius.server.newuser.User;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -732,6 +733,66 @@ public class AppBroker implements Configurable {
      */
     public Layer getDrawingStyleLayer() {
         return drawingStyleLayer;
+    }
+
+    /**
+     * Check, if the current user belongs to the group wawi.
+     *
+     * @return  true, iff the current user belongs to the group wawi
+     */
+    public boolean isWawiOrAdminUser() {
+        final User user = SessionManager.getSession().getUser();
+
+        if (user.getUserGroup().getName().startsWith("lung")
+                    || user.getUserGroup().getName().equalsIgnoreCase("administratoren")
+                    || user.getUserGroup().getName().contains("lu")
+                    || user.getUserGroup().getName().contains("wbv")
+                    || user.getUserGroup().getName().contains("uwb")
+                    || user.getUserGroup().getName().contains("wsa")
+                    || user.getUserGroup().getName().contains("stalu")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public boolean isAdminOrLungUser() {
+        final User user = SessionManager.getSession().getUser();
+
+        if (user.getUserGroup().getName().startsWith("lung")
+                    || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check, if the current user is a gu (Gewaesserunterhalter).
+     *
+     * @return  true, iff the current user is a gu (Gewaesserunterhalter)
+     */
+    public boolean isGu() {
+        final User user = SessionManager.getSession().getUser();
+
+        for (final CidsBean bean : getWwGrList()) {
+            final String owner = (String)bean.getProperty("owner");
+
+            if ((owner != null) && owner.equals(user.getUserGroup().getName())) {
+                final String prefix = (String)bean.getProperty("praefix");
+
+                if (prefix != null) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

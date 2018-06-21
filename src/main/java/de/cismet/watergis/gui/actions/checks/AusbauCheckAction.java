@@ -91,10 +91,10 @@ public class AusbauCheckAction extends AbstractCheckAction {
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_ba_due");
     private static final int[] USED_CLASS_IDS = new int[] {
-            FG_BA_SBEF.getId(),
-            FG_BA_UBEF.getId(),
-            FG_BA_BBEF.getId(),
-            FG_BA_PROF.getId(),
+            ((FG_BA_SBEF != null) ? FG_BA_SBEF.getId() : -1),
+            ((FG_BA_UBEF != null) ? FG_BA_UBEF.getId() : -1),
+            ((FG_BA_BBEF != null) ? FG_BA_BBEF.getId() : -1),
+            ((FG_BA_PROF != null) ? FG_BA_PROF.getId() : -1),
             FG_BA_RL.getId(),
             FG_BA_D.getId(),
             FG_BA_DUE.getId()
