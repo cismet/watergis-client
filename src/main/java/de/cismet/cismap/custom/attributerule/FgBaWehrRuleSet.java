@@ -84,9 +84,9 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         WEHR_V_MATERIAL.put("bo", new String[] { "h", "k", "st" });
         WEHR_V_MATERIAL.put("bo-j", new String[] { "h", "k", "st" });
         WEHR_V_MATERIAL.put("schw", new String[] { "b", "k" });
-        WEHR_A_MATERIAL_A.put("Pl", new String[] { "B" });
-        WEHR_A_MATERIAL_A.put("RL", new String[] { "B" });
-        WEHR_A_MATERIAL_A.put("SP", new String[] { "Ste" });
+        WEHR_A_MATERIAL_A.put("pl", new String[] { "b" });
+        WEHR_A_MATERIAL_A.put("rl", new String[] { "b" });
+        WEHR_A_MATERIAL_A.put("sp", new String[] { "ste" });
     }
 
     //~ Instance initializers --------------------------------------------------

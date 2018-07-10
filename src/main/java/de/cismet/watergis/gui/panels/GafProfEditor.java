@@ -54,6 +54,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
@@ -78,6 +79,8 @@ import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+
+import de.cismet.commons.concurrency.CismetExecutors;
 
 import de.cismet.tools.CismetThreadPool;
 
@@ -129,6 +132,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
     private Dimension lastDims;
     private boolean firstInit = true;
     private GafProfWrapper wrapper = new GafProfWrapper(null);
+    private String lastTime = "";
+    private Executor locationExecutor = CismetExecutors.newSingleThreadExecutor();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cbFreigabe;
@@ -836,6 +841,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
                 org.jdesktop.beansbinding.ELProperty.create("${wrapper.aufnahmezeit}"),
                 txtAufn1,
                 org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding.setValidator(new TimeValidator());
         bindingGroup.addBinding(binding);
 
         txtAufn1.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -856,7 +862,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
                 org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
                 this,
-                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.aufn_datum}"),
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.aufndatum}"),
                 dateChooser,
                 org.jdesktop.beansbinding.BeanProperty.create("date"));
         binding.setConverter(dateChooser.getConverter());
@@ -1147,8 +1153,20 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
      * @param  evt  DOCUMENT ME!
      */
     private void txtAufn1FocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtAufn1FocusLost
-        feature.setProperty("aufn_zeit", txtAufn1.getText());
-    }                                                                     //GEN-LAST:event_txtAufn1FocusLost
+        final String zeit = txtAufn1.getText();
+
+        if (!ConversionUtils.isValidTimeString(zeit)) {
+            txtAufn1.setText(((lastTime == null) ? "" : lastTime));
+            return;
+        }
+
+        if (zeit.matches("\\d{1,2}?:\\d{1,2}?")) {
+            txtAufn1.setText(zeit + ":00");
+        }
+
+        lastTime = txtAufn1.getText();
+//         feature.setProperty("aufn_zeit", txtAufn1.getText());
+    } //GEN-LAST:event_txtAufn1FocusLost
 
     /**
      * DOCUMENT ME!
@@ -1284,15 +1302,7 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
                 LOG.error("Cannot determine new station", ex);
             }
             bindingGroup.bind();
-            cidsBean.addPropertyChangeListener(new PropertyChangeListener() {
-
-                    @Override
-                    public void propertyChange(final PropertyChangeEvent evt) {
-                        if (evt.getPropertyName().equals("aufn_datum")) {
-                            feature.setProperty("aufn_datum", dateChooser.getDate());
-                        }
-                    }
-                });
+            lastTime = (String)cidsBean.getProperty("aufn_zeit");
             refreshGui();
             final Date uplDate = (Date)cidsBean.getProperty("upl_datum");
             final String uplTime = (String)cidsBean.getProperty("upl_zeit");
@@ -1316,20 +1326,26 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
         taBemerkung.setText(object2String(feature.getProperty("bemerkung")));
         taTitle.setText(object2String(feature.getProperty("titel")));
         taBeschreibung.setText(object2String(feature.getProperty("beschreib")));
-        refreshLaStation(
-            feature,
-            (String)feature.getProperty("ba_cd"),
-            (Double)feature.getProperty("ba_st"),
-            "la_cd",
-            "la_st");
+        locationExecutor.execute(new Thread("LocationThread") {
 
-        if (feature != null) {
-            final Object laCd = feature.getProperty("la_cd");
-            final Object laSt = feature.getProperty("la_st");
-            labLaCdVal.setText(((laCd != null) ? laCd.toString() : ""));
-            labStatLaVal.setText(((laSt != null) ? laSt.toString() : ""));
-            labStatLaVal.setText(labStatLaVal.getText().replace('.', ','));
-        }
+                @Override
+                public void run() {
+                    refreshLaStation(
+                        feature,
+                        (String)feature.getProperty("ba_cd"),
+                        (Double)feature.getProperty("ba_st"),
+                        "la_cd",
+                        "la_st");
+                }
+            });
+
+//        if (feature != null) {
+//            final Object laCd = feature.getProperty("la_cd");
+//            final Object laSt = feature.getProperty("la_st");
+//            labLaCdVal.setText(((laCd != null) ? laCd.toString() : ""));
+//            labStatLaVal.setText(((laSt != null) ? laSt.toString() : ""));
+//            labStatLaVal.setText(labStatLaVal.getText().replace('.', ','));
+//        }
 
         if (feature.getProperty("ba_cd") != null) {
             labBaCdVal.setText(String.valueOf(feature.getProperty("ba_cd")));
@@ -1646,10 +1662,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
                 return null;
             }
 
-            try {
-                timeFormatter.parse(t);
-            } catch (ParseException ex) {
-                return new Result(null, "Dies ist kein gültiges Datum");
+            if (!ConversionUtils.isValidTimeString(t)) {
+                return new Validator.Result("Error", "Dies ist kein gültiges Datum", Validator.Result.ERROR);
             }
 
             return null;

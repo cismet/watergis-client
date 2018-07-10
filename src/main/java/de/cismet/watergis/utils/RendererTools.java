@@ -12,6 +12,7 @@ import java.awt.Color;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -48,6 +49,18 @@ public class RendererTools {
     public static void makeReadOnly(final JComboBox cb) {
         cb.setEnabled(false);
         cb.setRenderer(new CustomListCellRenderer());
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  sp  cb DOCUMENT ME!
+     */
+    public static void makeReadOnly(final JSpinner sp) {
+        sp.setOpaque(false);
+        sp.setBorder(null);
+        sp.getEditor().setOpaque(false);
+        ((JSpinner.DefaultEditor)sp.getEditor()).getTextField().setOpaque(false);
     }
 
     /**
@@ -114,6 +127,18 @@ public class RendererTools {
         tf.setBorder(new JTextField().getBorder());
         tf.setOpaque(true);
         tf.setEditable(true);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  sp  cb DOCUMENT ME!
+     */
+    public static void makeWritable(final JSpinner sp) {
+        sp.setOpaque(true);
+        sp.setBorder(new JSpinner().getBorder());
+        sp.getEditor().setOpaque(true);
+        ((JSpinner.DefaultEditor)sp.getEditor()).getTextField().setOpaque(true);
     }
 
     /**

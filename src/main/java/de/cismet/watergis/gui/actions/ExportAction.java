@@ -690,8 +690,7 @@ public class ExportAction extends AbstractAction implements Configurable {
                         }
                     }
 
-                    if (hasWdm && !user.getUserGroup().getName().equalsIgnoreCase("administratoren")
-                                && ExportDialog.getInstance().hasForeignData()) {
+                    if (hasWdm && !user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                         final List<DefaultFeatureServiceFeature> acceptedFeatures =
                             new ArrayList<DefaultFeatureServiceFeature>(features.size());
 
@@ -713,7 +712,7 @@ public class ExportAction extends AbstractAction implements Configurable {
                                 acceptFeature = false;
                             }
 
-                            if (isInvalidForeignData(feature)) {
+                            if (acceptFeature && isInvalidForeignData(feature)) {
                                 acceptFeature = false;
                             }
 
@@ -822,6 +821,9 @@ public class ExportAction extends AbstractAction implements Configurable {
                     final Integer wwGr = (Integer)feature.getProperty("ww_gr");
 
                     if ((wwGr == null) || ((wwGr != null) && !isOwnWwGr(wwGr))) {
+                        if (!ExportDialog.getInstance().hasForeignData()) {
+                            return true;
+                        }
                         final String baCd = (String)feature.getProperty("ba_cd");
 
                         final List<DefaultFeatureServiceFeature> correspondingExp = getExpForBaCd(baCd);

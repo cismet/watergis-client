@@ -779,6 +779,28 @@ public class Photo extends javax.swing.JPanel {
     }
 
     /**
+     * add the given photo features to the attribute table.
+     *
+     * @param  features  DOCUMENT ME!
+     */
+    private void addNewFeaturesToTable(final List<CidsLayerFeature> features) {
+        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                "foto");
+
+        if ((services != null) && !services.isEmpty()) {
+            final AttributeTable tablePf = AppBroker.getInstance()
+                        .getWatergisApp()
+                        .getAttributeTableByFeatureService(services.get(0));
+            final List<FeatureServiceFeature> newFeatures = new ArrayList<FeatureServiceFeature>();
+            newFeatures.addAll(features);
+
+            if (tablePf != null) {
+                tablePf.addFeatures(newFeatures);
+            }
+        }
+    }
+
+    /**
      * DOCUMENT ME!
      *
      * @param   feature  DOCUMENT ME!
@@ -1658,6 +1680,7 @@ public class Photo extends javax.swing.JPanel {
 //                    setEditorFeature(newFeatures.get(0));
                     reloadPhotoServices();
                     reloadPrPfTable();
+                    addNewFeaturesToTable(newFeatures);
                 }
             } catch (InterruptedException ex) {
                 LOG.warn(ex, ex);

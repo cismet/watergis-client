@@ -12,9 +12,16 @@
  */
 package de.cismet.watergis.gui.panels;
 
+import java.awt.EventQueue;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+
+import java.sql.Date;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
@@ -26,6 +33,16 @@ import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
  * @version  $Revision$, $Date$
  */
 public class GafProfWrapper implements PropertyChangeListener {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Map<String, String> featureName2WrapperName = new HashMap<String, String>();
+
+    static {
+        featureName2WrapperName.put("beschreib", "beschreibung");
+        featureName2WrapperName.put("aufn_datum", "aufndatum");
+        featureName2WrapperName.put("aufn_name", "aufnahmename");
+    }
 
     //~ Instance fields --------------------------------------------------------
 
@@ -114,6 +131,48 @@ public class GafProfWrapper implements PropertyChangeListener {
     public void setBeschreibung(final String beschreib) {
         if (feature != null) {
             feature.setProperty("beschreib", beschreib);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  aufn_datum  bem winkel DOCUMENT ME!
+     */
+    public void setAufndatum(final Date aufn_datum) {
+        if (feature != null) {
+            if (aufn_datum.before(new java.util.Date(100, 1, 1))) {
+                feature.setProperty(
+                    "aufn_datum",
+                    new Date(aufn_datum.getYear() + 2000, aufn_datum.getMonth(), aufn_datum.getDate()));
+                EventQueue.invokeLater(new Thread("changeValue") {
+
+                        @Override
+                        public void run() {
+                            feature.setProperty(
+                                "aufn_datum",
+                                new Date(aufn_datum.getYear() + 1000, aufn_datum.getMonth(), aufn_datum.getDate()));
+                            feature.setProperty(
+                                "aufn_datum",
+                                new Date(aufn_datum.getYear() + 2000, aufn_datum.getMonth(), aufn_datum.getDate()));
+                        }
+                    });
+            } else {
+                feature.setProperty("aufn_datum", aufn_datum);
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Date getAufndatum() {
+        if (feature != null) {
+            return (Date)feature.getProperty("aufn_datum");
+        } else {
+            return null;
         }
     }
 
@@ -298,7 +357,17 @@ public class GafProfWrapper implements PropertyChangeListener {
         if (box != null) {
             changeSupport.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), box.getSelectedItem());
         } else {
-            changeSupport.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+            try {
+                changeSupport.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+
+                if (featureName2WrapperName.get(evt.getPropertyName()) != null) {
+                    changeSupport.firePropertyChange(featureName2WrapperName.get(evt.getPropertyName()),
+                        evt.getOldValue(),
+                        evt.getNewValue());
+                }
+            } catch (NullPointerException e) {
+                // nothing to do
+            }
         }
     }
 }

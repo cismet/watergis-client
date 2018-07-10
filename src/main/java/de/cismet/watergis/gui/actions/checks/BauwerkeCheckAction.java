@@ -106,10 +106,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_ba_schw");
     private static final int[] USED_CLASS_IDS = new int[] {
-            FG_BA_ANLL.getId(),
-            FG_BA_ANLP.getId(),
-            FG_BA_KR.getId(),
-            FG_BA_EA.getId(),
+            ((FG_BA_ANLL != null) ? FG_BA_ANLL.getId() : -1),
+            ((FG_BA_ANLP != null) ? FG_BA_ANLP.getId() : -1),
+            ((FG_BA_KR != null) ? FG_BA_KR.getId() : -1),
+            ((FG_BA_EA != null) ? FG_BA_EA.getId() : -1),
             FG_BA_SCHA.getId(),
             FG_BA_WEHR.getId(),
             FG_BA_SCHW.getId(),
