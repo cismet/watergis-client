@@ -134,9 +134,9 @@ public class SonstigeCheckAction extends AbstractCheckAction {
     private static final int[] USED_CLASS_IDS = new int[] {
             FG_BA_DEICH.getId(),
             ((GU_WIWE != null) ? GU_WIWE.getId() : -1),
-            FG_BA_UGHZ.getId(),
-            FG_BA_LEIS.getId(),
-            FG_BA_TECH.getId(),
+            ((FG_BA_UGHZ != null) ? FG_BA_UGHZ.getId() : -1),
+            ((FG_BA_LEIS != null) ? FG_BA_LEIS.getId() : -1),
+            ((FG_BA_TECH != null) ? FG_BA_TECH.getId() : -1),
             FOTO.getId(),
             FG_BA_RL.getId(),
             FG_BA_D.getId(),

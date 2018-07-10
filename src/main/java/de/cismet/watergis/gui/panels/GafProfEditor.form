@@ -585,6 +585,9 @@
                   <BindingProperties>
                     <BindingProperty name="text" source="Form" sourcePath="${wrapper.aufnahmezeit}" target="txtAufn1" targetPath="text" updateStrategy="0" immediately="false">
                       <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
+                      <Property name="validator" type="org.jdesktop.beansbinding.Validator" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                        <Connection code="new TimeValidator()" type="code"/>
+                      </Property>
                     </BindingProperty>
                   </BindingProperties>
                   <Events>
@@ -598,7 +601,7 @@
                 </Component>
                 <Component class="de.cismet.cids.editors.DefaultBindableDateChooser" name="dateChooser">
                   <BindingProperties>
-                    <BindingProperty name="date" source="Form" sourcePath="${cidsBean.aufn_datum}" target="dateChooser" targetPath="date" updateStrategy="0" immediately="false">
+                    <BindingProperty name="date" source="Form" sourcePath="${wrapper.aufndatum}" target="dateChooser" targetPath="date" updateStrategy="0" immediately="false">
                       <Property name="converter" type="org.jdesktop.beansbinding.Converter" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                         <Connection code="dateChooser.getConverter()" type="code"/>
                       </Property>
