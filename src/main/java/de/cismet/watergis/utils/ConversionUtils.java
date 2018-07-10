@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 
 import java.util.Base64;
+import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
 
@@ -90,5 +91,48 @@ public class ConversionUtils {
         final ByteArrayInputStream in = new ByteArrayInputStream(Base64.getDecoder().decode(s));
 
         return ImageIO.read(in);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   t  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static boolean isValidTimeString(final String t) {
+        if (t.matches("\\d{1,2}?:\\d{1,2}?") || t.matches("\\d{1,2}?:\\d{1,2}?:\\d{1,2}?")) {
+            final StringTokenizer st = new StringTokenizer(t, ":");
+            int count = 0;
+
+            while (st.hasMoreTokens()) {
+                if (count == 0) {
+                    try {
+                        final int hours = Integer.parseInt(st.nextToken());
+
+                        if ((hours < 0) || (hours > 23)) {
+                            return false;
+                        }
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                } else {
+                    try {
+                        final int number = Integer.parseInt(st.nextToken());
+
+                        if ((number < 0) || (number > 59)) {
+                            return false;
+                        }
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                }
+
+                ++count;
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 }

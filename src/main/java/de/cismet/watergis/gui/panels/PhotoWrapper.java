@@ -12,6 +12,8 @@
  */
 package de.cismet.watergis.gui.panels;
 
+import java.awt.EventQueue;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -190,7 +192,25 @@ public class PhotoWrapper implements PropertyChangeListener {
      */
     public void setAufndatum(final Date aufn_datum) {
         if (feature != null) {
-            feature.setProperty("aufn_datum", aufn_datum);
+            if (aufn_datum.before(new java.util.Date(100, 1, 1))) {
+                feature.setProperty(
+                    "aufn_datum",
+                    new Date(aufn_datum.getYear() + 2000, aufn_datum.getMonth(), aufn_datum.getDate()));
+                EventQueue.invokeLater(new Thread("changeValue") {
+
+                        @Override
+                        public void run() {
+                            feature.setProperty(
+                                "aufn_datum",
+                                new Date(aufn_datum.getYear() + 1000, aufn_datum.getMonth(), aufn_datum.getDate()));
+                            feature.setProperty(
+                                "aufn_datum",
+                                new Date(aufn_datum.getYear() + 2000, aufn_datum.getMonth(), aufn_datum.getDate()));
+                        }
+                    });
+            } else {
+                feature.setProperty("aufn_datum", aufn_datum);
+            }
         }
     }
 
@@ -249,6 +269,25 @@ public class PhotoWrapper implements PropertyChangeListener {
      */
     public void setAufnahmezeit(final String aufnZeit) {
         if (feature != null) {
+//            String zeit = aufnZeit;
+//            if (aufnZeit.matches("\\d{1,2}?:\\d{1,2}?")) {
+//                zeit = aufnZeit + ":00";
+//
+//                EventQueue.invokeLater(new Thread("changeValue") {
+//
+//                        @Override
+//                        public void run() {
+//                            feature.setProperty(
+//                                "aufn_datum",
+//                                aufnZeit
+//                                        + ":0");
+//                            feature.setProperty(
+//                                "aufn_datum",
+//                                aufnZeit
+//                                        + ":00");
+//                        }
+//                    });
+//            }
             feature.setProperty("aufn_zeit", aufnZeit);
         }
     }
@@ -452,12 +491,16 @@ public class PhotoWrapper implements PropertyChangeListener {
         if (box != null) {
             changeSupport.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), box.getSelectedItem());
         } else {
-            changeSupport.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+            try {
+                changeSupport.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
 
-            if (featureName2WrapperName.get(evt.getPropertyName()) != null) {
-                changeSupport.firePropertyChange(featureName2WrapperName.get(evt.getPropertyName()),
-                    evt.getOldValue(),
-                    evt.getNewValue());
+                if (featureName2WrapperName.get(evt.getPropertyName()) != null) {
+                    changeSupport.firePropertyChange(featureName2WrapperName.get(evt.getPropertyName()),
+                        evt.getOldValue(),
+                        evt.getNewValue());
+                }
+            } catch (NullPointerException e) {
+                // nothing to do
             }
         }
     }

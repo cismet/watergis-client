@@ -1506,6 +1506,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                                 t.start();
                             }
                         }
+
+                        if (service instanceof CidsLayer) {
+                            final CidsLayer cl = (CidsLayer)service;
+
+                            if (cl.getMetaClass().getName().equals("foto")) {
+                                if (vPhoto.isClosable()) {
+                                    vPhoto.close();
+                                }
+                            } else if (cl.getMetaClass().getName().equals("qp")) {
+                                if (vGaf.isClosable()) {
+                                    vGaf.close();
+                                }
+                            }
+                        }
                     }
                     topicTreeSelectionChanged(null);
 
