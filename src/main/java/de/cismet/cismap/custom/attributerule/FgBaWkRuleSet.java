@@ -57,7 +57,7 @@ public class FgBaWkRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ba_cd", new Numeric(15, 0, false, false));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
         typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
         typeMap.put("wk_nr", new Varchar(10, true, true));
