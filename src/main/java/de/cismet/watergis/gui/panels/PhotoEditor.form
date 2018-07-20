@@ -303,7 +303,14 @@
                 </Property>
               </Properties>
               <BindingProperties>
-                <BindingProperty name="value" source="Form" sourcePath="${wrapper.winkel}" target="spAngle" targetPath="value" updateStrategy="0" immediately="false"/>
+                <BindingProperty name="value" source="Form" sourcePath="${wrapper.winkel}" target="spAngle" targetPath="value" updateStrategy="0" immediately="false">
+                  <Property name="nullValue" type="java.lang.Object" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                    <Connection code="0" type="code"/>
+                  </Property>
+                  <Property name="incompletePathValue" type="java.lang.Object" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                    <Connection code="0" type="code"/>
+                  </Property>
+                </BindingProperty>
               </BindingProperties>
               <Events>
                 <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="spAngleStateChanged"/>

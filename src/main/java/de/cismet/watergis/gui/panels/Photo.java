@@ -834,6 +834,16 @@ public class Photo extends javax.swing.JPanel {
         final Map<String, Object> map = new HashMap<String, Object>();
         final CidsBean basisStat = (CidsBean)feature.getBean().getProperty("ba_st");
         final CidsBean freigabe = (CidsBean)feature.getBean().getProperty("freigabe");
+        final User user = SessionManager.getSession().getUser();
+        Boolean hasPermissionforBemerkung;
+
+        if ((user == null) || user.getUserGroup().getName().startsWith("lung")
+                    || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            hasPermissionforBemerkung = true;
+        } else {
+            hasPermissionforBemerkung = (feature.getProperty("upl_name") != null)
+                        && feature.getProperty("upl_name").equals(user.getName());
+        }
 
         map.put("punkt", feature.getGeometry());
         map.put("foto", feature.getProperty("foto"));
@@ -876,6 +886,7 @@ public class Photo extends javax.swing.JPanel {
         map.put("beschreibung", feature.getProperty("beschreib"));
         map.put("bemerkung", feature.getProperty("bemerkung"));
         map.put("foto", feature.getProperty("foto"));
+        map.put("isUploader", hasPermissionforBemerkung);
 
         final JasperReport jasperReport = (JasperReport)JRLoader.loadObject(Photo.class.getResourceAsStream(
                     "/de/cismet/watergis/reports/foto.jasper"));

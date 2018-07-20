@@ -31,7 +31,6 @@ import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
@@ -49,7 +48,6 @@ import de.cismet.tools.gui.WaitingDialogThread;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.dialog.GafProfReportDialog;
-import de.cismet.watergis.gui.dialog.PhotoReportDialog;
 import de.cismet.watergis.gui.panels.GafProf;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
