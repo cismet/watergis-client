@@ -19,8 +19,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-
 import java.sql.Timestamp;
 
 import javax.swing.table.TableCellEditor;
@@ -36,15 +34,9 @@ import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
-import de.cismet.tools.gui.StaticSwingTools;
-import de.cismet.tools.gui.WaitingDialogThread;
-
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.reports.WkFgReportAction;
-import de.cismet.watergis.gui.dialog.WkFgReportDialog;
-
-import de.cismet.watergis.reports.GewaesserReport;
 
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
@@ -55,19 +47,19 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
+public class FgBaWkRuleSet extends WatergisDefaultRuleSet {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(FgLaWkRuleSet.class);
+    private static final Logger LOG = Logger.getLogger(FgBaWkRuleSet.class);
 
     //~ Instance initializers --------------------------------------------------
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("la_cd", new Numeric(15, 0, false, false));
-        typeMap.put("la_st_von", new Numeric(10, 2, false, true));
-        typeMap.put("la_st_bis", new Numeric(10, 2, false, true));
+        typeMap.put("ba_cd", new Varchar(50, false, false));
+        typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
+        typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
         typeMap.put("wk_nr", new Varchar(10, true, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("laenge_wk", new Numeric(10, 2, false, true));
@@ -157,13 +149,13 @@ public class FgLaWkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
+        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
         final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
         final StationLineCreator creator = new StationLineCreator(
-                "la_st",
+                "ba_st",
                 routeMc,
-                "LAWA-Gewässer (LAWA)",
+                "Basisgewässer (FG)",
                 new LinearReferencingWatergisHelper());
         creator.setCheck(check);
 

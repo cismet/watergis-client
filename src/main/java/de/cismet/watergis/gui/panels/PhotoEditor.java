@@ -410,9 +410,9 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         taTitle = new javax.swing.JTextArea();
         panImage = new javax.swing.JPanel();
         labImage = new javax.swing.JLabel();
-        lblBusy = new org.jdesktop.swingx.JXBusyLabel(new Dimension(75,75));
+        lblBusy = new org.jdesktop.swingx.JXBusyLabel(new Dimension(75, 75));
         jPanel3 = new javax.swing.JPanel();
-        lblBusyLoad = new org.jdesktop.swingx.JXBusyLabel(new Dimension(75,75));
+        lblBusyLoad = new org.jdesktop.swingx.JXBusyLabel(new Dimension(75, 75));
         jPanel2 = new javax.swing.JPanel();
         labEmpty = new javax.swing.JLabel();
 
@@ -420,8 +420,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        labFoto.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labFoto, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labFoto.text", new Object[] {})); // NOI18N
+        labFoto.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labFoto,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labFoto.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -429,7 +431,12 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 15, 10, 0);
         jPanel1.add(labFoto, gridBagConstraints);
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${cidsBean.foto}"), labFotoVal, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.foto}"),
+                labFotoVal,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -443,8 +450,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         panUpload.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.jLabel1.text", new Object[] {})); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel1,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.jLabel1.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -453,8 +462,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(0, 7, 0, 0);
         panUpload.add(jLabel1, gridBagConstraints);
 
-        labUplName.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labUplName, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labUplName.text", new Object[] {})); // NOI18N
+        labUplName.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labUplName,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labUplName.text", new Object[] {})); // NOI18N
         labUplName.setPreferredSize(new java.awt.Dimension(103, 18));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -463,7 +474,12 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(15, 10, 10, 10);
         panUpload.add(labUplName, gridBagConstraints);
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${cidsBean.upl_name}"), labUplNameVal, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.upl_name}"),
+                labUplNameVal,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -474,8 +490,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(15, 10, 10, 10);
         panUpload.add(labUplNameVal, gridBagConstraints);
 
-        labUplDatum.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labUplDatum, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labUplDatum.text", new Object[] {})); // NOI18N
+        labUplDatum.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labUplDatum,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labUplDatum.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -490,8 +508,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panUpload.add(labUplDatumVal, gridBagConstraints);
 
-        labId.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labId, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labId.text", new Object[] {})); // NOI18N
+        labId.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labId,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labId.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -499,7 +519,9 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panUpload.add(labId, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(labIdVal, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labIdVal.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labIdVal,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labIdVal.text", new Object[] {})); // NOI18N
         labIdVal.setPreferredSize(new java.awt.Dimension(150, 17));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -508,8 +530,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panUpload.add(labIdVal, gridBagConstraints);
 
-        labId1.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labId1, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labId1.text", new Object[] {})); // NOI18N
+        labId1.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labId1,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labId1.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
@@ -520,19 +544,27 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         txtFotonrgu.setMinimumSize(new java.awt.Dimension(120, 25));
         txtFotonrgu.setPreferredSize(new java.awt.Dimension(120, 25));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.fotonrgu}"), txtFotonrgu, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.fotonrgu}"),
+                txtFotonrgu,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
         binding.setSourceNullValue("");
         binding.setSourceUnreadableValue("");
         bindingGroup.addBinding(binding);
 
         txtFotonrgu.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtFotonrguFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtFotonrguFocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusGained(final java.awt.event.FocusEvent evt) {
+                    txtFotonrguFocusGained(evt);
+                }
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtFotonrguFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
@@ -551,8 +583,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         panVerortung.setLayout(new java.awt.GridBagLayout());
 
-        labRe.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labRe, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labRe.text", new Object[] {})); // NOI18N
+        labRe.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labRe,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labRe.text", new Object[] {})); // NOI18N
         labRe.setPreferredSize(new java.awt.Dimension(103, 18));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -564,10 +598,12 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         txtRe.setMinimumSize(new java.awt.Dimension(250, 25));
         txtRe.setPreferredSize(new java.awt.Dimension(100, 25));
         txtRe.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtReFocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtReFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -578,10 +614,12 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         txtHo.setMinimumSize(new java.awt.Dimension(250, 25));
         txtHo.setPreferredSize(new java.awt.Dimension(100, 25));
         txtHo.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtHoFocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtHoFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -589,8 +627,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 10, 10);
         panVerortung.add(txtHo, gridBagConstraints);
 
-        labWinkel.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labWinkel, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labWinkel.text", new Object[] {})); // NOI18N
+        labWinkel.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labWinkel,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labWinkel.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -599,8 +639,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(15, 15, 10, 10);
         panVerortung.add(labWinkel, gridBagConstraints);
 
-        jLabel2.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.jLabel2.text", new Object[] {})); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel2,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.jLabel2.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -613,22 +655,34 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         spAngle.setMinimumSize(new java.awt.Dimension(120, 25));
         spAngle.setPreferredSize(new java.awt.Dimension(120, 25));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.winkel}"), spAngle, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.winkel}"),
+                spAngle,
+                org.jdesktop.beansbinding.BeanProperty.create("value"));
+        binding.setSourceNullValue(0);
+        binding.setSourceUnreadableValue(0);
         bindingGroup.addBinding(binding);
 
         spAngle.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                spAngleStateChanged(evt);
-            }
-        });
+
+                @Override
+                public void stateChanged(final javax.swing.event.ChangeEvent evt) {
+                    spAngleStateChanged(evt);
+                }
+            });
         spAngle.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                spAngleFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                spAngleFocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusGained(final java.awt.event.FocusEvent evt) {
+                    spAngleFocusGained(evt);
+                }
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    spAngleFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 1;
@@ -647,8 +701,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         panGewaesserBezug.setLayout(new java.awt.GridBagLayout());
 
-        labBaCd.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labBaCd, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labBaCd.text", new Object[] {})); // NOI18N
+        labBaCd.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labBaCd,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labBaCd.text", new Object[] {})); // NOI18N
         labBaCd.setPreferredSize(new java.awt.Dimension(103, 18));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -657,8 +713,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labBaCd, gridBagConstraints);
 
-        labLaCd.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labLaCd, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labLaCd.text", new Object[] {})); // NOI18N
+        labLaCd.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labLaCd,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labLaCd.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -666,7 +724,12 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labLaCd, gridBagConstraints);
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${cidsBean.ba_st.route.ba_cd}"), labBaCdVal, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.ba_st.route.ba_cd}"),
+                labBaCdVal,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
         binding.setSourceNullValue("");
         binding.setSourceUnreadableValue("null");
         bindingGroup.addBinding(binding);
@@ -684,8 +747,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labLaCdVal, gridBagConstraints);
 
-        labLst.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labLst, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labLst.text", new Object[] {})); // NOI18N
+        labLst.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labLst,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labLst.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
@@ -694,8 +759,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labLst, gridBagConstraints);
 
-        labLRl.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labLRl, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labLRl.text", new Object[] {})); // NOI18N
+        labLRl.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labLRl,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labLRl.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -703,8 +770,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labLRl, gridBagConstraints);
 
-        labStatLa.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labStatLa, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labStatLa.text", new Object[] {})); // NOI18N
+        labStatLa.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labStatLa,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labStatLa.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -713,8 +782,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panGewaesserBezug.add(labStatLa, gridBagConstraints);
 
-        labStatBa.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labStatBa, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labStatBa.text", new Object[] {})); // NOI18N
+        labStatBa.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labStatBa,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labStatBa.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -735,7 +806,9 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         panStatEdit.setPreferredSize(new java.awt.Dimension(120, 25));
         panStatEdit.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(labStat, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labStat.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labStat,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labStat.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -745,7 +818,12 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         spinStat.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, null, 1.0d));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${cidsBean.ba_st.wert}"), spinStat, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${cidsBean.ba_st.wert}"),
+                spinStat,
+                org.jdesktop.beansbinding.BeanProperty.create("value"));
         binding.setSourceNullValue(0);
         binding.setSourceUnreadableValue(0);
         bindingGroup.addBinding(binding);
@@ -765,8 +843,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         panGewaesserBezug.add(panStatEdit, gridBagConstraints);
 
-        jLabel3.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.jLabel3.text", new Object[] {})); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel3,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.jLabel3.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -785,9 +865,15 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         panReLi.setPreferredSize(new java.awt.Dimension(210, 25));
         panReLi.setLayout(new java.awt.GridLayout(1, 0));
 
-        cbReLi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbReLi.setModel(new javax.swing.DefaultComboBoxModel<>(
+                new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.lRl}"), cbReLi, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.lRl}"),
+                cbReLi,
+                org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
 
         panReLi.add(cbReLi);
@@ -804,9 +890,15 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         panStatus.setPreferredSize(new java.awt.Dimension(120, 25));
         panStatus.setLayout(new java.awt.GridLayout(1, 0));
 
-        cbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(
+                new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.lSt}"), cbStatus, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.lSt}"),
+                cbStatus,
+                org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
 
         panStatus.add(cbStatus);
@@ -829,8 +921,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         panAufn.setLayout(new java.awt.GridBagLayout());
 
-        labAufnName.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labAufnName, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labAufnName.text", new Object[] {})); // NOI18N
+        labAufnName.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labAufnName,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labAufnName.text", new Object[] {})); // NOI18N
         labAufnName.setPreferredSize(new java.awt.Dimension(103, 18));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -840,7 +934,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         panAufn.add(labAufnName, gridBagConstraints);
 
         labAufnDatum.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labAufnDatum, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labAufnDatum.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labAufnDatum,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labAufnDatum.text", new Object[] {
+                }));                                              // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -851,17 +948,25 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         txtAufn.setMinimumSize(new java.awt.Dimension(250, 25));
         txtAufn.setPreferredSize(new java.awt.Dimension(210, 25));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.aufnahmename}"), txtAufn, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.aufnahmename}"),
+                txtAufn,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         txtAufn.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtAufnFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtAufnFocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusGained(final java.awt.event.FocusEvent evt) {
+                    txtAufnFocusGained(evt);
+                }
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtAufnFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -870,8 +975,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panAufn.add(txtAufn, gridBagConstraints);
 
-        labFreigabe.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labFreigabe, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labFreigabe.text", new Object[] {})); // NOI18N
+        labFreigabe.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labFreigabe,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labFreigabe.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
@@ -880,8 +987,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         panAufn.add(labFreigabe, gridBagConstraints);
 
-        jLabel4.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.jLabel4.text", new Object[] {})); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel4,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.jLabel4.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -895,20 +1004,29 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         txtAufn1.setMinimumSize(new java.awt.Dimension(85, 25));
         txtAufn1.setPreferredSize(new java.awt.Dimension(85, 25));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.aufnahmezeit}"), txtAufn1, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.aufnahmezeit}"),
+                txtAufn1,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
         binding.setValidator(new TimeValidator());
         bindingGroup.addBinding(binding);
 
         txtAufn1.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtAufn1FocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtAufn1FocusLost(evt);
+                }
+            });
         txtAufn1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtAufn1KeyTyped(evt);
-            }
-        });
+
+                @Override
+                public void keyTyped(final java.awt.event.KeyEvent evt) {
+                    txtAufn1KeyTyped(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -917,15 +1035,22 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
         jPanel4.add(txtAufn1, gridBagConstraints);
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.aufndatum}"), dateChooser, org.jdesktop.beansbinding.BeanProperty.create("date"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.aufndatum}"),
+                dateChooser,
+                org.jdesktop.beansbinding.BeanProperty.create("date"));
         binding.setConverter(dateChooser.getConverter());
         bindingGroup.addBinding(binding);
 
         dateChooser.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                dateChooserFocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    dateChooserFocusLost(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -945,9 +1070,15 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         panFreigabe.setPreferredSize(new java.awt.Dimension(120, 25));
         panFreigabe.setLayout(new java.awt.GridLayout(1, 0));
 
-        cbFreigabe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbFreigabe.setModel(new javax.swing.DefaultComboBoxModel<>(
+                new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.freigabe}"), cbFreigabe, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.freigabe}"),
+                cbFreigabe,
+                org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
 
         panFreigabe.add(cbFreigabe);
@@ -970,8 +1101,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         panBesch.setLayout(new java.awt.GridBagLayout());
 
-        labTitle.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labTitle, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labTitle.text", new Object[] {})); // NOI18N
+        labTitle.setFont(new java.awt.Font("Ubuntu", 1, 15));                                                       // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labTitle,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labTitle.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -980,7 +1113,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         panBesch.add(labTitle, gridBagConstraints);
 
         labBemerkung.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labBemerkung, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labBemerkung.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labBemerkung,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labBemerkung.text", new Object[] {
+                }));                                              // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -992,14 +1128,21 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         taBemerkung.setColumns(20);
         taBemerkung.setRows(4);
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.bemerkung}"), taBemerkung, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.bemerkung}"),
+                taBemerkung,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         taBemerkung.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                taBemerkungFocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    taBemerkungFocusLost(evt);
+                }
+            });
         jScrollPane1.setViewportView(taBemerkung);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1013,7 +1156,12 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         panBesch.add(jScrollPane1, gridBagConstraints);
 
         labBeschreibung.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(labBeschreibung, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labBeschreibung.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labBeschreibung,
+            org.openide.util.NbBundle.getMessage(
+                PhotoEditor.class,
+                "PhotoEditor.labBeschreibung.text",
+                new Object[] {}));                                   // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -1024,14 +1172,21 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         taBeschreibung.setColumns(20);
         taBeschreibung.setRows(4);
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.beschreibung}"), taBeschreibung, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.beschreibung}"),
+                taBeschreibung,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         taBeschreibung.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                taBeschreibungFocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    taBeschreibungFocusLost(evt);
+                }
+            });
         jScrollPane2.setViewportView(taBeschreibung);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1047,14 +1202,21 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         taTitle.setColumns(20);
         taTitle.setRows(4);
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${wrapper.titel}"), taTitle, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(
+                org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE,
+                this,
+                org.jdesktop.beansbinding.ELProperty.create("${wrapper.titel}"),
+                taTitle,
+                org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         taTitle.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                taTitleFocusLost(evt);
-            }
-        });
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    taTitleFocusLost(evt);
+                }
+            });
         jScrollPane3.setViewportView(taTitle);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1119,7 +1281,9 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(labEmpty, org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labEmpty.text", new Object[] {})); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labEmpty,
+            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labEmpty.text", new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -1130,14 +1294,14 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         add(jPanel2, "empty");
 
         bindingGroup.bind();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtReFocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtReFocusLost
+    private void txtReFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtReFocusLost
         try {
             final double coord = Double.parseDouble(txtRe.getText().replace(',', '.'));
             final CidsBean bean = (CidsBean)cidsBean.getProperty("geom");
@@ -1172,14 +1336,14 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         } catch (Exception e) {
             LOG.error("Error in rh/ho converter", e);
         }
-    }//GEN-LAST:event_txtReFocusLost
+    } //GEN-LAST:event_txtReFocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtHoFocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtHoFocusLost
+    private void txtHoFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtHoFocusLost
         try {
             final double coord = Double.parseDouble(txtHo.getText().replace(',', '.'));
             final CidsBean bean = (CidsBean)cidsBean.getProperty("geom");
@@ -1214,46 +1378,46 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         } catch (Exception e) {
             LOG.error("Error in rh/ho converter", e);
         }
-    }//GEN-LAST:event_txtHoFocusLost
+    } //GEN-LAST:event_txtHoFocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void taTitleFocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_taTitleFocusLost
-    }//GEN-LAST:event_taTitleFocusLost
+    private void taTitleFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_taTitleFocusLost
+    }                                                                    //GEN-LAST:event_taTitleFocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void taBeschreibungFocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_taBeschreibungFocusLost
-    }//GEN-LAST:event_taBeschreibungFocusLost
+    private void taBeschreibungFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_taBeschreibungFocusLost
+    }                                                                           //GEN-LAST:event_taBeschreibungFocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void taBemerkungFocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_taBemerkungFocusLost
-    }//GEN-LAST:event_taBemerkungFocusLost
+    private void taBemerkungFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_taBemerkungFocusLost
+    }                                                                        //GEN-LAST:event_taBemerkungFocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtAufnFocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtAufnFocusLost
-    }//GEN-LAST:event_txtAufnFocusLost
+    private void txtAufnFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtAufnFocusLost
+    }                                                                    //GEN-LAST:event_txtAufnFocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtAufn1FocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtAufn1FocusLost
+    private void txtAufn1FocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtAufn1FocusLost
         final String zeit = txtAufn1.getText();
 
         if (!ConversionUtils.isValidTimeString(zeit)) {
@@ -1271,76 +1435,76 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         }
 
         lastTime = txtAufn1.getText();
-    }//GEN-LAST:event_txtAufn1FocusLost
+    } //GEN-LAST:event_txtAufn1FocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void dateChooserFocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_dateChooserFocusLost
-    }//GEN-LAST:event_dateChooserFocusLost
+    private void dateChooserFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_dateChooserFocusLost
+    }                                                                        //GEN-LAST:event_dateChooserFocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtAufnFocusGained(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtAufnFocusGained
+    private void txtAufnFocusGained(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtAufnFocusGained
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtAufnFocusGained
+    } //GEN-LAST:event_txtAufnFocusGained
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtFotonrguFocusGained(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtFotonrguFocusGained
+    private void txtFotonrguFocusGained(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtFotonrguFocusGained
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtFotonrguFocusGained
+    } //GEN-LAST:event_txtFotonrguFocusGained
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtFotonrguFocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtFotonrguFocusLost
+    private void txtFotonrguFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtFotonrguFocusLost
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtFotonrguFocusLost
+    } //GEN-LAST:event_txtFotonrguFocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtAufn1KeyTyped(final java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAufn1KeyTyped
-    }//GEN-LAST:event_txtAufn1KeyTyped
+    private void txtAufn1KeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtAufn1KeyTyped
+    }                                                                  //GEN-LAST:event_txtAufn1KeyTyped
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void spAngleFocusGained(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_spAngleFocusGained
+    private void spAngleFocusGained(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_spAngleFocusGained
         // TODO add your handling code here:
-    }//GEN-LAST:event_spAngleFocusGained
+    } //GEN-LAST:event_spAngleFocusGained
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void spAngleFocusLost(final java.awt.event.FocusEvent evt) {//GEN-FIRST:event_spAngleFocusLost
+    private void spAngleFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_spAngleFocusLost
         showNewAngle();
-    }//GEN-LAST:event_spAngleFocusLost
+    }                                                                    //GEN-LAST:event_spAngleFocusLost
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void spAngleStateChanged(final javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spAngleStateChanged
-    }//GEN-LAST:event_spAngleStateChanged
+    private void spAngleStateChanged(final javax.swing.event.ChangeEvent evt) { //GEN-FIRST:event_spAngleStateChanged
+    }                                                                           //GEN-LAST:event_spAngleStateChanged
 
     /**
      * Set the cids layer feature. This method should be used instead of the setCidsBean method

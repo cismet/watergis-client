@@ -341,7 +341,8 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        if (column.equals("material_v") && (newValue != null) && (feature.getProperty("material_v") != null)) {
+        if (column.equals("material_v") && (newValue != null) && !newValue.equals("")
+                    && (feature.getProperty("material_v") != null)) {
             final String[] allowedMaterialVArray = WEHR_V_MATERIAL.get(feature.getProperty("wehr_v").toString()
                             .toLowerCase());
 
@@ -732,6 +733,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             "Wenn das Attribut wehr_v = "
                                     + feature.getProperty("wehr_v").toString()
                                     + ", dann muss das Attribut material_v null sein");
+                        return false;
                     }
                 }
             }
@@ -759,6 +761,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             "Wenn das Attribut wehr_a = "
                                     + feature.getProperty("wehr_a").toString()
                                     + ", dann muss das Attribut material_a null sein");
+                        return false;
                     }
                 }
             }
