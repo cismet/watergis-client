@@ -169,8 +169,7 @@ public class FgBaWkRuleSet extends WatergisDefaultRuleSet {
             final int clickCount) {
         if (columnName.equals("wk_nr")) {
             if ((value instanceof String) && (clickCount == 1)) {
-                createReport(value.toString().toUpperCase());
-//                downloadDocumentFromWebDav(WK_FG_WEBDAV_PATH, addExtension(value.toString().toUpperCase(), "pdf"));
+                downloadDocumentFromWebDav(WK_FG_WEBDAV_PATH, addExtension(value.toString().toUpperCase(), "pdf"));
             }
         }
     }
