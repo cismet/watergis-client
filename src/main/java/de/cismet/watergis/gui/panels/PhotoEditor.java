@@ -936,8 +936,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         labAufnDatum.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labAufnDatum,
-            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labAufnDatum.text", new Object[] {
-                }));                                              // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                PhotoEditor.class,
+                "PhotoEditor.labAufnDatum.text",
+                new Object[] {}));                                // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -1115,8 +1117,10 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
         labBemerkung.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labBemerkung,
-            org.openide.util.NbBundle.getMessage(PhotoEditor.class, "PhotoEditor.labBemerkung.text", new Object[] {
-                }));                                              // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                PhotoEditor.class,
+                "PhotoEditor.labBemerkung.text",
+                new Object[] {}));                                // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
