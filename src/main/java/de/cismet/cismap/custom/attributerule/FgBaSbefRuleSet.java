@@ -60,8 +60,8 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
 
     static {
         allowedMaterial.put("Buh", new String[] { "H", "K", "Ste", "Ste-Fs", "Ste-Gab", "Ste-Wab" });
-        allowedMaterial.put("Gtr", new String[] { "B", "H", "K" });
-        allowedMaterial.put("Pf", new String[] { "B", "K", "Ste-Fs" });
+        allowedMaterial.put("Gtr", new String[] { "B", "K", "Ste-Fs" });
+        allowedMaterial.put("Pf", new String[] { "B", "H", "K" });
         allowedMaterial.put("Pfl", new String[] { "B", "Ste", "Ste-Fs", "Ste-Gab", "Ste-Wb" });
         allowedMaterial.put("Pfr", new String[] { "B", "H", "K" });
         allowedMaterial.put("Pl", new String[] { "B" });
@@ -136,7 +136,7 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
             }
         }
 
-        if (column.equals("br") && !checkRange(column, newValue, 0, 10, 0, 30, true, false, true)) {
+        if (column.equals("br") && !checkRange(column, newValue, 0, 10, 0, 100, true, false, true)) {
             return oldValue;
         }
 
@@ -360,7 +360,7 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
                     "Das Attribut sbef darf nicht leer sein");
                 return false;
             }
-            if (!checkRange("br", feature.getProperty("br"), 0, 30, true, false, true)) {
+            if (!checkRange("br", feature.getProperty("br"), 0, 100, true, false, true)) {
                 return false;
             }
             if (!checkRangeBetweenOrEqual("ho_e", feature.getProperty("ho_e"), -6, 179, true)) {

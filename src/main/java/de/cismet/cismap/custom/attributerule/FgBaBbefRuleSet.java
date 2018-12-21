@@ -63,7 +63,8 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
 
     static {
         allowedMaterial.put("Berme", new String[] { null });
-        allowedMaterial.put("Fa", new String[] { "H-Rsg", "Kok" });
+        allowedMaterial.put("Fa", new String[] { "H-Rsg", "Kok", "H" });
+        allowedMaterial.put("SP", new String[] { "Ste", "Ste-Fs", "Ste-Gab", "Ste-Wb" });
         allowedMaterial.put("Gtr", new String[] { "B", "K", "Ste-Fs" });
         allowedMaterial.put("Mte", new String[] { "Ste-Gab", "Vl" });
         allowedMaterial.put("Pfl", new String[] { "B" });
