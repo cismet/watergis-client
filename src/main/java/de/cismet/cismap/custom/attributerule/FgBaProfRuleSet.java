@@ -161,7 +161,7 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-        if (column.equals("br") && !checkRange(column, newValue, 0, 10, 0, 30, true, false, true)) {
+        if (column.equals("br") && !checkRange(column, newValue, 0, 10, 0, 100, true, false, true)) {
             return oldValue;
         }
         if (column.equals("ho_e") && !checkRangeBetweenOrEqual(column, newValue, -6, 179, true)) {
@@ -355,7 +355,7 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                             true)) {
                 return false;
             }
-            if (!checkRange("br", feature.getProperty("br"), 0, 10, 0, 30, true, false, true)) {
+            if (!checkRange("br", feature.getProperty("br"), 0, 10, 0, 100, true, false, true)) {
                 return false;
             }
             if (!checkRange("mw", feature.getProperty("mw"), 0, 10, 0, 15, true, false, true)) {

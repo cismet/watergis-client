@@ -17,8 +17,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import java.sql.Timestamp;
 
-import java.util.List;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
@@ -26,7 +24,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;

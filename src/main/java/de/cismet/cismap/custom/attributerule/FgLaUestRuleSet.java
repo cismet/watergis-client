@@ -62,8 +62,6 @@ public class FgLaUestRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("la_cd", new Numeric(15, 0, false, true));
         typeMap.put("la_st", new Numeric(10, 2, false, true));
         typeMap.put("land", new Varchar(8, false, true));
-        typeMap.put("unterlauf", new Varchar(4, false, true));
-        typeMap.put("st_aus", new Varchar(4, false, true));
         typeMap.put("abst_inst", new Varchar(50, false, true));
         typeMap.put("abst_datum", new Varchar(10, false, true));
         typeMap.put("abst_statu", new Numeric(1, 0, false, true));
