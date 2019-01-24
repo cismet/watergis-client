@@ -95,9 +95,9 @@ public class AusbauCheckAction extends AbstractCheckAction {
             ((FG_BA_UBEF != null) ? FG_BA_UBEF.getId() : -1),
             ((FG_BA_BBEF != null) ? FG_BA_BBEF.getId() : -1),
             ((FG_BA_PROF != null) ? FG_BA_PROF.getId() : -1),
-            FG_BA_RL.getId(),
-            FG_BA_D.getId(),
-            FG_BA_DUE.getId()
+            ((FG_BA_RL != null) ? FG_BA_RL.getId() : -1),
+            ((FG_BA_D != null) ? FG_BA_D.getId() : -1),
+            ((FG_BA_DUE != null) ? FG_BA_DUE.getId() : -1)
         };
     private static String QUERY_PROF_ATTR;
     private static String QUERY_SBEF_ATTR;
@@ -161,7 +161,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (bef.traeger is not null and kt.traeger is null)\n"
                             + "or (bef.zust_kl is not null and kz.zust_kl is null)\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
-                            + "or (br  is not null and (br <= 0 or br > 30))\n"
+                            + "or (br  is not null and (br <= 0 or br > 100))\n"
                             + "or (ho_e  is not null and (ho_e < -6 or ho_e > 179))\n"
                             + "or (ho_a  is not null and (ho_a < -6 or ho_a > 179))\n"
                             + "or (gefaelle  is not null and (gefaelle < -10 or gefaelle > 100))\n"
@@ -196,7 +196,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (bef.traeger is not null and kt.traeger is null)\n"
                             + "or (bef.zust_kl is not null and kz.zust_kl is null)\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
-                            + "or (br  is not null and (br <= 0 or br > 30))\n"
+                            + "or (br  is not null and (br <= 0 or br > 100))\n"
                             + "or (ho_e  is not null and (ho_e < -6 or ho_e > 179))\n"
                             + "or (ho_a  is not null and (ho_a < -6 or ho_a > 179))\n"
                             + "or (gefaelle  is not null and (gefaelle < -10 or gefaelle > 100))\n"
@@ -301,7 +301,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "where\n"
                             + "(%1$s is null or von.route = any(%1$s)) and (kbef.sbef is null or obj_nr is null\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
-                            + "or (br  is not null and (br <= 0 or br > 30))\n"
+                            + "or (br  is not null and (br <= 0 or br > 100))\n"
                             + "or (ho_e  is not null and (ho_e < -6 or ho_e > 179))\n"
                             + "or (ho_a  is not null and (ho_a < -6 or ho_a > 179))\n"
                             + "or (gefaelle  is not null and (gefaelle < -10 or gefaelle > 100))\n"
@@ -336,7 +336,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "where\n"
                             + "(%1$s is null or von.route = any(%1$s)) and (kbef.sbef is null or obj_nr is null\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
-                            + "or (br  is not null and (br <= 0 or br > 30))\n"
+                            + "or (br  is not null and (br <= 0 or br > 100))\n"
                             + "or (ho_e  is not null and (ho_e < -6 or ho_e > 179))\n"
                             + "or (ho_a  is not null and (ho_a < -6 or ho_a > 179))\n"
                             + "or (gefaelle  is not null and (gefaelle < -10 or gefaelle > 100))\n"
@@ -345,6 +345,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or abs(bis.wert - von.wert) < 0.1\n"
                             + "or (ho_e is not null and ho_a is not null and (ho_e < ho_a))\n"
                             + "or (kbef.sbef = 'Buh' and km.material not in ('H', 'K', 'Ste', 'Ste-Fs', 'Ste-Gab', 'Ste-Wab'))\n"
+                            + "or (kbef.sbef = 'Gtr' and km.material not in ('B', 'Ste-Fs', 'K'))\n"
                             + "or (kbef.sbef = 'Pf' and km.material not in ('B', 'H', 'K'))\n"
                             + "or (kbef.sbef = 'Pfl' and km.material not in ('B', 'Ste', 'Ste-Fs', 'Ste-Gab', 'Ste-Wb'))\n"
                             + "or (kbef.sbef = 'Pfr' and km.material not in ('B', 'H', 'K'))\n"
@@ -383,7 +384,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.bbef <> 'Rin' and (abs(bis.wert - von.wert) <= 0.5))\n"
                             + "or (ho_d_o is not null and ho_d_u is not null and (ho_d_o <= ho_d_u))\n"
                             + "or (kbef.bbef = 'Berme' and km.material is not null)\n"
-                            + "or (kbef.bbef = 'Fa' and km.material not in ('H-Rsg', 'Kok'))\n"
+                            + "or (kbef.bbef = 'Fa' and km.material not in ('H-Rsg', 'Kok', 'H'))\n"
+                            + "or (kbef.bbef = 'SP' and km.material not in ('Ste', 'Ste-Fs', 'Ste-Gab', 'Ste-Wb'))\n"
                             + "or (kbef.bbef = 'Gtr' and km.material not in ('B', 'K', 'Ste-Fs'))\n"
                             + "or (kbef.bbef = 'Mte' and km.material not in ('Ste-Gab', 'Vl'))\n"
                             + "or (kbef.bbef = 'Pfl' and km.material not in ('B'))\n"
@@ -415,7 +417,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kbef.bbef <> 'Rin' and (abs(bis.wert - von.wert) <= 0.5))\n"
                             + "or (ho_d_o is not null and ho_d_u is not null and (ho_d_o <= ho_d_u))\n"
                             + "or (kbef.bbef = 'Berme' and km.material is not null)\n"
-                            + "or (kbef.bbef = 'Fa' and km.material not in ('H-Rsg', 'Kok'))\n"
+                            + "or (kbef.bbef = 'Fa' and km.material not in ('H-Rsg', 'Kok', 'H'))\n"
+                            + "or (kbef.bbef = 'SP' and km.material not in ('Ste', 'Ste-Fs', 'Ste-Gab', 'Ste-Wb'))\n"
                             + "or (kbef.bbef = 'Gtr' and km.material not in ('B', 'K', 'Ste-Fs'))\n"
                             + "or (kbef.bbef = 'Mte' and km.material not in ('Ste-Gab', 'Vl'))\n"
                             + "or (kbef.bbef = 'Pfl' and km.material not in ('B'))\n"

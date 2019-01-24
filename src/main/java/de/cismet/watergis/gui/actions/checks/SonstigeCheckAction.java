@@ -132,15 +132,15 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         "Prüfungen->Sonstiges->Deich->Deich: Attribute";
     private static final String CHECK_SONSTIGES_DEICH_DEICH__LUECKE = "Prüfungen->Sonstiges->Deich->Deich: Lücke";
     private static final int[] USED_CLASS_IDS = new int[] {
-            FG_BA_DEICH.getId(),
+            ((FG_BA_DEICH != null) ? FG_BA_DEICH.getId() : -1),
             ((GU_WIWE != null) ? GU_WIWE.getId() : -1),
             ((FG_BA_UGHZ != null) ? FG_BA_UGHZ.getId() : -1),
             ((FG_BA_LEIS != null) ? FG_BA_LEIS.getId() : -1),
             ((FG_BA_TECH != null) ? FG_BA_TECH.getId() : -1),
-            FOTO.getId(),
-            FG_BA_RL.getId(),
-            FG_BA_D.getId(),
-            FG_BA_DUE.getId()
+            ((FOTO != null) ? FOTO.getId() : -1),
+            ((FG_BA_RL != null) ? FG_BA_RL.getId() : -1),
+            ((FG_BA_D != null) ? FG_BA_D.getId() : -1),
+            ((FG_BA_DUE != null) ? FG_BA_DUE.getId() : -1)
         };
 //    private static final String CHECK_SONSTIGES_DEICH_DEICH__UEBERLAPPUNG =
 //        "Prüfungen->Sonstiges->Deich->Deich: Überlappung";
@@ -355,7 +355,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
                             + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
                             + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "	join dlm25w.k_ww_gr gr on (l.ww_gr = gr.id)\n"
+                            + "	join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and ("
                             + "(leis is null or obj_nr is null or l_rl is null or abs(von.wert - bis.wert) < 0.5) "
                             + " or (l.esw is not null and (l.esw < 0 or l.esw > 1)) "
@@ -369,7 +369,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + " join dlm25w.fg_ba_linie linie on (le.ba_st = linie.id)\n"
                             + " join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + " join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " left join dlm25w.k_ww_gr gr on (gr.id = le.ww_gr)\n"
+                            + " join dlm25w.fg_ba ba on (von.route = ba.id)"
+                            + " left join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and esw = 1 and \n"
                             + "(exists (select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
@@ -388,7 +389,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + " join dlm25w.fg_ba_linie linie on (le.ba_st = linie.id)\n"
                             + " join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + " join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + " join dlm25w.k_ww_gr gr on (gr.id = le.ww_gr)\n"
+                            + " join dlm25w.fg_ba ba on (von.route = ba.id)"
+                            + " join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and esw = 1 and \n"
                             + "(exists (select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0.1\n"
@@ -412,7 +414,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
                             + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
                             + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (tech is null or obj_nr is null or abs(von.wert - bis.wert) < 0.5)";
+                            + "where (%1$s is null or von.route = any(%1$s)) and (obj_nr is null or abs(von.wert - bis.wert) < 0.5)";
             } else {
                 QUERY_TECH_ATTR = "select " + FG_BA_TECH.getID() + ", t." + FG_BA_TECH.getPrimaryKey()
                             + " from dlm25w.fg_ba_tech t\n"
@@ -421,8 +423,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
                             + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
                             + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "	join dlm25w.k_ww_gr gr on (t.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (tech is null or obj_nr is null or abs(von.wert - bis.wert) < 0.5) and (gr.owner = '"
+                            + "	join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
+                            + "where (%1$s is null or von.route = any(%1$s)) and (obj_nr is null or abs(von.wert - bis.wert) < 0.5) and (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s)";
             }
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -449,7 +451,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + " join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "left join dlm25w.k_tech te on (te.id = t.tech)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and te.tech = 'v' and \n"
                             + "((\n"
@@ -469,7 +472,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + " join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "left join dlm25w.k_tech te on (te.id = t.tech)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and te.tech = 'd' and \n"
                             + "((\n"
@@ -486,7 +490,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + " join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "left join dlm25w.k_tech te on (te.id = t.tech)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and te.tech = 'd' and \n"
                             + "((\n"
@@ -506,7 +511,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + " join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "left join dlm25w.k_tech te on (te.id = t.tech)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and (te.tech = 'd' or te.tech = 'v') and \n"
                             + "((\n"
@@ -527,7 +533,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + " join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "left join dlm25w.k_tech te on (te.id = t.tech)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and (te.tech = 'd' or te.tech = 'v') and \n"
                             + "((\n"
@@ -551,7 +558,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + " join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "left join dlm25w.k_tech te on (te.id = t.tech)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and (te.tech <> 'd' and te.tech <> 'v') and \n"
                             + "(exists (select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
@@ -570,7 +578,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + " join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "left join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "left join dlm25w.k_tech te on (te.id = t.tech)\n"
                             + "where (%1$s is null or von.route = any(%1$s)) and (te.tech <> 'd' and te.tech <> 'v') and \n"
                             + "(exists (select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
@@ -653,14 +662,16 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + "                                 join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "                            	) as t1,\n"
                             + "                            	(select von.wert as von, bis.wert as bis, von.route, t.id from \n"
                             + "                            	dlm25w.fg_ba_tech t\n"
                             + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + "                                 join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + "                            	) as t2\n"
                             + "                            where (%1$s is null or t1.route = any(%1$s)) and t1.id <> t2.id and t1.route = t2.route and ((least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) > -0.5 and (least(greatest(t2.von, t2.bis), greatest(t1.von, t1.bis)) - greatest(least(t2.von, t2.bis), least(t1.von, t1.bis))) < 0)";
             } else {
@@ -670,7 +681,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + "                                 join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + " WHERE (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s)"
                             + "                            	) as t1,\n"
@@ -679,7 +691,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "                            	join dlm25w.fg_ba_linie linie on (t.ba_st = linie.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
                             + "                            	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = t.ww_gr)\n"
+                            + "                                 join dlm25w.fg_ba ba on (von.route = ba.id) "
+                            + "                            	join dlm25w.k_ww_gr gr on (gr.id = ba.ww_gr)\n"
                             + " WHERE (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s)"
                             + "                            	) as t2\n"
