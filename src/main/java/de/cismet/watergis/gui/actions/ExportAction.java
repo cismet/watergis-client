@@ -270,7 +270,12 @@ public class ExportAction extends AbstractAction implements Configurable {
                                 null,
                                 null);
                         DownloadManager.instance().add(d);
-                        return false;
+
+                        final User user = SessionManager.getSession().getUser();
+
+                        if (!user.getName().equalsIgnoreCase("admin")) {
+                            return false;
+                        }
                     }
 
                     while (new File(tempPath).exists()) {
@@ -1149,9 +1154,9 @@ public class ExportAction extends AbstractAction implements Configurable {
                             final int shpGeoType = GeometryUtils.getShpGeometryType(geometryType);
 
                             try {
-                                clearShpOrShxFile(filename + ".shp", shpGeoType);
-                                clearShpOrShxFile(filename + ".shx", shpGeoType);
-                                clearDbfFile(filename + ".dbf");
+                                GeometryUtils.clearShpOrShxFile(filename + ".shp", shpGeoType);
+                                GeometryUtils.clearShpOrShxFile(filename + ".shx", shpGeoType);
+                                GeometryUtils.clearDbfFile(filename + ".dbf");
                             } catch (Exception e) {
                                 LOG.error("Cannot remove content from shape. So remove it completely", e);
                                 final File shapeFile = new File(filename + ".shp");
@@ -1182,122 +1187,6 @@ public class ExportAction extends AbstractAction implements Configurable {
                     } catch (Exception ex) {
                         LOG.error("Error during export", ex);
                         throw ex;
-                    }
-                }
-
-                /**
-                 * Removes all content from the given shp or shx file, so that the file contains only the header.
-                 *
-                 * @param   fileName    the file to clear
-                 * @param   shpGeoType  DOCUMENT ME!
-                 *
-                 * @throws  IOException  DOCUMENT ME!
-                 */
-                private void clearShpOrShxFile(final String fileName, final int shpGeoType) throws IOException {
-                    final File origFile = new File(fileName);
-
-                    if (origFile.exists()) {
-                        InputStream is = null;
-                        OutputStream os = null;
-                        origFile.delete();
-
-                        try {
-                            is = getClass().getResourceAsStream(
-                                    "/de/cismet/watergis/gui/actions/emptyShapeTemplate.shp");
-                            os = new FileOutputStream(new File(fileName));
-                            int b;
-                            int index = 0;
-
-                            while ((b = is.read()) != -1) {
-                                if (index == 32) {
-                                    os.write(shpGeoType);
-                                } else {
-                                    os.write(b);
-                                }
-                                ++index;
-                            }
-                        } finally {
-                            try {
-                                if (is != null) {
-                                    is.close();
-                                }
-                            } catch (Exception e) {
-                                LOG.error("Cannot close " + origFile.getAbsolutePath(), e);
-                            }
-                            try {
-                                if (os != null) {
-                                    os.close();
-                                }
-                            } catch (Exception e) {
-                                LOG.error("Cannot close " + fileName, e);
-                            }
-                        }
-                    }
-                }
-
-                /**
-                 * Removes all content from the given shp or shx file, so that the file contains only the header.
-                 *
-                 * @param   fileName  the file to clear
-                 *
-                 * @throws  IOException  DOCUMENT ME!
-                 */
-                private void clearDbfFile(final String fileName) throws IOException {
-                    File origFile = new File(fileName);
-
-                    if (origFile.exists()) {
-                        InputStream is = null;
-                        OutputStream os = null;
-                        origFile.renameTo(new File(fileName + ".backup"));
-                        origFile = new File(fileName + ".backup");
-
-                        try {
-                            is = new FileInputStream(origFile);
-                            os = new FileOutputStream(new File(fileName));
-                            int content;
-                            int byteCounter = 0;
-                            int tmpLength = 0;
-                            int length = 1000;
-
-                            while ((content = is.read()) != -1) {
-                                ++byteCounter;
-                                if (byteCounter == 5) {
-                                    // set the object count to 0
-                                    os.write(0x0);
-                                    continue;
-                                }
-                                if (byteCounter == 9) {
-                                    // byte 9/10 contain the position of first data record
-                                    tmpLength = content;
-                                }
-                                if (byteCounter == 10) {
-                                    tmpLength += content
-                                                << 8;
-                                    length = tmpLength;
-                                }
-                                os.write(content);
-                                if ((byteCounter >= (length - 1)) && (content == 0xd)) { // 0xd is the last byte of
-                                                                                         // the header
-                                    break;
-                                }
-                            }
-                        } finally {
-                            try {
-                                if (is != null) {
-                                    is.close();
-                                }
-                            } catch (Exception e) {
-                                LOG.error("Cannot close " + origFile.getAbsolutePath(), e);
-                            }
-                            try {
-                                if (os != null) {
-                                    os.close();
-                                }
-                            } catch (Exception e) {
-                                LOG.error("Cannot close " + fileName, e);
-                            }
-                            origFile.delete();
-                        }
                     }
                 }
 
