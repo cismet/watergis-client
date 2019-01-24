@@ -157,7 +157,7 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
         if (column.equals("ho_d_m") && !checkRange(column, newValue, 0, 10, 0, 30, true, false, true)) {
             return oldValue;
         }
-        if (column.equals("br_tr_o_li") && !checkRangeBetweenOrEqual(column, newValue, 0.05, 2, 0.025, 4, true)) {
+        if (column.equals("br_tr_o_li") && !checkRangeBetweenOrEqual(column, newValue, 0.05, 2, 0.025, 5, true)) {
             return oldValue;
         }
 
@@ -168,12 +168,12 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                         newValue = Math.round(((Number)newValue).doubleValue());
                     }
                 }
-                if (!checkRangeBetweenOrEqual("br_dm_li", newValue, 50, 2000, 25, 4000, true)) {
+                if (!checkRangeBetweenOrEqual("br_dm_li", newValue, 50, 2000, 25, 5000, true)) {
                     return oldValue;
                 }
             }
             if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
-                if (!checkRangeBetweenOrEqual("br_dm_li", newValue, 0.05, 2, 0.025, 4, true)) {
+                if (!checkRangeBetweenOrEqual("br_dm_li", newValue, 0.05, 2, 0.025, 5, true)) {
                     return oldValue;
                 }
             }
@@ -186,12 +186,12 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                         newValue = Math.round(((Number)newValue).doubleValue());
                     }
                 }
-                if (!checkRangeBetweenOrEqual("ho_li", newValue, 50, 2000, 25, 4000, true)) {
+                if (!checkRangeBetweenOrEqual("ho_li", newValue, 50, 2000, 25, 5000, true)) {
                     return oldValue;
                 }
             }
             if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
-                if (!checkRangeBetweenOrEqual("ho_li", newValue, 0.05, 2, 0.025, 4, true)) {
+                if (!checkRangeBetweenOrEqual("ho_li", newValue, 0.05, 2, 0.025, 5, true)) {
                     return oldValue;
                 }
             }
@@ -437,9 +437,12 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
             if (!checkRangeBetweenOrEqual("ho_d_a", feature.getProperty("ho_d_a"), 0, 5, true)) {
                 return false;
             }
+            if (!checkRangeBetweenOrEqual("br_tr_o_li", feature.getProperty("br_tr_o_li"), 0.025, 5, true)) {
+                return false;
+            }
 
             if (feature.getProperty("profil").equals("kr") || feature.getProperty("profil").equals("ei")) {
-                if (!checkRangeBetweenOrEqual("br_dm_li", feature.getProperty("br_dm_li"), 25, 4000, true)) {
+                if (!checkRangeBetweenOrEqual("br_dm_li", feature.getProperty("br_dm_li"), 25, 5000, true)) {
                     return false;
                 }
                 if (isNoInteger("br_dm_li", feature.getProperty("br_dm_li"), false)) {
@@ -447,7 +450,7 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                 }
             }
             if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
-                if (!checkRangeBetweenOrEqual("br_dm_li", feature.getProperty("br_dm_li"), 0.05, 2, 0.025, 4, true)) {
+                if (!checkRangeBetweenOrEqual("br_dm_li", feature.getProperty("br_dm_li"), 0.05, 2, 0.025, 5, true)) {
                     return false;
                 }
                 if (isNoInteger("ho_li", feature.getProperty("ho_li"), false)) {
@@ -455,12 +458,12 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                 }
             }
             if (feature.getProperty("profil").equals("ei")) {
-                if (!checkRangeBetweenOrEqual("ho_li", feature.getProperty("ho_li"), 25, 4000, true)) {
+                if (!checkRangeBetweenOrEqual("ho_li", feature.getProperty("ho_li"), 25, 5000, true)) {
                     return false;
                 }
             }
             if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
-                if (!checkRangeBetweenOrEqual("ho_li", feature.getProperty("ho_li"), 0.025, 4, true)) {
+                if (!checkRangeBetweenOrEqual("ho_li", feature.getProperty("ho_li"), 0.025, 5, true)) {
                     return false;
                 }
             }

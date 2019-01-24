@@ -104,12 +104,12 @@ public class LawaCheckAction extends AbstractCheckAction {
             CHECK_BAK_OHNE_GBK
         };
     private static final int[] USED_CLASS_IDS = new int[] {
-            FG_BAK_GBK.getId(),
-            FG_BAK_GWK.getId(),
-            FG_BA_GBK_DELTA.getId(),
-            FG_BAK_GN1.getId(),
-            FG_BAK_GN2.getId(),
-            FG_BAK_GN3.getId()
+            ((FG_BAK_GBK != null) ? FG_BAK_GBK.getId() : -1),
+            ((FG_BAK_GWK != null) ? FG_BAK_GWK.getId() : -1),
+            ((FG_BA_GBK_DELTA != null) ? FG_BA_GBK_DELTA.getId() : -1),
+            ((FG_BAK_GN1 != null) ? FG_BAK_GN1.getId() : -1),
+            ((FG_BAK_GN2 != null) ? FG_BAK_GN2.getId() : -1),
+            ((FG_BAK_GN3 != null) ? FG_BAK_GN3.getId() : -1)
         };
 
     static {
