@@ -79,8 +79,8 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
             CHECK_LAWA_ROUTEN_KONNEKTIVITAET
         };
     private static final int[] USED_CLASS_IDS = new int[] {
-            LAK_AE_MC.getId(),
-            FG_BAK_GWK.getId(),
+            ((LAK_AE_MC != null) ? LAK_AE_MC.getId() : -1),
+            ((FG_BAK_GWK != null) ? FG_BAK_GWK.getId() : -1),
         };
 
     static {

@@ -110,12 +110,12 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             ((FG_BA_ANLP != null) ? FG_BA_ANLP.getId() : -1),
             ((FG_BA_KR != null) ? FG_BA_KR.getId() : -1),
             ((FG_BA_EA != null) ? FG_BA_EA.getId() : -1),
-            FG_BA_SCHA.getId(),
-            FG_BA_WEHR.getId(),
-            FG_BA_SCHW.getId(),
-            FG_BA_RL.getId(),
-            FG_BA_D.getId(),
-            FG_BA_DUE.getId()
+            ((FG_BA_SCHA != null) ? FG_BA_SCHA.getId() : -1),
+            ((FG_BA_WEHR != null) ? FG_BA_WEHR.getId() : -1),
+            ((FG_BA_SCHW != null) ? FG_BA_SCHW.getId() : -1),
+            ((FG_BA_RL != null) ? FG_BA_RL.getId() : -1),
+            ((FG_BA_D != null) ? FG_BA_D.getId() : -1),
+            ((FG_BA_DUE != null) ? FG_BA_DUE.getId() : -1)
         };
     private static String QUERY_DUE_ATTR;
     private static String QUERY_D_ATTR;
@@ -242,9 +242,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where\n"
                             + "(rl.profil is null or obj_nr is null\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
-                            + "or (br_dm_li is not null and ((p.profil in ('kr', 'ei') and (br_dm_li <25 or br_dm_li > 4000)) or ( p.profil in ('re', 'tr') and (br_dm_li < 0.025 or br_dm_li > 4) )))\n"
-                            + "or (ho_li is not null and ((p.profil in ('ei') and (ho_li <25 or ho_li > 4000)) or ( p.profil in ('re', 'tr') and (ho_li < 0.025 or ho_li > 4) )))\n"
-                            + "or (br_tr_o_li is not null and (br_tr_o_li <0.025 or br_tr_o_li > 4))\n"
+                            + "or (br_dm_li is not null and ((p.profil in ('kr', 'ei') and (br_dm_li <25 or br_dm_li > 5000)) or ( p.profil in ('re', 'tr') and (br_dm_li < 0.025 or br_dm_li > 5) )))\n"
+                            + "or (ho_li is not null and ((p.profil in ('ei') and (ho_li <25 or ho_li > 5000)) or ( p.profil in ('re', 'tr') and (ho_li < 0.025 or ho_li > 5) )))\n"
+                            + "or (br_tr_o_li is not null and (br_tr_o_li <0.025 or br_tr_o_li > 5))\n"
                             + "or (ho_e is not null and (ho_e < -6 or ho_e > 179))\n"
                             + "or (ho_a is not null and (ho_a < -6 or ho_a > 179))\n"
                             + "or (gefaelle is not null and (gefaelle < -10 or gefaelle > 100))\n"
@@ -268,9 +268,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where\n"
                             + "(rl.profil is null or obj_nr is null\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
-                            + "or (br_dm_li is not null and ((p.profil in ('kr', 'ei') and (br_dm_li <25 or br_dm_li > 4000)) or ( p.profil in ('re', 'tr') and (br_dm_li < 0.025 or br_dm_li > 4) )))\n"
-                            + "or (ho_li is not null and ((p.profil in ('ei') and (ho_li <25 or ho_li > 4000)) or ( p.profil in ('re', 'tr') and (ho_li < 0.025 or ho_li > 4) )))\n"
-                            + "or (br_tr_o_li is not null and (br_tr_o_li <0.025 or br_tr_o_li > 4))\n"
+                            + "or (br_dm_li is not null and ((p.profil in ('kr', 'ei') and (br_dm_li <25 or br_dm_li > 5000)) or ( p.profil in ('re', 'tr') and (br_dm_li < 0.025 or br_dm_li > 5) )))\n"
+                            + "or (ho_li is not null and ((p.profil in ('ei') and (ho_li <25 or ho_li > 5000)) or ( p.profil in ('re', 'tr') and (ho_li < 0.025 or ho_li > 5) )))\n"
+                            + "or (br_tr_o_li is not null and (br_tr_o_li <0.025 or br_tr_o_li > 5))\n"
                             + "or (ho_e is not null and (ho_e < -6 or ho_e > 179))\n"
                             + "or (ho_a is not null and (ho_a < -6 or ho_a > 179))\n"
                             + "or (gefaelle is not null and (gefaelle < -10 or gefaelle > 100))\n"
@@ -462,10 +462,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "(a.anlp is null or obj_nr is null\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
                             + "or (an.anlp not in ('Steg', 'Vt', 'Wee', 'Z') and (br < 0 or br > 10 ))\n"
-                            + "or (an.anlp in ('Steg', 'Vt', 'Wee') and (br < 1 or br > 200))\n"
+                            + "or (an.anlp in ('Steg', 'Vt', 'Wee', 'Z') and (br < 1 or br > 200))\n"
                             + "or (an.anlp in ('Albw', 'Elbw', 'Fu', 'Rsk', 'Schi', 'Slu', 'Stt') and (rl.l_rl <> 'mi'))\n"
-                            + "or (an.anlp in ('P', 'P-Gr', 'P-Steg', 'P-Gr-Steg', 'P-Lat', 'Sta') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li')))\n"
-                            + "or (an.anlp in ('Steg', 'Vt', 'Wes') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'bs')))\n"
+                            + "or (an.anlp in ('P', 'P-Gr', 'P-Steg', 'P-Gr-Steg', 'P-Lat', 'Sta') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'mi', 'bs', 'nb')))\n"
+                            + "or (an.anlp in ('Steg', 'Vt', 'Wes') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'bs', 'nb')))\n"
                             + "or (a.esw is not null and (a.esw < 0 or a.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s));";
             } else {
@@ -481,10 +481,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "(a.anlp is null or obj_nr is null\n"
                             + "or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
                             + "or (an.anlp not in ('Steg', 'Vt', 'Wee', 'Z') and (br < 0 or br > 10 ))\n"
-                            + "or (an.anlp in ('Steg', 'Vt', 'Wee') and (br < 1 or br > 200))\n"
+                            + "or (an.anlp in ('Steg', 'Vt', 'Wee', 'Z') and (br < 1 or br > 200))\n"
                             + "or (an.anlp in ('Albw', 'Elbw', 'Fu', 'Rsk', 'Schi', 'Slu', 'Stt') and (rl.l_rl <> 'mi'))\n"
-                            + "or (an.anlp in ('P', 'P-Gr', 'P-Steg', 'P-Gr-Steg', 'P-Lat', 'Sta') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li')))\n"
-                            + "or (an.anlp in ('Steg', 'Vt', 'Wes') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'bs')))\n"
+                            + "or (an.anlp in ('P', 'P-Gr', 'P-Steg', 'P-Gr-Steg', 'P-Lat', 'Sta') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'mi', 'bs', 'nb')))\n"
+                            + "or (an.anlp in ('Steg', 'Vt', 'Wes') and (rl.l_rl is not null and rl.l_rl not in ('re', 'li', 'bs', 'nb')))\n"
                             + "or (a.esw is not null and (a.esw < 0 or a.esw > 1)) "
                             + ") and (%1$s is null or ba.id = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName()
@@ -632,7 +632,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (w.wehr in ('Tro') and wv.wehr_v not in ('Tro'))\n"
                             + "or (w.wehr in ('Wz') and wv.wehr_v not in ('Wz'))\n"
                             + "or (w.wehr in ('W-Strei', 'W-Üfa') and wav.wehr_av not in ('ohne'))\n"
-                            + "or (wv.wehr_v in ('Bo','Bo-J') and m.material not in ('H','K','St'))\n"
+                            + "or (wv.wehr_v in ('Bo','Bo-J') and m.material not in ('H','K','St','nb'))\n"
                             + "or (wv.wehr_v in ('Schw') and m.material not in ('B','K'))\n"
                             + "or (wv.wehr_v not in ('Bo', 'Bo-J', 'Schw') and m.material is not null)\n"
                             + "or (sbef.sbef in ('PL', 'RL') and (ma.material is null or ma.material not in ('B')))\n"
@@ -674,7 +674,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (w.wehr in ('Tro') and wv.wehr_v not in ('Tro'))\n"
                             + "or (w.wehr in ('Wz') and wv.wehr_v not in ('Wz'))\n"
                             + "or (w.wehr in ('W-Strei', 'W-Üfa') and wav.wehr_av not in ('ohne'))\n"
-                            + "or (wv.wehr_v in ('Bo','Bo-J') and m.material not in ('H','K','St'))\n"
+                            + "or (wv.wehr_v in ('Bo','Bo-J') and m.material not in ('H','K','St','nb'))\n"
                             + "or (wv.wehr_v in ('Schw') and m.material not in ('B','K'))\n"
                             + "or (wv.wehr_v not in ('Bo', 'Bo-J', 'Schw') and m.material is not null)\n"
                             + "or (sbef.sbef in ('PL', 'RL') and (ma.material is null or ma.material not in ('B')))\n"
@@ -701,8 +701,12 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (az  is not null and (az < -6 or az > 179))\n"
                             + "or (ezg_fl  is not null and (ezg_fl <= 0 or ezg_fl > 100))\n"
                             + "or (v_fl  is not null and (v_fl <= 0 or v_fl > 100))\n"
-                            + "or (pu  is not null and (pu < 1 or pu > 9))\n"
-                            + "or (pu_foel  is not null and (pu_foel <= 0 or pu_foel > 100))\n"
+                            + "or (pu_anz1  is not null and (pu_anz1 < 1 or pu_anz1 > 9))\n"
+                            + "or (pu_anz2  is not null and (pu_anz2 < 1 or pu_anz2 > 9))\n"
+                            + "or (pu_motl1  is not null and (pu_motl1 <= 0 or pu_motl1 > 500))\n"
+                            + "or (pu_motl2  is not null and (pu_motl2 <= 0 or pu_motl2 > 500))\n"
+                            + "or (pu_foel1  is not null and (pu_foel1 <= 0 or pu_foel1 > 100))\n"
+                            + "or (pu_foel2  is not null and (pu_foel2 <= 0 or pu_foel2 > 100))\n"
                             + "or (sz is not null and az is not null and (sz <= az))\n"
                             + "or (ezg_fl is not null and v_fl is not null and (ezg_fl < v_fl))\n"
                             + "or (schw.esw is not null and (schw.esw < 0 or schw.esw > 1)) "
@@ -722,8 +726,12 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "or (az  is not null and (az < -6 or az > 179))\n"
                             + "or (ezg_fl  is not null and (ezg_fl <= 0 or ezg_fl > 100))\n"
                             + "or (v_fl  is not null and (v_fl <= 0 or v_fl > 100))\n"
-                            + "or (pu  is not null and (pu < 1 or pu > 9))\n"
-                            + "or (pu_foel  is not null and (pu_foel <= 0 or pu_foel > 100))\n"
+                            + "or (pu_anz1  is not null and (pu_anz1 < 1 or pu_anz1 > 9))\n"
+                            + "or (pu_anz2  is not null and (pu_anz2 < 1 or pu_anz2 > 9))\n"
+                            + "or (pu_motl1  is not null and (pu_motl1 <= 0 or pu_motl1 > 500))\n"
+                            + "or (pu_motl2  is not null and (pu_motl2 <= 0 or pu_motl2 > 500))\n"
+                            + "or (pu_foel1  is not null and (pu_foel1 <= 0 or pu_foel1 > 100))\n"
+                            + "or (pu_foel2  is not null and (pu_foel2 <= 0 or pu_foel2 > 100))\n"
                             + "or (sz is not null and az is not null and (sz <= az))\n"
                             + "or (ezg_fl is not null and v_fl is not null and (ezg_fl < v_fl))\n"
                             + "or (schw.esw is not null and (schw.esw < 0 or schw.esw > 1)) "
@@ -1506,7 +1514,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 31;
+        return 30;
     }
 
     @Override
@@ -2123,14 +2131,14 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 CHECKS_BAUWERKE_ANLL_ANLL_AUF_GESCHLOSSEN));
         increaseProgress(wd, 1);
 
-        query = (useExpCond
-                ? String.format(QUERY_KR_MARKED_TWICE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
-                : String.format(QUERY_KR_MARKED_TWICE, SQLFormatter.createSqlArrayString(selectedIds)));
-        result.setKrMarkedTwice(analyseByQuery(
-                FG_BA_KR,
-                query,
-                CHECKS_BAUWERKE_KR_KR_DOPPELTE__MARKIERUNG));
-        increaseProgress(wd, 1);
+//        query = (useExpCond
+//                ? String.format(QUERY_KR_MARKED_TWICE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
+//                : String.format(QUERY_KR_MARKED_TWICE, SQLFormatter.createSqlArrayString(selectedIds)));
+//        result.setKrMarkedTwice(analyseByQuery(
+//                FG_BA_KR,
+//                query,
+//                CHECKS_BAUWERKE_KR_KR_DOPPELTE__MARKIERUNG));
+//        increaseProgress(wd, 1);
 
         if (result.getAnllAttr() != null) {
             result.setAnllAttrErrors(result.getAnllAttr().getFeatureCount(null));

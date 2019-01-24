@@ -89,7 +89,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
             CHECK_BASISROUTEN_GEWAESSER_SCHNEIDEND,
             CHECK_BASISROUTEN_GEWAESSER_ZU_KURZ
         };
-    private static final int[] USED_CLASS_IDS = new int[] { BAK_AE_MC.getId() };
+    private static final int[] USED_CLASS_IDS = new int[] { ((BAK_AE_MC != null) ? BAK_AE_MC.getId() : -1) };
 
     static {
         if ((BAK_AE_MC != null) && (BAK_MC != null)) {
