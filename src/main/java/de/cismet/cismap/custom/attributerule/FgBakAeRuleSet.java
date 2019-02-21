@@ -55,7 +55,7 @@ public class FgBakAeRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, true));
         typeMap.put("bak_st_von", new Numeric(10, 2, false, false));
         typeMap.put("bak_st_bis", new Numeric(10, 2, false, false));

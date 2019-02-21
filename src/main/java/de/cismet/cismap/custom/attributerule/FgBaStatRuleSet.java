@@ -32,7 +32,9 @@ public class FgBaStatRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
-        typeMap.put("ww_gr", new WatergisDefaultRuleSet.Catalogue("k_ww_gr", false, false));
+        typeMap.put(
+            "ww_gr",
+            new WatergisDefaultRuleSet.Catalogue("k_ww_gr", false, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new WatergisDefaultRuleSet.Varchar(50, false, false));
         typeMap.put("ba_st", new WatergisDefaultRuleSet.Numeric(10, 0, false, false));
         typeMap.put("ba_st_km", new WatergisDefaultRuleSet.Numeric(7, 1, false, false, true));

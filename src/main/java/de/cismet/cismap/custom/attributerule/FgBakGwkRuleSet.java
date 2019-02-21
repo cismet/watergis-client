@@ -61,7 +61,7 @@ public class FgBakGwkRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ba_cd", new Varchar(50, true, false));
         typeMap.put("bak_st_von", new Numeric(10, 2, true, false));
         typeMap.put("bak_st_bis", new Numeric(10, 2, true, false));
-        typeMap.put("la_cd", new Catalogue("k_gwk_lawa", true, true, true));
+        typeMap.put("la_cd", new Catalogue("k_gwk_lawa", true, true, true, new Numeric(15, 0, false, false)));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));

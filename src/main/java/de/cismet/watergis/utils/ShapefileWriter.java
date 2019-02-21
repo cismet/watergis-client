@@ -533,9 +533,20 @@ public class ShapefileWriter implements JUMPWriter {
                 if ((ruleSet != null) && (ruleSet.getType(columnName) instanceof WatergisDefaultRuleSet.Numeric)) {
                     final WatergisDefaultRuleSet.Numeric type = (WatergisDefaultRuleSet.Numeric)ruleSet.getType(
                             columnName);
-                    fields[f] = new DbfFieldDef(columnName, 'N', type.getPrecision(), 0);               // LDB: previously 16
+                    fields[f] = new DbfFieldDef(columnName, 'N', type.getPrecision(), 0); // LDB: previously 16
+                } else if ((ruleSet != null)
+                            && (ruleSet.getType(columnName) instanceof WatergisDefaultRuleSet.SubDataType)) {
+                    final WatergisDefaultRuleSet.SubDataType cat = (WatergisDefaultRuleSet.SubDataType)ruleSet.getType(
+                            columnName);
+
+                    if ((cat.getDataType() != null) && (cat.getDataType() instanceof WatergisDefaultRuleSet.Numeric)) {
+                        final WatergisDefaultRuleSet.Numeric type = (WatergisDefaultRuleSet.Numeric)cat.getDataType();
+                        fields[f] = new DbfFieldDef(columnName, 'N', type.getPrecision(), 0); // LDB: previously 16
+                    } else {
+                        fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);                  // LDB: previously 16
+                    }
                 } else {
-                    fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);                                // LDB: previously 16
+                    fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);                      // LDB: previously 16
                 }
                 fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                 f++;
@@ -543,7 +554,32 @@ public class ShapefileWriter implements JUMPWriter {
                 if ((ruleSet != null) && (ruleSet.getType(columnName) instanceof WatergisDefaultRuleSet.Numeric)) {
                     final WatergisDefaultRuleSet.Numeric type = (WatergisDefaultRuleSet.Numeric)ruleSet.getType(
                             columnName);
-                    fields[f] = new DbfFieldDef(columnName, 'N', type.getPrecision(), type.getScale()); // LDB: previously 16
+                    // if the number has decimals, then the decimal character will decrease the digits of the number
+                    // by one
+                    final int lengthOfDecimalCharacter = (int)Math.signum((double)type.getScale());
+                    fields[f] = new DbfFieldDef(
+                            columnName,
+                            'N',
+                            type.getPrecision()
+                                    + lengthOfDecimalCharacter,
+                            type.getScale()); // LDB: previously 16
+                } else if ((ruleSet != null)
+                            && (ruleSet.getType(columnName) instanceof WatergisDefaultRuleSet.SubDataType)) {
+                    final WatergisDefaultRuleSet.SubDataType cat = (WatergisDefaultRuleSet.SubDataType)ruleSet.getType(
+                            columnName);
+
+                    if ((cat.getDataType() != null) && (cat.getDataType() instanceof WatergisDefaultRuleSet.Numeric)) {
+                        final WatergisDefaultRuleSet.Numeric type = (WatergisDefaultRuleSet.Numeric)cat.getDataType();
+                        final int lengthOfDecimalCharacter = (int)Math.signum((double)type.getScale());
+                        fields[f] = new DbfFieldDef(
+                                columnName,
+                                'N',
+                                type.getPrecision()
+                                        + lengthOfDecimalCharacter,
+                                type.getScale()); // LDB: previously 16
+                    } else {
+                        fields[f] = new DbfFieldDef(columnName, 'N', 33, 16);
+                    }
                 } else {
                     fields[f] = new DbfFieldDef(columnName, 'N', 33, 16);
                 }
@@ -556,6 +592,16 @@ public class ShapefileWriter implements JUMPWriter {
                     final WatergisDefaultRuleSet.Varchar type = (WatergisDefaultRuleSet.Varchar)ruleSet.getType(
                             columnName);
                     maxlength = type.getMaxLength();
+                } else if ((ruleSet != null)
+                            && (ruleSet.getType(columnName) instanceof WatergisDefaultRuleSet.SubDataType)) {
+                    final WatergisDefaultRuleSet.SubDataType cat = (WatergisDefaultRuleSet.SubDataType)ruleSet.getType(
+                            columnName);
+                    if ((cat.getDataType() != null) && (cat.getDataType() instanceof WatergisDefaultRuleSet.Varchar)) {
+                        final WatergisDefaultRuleSet.Varchar type = (WatergisDefaultRuleSet.Varchar)cat.getDataType();
+                        maxlength = type.getMaxLength();
+                    } else {
+                        maxlength = findMaxStringLength(featureCollection, t);
+                    }
                 } else {
                     maxlength = findMaxStringLength(featureCollection, t);
                 }

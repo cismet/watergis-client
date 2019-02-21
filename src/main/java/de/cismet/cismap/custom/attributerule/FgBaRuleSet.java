@@ -49,7 +49,7 @@ public class FgBaRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(false, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, true));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, true, new Numeric(4, 0, false, false)));
         // wenn ba_cd == null, dann wird es automatisch gefuellt (in prepareforSave)
         typeMap.put("ba_cd", new Varchar(50, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, false));

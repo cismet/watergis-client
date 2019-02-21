@@ -90,7 +90,7 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true, new Numeric(4, 0, false, false)));
         // wenn ba_cd == null, dann wird es automatisch gefuellt (in prepareforSave)
         typeMap.put("ba_cd", new Varchar(50, true));
         typeMap.put("bak_st_von", new Numeric(10, 2, false, false));
@@ -277,13 +277,17 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
     private void setBaCd(final FeatureServiceFeature feature) {
         if (feature instanceof CidsLayerFeature) {
             final CidsLayerFeature cLayerFeature = (CidsLayerFeature)feature;
-            final CidsLayerFeature wwGr = (CidsLayerFeature)cLayerFeature.getPropertyObject("ww_gr");
-            final String baCd = (String)feature.getProperty("ba_cd");
-            final String praefix = (String)wwGr.getProperty("praefix");
+            final Object o = cLayerFeature.getPropertyObject("ww_gr");
 
-            if (praefix != null) {
-                if (!baCd.startsWith(praefix + ":")) {
-                    feature.setProperty("ba_cd", praefix + ":" + baCd);
+            if (o instanceof CidsLayerFeature) {
+                final CidsLayerFeature wwGr = (CidsLayerFeature)o;
+                final String baCd = (String)feature.getProperty("ba_cd");
+                final String praefix = (String)wwGr.getProperty("praefix");
+
+                if (praefix != null) {
+                    if (!baCd.startsWith(praefix + ":")) {
+                        feature.setProperty("ba_cd", praefix + ":" + baCd);
+                    }
                 }
             }
         }
