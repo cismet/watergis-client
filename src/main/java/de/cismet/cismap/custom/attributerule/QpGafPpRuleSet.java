@@ -81,12 +81,12 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("id_gaf", new Varchar(50, true));
         typeMap.put("y", y);
         typeMap.put("z", z);
-        typeMap.put("kz", new Catalogue("k_qp_gaf_kz", true, true));
-        typeMap.put("rk", new Catalogue("k_qp_gaf_rk", false, true));
+        typeMap.put("kz", new Catalogue("k_qp_gaf_kz", true, true, new Varchar(10, false, false)));
+        typeMap.put("rk", new Catalogue("k_qp_gaf_rk", false, true, new Numeric(4, 0, false, false)));
         typeMap.put("rk_name", new Varchar(75, false));
         typeMap.put("rk_k", new Numeric(6, 2, false));
         typeMap.put("rk_kst", new Numeric(6, 2, false));
-        typeMap.put("bk", new Catalogue("k_qp_gaf_bk", false, true));
+        typeMap.put("bk", new Catalogue("k_qp_gaf_bk", false, true, new Numeric(4, 0, false, false)));
         typeMap.put("bk_name", new Varchar(75, false));
         typeMap.put("bk_ax", new Numeric(6, 2, false));
         typeMap.put("bk_ay", new Numeric(6, 2, false));

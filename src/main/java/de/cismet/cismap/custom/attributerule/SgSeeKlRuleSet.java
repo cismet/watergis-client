@@ -52,7 +52,7 @@ public class SgSeeKlRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true, new Numeric(4, 0, false, false)));
         typeMap.put("see_gn", new Varchar(50, false, true));
         typeMap.put("gbk_lawa", new Numeric(15, 0, true, true));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));

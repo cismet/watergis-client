@@ -62,18 +62,18 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
         typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
-        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
-        typeMap.put("tech", new Catalogue("k_tech", true, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
+        typeMap.put("tech", new Catalogue("k_tech", true, true, new Varchar(10, false, false)));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
         typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
-        typeMap.put("na_gu", new Catalogue("k_na_gu", false, true));
-        typeMap.put("mahd_gu", new Catalogue("k_mahd_gu", false, true));
-        typeMap.put("gu_gu", new Catalogue("k_tech", false, true));
+        typeMap.put("na_gu", new Catalogue("k_na_gu", false, true, new Numeric(4, 0, false, false)));
+        typeMap.put("mahd_gu", new Catalogue("k_mahd_gu", false, true, new Numeric(4, 0, false, false)));
+        typeMap.put("gu_gu", new Catalogue("k_tech", false, true, new Varchar(10, false, false)));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));

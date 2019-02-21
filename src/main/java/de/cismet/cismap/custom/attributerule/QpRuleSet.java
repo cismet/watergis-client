@@ -100,12 +100,12 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
         final DateType date = new DateType(false, true);
 
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st", new Numeric(10, 2, false, false));
         typeMap.put("la_cd", new Numeric(20, 0, false, false));
         typeMap.put("la_st", new Numeric(10, 2, false, false));
-        typeMap.put("l_st", new Catalogue("k_l_st", true, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", true, true, new Varchar(10, false, false)));
         typeMap.put("re", new Numeric(11, 2, true, false));
         typeMap.put("ho", new Numeric(10, 2, true, false));
         typeMap.put("qp_nr", new Numeric(20, 0, true, false));
@@ -115,7 +115,7 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("aufn_name", new Varchar(50, false, true));
         typeMap.put("aufn_datum", date);
         typeMap.put("aufn_zeit", new Time(false, true));
-        typeMap.put("freigabe", new Catalogue("k_freigabe", true, true));
+        typeMap.put("freigabe", new Catalogue("k_freigabe", true, true, new Varchar(10, false, false)));
         typeMap.put("titel", new Varchar(250, false, true));
         typeMap.put("beschreib", new Varchar(250, false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));

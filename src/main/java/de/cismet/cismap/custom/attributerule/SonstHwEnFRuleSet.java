@@ -53,7 +53,7 @@ public class SonstHwEnFRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, true));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, true, new Numeric(4, 0, false, false)));
         typeMap.put("nr", new Numeric(16, 0, false, true));
         typeMap.put("wann", new Varchar(16, false, false));
         typeMap.put("wer", new Varchar(250, true, true));

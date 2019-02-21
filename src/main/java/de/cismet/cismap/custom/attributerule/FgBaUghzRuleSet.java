@@ -60,16 +60,16 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
         typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
-        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
-        typeMap.put("l_rl", new Catalogue("k_l_rl", true, true));
-        typeMap.put("ughz", new Catalogue("k_ughz", true, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", true, true, new Varchar(2, false, false)));
+        typeMap.put("ughz", new Catalogue("k_ughz", true, true, new Varchar(10, false, false)));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
         typeMap.put("obj_nr_gu", new Varchar(50, false, true));
-        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true, new Varchar(10, false, false)));
         typeMap.put("traeger_gu", new Varchar(50, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
         typeMap.put("esw", new BooleanAsInteger(false, true));

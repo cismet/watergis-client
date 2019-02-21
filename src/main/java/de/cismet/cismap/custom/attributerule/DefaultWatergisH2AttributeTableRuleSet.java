@@ -97,7 +97,13 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
 
     {
         typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
-        typeMap.put("ww_gr", new WatergisDefaultRuleSet.Catalogue("k_ww_gr", false, false));
+        typeMap.put(
+            "ww_gr",
+            new WatergisDefaultRuleSet.Catalogue(
+                "k_ww_gr",
+                false,
+                false,
+                new WatergisDefaultRuleSet.Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new WatergisDefaultRuleSet.Varchar(50, false, false));
         typeMap.put("ba_st_von", new WatergisDefaultRuleSet.Numeric(10, 2, false, true));
         typeMap.put("ba_st_bis", new WatergisDefaultRuleSet.Numeric(10, 2, false, true));

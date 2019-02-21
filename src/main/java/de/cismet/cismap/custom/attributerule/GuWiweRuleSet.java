@@ -82,16 +82,16 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true));
-        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
-        typeMap.put("wiwe", new Catalogue("k_wiwe", true, true));
-        typeMap.put("material", new Catalogue("k_material", false, true));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true, new Numeric(4, 0, false, false)));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
+        typeMap.put("wiwe", new Catalogue("k_wiwe", true, true, new Varchar(10, false, false)));
+        typeMap.put("material", new Catalogue("k_material", false, true, new Varchar(10, false, false)));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
         typeMap.put("obj_nr_gu", new Varchar(50, false, true));
-        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true, new Varchar(10, false, false)));
         typeMap.put("traeger_gu", new Varchar(50, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true, new Numeric(1, 0, false, false)));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br", new Numeric(4, 2, false, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));

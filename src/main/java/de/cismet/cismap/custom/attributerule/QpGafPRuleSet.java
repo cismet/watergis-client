@@ -55,12 +55,12 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st", new Numeric(10, 2, false, false));
         typeMap.put("la_cd", new Numeric(15, 0, false, false));
         typeMap.put("la_st", new Numeric(10, 2, false, false));
-        typeMap.put("l_st", new Catalogue("k_l_st", false, false));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, false, new Varchar(10, false, false)));
         typeMap.put("re", new Numeric(11, 2, false, false));
         typeMap.put("ho", new Numeric(10, 2, false, false));
         typeMap.put("qp_nr", new Numeric(20, 0, false, false));
@@ -77,7 +77,7 @@ public class QpGafPRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("id_gaf", new Varchar(50, false, false));
         typeMap.put("y", new Numeric(6, 2, false, false));
         typeMap.put("z", new Numeric(6, 2, false, false));
-        typeMap.put("kz", new Catalogue("k_qp_gaf_kz", true, false));
+        typeMap.put("kz", new Catalogue("k_qp_gaf_kz", true, false, new Varchar(10, false, false)));
         typeMap.put("hw", new Numeric(10, 2, false, false));
         typeMap.put("rw", new Numeric(11, 2, false, false));
         typeMap.put("hyk", new Varchar(10, false, false));

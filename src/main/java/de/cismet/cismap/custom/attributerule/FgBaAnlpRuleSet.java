@@ -63,19 +63,21 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st", new Numeric(10, 2, false, true));
-        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
-        typeMap.put("l_rl", new Catalogue("k_l_rl", false, true));
-        typeMap.put("anlp", new Catalogue("k_anlp", true, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", false, true, new Varchar(2, false, false)));
+        typeMap.put("anlp", new Catalogue("k_anlp", true, true, new Varchar(10, false, false)));
+        typeMap.put("anlp_a", new Catalogue("k_sbef", true, true, new Varchar(10, false, false)));
+        typeMap.put("material_a", new Catalogue("k_material", true, true, new Varchar(10, false, false)));
         typeMap.put("obj_nr", new Numeric(20, 0, false, true));
         typeMap.put("obj_nr_gu", new Varchar(50, false, false));
-        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true, new Varchar(10, false, false)));
         typeMap.put("traeger_gu", new Varchar(50, false, true));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true, new Numeric(1, 0, false, false)));
         typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br", new Numeric(4, 2, false, true));
@@ -158,7 +160,8 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
 
                 if ((rl == null)
                             || !(rl.toString().equals("mi") || rl.toString().equals("re")
-                                || rl.toString().equals("li") || rl.toString().equals("bs")  || rl.toString().equals("nb"))) {
+                                || rl.toString().equals("li") || rl.toString().equals("bs")
+                                || rl.toString().equals("nb"))) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                         "Bei anlp = P/P-Gr/P-Steg/P-Gr-Ste/P-Lat/Sta darf das Attribut l_rl nur die Werte re/li/mi/bs/nb haben.");
                     return oldValue;
@@ -429,7 +432,8 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
 
                 if ((rl == null)
                             || !(rl.toString().equals("mi") || rl.toString().equals("re")
-                                || rl.toString().equals("li") || rl.toString().equals("bs") || rl.toString().equals("nb"))) {
+                                || rl.toString().equals("li") || rl.toString().equals("bs")
+                                || rl.toString().equals("nb"))) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                         "Bei anlp = P/P-Gr/P-Steg/P-Gr-Ste/P-Lat/Sta darf das Attribut l_rl nur die Werte re/li/mi/bs/nb haben.");
                     return false;
