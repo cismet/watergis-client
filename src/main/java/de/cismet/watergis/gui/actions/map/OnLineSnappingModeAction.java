@@ -64,8 +64,7 @@ public class OnLineSnappingModeAction extends AbstractAction implements Snapping
     public void actionPerformed(final ActionEvent e) {
         if (!e.getSource().equals(AppBroker.getInstance())) {
             final MappingComponent map = AppBroker.getInstance().getMappingComponent();
-            map.setSnappingEnabled(true);
-            map.setSnappingOnLineEnabled(true);
+            map.setSnappingMode(MappingComponent.SnappingMode.LINE);
             if (button != null) {
                 button.setIcon((ImageIcon)getValue(SMALL_ICON));
             }

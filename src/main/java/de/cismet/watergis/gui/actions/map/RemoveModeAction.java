@@ -11,50 +11,52 @@
  */
 package de.cismet.watergis.gui.actions.map;
 
+import org.apache.log4j.Logger;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.KeyStroke;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.components.SnappingMode;
+import de.cismet.watergis.gui.actions.selection.*;
 
 /**
  * DOCUMENT ME!
  *
- * @author   therter
+ * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(
-    service = SnappingMode.class,
-    position = 10
-)
-public class NoSnappingModeAction extends AbstractAction implements SnappingMode {
+public class RemoveModeAction extends AbstractAction {
 
-    //~ Instance fields --------------------------------------------------------
+    //~ Static fields/initializers ---------------------------------------------
 
-    private JButton button = null;
+    private static final Logger LOG = Logger.getLogger(RemoveModeAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new CloseAction object.
      */
-    public NoSnappingModeAction() {
+    public RemoveModeAction() {
+        setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                NoSnappingModeAction.class,
-                "NoSnappingModeAction.toolTipText");
+                RemoveModeAction.class,
+                "RemoveModeAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
-        final String text = org.openide.util.NbBundle.getMessage(
-                NoSnappingModeAction.class,
-                "NoSnappingModeAction.text");
+        final String text = org.openide.util.NbBundle.getMessage(RemoveModeAction.class,
+                "RemoveModeAction.text");
         putValue(NAME, text);
+        final String mnemonic = org.openide.util.NbBundle.getMessage(
+                RemoveModeAction.class,
+                "RemoveModeAction.mnemonic");
+        putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/no-snap.png"));
+                    "/de/cismet/watergis/res/icons16/icon-flickrthree.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -62,22 +64,15 @@ public class NoSnappingModeAction extends AbstractAction implements SnappingMode
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        if (!e.getSource().equals(AppBroker.getInstance())) {
-            final MappingComponent map = AppBroker.getInstance().getMappingComponent();
-            map.setSnappingMode(MappingComponent.SnappingMode.OFF);
-            if (button != null) {
-                button.setIcon((ImageIcon)getValue(SMALL_ICON));
-            }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Switch in Remove Mode");
         }
+        AppBroker.getInstance().getMappingComponent().setInteractionMode("REMOVE_MULTIPOLYGON");
+        putValue(SELECTED_KEY, Boolean.TRUE);
     }
 
     @Override
     public boolean isEnabled() {
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
-    }
-
-    @Override
-    public void setParentButton(final JButton button) {
-        this.button = button;
     }
 }
