@@ -11,17 +11,19 @@
  */
 package de.cismet.watergis.gui.actions.map;
 
+import org.apache.log4j.Logger;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.KeyStroke;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.components.SnappingMode;
+import de.cismet.watergis.gui.actions.selection.*;
 
 /**
  * DOCUMENT ME!
@@ -29,32 +31,33 @@ import de.cismet.watergis.gui.components.SnappingMode;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-@org.openide.util.lookup.ServiceProvider(
-    service = SnappingMode.class,
-    position = 10
-)
-public class NoSnappingModeAction extends AbstractAction implements SnappingMode {
+public class ChangePolygonModeAction extends AbstractAction {
 
-    //~ Instance fields --------------------------------------------------------
+    //~ Static fields/initializers ---------------------------------------------
 
-    private JButton button = null;
+    private static final Logger LOG = Logger.getLogger(ChangePolygonModeAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new CloseAction object.
      */
-    public NoSnappingModeAction() {
+    public ChangePolygonModeAction() {
+        setEnabled(false);
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                NoSnappingModeAction.class,
-                "NoSnappingModeAction.toolTipText");
+                ChangePolygonModeAction.class,
+                "ChangePolygonModeAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(
-                NoSnappingModeAction.class,
-                "NoSnappingModeAction.text");
+                ChangePolygonModeAction.class,
+                "ChangePolygonModeAction.text");
         putValue(NAME, text);
+        final String mnemonic = org.openide.util.NbBundle.getMessage(
+                ChangePolygonModeAction.class,
+                "ChangePolygonModeAction.mnemonic");
+        putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/no-snap.png"));
+                    "/de/cismet/watergis/res/icons16/icon-flickr.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -62,22 +65,15 @@ public class NoSnappingModeAction extends AbstractAction implements SnappingMode
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        if (!e.getSource().equals(AppBroker.getInstance())) {
-            final MappingComponent map = AppBroker.getInstance().getMappingComponent();
-            map.setSnappingMode(MappingComponent.SnappingMode.OFF);
-            if (button != null) {
-                button.setIcon((ImageIcon)getValue(SMALL_ICON));
-            }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Switch in change polygon Mode");
         }
+        AppBroker.getInstance().getMappingComponent().setInteractionMode("CHANGE_MULTIPOLYGON");
+        putValue(SELECTED_KEY, Boolean.TRUE);
     }
 
     @Override
     public boolean isEnabled() {
         return true || AppBroker.getInstance().isActionsAlwaysEnabled();
-    }
-
-    @Override
-    public void setParentButton(final JButton button) {
-        this.button = button;
     }
 }

@@ -31,9 +31,9 @@ import de.cismet.watergis.gui.components.SnappingMode;
  */
 @org.openide.util.lookup.ServiceProvider(
     service = SnappingMode.class,
-    position = 10
+    position = 40
 )
-public class NoSnappingModeAction extends AbstractAction implements SnappingMode {
+public class BothSnappingModeAction extends AbstractAction implements SnappingMode {
 
     //~ Instance fields --------------------------------------------------------
 
@@ -44,17 +44,17 @@ public class NoSnappingModeAction extends AbstractAction implements SnappingMode
     /**
      * Creates a new CloseAction object.
      */
-    public NoSnappingModeAction() {
+    public BothSnappingModeAction() {
         final String tooltip = org.openide.util.NbBundle.getMessage(
-                NoSnappingModeAction.class,
-                "NoSnappingModeAction.toolTipText");
+                BothSnappingModeAction.class,
+                "BothSnappingModeAction.toolTipText");
         putValue(SHORT_DESCRIPTION, tooltip);
         final String text = org.openide.util.NbBundle.getMessage(
-                NoSnappingModeAction.class,
-                "NoSnappingModeAction.text");
+                BothSnappingModeAction.class,
+                "BothSnappingModeAction.text");
         putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/no-snap.png"));
+                    "/de/cismet/watergis/res/icons16/icon-abacus.png"));
         putValue(SMALL_ICON, icon);
     }
 
@@ -64,7 +64,7 @@ public class NoSnappingModeAction extends AbstractAction implements SnappingMode
     public void actionPerformed(final ActionEvent e) {
         if (!e.getSource().equals(AppBroker.getInstance())) {
             final MappingComponent map = AppBroker.getInstance().getMappingComponent();
-            map.setSnappingMode(MappingComponent.SnappingMode.OFF);
+            map.setSnappingMode(MappingComponent.SnappingMode.BOTH);
             if (button != null) {
                 button.setIcon((ImageIcon)getValue(SMALL_ICON));
             }

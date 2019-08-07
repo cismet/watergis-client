@@ -28,7 +28,6 @@ import javax.swing.KeyStroke;
 import de.cismet.cismap.commons.features.DrawingSLDStyledFeature;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.gui.MappingComponent;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.actions.FeatureCreateAction;
 
 import de.cismet.watergis.broker.AppBroker;
 

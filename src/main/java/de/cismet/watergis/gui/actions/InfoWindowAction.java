@@ -180,6 +180,17 @@ public class InfoWindowAction extends AbstractAction {
 
     /**
      * DOCUMENT ME!
+     *
+     * @param  listener  DOCUMENT ME!
+     */
+    public void removeFeatureInfoPanelListener(final FeatureInfoPanelListener listener) {
+        if (featureInfoPanel != null) {
+            featureInfoPanel.removeFeatureInfoPanelListeners(listener);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
      */
     public void dispose() {
         if (featureInfoPanel != null) {
