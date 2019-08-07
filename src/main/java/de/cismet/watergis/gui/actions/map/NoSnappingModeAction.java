@@ -64,8 +64,7 @@ public class NoSnappingModeAction extends AbstractAction implements SnappingMode
     public void actionPerformed(final ActionEvent e) {
         if (!e.getSource().equals(AppBroker.getInstance())) {
             final MappingComponent map = AppBroker.getInstance().getMappingComponent();
-            map.setSnappingEnabled(false);
-            map.setSnappingOnLineEnabled(false);
+            map.setSnappingMode(MappingComponent.SnappingMode.OFF);
             if (button != null) {
                 button.setIcon((ImageIcon)getValue(SMALL_ICON));
             }

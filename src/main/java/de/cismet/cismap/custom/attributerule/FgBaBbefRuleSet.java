@@ -79,21 +79,21 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
         typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
-        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
-        typeMap.put("l_rl", new Catalogue("k_l_rl", true, true));
-        typeMap.put("bbef", new Catalogue("k_bbef", true, true, true));
-        typeMap.put("material", new Catalogue("k_material", false, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", true, true, new Varchar(2, false, false)));
+        typeMap.put("bbef", new Catalogue("k_bbef", true, true, true, new Varchar(10, false, false)));
+        typeMap.put("material", new Catalogue("k_material", false, true, new Varchar(10, false, false)));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
         typeMap.put("obj_nr_gu", new Varchar(50, false, false));
-        typeMap.put("traeger", new Catalogue("k_traeger", false, true));
+        typeMap.put("traeger", new Catalogue("k_traeger", false, true, new Varchar(10, false, false)));
         typeMap.put("traeger_gu", new Varchar(50, false, false));
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, false, true));
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
-        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true));
+        typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true, new Numeric(1, 0, false, false)));
         typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("br", new Numeric(4, 2, false, true));

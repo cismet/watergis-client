@@ -1571,7 +1571,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         final Geometry routeGeom = helper.getRouteGeometryFromStationBean(
                                 helper.getStationBeanFromLineBean(lineBean, true));
 
-                        if ((routeGeom != null) && (((Double)newValue).doubleValue() > routeGeom.getLength())) {
+                        if ((routeGeom != null)
+                                    && ((((Double)newValue).doubleValue() - 0.01) > routeGeom.getLength())) {
                             EventQueue.invokeLater(new Runnable() {
 
                                     @Override
@@ -1793,39 +1794,39 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             }
         }
 
-        final CrossedLinesCheck check = new CrossedLinesCheck();
-
-        for (final FeatureServiceFeature feature : features) {
-            final Geometry geo = feature.getGeometry();
-            if (!check.check(geo, null, false)) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Die Geometrie des Objektes mit der id "
-                            + feature.getId()
-                            + " überschneidet sich ",
-                    "Ungültiger Wert",
-                    JOptionPane.ERROR_MESSAGE);
-
-                return false;
-            } else {
-                final Coordinate[] coords = geo.getCoordinates();
-                Coordinate lastCoord = null;
-
-                for (final Coordinate c : coords) {
-                    if ((lastCoord != null) && lastCoord.equals(c)) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Geometrie des Objektes mit der id "
-                                    + feature.getId()
-                                    + " besitzt doppelte Punkte",
-                            "Ungültiger Wert",
-                            JOptionPane.ERROR_MESSAGE);
-
-                        return false;
-                    }
-
-                    lastCoord = c;
-                }
-            }
-        }
+//        final CrossedLinesCheck check = new CrossedLinesCheck();
+//
+//        for (final FeatureServiceFeature feature : features) {
+//            final Geometry geo = feature.getGeometry();
+//            if (!check.check(geo, null, false)) {
+//                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                    "Die Geometrie des Objektes mit der id "
+//                            + feature.getId()
+//                            + " überschneidet sich ",
+//                    "Ungültiger Wert",
+//                    JOptionPane.ERROR_MESSAGE);
+//
+//                return false;
+//            } else {
+//                final Coordinate[] coords = geo.getCoordinates();
+//                Coordinate lastCoord = null;
+//
+//                for (final Coordinate c : coords) {
+//                    if ((lastCoord != null) && lastCoord.equals(c)) {
+//                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                            "Die Geometrie des Objektes mit der id "
+//                                    + feature.getId()
+//                                    + " besitzt doppelte Punkte",
+//                            "Ungültiger Wert",
+//                            JOptionPane.ERROR_MESSAGE);
+//
+//                        return false;
+//                    }
+//
+//                    lastCoord = c;
+//                }
+//            }
+//        }
 
         return true;
     }
@@ -1842,6 +1843,31 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         final int tmpPrecision = bd.precision();
         final int digitsOnTheLeft = bd.toBigInteger().toString().length();
         System.out.println("scale " + tmpScale + " precision " + tmpPrecision + " left " + digitsOnTheLeft);
+    }
+
+    //~ Inner Interfaces -------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    public static interface SubDataType {
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  dataType  DOCUMENT ME!
+         */
+        void setDataType(DataType dataType);
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        DataType getDataType();
     }
 
     //~ Inner Classes ----------------------------------------------------------
@@ -2306,7 +2332,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    public static class BooleanAsInteger extends DataType {
+    public static class BooleanAsInteger extends DataType implements SubDataType {
 
         //~ Constructors -------------------------------------------------------
 
@@ -2354,6 +2380,16 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         @Override
         public String toString() {
             return "Numeric(1,0)";
+        }
+
+        @Override
+        public void setDataType(final DataType dataType) {
+            // nothing to do
+        }
+
+        @Override
+        public DataType getDataType() {
+            return new Numeric(1, 0, false);
         }
     }
 
@@ -2832,12 +2868,13 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class Catalogue extends DataType {
+    public static class Catalogue extends DataType implements SubDataType {
 
         //~ Instance fields ----------------------------------------------------
 
         private final String catalogueReference;
         private boolean rightAlignment = false;
+        private DataType dataType;
 
         //~ Constructors -------------------------------------------------------
 
@@ -2851,6 +2888,23 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         public Catalogue(final String catalogueReference, final boolean notNull, final boolean editable) {
             super(notNull, false, editable, null, null);
             this.catalogueReference = catalogueReference;
+        }
+
+        /**
+         * Creates a new Catalogue object.
+         *
+         * @param  catalogueReference  DOCUMENT ME!
+         * @param  notNull             DOCUMENT ME!
+         * @param  editable            DOCUMENT ME!
+         * @param  dataType            DOCUMENT ME!
+         */
+        public Catalogue(final String catalogueReference,
+                final boolean notNull,
+                final boolean editable,
+                final DataType dataType) {
+            super(notNull, false, editable, null, null);
+            this.catalogueReference = catalogueReference;
+            this.dataType = dataType;
         }
 
         /**
@@ -2874,6 +2928,25 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
          *
          * @param  catalogueReference  DOCUMENT ME!
          * @param  notNull             DOCUMENT ME!
+         * @param  editable            DOCUMENT ME!
+         * @param  rightAlignment      DOCUMENT ME!
+         * @param  dataType            DOCUMENT ME!
+         */
+        public Catalogue(final String catalogueReference,
+                final boolean notNull,
+                final boolean editable,
+                final boolean rightAlignment,
+                final DataType dataType) {
+            this(catalogueReference, notNull, editable);
+            this.rightAlignment = rightAlignment;
+            this.dataType = dataType;
+        }
+
+        /**
+         * Creates a new Catalogue object.
+         *
+         * @param  catalogueReference  DOCUMENT ME!
+         * @param  notNull             DOCUMENT ME!
          * @param  unique              DOCUMENT ME!
          * @param  field               DOCUMENT ME!
          * @param  table               DOCUMENT ME!
@@ -2888,6 +2961,16 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void setDataType(final DataType dataType) {
+            this.dataType = dataType;
+        }
+
+        @Override
+        public DataType getDataType() {
+            return this.dataType;
+        }
 
         /**
          * DOCUMENT ME!

@@ -102,6 +102,12 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
     private boolean cancelled = false;
     private int selectedThemeFeatureCount = -1;
+    private int selectedThemeFgFeatureCount = -1;
+    private int selectedThemeFgBreiteFeatureCount = -1;
+    private int selectedThemeFgFlaecheFeatureCount = -1;
+    private int selectedThemeSeeFeatureCount = -1;
+    private int selectedThemeKleinseeFeatureCount = -1;
+    private int selectedThemeOstseeFeatureCount = -1;
     private int selectedGewFeatureCount = -1;
     private String lastValue = "";
 
@@ -112,17 +118,25 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
     private javax.swing.JComboBox cbbAttr2;
     private javax.swing.JComboBox cbbFlaeche;
     private javax.swing.JCheckBox ckbFgFlaechen;
+    private javax.swing.JCheckBox ckbFgFlaechenSelected;
     private javax.swing.JCheckBox ckbFlSelection;
     private javax.swing.JCheckBox ckbKleinsee;
+    private javax.swing.JCheckBox ckbKleinseeSelected;
     private javax.swing.JCheckBox ckbOffeneFg;
     private javax.swing.JCheckBox ckbOffeneFgBreite;
+    private javax.swing.JCheckBox ckbOffeneFgBreiteSelected;
+    private javax.swing.JCheckBox ckbOffeneFgSelected;
     private javax.swing.JCheckBox ckbOstsee;
+    private javax.swing.JCheckBox ckbOstseeSelected;
     private javax.swing.JCheckBox ckbPerArea;
     private javax.swing.JCheckBox ckbSee;
+    private javax.swing.JCheckBox ckbSeeSelected;
     private javax.swing.JCheckBox ckbStand;
+    private javax.swing.JCheckBox ckbStandSelected;
     private javax.swing.JCheckBox ckbVar1;
     private javax.swing.JCheckBox ckbVar2;
     private javax.swing.Box.Filler filler1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -261,6 +275,14 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                                         public void run() {
                                             selectedThemeFeatureCount = refreshSelectedFeatureCount(
                                                     false);
+                                            selectedThemeFgFeatureCount = refreshSelectedFgFeatureCount(false);
+                                            selectedThemeFgBreiteFeatureCount = refreshSelectedFgBreiteFeatureCount(
+                                                    false);
+                                            selectedThemeFgFlaecheFeatureCount = refreshSelectedFgFlaechenFeatureCount(
+                                                    false);
+                                            selectedThemeSeeFeatureCount = refreshSelectedSeeFeatureCount(false);
+                                            selectedThemeKleinseeFeatureCount = refreshSelectedSeeKlFeatureCount(false);
+                                            selectedThemeOstseeFeatureCount = refreshSelectedOstSeeFeatureCount(false);
                                         }
                                     });
                             }
@@ -412,6 +434,12 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
         if (b) {
             cancelled = true;
             selectedThemeFeatureCount = refreshSelectedFeatureCount(true);
+            selectedThemeFgFeatureCount = refreshSelectedFgFeatureCount(true);
+            selectedThemeFgBreiteFeatureCount = refreshSelectedFgBreiteFeatureCount(true);
+            selectedThemeFgFlaecheFeatureCount = refreshSelectedFgFlaechenFeatureCount(true);
+            selectedThemeSeeFeatureCount = refreshSelectedSeeFeatureCount(true);
+            selectedThemeKleinseeFeatureCount = refreshSelectedSeeKlFeatureCount(true);
+            selectedThemeOstseeFeatureCount = refreshSelectedOstSeeFeatureCount(true);
         }
         super.setVisible(b);
     }
@@ -506,6 +534,14 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
         cbbAttr2 = new javax.swing.JComboBox();
         ckbFlSelection = new javax.swing.JCheckBox();
         ckbPerArea = new javax.swing.JCheckBox();
+        ckbOffeneFgSelected = new javax.swing.JCheckBox();
+        ckbOffeneFgBreiteSelected = new javax.swing.JCheckBox();
+        ckbFgFlaechenSelected = new javax.swing.JCheckBox();
+        ckbStandSelected = new javax.swing.JCheckBox();
+        ckbSeeSelected = new javax.swing.JCheckBox();
+        ckbKleinseeSelected = new javax.swing.JCheckBox();
+        ckbOstseeSelected = new javax.swing.JCheckBox();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(
@@ -632,7 +668,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 15, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 15, 5, 10);
         getContentPane().add(ckbOffeneFg, gridBagConstraints);
 
         ckbOffeneFgBreite.setSelected(true);
@@ -651,9 +687,9 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 15, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 15, 5, 10);
         getContentPane().add(ckbOffeneFgBreite, gridBagConstraints);
 
         txtGerBr.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
@@ -671,7 +707,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 15, 10, 10);
         getContentPane().add(txtGerBr, gridBagConstraints);
@@ -684,10 +720,9 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 10, 0);
         getContentPane().add(labM, gridBagConstraints);
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
@@ -734,9 +769,9 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 15, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 15, 5, 10);
         getContentPane().add(ckbFgFlaechen, gridBagConstraints);
 
         ckbStand.setSelected(true);
@@ -746,6 +781,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 FgGerogaRsDialog.class,
                 "FgGerogaRsDialog.ckbStand.text",
                 new Object[] {})); // NOI18N
+        ckbStand.setEnabled(false);
         ckbStand.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -755,9 +791,9 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 15, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 15, 5, 10);
         getContentPane().add(ckbStand, gridBagConstraints);
 
         ckbSee.setSelected(true);
@@ -776,9 +812,9 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 25, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 30, 5, 10);
         getContentPane().add(ckbSee, gridBagConstraints);
 
         ckbKleinsee.setSelected(true);
@@ -797,9 +833,9 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 25, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 30, 5, 10);
         getContentPane().add(ckbKleinsee, gridBagConstraints);
 
         ckbOstsee.setSelected(true);
@@ -818,7 +854,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 17;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 15, 10, 10);
         getContentPane().add(ckbOstsee, gridBagConstraints);
@@ -1029,6 +1065,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 FgGerogaRsDialog.class,
                 "FgGerogaRsDialog.txtVar2Br.text",
                 new Object[] {})); // NOI18N
+        txtVar2Br.setEnabled(false);
         txtVar2Br.setPreferredSize(new java.awt.Dimension(50, 27));
         txtVar2Br.addFocusListener(new java.awt.event.FocusAdapter() {
 
@@ -1071,6 +1108,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                 FgGerogaRsDialog.class,
                 "FgGerogaRsDialog.txtVar2St.text",
                 new Object[] {})); // NOI18N
+        txtVar2St.setEnabled(false);
         txtVar2St.setPreferredSize(new java.awt.Dimension(50, 27));
         txtVar2St.addFocusListener(new java.awt.event.FocusAdapter() {
 
@@ -1117,7 +1155,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 18;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel5, gridBagConstraints);
@@ -1263,10 +1301,177 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 20;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel6, gridBagConstraints);
+
+        ckbOffeneFgSelected.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbOffeneFgSelected,
+            org.openide.util.NbBundle.getMessage(
+                FgGerogaRsDialog.class,
+                "FgGerogaRsDialog.ckbOffeneFgSelected.text",
+                new Object[] {})); // NOI18N
+        ckbOffeneFgSelected.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbOffeneFgSelectedActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        getContentPane().add(ckbOffeneFgSelected, gridBagConstraints);
+
+        ckbOffeneFgBreiteSelected.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbOffeneFgBreiteSelected,
+            org.openide.util.NbBundle.getMessage(
+                FgGerogaRsDialog.class,
+                "FgGerogaRsDialog.ckbOffeneFgBreiteSelected.text",
+                new Object[] {})); // NOI18N
+        ckbOffeneFgBreiteSelected.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbOffeneFgBreiteSelectedActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        getContentPane().add(ckbOffeneFgBreiteSelected, gridBagConstraints);
+
+        ckbFgFlaechenSelected.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbFgFlaechenSelected,
+            org.openide.util.NbBundle.getMessage(
+                FgGerogaRsDialog.class,
+                "FgGerogaRsDialog.ckbFgFlaechenSelected.text",
+                new Object[] {})); // NOI18N
+        ckbFgFlaechenSelected.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbFgFlaechenSelectedActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        getContentPane().add(ckbFgFlaechenSelected, gridBagConstraints);
+
+        ckbStandSelected.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbStandSelected,
+            org.openide.util.NbBundle.getMessage(
+                FgGerogaRsDialog.class,
+                "FgGerogaRsDialog.ckbStandSelected.text",
+                new Object[] {})); // NOI18N
+        ckbStandSelected.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbStandSelectedActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        getContentPane().add(ckbStandSelected, gridBagConstraints);
+
+        ckbSeeSelected.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbSeeSelected,
+            org.openide.util.NbBundle.getMessage(
+                FgGerogaRsDialog.class,
+                "FgGerogaRsDialog.ckbSeeSelected.text",
+                new Object[] {})); // NOI18N
+        ckbSeeSelected.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbSeeSelectedActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        getContentPane().add(ckbSeeSelected, gridBagConstraints);
+
+        ckbKleinseeSelected.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbKleinseeSelected,
+            org.openide.util.NbBundle.getMessage(
+                FgGerogaRsDialog.class,
+                "FgGerogaRsDialog.ckbKleinseeSelected.text",
+                new Object[] {})); // NOI18N
+        ckbKleinseeSelected.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbKleinseeSelectedActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 12;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        getContentPane().add(ckbKleinseeSelected, gridBagConstraints);
+
+        ckbOstseeSelected.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbOstseeSelected,
+            org.openide.util.NbBundle.getMessage(
+                FgGerogaRsDialog.class,
+                "FgGerogaRsDialog.ckbOstseeSelected.text",
+                new Object[] {})); // NOI18N
+        ckbOstseeSelected.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbOstseeSelectedActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 17;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        getContentPane().add(ckbOstseeSelected, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel1,
+            org.openide.util.NbBundle.getMessage(
+                FgGerogaRsDialog.class,
+                "FgGerogaRsDialog.jLabel1.text",
+                new Object[] {})); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 40, 5, 10);
+        getContentPane().add(jLabel1, gridBagConstraints);
 
         pack();
     } // </editor-fold>//GEN-END:initComponents
@@ -1462,7 +1667,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void ckbSeeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbSeeActionPerformed
-        ckbStand.setSelected(ckbSee.isSelected() && ckbKleinsee.isSelected());
+        ckbStand.setSelected(ckbSee.isSelected() || ckbKleinsee.isSelected());
         CheckBoxCheck();
     }                                                                          //GEN-LAST:event_ckbSeeActionPerformed
 
@@ -1472,7 +1677,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void ckbKleinseeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbKleinseeActionPerformed
-        ckbStand.setSelected(ckbSee.isSelected() && ckbKleinsee.isSelected());
+        ckbStand.setSelected(ckbSee.isSelected() || ckbKleinsee.isSelected());
         CheckBoxCheck();
     }                                                                               //GEN-LAST:event_ckbKleinseeActionPerformed
 
@@ -1577,6 +1782,70 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             txtVar2St.setText("4");
         }
     } //GEN-LAST:event_txtVar2StFocusLost
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbOffeneFgSelectedActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbOffeneFgSelectedActionPerformed
+        // TODO add your handling code here:
+    } //GEN-LAST:event_ckbOffeneFgSelectedActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbOffeneFgBreiteSelectedActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbOffeneFgBreiteSelectedActionPerformed
+        // TODO add your handling code here:
+    } //GEN-LAST:event_ckbOffeneFgBreiteSelectedActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbFgFlaechenSelectedActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbFgFlaechenSelectedActionPerformed
+        // TODO add your handling code here:
+    } //GEN-LAST:event_ckbFgFlaechenSelectedActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbStandSelectedActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbStandSelectedActionPerformed
+        ckbSeeSelected.setSelected(ckbStandSelected.isSelected());
+        ckbKleinseeSelected.setSelected(ckbStandSelected.isSelected());
+    }                                                                                    //GEN-LAST:event_ckbStandSelectedActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbSeeSelectedActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbSeeSelectedActionPerformed
+        ckbStandSelected.setSelected(ckbSeeSelected.isSelected() || ckbKleinseeSelected.isSelected());
+    }                                                                                  //GEN-LAST:event_ckbSeeSelectedActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbKleinseeSelectedActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbKleinseeSelectedActionPerformed
+        ckbStandSelected.setSelected(ckbSeeSelected.isSelected() || ckbKleinseeSelected.isSelected());
+    }                                                                                       //GEN-LAST:event_ckbKleinseeSelectedActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbOstseeSelectedActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbOstseeSelectedActionPerformed
+        // TODO add your handling code here:
+    } //GEN-LAST:event_ckbOstseeSelectedActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -1755,11 +2024,17 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                             bboxGeometry,
                             ckbOffeneFg.isSelected(),
                             ckbOffeneFgBreite.isSelected(),
-                            ckbFgFlaechen.isSelected(),
-                            ckbSee.isSelected(),
-                            ckbKleinsee.isSelected(),
-                            ckbOstsee.isSelected(),
-                            br);
+                            ckbFgFlaechen.isSelected()
+                                    && !ckbFgFlaechenSelected.isSelected(),
+                            ckbSee.isSelected()
+                                    && !ckbSeeSelected.isSelected(),
+                            ckbKleinsee.isSelected()
+                                    && !ckbKleinseeSelected.isSelected(),
+                            ckbOstsee.isSelected()
+                                    && !ckbOstseeSelected.isSelected(),
+                            br,
+                            (ckbOffeneFgSelected.isSelected() ? selectedFgAsBaCd() : null),
+                            (ckbOffeneFgBreiteSelected.isSelected() ? selectedFgAsId() : null));
 
                     final User user = SessionManager.getSession().getUser();
                     final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
@@ -1778,6 +2053,53 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                             totalGeom = wkbReader.read((byte[])attributes.get(0).get(0));
                         }
                     }
+
+                    if (ckbFgFlaechenSelected.isSelected()) {
+                        final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
+
+                        for (final AbstractFeatureService s : getAllActiveServices("dlm25w.fg_ba_fl")) {
+                            set.addAll(FeatureServiceHelper.getSelectedFeatures(s));
+                        }
+
+                        final Geometry g = GeometryUtils.unionFeatureGeometries(new ArrayList<FeatureServiceFeature>(
+                                    set));
+                        totalGeom = totalGeom.union(g);
+                    }
+                    if (ckbSeeSelected.isSelected()) {
+                        final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
+
+                        for (final AbstractFeatureService s : getAllActiveServices("dlm25w.sg_see")) {
+                            set.addAll(FeatureServiceHelper.getSelectedFeatures(s));
+                        }
+
+                        final Geometry g = GeometryUtils.unionFeatureGeometries(new ArrayList<FeatureServiceFeature>(
+                                    set));
+                        totalGeom = totalGeom.union(g);
+                    }
+                    if (ckbKleinseeSelected.isSelected()) {
+                        final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
+
+                        for (final AbstractFeatureService s : getAllActiveServices("dlm25w.sg_see_kl")) {
+                            set.addAll(FeatureServiceHelper.getSelectedFeatures(s));
+                        }
+
+                        final Geometry g = GeometryUtils.unionFeatureGeometries(new ArrayList<FeatureServiceFeature>(
+                                    set));
+                        totalGeom = totalGeom.union(g);
+                    }
+
+                    if (ckbOstseeSelected.isSelected()) {
+                        final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
+
+                        for (final AbstractFeatureService s : getAllActiveServices("dlm25w.ezg_mv_ostsee")) {
+                            set.addAll(FeatureServiceHelper.getSelectedFeatures(s));
+                        }
+
+                        final Geometry g = GeometryUtils.unionFeatureGeometries(new ArrayList<FeatureServiceFeature>(
+                                    set));
+                        totalGeom = totalGeom.union(g);
+                    }
+
                     if (canceled) {
                         return null;
                     }
@@ -1790,6 +2112,36 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                     } else {
                         return createStreifen(totalGeom, useAreas, areaFeatures, service);
                     }
+                }
+
+                private String[] selectedFgAsBaCd() {
+                    final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
+
+                    for (final AbstractFeatureService s : getAllActiveServices("dlm25w.fg_ba")) {
+                        set.addAll(FeatureServiceHelper.getSelectedFeatures(s));
+                    }
+                    final ArrayList<String> st = new ArrayList<String>();
+
+                    for (final FeatureServiceFeature tmp : set) {
+                        st.add((String)tmp.getProperty("ba_cd"));
+                    }
+
+                    return st.toArray(new String[st.size()]);
+                }
+
+                private Integer[] selectedFgAsId() {
+                    final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
+
+                    for (final AbstractFeatureService s : getAllActiveServices("dlm25w.fg_ba")) {
+                        set.addAll(FeatureServiceHelper.getSelectedFeatures(s));
+                    }
+                    final ArrayList<Integer> st = new ArrayList<Integer>();
+
+                    for (final FeatureServiceFeature tmp : set) {
+                        st.add((Integer)tmp.getId());
+                    }
+
+                    return st.toArray(new Integer[st.size()]);
                 }
 
                 /**
@@ -1808,7 +2160,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                         final boolean useAreas,
                         final List<FeatureServiceFeature> areaFeature,
                         final AbstractFeatureService areaService) throws Exception {
-                    Geometry oldRs = totalGeom;
+                    Geometry oldRs = totalGeom.buffer(0);
                     H2FeatureService targetlayer = null;
                     final Timestamp time = new Timestamp(new Date().getTime());
                     final String user = SessionManager.getSession().getUser().getName();
@@ -2174,6 +2526,7 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
      * @throws  Exception  DOCUMENT ME!
      */
     private Geometry buffer(final Geometry g, final double dist) throws Exception {
+//        return g.buffer(dist);
         Geometry bufferedGeometry = null;
         final CidsServerSearch search = new Buffer(g, dist);
 
@@ -2262,86 +2615,298 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
     /**
      * DOCUMENT ME!
      *
+     * @param   tableName  DOCUMENT ME!
+     *
      * @return  DOCUMENT ME!
      */
-    public FeatureServiceFeature[] getSelectedGew() {
+    private List<AbstractFeatureService> getAllActiveServices(final String tableName) {
+        final List<AbstractFeatureService> serviceList = new ArrayList<AbstractFeatureService>();
+        final ActiveLayerModel mappingModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
+                    .getMappingModel();
+        final TreeMap treeMap = mappingModel.getMapServices();
+        final List<Integer> keyList = new ArrayList<Integer>(treeMap.keySet());
+        final Iterator it = keyList.iterator();
+
+        while (it.hasNext()) {
+            final Object service = treeMap.get(it.next());
+
+            if (service instanceof CidsLayer) {
+                final CidsLayer featureService = (CidsLayer)service;
+
+                if (featureService.getMetaClass().getTableName().equalsIgnoreCase(tableName)) {
+                    try {
+                        if (!featureService.isInitialized()) {
+                            ((AbstractFeatureService)service).initAndWait();
+                        }
+                        serviceList.add(featureService);
+                    } catch (Exception e) {
+                        LOG.error("Error while initialising service", e);
+                    }
+                }
+            }
+        }
+
+        return serviceList;
+    }
+
+    /**
+     * refreshes the ckbOffeneFgSelected label.
+     *
+     * @param   forceGuiRefresh  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public int refreshSelectedFgFeatureCount(final boolean forceGuiRefresh) {
         final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
 
-        for (final AbstractFeatureService service : getAllActiveFgBaServices()) {
+        for (final AbstractFeatureService service : getAllActiveServices("dlm25w.fg_ba")) {
             set.addAll(FeatureServiceHelper.getSelectedFeatures(service));
         }
 
-        return set.toArray(new FeatureServiceFeature[set.size()]);
+        final int count = set.size();
+
+        ckbOffeneFgSelected.setText(NbBundle.getMessage(
+                GewaesserReportDialog.class,
+                "FgGerogaRsDialog.ckbOffeneFgSelected.text") + " "
+                    + NbBundle.getMessage(
+                        BufferDialog.class,
+                        "FgGerogaRsDialog.refreshSelectedFgCount.text",
+                        count));
+
+        ckbOffeneFgSelected.setEnabled(true);
+
+        if (forceGuiRefresh || (count != selectedThemeFgFeatureCount)) {
+            ckbOffeneFgSelected.setSelected(count > 0);
+        }
+
+        if (count == 0) {
+            ckbOffeneFgSelected.setSelected(false);
+            ckbOffeneFgSelected.setEnabled(false);
+        }
+
+        return count;
     }
 
     /**
-     * DOCUMENT ME!
+     * refreshes the ckbOffeneFgSelected label.
+     *
+     * @param   forceGuiRefresh  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private List<AbstractFeatureService> getAllActiveFgBaServices() {
-        final List<AbstractFeatureService> serviceList = new ArrayList<AbstractFeatureService>();
-        final ActiveLayerModel mappingModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
-                    .getMappingModel();
-        final TreeMap treeMap = mappingModel.getMapServices();
-        final List<Integer> keyList = new ArrayList<Integer>(treeMap.keySet());
-        final Iterator it = keyList.iterator();
+    public int refreshSelectedFgBreiteFeatureCount(final boolean forceGuiRefresh) {
+        final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
 
-        while (it.hasNext()) {
-            final Object service = treeMap.get(it.next());
-
-            if (service instanceof CidsLayer) {
-                final CidsLayer featureService = (CidsLayer)service;
-
-                if (featureService.getMetaClass().getTableName().equalsIgnoreCase("dlm25w.fg_ba")) {
-                    try {
-                        if (!featureService.isInitialized()) {
-                            ((AbstractFeatureService)service).initAndWait();
-                        }
-                        serviceList.add(featureService);
-                    } catch (Exception e) {
-                        LOG.error("Error while initialising service", e);
-                    }
-                }
-            }
+        for (final AbstractFeatureService service : getAllActiveServices("dlm25w.fg_ba")) {
+            set.addAll(FeatureServiceHelper.getSelectedFeatures(service));
         }
 
-        return serviceList;
+        final int count = set.size();
+
+        ckbOffeneFgBreiteSelected.setText(NbBundle.getMessage(
+                GewaesserReportDialog.class,
+                "FgGerogaRsDialog.ckbOffeneFgBreiteSelected.text") + " "
+                    + NbBundle.getMessage(
+                        BufferDialog.class,
+                        "FgGerogaRsDialog.refreshSelectedFgBreiteCount.text",
+                        count));
+
+        ckbOffeneFgBreiteSelected.setEnabled(true);
+
+        if (forceGuiRefresh || (count != selectedThemeFgBreiteFeatureCount)) {
+            ckbOffeneFgBreiteSelected.setSelected(count > 0);
+        }
+
+        if (count == 0) {
+            ckbOffeneFgBreiteSelected.setSelected(false);
+            ckbOffeneFgBreiteSelected.setEnabled(false);
+        }
+
+        return count;
     }
 
     /**
-     * DOCUMENT ME!
+     * refreshes the ckbOffeneFgSelected label.
+     *
+     * @param   forceGuiRefresh  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private List<AbstractFeatureService> getAllActiveGmdServices() {
-        final List<AbstractFeatureService> serviceList = new ArrayList<AbstractFeatureService>();
-        final ActiveLayerModel mappingModel = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
-                    .getMappingModel();
-        final TreeMap treeMap = mappingModel.getMapServices();
-        final List<Integer> keyList = new ArrayList<Integer>(treeMap.keySet());
-        final Iterator it = keyList.iterator();
+    public int refreshSelectedFgFlaechenFeatureCount(final boolean forceGuiRefresh) {
+        final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
 
-        while (it.hasNext()) {
-            final Object service = treeMap.get(it.next());
-
-            if (service instanceof CidsLayer) {
-                final CidsLayer featureService = (CidsLayer)service;
-
-                if (featureService.getMetaClass().getTableName().equalsIgnoreCase("dlm25w.vw_alk_gmd")) {
-                    try {
-                        if (!featureService.isInitialized()) {
-                            ((AbstractFeatureService)service).initAndWait();
-                        }
-                        serviceList.add(featureService);
-                    } catch (Exception e) {
-                        LOG.error("Error while initialising service", e);
-                    }
-                }
-            }
+        for (final AbstractFeatureService service : getAllActiveServices("dlm25w.fg_ba_fl")) {
+            set.addAll(FeatureServiceHelper.getSelectedFeatures(service));
         }
 
-        return serviceList;
+        final int count = set.size();
+
+        ckbFgFlaechenSelected.setText(NbBundle.getMessage(
+                GewaesserReportDialog.class,
+                "FgGerogaRsDialog.ckbFgFlaechenSelected.text") + " "
+                    + NbBundle.getMessage(
+                        BufferDialog.class,
+                        "FgGerogaRsDialog.refreshSelectedFgFlaecheCount.text",
+                        count));
+
+        ckbFgFlaechenSelected.setEnabled(true);
+
+        if (forceGuiRefresh || (count != selectedThemeFgFlaecheFeatureCount)) {
+            ckbFgFlaechenSelected.setSelected(count > 0);
+        }
+
+        if (count == 0) {
+            ckbFgFlaechenSelected.setSelected(false);
+            ckbFgFlaechenSelected.setEnabled(false);
+        }
+
+        return count;
+    }
+
+    /**
+     * refreshes the ckbOffeneFgSelected label.
+     *
+     * @param   forceGuiRefresh  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public int refreshSelectedSeeFeatureCount(final boolean forceGuiRefresh) {
+        final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
+
+        for (final AbstractFeatureService service : getAllActiveServices("dlm25w.sg_see")) {
+            set.addAll(FeatureServiceHelper.getSelectedFeatures(service));
+        }
+
+        final int count = set.size();
+
+        ckbSeeSelected.setText(NbBundle.getMessage(
+                GewaesserReportDialog.class,
+                "FgGerogaRsDialog.ckbSeeSelected.text") + " "
+                    + NbBundle.getMessage(
+                        BufferDialog.class,
+                        "FgGerogaRsDialog.refreshSelectedSeeCount.text",
+                        count));
+
+        ckbSeeSelected.setEnabled(true);
+
+        if (forceGuiRefresh || (count != selectedThemeSeeFeatureCount)) {
+            ckbSeeSelected.setSelected(count > 0);
+        }
+
+        if (count == 0) {
+            ckbSeeSelected.setSelected(false);
+            ckbSeeSelected.setEnabled(false);
+        }
+
+        return count;
+    }
+
+    /**
+     * refreshes the ckbOffeneFgSelected label.
+     *
+     * @param   forceGuiRefresh  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public int refreshSelectedSeeKlFeatureCount(final boolean forceGuiRefresh) {
+        final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
+
+        for (final AbstractFeatureService service : getAllActiveServices("dlm25w.sg_see_kl")) {
+            set.addAll(FeatureServiceHelper.getSelectedFeatures(service));
+        }
+
+        final int count = set.size();
+
+        ckbKleinseeSelected.setText(NbBundle.getMessage(
+                GewaesserReportDialog.class,
+                "FgGerogaRsDialog.ckbKleinseeSelected.text") + " "
+                    + NbBundle.getMessage(
+                        BufferDialog.class,
+                        "FgGerogaRsDialog.refreshSelectedKleinseeCount.text",
+                        count));
+
+        ckbKleinseeSelected.setEnabled(true);
+
+        if (forceGuiRefresh || (count != selectedThemeKleinseeFeatureCount)) {
+            ckbKleinseeSelected.setSelected(count > 0);
+        }
+
+        if (count == 0) {
+            ckbKleinseeSelected.setSelected(false);
+            ckbKleinseeSelected.setEnabled(false);
+        }
+
+        return count;
+    }
+
+    /**
+     * refreshes the ckbOffeneFgSelected label.
+     *
+     * @param   forceGuiRefresh  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public int refreshSelectedOstSeeFeatureCount(final boolean forceGuiRefresh) {
+        final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
+
+        for (final AbstractFeatureService service : getAllActiveServices("dlm25w.ezg_mv_ostsee")) {
+            set.addAll(FeatureServiceHelper.getSelectedFeatures(service));
+        }
+
+        final int count = set.size();
+
+        ckbOstseeSelected.setText(NbBundle.getMessage(
+                GewaesserReportDialog.class,
+                "FgGerogaRsDialog.ckbOstseeSelected.text") + " "
+                    + NbBundle.getMessage(
+                        BufferDialog.class,
+                        "FgGerogaRsDialog.refreshSelectedOstseeCount.text",
+                        count));
+
+        ckbOstseeSelected.setEnabled(true);
+
+        if (forceGuiRefresh || (count != selectedThemeKleinseeFeatureCount)) {
+            ckbOstseeSelected.setSelected(count > 0);
+        }
+
+        if (count == 0) {
+            ckbOstseeSelected.setSelected(false);
+            ckbOstseeSelected.setEnabled(false);
+        }
+
+        return count;
+    }
+
+    /**
+     * refreshes the ckbOffeneFgSelected label.
+     *
+     * @param   forceGuiRefresh  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public int refreshSelectedSgFeatureCount(final boolean forceGuiRefresh) {
+        final int count = selectedThemeKleinseeFeatureCount + selectedThemeSeeFeatureCount;
+
+        ckbStandSelected.setText(NbBundle.getMessage(
+                GewaesserReportDialog.class,
+                "FgGerogaRsDialog.ckbStandSelected.text") + " "
+                    + NbBundle.getMessage(
+                        BufferDialog.class,
+                        "FgGerogaRsDialog.refreshSelectedStandCount.text",
+                        count));
+
+        ckbStandSelected.setEnabled(true);
+
+//        if (forceGuiRefresh || (count != selectedThemeStandFeatureCount)) {
+//            ckbStandSelected.setSelected(count > 0);
+//        }
+
+        if (count == 0) {
+            ckbStandSelected.setSelected(false);
+            ckbStandSelected.setEnabled(false);
+        }
+
+        return count;
     }
 
     /**

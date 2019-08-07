@@ -271,11 +271,11 @@ public class ExportAction extends AbstractAction implements Configurable {
                                 null);
                         DownloadManager.instance().add(d);
 
-                        final User user = SessionManager.getSession().getUser();
-
-                        if (!user.getName().equalsIgnoreCase("admin")) {
-                            return false;
-                        }
+//                        final User user = SessionManager.getSession().getUser();
+//
+//                        if (!user.getName().equalsIgnoreCase("admin")) {
+//                            return false;
+//                        }
                     }
 
                     while (new File(tempPath).exists()) {
@@ -322,10 +322,10 @@ public class ExportAction extends AbstractAction implements Configurable {
                                 String[] selectedbaCdArray = null;
                                 final User user = SessionManager.getSession().getUser();
 
-                                if (user.getUserGroup().getName().equalsIgnoreCase("Administratoren")
-                                            || user.getUserGroup().getName().equalsIgnoreCase("lung_edit1")) {
-                                    selectedbaCdArray = getAttributesOfSelectedObjects("fg_ba", "ba_cd");
-                                }
+//                                if (user.getUserGroup().getName().equalsIgnoreCase("Administratoren")
+//                                            || user.getUserGroup().getName().equalsIgnoreCase("lung_edit1")) {
+                                selectedbaCdArray = getAttributesOfSelectedObjects("fg_ba", "ba_cd");
+//                                }
                                 String query = null;
 
                                 if (!service.getName().startsWith("k_")) {

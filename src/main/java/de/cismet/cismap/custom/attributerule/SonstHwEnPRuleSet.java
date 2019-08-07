@@ -55,7 +55,9 @@ public class SonstHwEnPRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
-        typeMap.put("ww_gr", new WatergisDefaultRuleSet.Catalogue("k_ww_gr", false, true));
+        typeMap.put(
+            "ww_gr",
+            new WatergisDefaultRuleSet.Catalogue("k_ww_gr", false, true, new Numeric(4, 0, false, false)));
         typeMap.put("nr", new Numeric(16, 0, false, true));
         typeMap.put("wann", new Varchar(16, false, false));
         typeMap.put("wer", new Varchar(250, true, true));
@@ -83,7 +85,7 @@ public class SonstHwEnPRuleSet extends WatergisDefaultRuleSet {
             return AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren");
         } else if (columnName.equals("bearb_wann") || columnName.equals("bearb_wer")
                     || columnName.equals("bearb_komm")) {
-            return SessionManager.getSession().getUser().getUserGroup().getName().equals("lung_edit1")
+            return SessionManager.getSession().getUser().getUserGroup().getName().startsWith("lung")
                         || SessionManager.getSession()
                         .getUser()
                         .getUserGroup()

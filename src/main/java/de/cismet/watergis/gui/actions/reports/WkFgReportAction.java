@@ -57,9 +57,12 @@ import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
+import de.cismet.tools.gui.downloadmanager.MultipleDownload;
 import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.download.FakeFileDownload;
 
 import de.cismet.watergis.gui.actions.*;
 import de.cismet.watergis.gui.dialog.WkFgReportDialog;
@@ -146,7 +149,7 @@ public class WkFgReportAction extends AbstractAction {
                             } else {
                                 final MetaClass fgLaWkMc = ClassCacheMultiple.getMetaClass(
                                         AppBroker.DOMAIN_NAME,
-                                        "fg_la_wk");
+                                        "dlm25w.fg_bak_wk");
                                 final CidsLayer cl = new CidsLayer(fgLaWkMc);
                                 cl.initAndWait();
                                 final List<FeatureServiceFeature> features = cl.getFeatureFactory()
@@ -165,6 +168,7 @@ public class WkFgReportAction extends AbstractAction {
 
                             int index = 0;
                             final int listSize = wkNrList.size();
+                            final List<FakeFileDownload> downloads = new ArrayList<FakeFileDownload>();
 
                             wd.setMax(listSize);
 
@@ -197,14 +201,22 @@ public class WkFgReportAction extends AbstractAction {
                                         WatergisDefaultRuleSet.WK_FG_WEBDAV_PATH,
                                         WatergisDefaultRuleSet.addExtension(wkk.toUpperCase(), "pdf"),
                                         fileToSaveTo);
+                                    downloads.add(new FakeFileDownload(fileToSaveTo));
                                 } catch (Exception ex) {
                                     LOG.error("Error while creating report", ex);
 //                                    error(ex);
                                 }
 
                                 if (Thread.interrupted() || canceled) {
-                                    return false;
+                                    break;
                                 }
+                            }
+
+                            if (downloads.size() > 1) {
+                                final MultipleDownload d = new MultipleDownload(downloads, "Gewässer");
+                                DownloadManager.instance().add(d);
+                            } else if (downloads.size() == 1) {
+                                DownloadManager.instance().add(downloads.get(0));
                             }
 
                             return true;

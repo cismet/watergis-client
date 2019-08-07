@@ -73,12 +73,12 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
         typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
-        typeMap.put("l_st", new Catalogue("k_l_st", false, true));
-        typeMap.put("l_rl", new Catalogue("k_l_rl", true, true));
+        typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
+        typeMap.put("l_rl", new Catalogue("k_l_rl", true, true, new Varchar(2, false, false)));
         typeMap.put("name", new Varchar(250, false, true));
         typeMap.put("doc_nr", new Numeric(20, 0, false, false));
         typeMap.put("doc_nr_gu", new Varchar(50, false, true));
@@ -324,13 +324,14 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
      */
     private boolean isLink(final Object value) {
         if (value instanceof String) {
-            final String stringVal = (String)value;
-            if (stringVal.length() > 2) {
-                final boolean firstCharLetter = Character.isUpperCase(stringVal.charAt(0))
-                            || Character.isLowerCase(stringVal.charAt(0));
-
-                return firstCharLetter && stringVal.substring(1, 2).equals(":");
-            }
+            return true; // only a test
+//            final String stringVal = (String)value;
+//            if (stringVal.length() > 2) {
+//                final boolean firstCharLetter = Character.isUpperCase(stringVal.charAt(0))
+//                            || Character.isLowerCase(stringVal.charAt(0));
+//
+//                return firstCharLetter && stringVal.substring(1, 2).equals(":");
+//            }
         }
 
         return false;

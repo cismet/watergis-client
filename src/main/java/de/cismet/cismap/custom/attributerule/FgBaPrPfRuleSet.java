@@ -39,7 +39,7 @@ public class FgBaPrPfRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, true, false));
         typeMap.put("ba_st", new Numeric(10, 2, true, false));
         typeMap.put("ba_gn", new Varchar(50, false));

@@ -61,7 +61,7 @@ public class FgBaGbRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, false));
         typeMap.put("ba_st_bis", new Numeric(10, 2, false, false));
@@ -116,7 +116,7 @@ public class FgBaGbRuleSet extends WatergisDefaultRuleSet {
             final String owner = AppBroker.getInstance().getOwner();
 
             if (!owner.equalsIgnoreCase("Administratoren")
-                        && !owner.equalsIgnoreCase("lung_edit1")) {
+                        && !owner.startsWith("lung")) {
                 filter = new CidsLayerFeatureFilter() {
 
                         @Override

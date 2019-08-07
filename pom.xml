@@ -13,7 +13,7 @@
 
     <groupId>de.cismet.watergis</groupId>
     <artifactId>watergis-client</artifactId>
-    <version>6.0.13</version>
+    <version>6.0.14</version>
     <packaging>jar</packaging>
 
     <name>WaterGIS Client</name>
@@ -35,7 +35,7 @@
         <connection>https://github.com/cismet/watergis-client.git</connection>
         <developerConnection>scm:git:git@github.com:cismet/watergis-client.git</developerConnection>
         <url>https://github.com/cismet/s-client</url>
-      <tag>v6.0.13</tag>
+      <tag>v6.0.14</tag>
   </scm>
 
     
@@ -55,7 +55,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-commons</artifactId>
-                <version>6.2.1</version>
+                <version>6.5.1</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -63,7 +63,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-gui-commons</artifactId>
-                <version>6.1.2</version>
+                <version>6.2.3</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>6.0.4</version>
+                <version>6.5.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -79,7 +79,7 @@
             <dependency>
                 <groupId>de.cismet.cids</groupId>
                 <artifactId>cids-server</artifactId>
-                <version>6.2.4</version>
+                <version>6.3.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -87,7 +87,7 @@
             <dependency>
                 <groupId>de.cismet.cids.navigator</groupId>
                 <artifactId>cids-navigator</artifactId>
-                <version>6.1.5</version>
+                <version>6.2.21</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -95,7 +95,7 @@
             <dependency>
                 <groupId>de.cismet.cismap</groupId>
                 <artifactId>cismap-plugin</artifactId>
-                <version>6.1.1</version>
+                <version>6.1.7</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>de.cismet.watergis</groupId>
                 <artifactId>watergis-server</artifactId>
-                <version>6.0.3</version>
+                <version>6.0.9</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>

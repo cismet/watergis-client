@@ -28,7 +28,7 @@ public class FgBaGerogRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", false, false, new Numeric(4, 0, false, false)));
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("l_gew", new Numeric(10, 2, false, false));
         typeMap.put("l_gew_o", new Numeric(10, 2, false, false));

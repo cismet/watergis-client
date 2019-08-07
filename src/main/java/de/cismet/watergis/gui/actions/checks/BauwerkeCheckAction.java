@@ -1304,7 +1304,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "(\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) > 0.1";
+                            + ")) >= 0.01";
             } else {
                 QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
                             + " from dlm25w.fg_ba_anll a\n"
@@ -1328,7 +1328,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "(\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) > 0.1";
+                            + ")) >= 0.01";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -1354,7 +1354,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "(\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) > 0.1";
+                            + ")) > 0.01";
             } else {
                 QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
                             + " from dlm25w.fg_ba_anll a\n"
@@ -1378,7 +1378,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "(\n"
                             + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) > 0.1";
+                            + ")) > 0.01";
             }
 
             if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -1775,7 +1775,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         String user = AppBroker.getInstance().getOwner();
         int[] selectedIds = null;
 
-        if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
+        if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
             user = null;
         }
 
