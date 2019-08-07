@@ -76,11 +76,11 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true, new Numeric(1, 0, false, false)));
         typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
-        typeMap.put("br", new Numeric(4, 2, false, true));
+        typeMap.put("br", new Numeric(6, 2, false, true));
         typeMap.put("sz", new Numeric(6, 2, false, true));
         typeMap.put("az", new Numeric(6, 2, false, true));
-        typeMap.put("ezg_fl", new Numeric(4, 2, false, true));
-        typeMap.put("v_fl", new Numeric(4, 2, false, true));
+        typeMap.put("ezg_fl", new Numeric(6, 2, false, true));
+        typeMap.put("v_fl", new Numeric(6, 2, false, true));
         typeMap.put("pu_anz1", new Numeric(1, 0, false, true));
         typeMap.put("pu_typ1", new Varchar(10, false, false));
         typeMap.put("pu_motl1", new Numeric(5, 1, false, true));

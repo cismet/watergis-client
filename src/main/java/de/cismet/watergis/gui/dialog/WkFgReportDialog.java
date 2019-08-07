@@ -452,7 +452,7 @@ public class WkFgReportDialog extends javax.swing.JDialog {
             if (service instanceof CidsLayer) {
                 final CidsLayer featureService = (CidsLayer)service;
 
-                if (featureService.getMetaClass().getTableName().equalsIgnoreCase("dlm25w.fg_la_wk")) {
+                if (featureService.getMetaClass().getTableName().equalsIgnoreCase("dlm25w.fg_bak_wk")) {
                     try {
                         if (!featureService.isInitialized()) {
                             ((AbstractFeatureService)service).initAndWait();

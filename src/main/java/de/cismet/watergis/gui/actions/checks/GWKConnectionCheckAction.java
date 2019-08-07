@@ -90,10 +90,16 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                         + "join dlm25w.fg_lak_linie linie on (ae.lak_st = linie.id) \n"
                         + "join dlm25w.fg_lak_punkt von on (linie.von = von.id)\n"
                         + "join dlm25w.fg_lak_punkt bis on (linie.bis = bis.id)\n"
+                        + "join geom gpv on (von.real_point = gpv.id) \n"
+                        + "join geom gpb on (bis.real_point = gpb.id) \n"
                         + "join dlm25w.fg_lak lak on (von.route = lak.id) \n"
+                        + "join dlm25w.fg_lak lak_bis on (bis.route = lak_bis.id) \n"
                         + "join geom on (lak.geom = geom.id) \n"
-                        + "where (von.wert = 0 and abs(bis.wert - st_length(geo_field)) < 1) or \n"
-                        + "(von.wert > 0 and abs(bis.wert - st_length(geo_field)) >= 1);";
+                        + "join geom gb on (lak_bis.geom = gb.id) \n"
+                        + "where \n"
+                        + "(von.wert > 0 and abs(bis.wert - st_length(geom.geo_field)) >= 1) or (lak_bis.id <> lak.id) or "
+                        + "(st_distance(ST_LineInterpolatePoint(geom.geo_field, von.wert / st_length(geom.geo_field)), gpv.geo_field) > 0.1 or "
+                        + "st_distance(ST_LineInterpolatePoint(gb.geo_field, bis.wert / st_length(gb.geo_field)), gpb.geo_field) > 0.1)  ;";
         }
     }
 
@@ -147,7 +153,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                     String user = AppBroker.getInstance().getOwner();
                     this.wd.setMax(getProgressSteps());
 
-                    if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
+                    if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
                         user = null;
                     }
 

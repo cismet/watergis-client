@@ -87,7 +87,7 @@ public class FgBaFgskRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("id") && !columnName.equals("laenge") && !columnName.equals("la_cd")
+                    && !columnName.equals("id") && !columnName.equals("laenge") && !columnName.equals("ba_cd")
                     && !columnName.equals("geom");
     }
 
@@ -128,9 +128,9 @@ public class FgBaFgskRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("la_st_von")) {
+        if (columnName.equals("ba_st_von")) {
             return new StationTableCellEditor(columnName);
-        } else if (columnName.equals("la_st_bis")) {
+        } else if (columnName.equals("ba_st_bis")) {
             return new StationTableCellEditor(columnName);
         } else {
             return null;

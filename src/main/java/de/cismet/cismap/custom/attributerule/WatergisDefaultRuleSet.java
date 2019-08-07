@@ -1571,7 +1571,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         final Geometry routeGeom = helper.getRouteGeometryFromStationBean(
                                 helper.getStationBeanFromLineBean(lineBean, true));
 
-                        if ((routeGeom != null) && (((Double)newValue).doubleValue() > routeGeom.getLength())) {
+                        if ((routeGeom != null)
+                                    && ((((Double)newValue).doubleValue() - 0.01) > routeGeom.getLength())) {
                             EventQueue.invokeLater(new Runnable() {
 
                                     @Override
@@ -1793,39 +1794,39 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             }
         }
 
-        final CrossedLinesCheck check = new CrossedLinesCheck();
-
-        for (final FeatureServiceFeature feature : features) {
-            final Geometry geo = feature.getGeometry();
-            if (!check.check(geo, null, false)) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Die Geometrie des Objektes mit der id "
-                            + feature.getId()
-                            + " überschneidet sich ",
-                    "Ungültiger Wert",
-                    JOptionPane.ERROR_MESSAGE);
-
-                return false;
-            } else {
-                final Coordinate[] coords = geo.getCoordinates();
-                Coordinate lastCoord = null;
-
-                for (final Coordinate c : coords) {
-                    if ((lastCoord != null) && lastCoord.equals(c)) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Geometrie des Objektes mit der id "
-                                    + feature.getId()
-                                    + " besitzt doppelte Punkte",
-                            "Ungültiger Wert",
-                            JOptionPane.ERROR_MESSAGE);
-
-                        return false;
-                    }
-
-                    lastCoord = c;
-                }
-            }
-        }
+//        final CrossedLinesCheck check = new CrossedLinesCheck();
+//
+//        for (final FeatureServiceFeature feature : features) {
+//            final Geometry geo = feature.getGeometry();
+//            if (!check.check(geo, null, false)) {
+//                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                    "Die Geometrie des Objektes mit der id "
+//                            + feature.getId()
+//                            + " überschneidet sich ",
+//                    "Ungültiger Wert",
+//                    JOptionPane.ERROR_MESSAGE);
+//
+//                return false;
+//            } else {
+//                final Coordinate[] coords = geo.getCoordinates();
+//                Coordinate lastCoord = null;
+//
+//                for (final Coordinate c : coords) {
+//                    if ((lastCoord != null) && lastCoord.equals(c)) {
+//                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                            "Die Geometrie des Objektes mit der id "
+//                                    + feature.getId()
+//                                    + " besitzt doppelte Punkte",
+//                            "Ungültiger Wert",
+//                            JOptionPane.ERROR_MESSAGE);
+//
+//                        return false;
+//                    }
+//
+//                    lastCoord = c;
+//                }
+//            }
+//        }
 
         return true;
     }

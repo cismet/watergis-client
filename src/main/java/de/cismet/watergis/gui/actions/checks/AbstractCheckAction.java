@@ -36,6 +36,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
+import javax.swing.event.TableModelEvent;
+import javax.swing.tree.TreePath;
 
 import de.cismet.cids.custom.watergis.server.search.RouteProblemsCount;
 import de.cismet.cids.custom.watergis.server.search.RouteProblemsCountAndClasses;
@@ -678,6 +680,7 @@ public abstract class AbstractCheckAction extends AbstractAction {
         final ActiveLayerModel model = (ActiveLayerModel)AppBroker.getInstance().getMappingComponent()
                     .getMappingModel();
         LayerCollection layerCollection = null;
+        final List<Object> pathObjects = new ArrayList<Object>();
 
         if (folder != null) {
             final String[] tokens = folder.split("->");
@@ -691,6 +694,7 @@ public abstract class AbstractCheckAction extends AbstractAction {
 
                         if ((tmp instanceof LayerCollection) && ((LayerCollection)tmp).getName().equals(subFolder)) {
                             layerCollection = (LayerCollection)tmp;
+                            pathObjects.add(layerCollection);
                             found = true;
                             break;
                         }
@@ -699,8 +703,9 @@ public abstract class AbstractCheckAction extends AbstractAction {
                     if (!found) {
                         final LayerCollection newLayerCollection = new LayerCollection();
                         newLayerCollection.setName(subFolder);
-                        layerCollection.add(newLayerCollection);
                         layerCollection = newLayerCollection;
+                        model.addEmptyLayerCollection(new TreePath(pathObjects.toArray()), layerCollection);
+                        pathObjects.add(newLayerCollection);
                     }
                 } else {
                     boolean found = false;
@@ -710,6 +715,7 @@ public abstract class AbstractCheckAction extends AbstractAction {
 
                         if ((tmp instanceof LayerCollection) && ((LayerCollection)tmp).getName().equals(subFolder)) {
                             layerCollection = (LayerCollection)tmp;
+                            pathObjects.add(layerCollection);
                             found = true;
                             break;
                         }
@@ -719,6 +725,7 @@ public abstract class AbstractCheckAction extends AbstractAction {
                         layerCollection = new LayerCollection();
                         layerCollection.setName(subFolder);
                         model.addEmptyLayerCollection(layerCollection);
+                        pathObjects.add(layerCollection);
                     }
                 }
             }

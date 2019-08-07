@@ -480,7 +480,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         String user = AppBroker.getInstance().getOwner();
         int[] selectedIds = null;
 
-        if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
+        if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
             user = null;
         }
 

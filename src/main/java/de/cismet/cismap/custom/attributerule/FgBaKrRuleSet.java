@@ -60,7 +60,7 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st", new Numeric(10, 2, false, true));
         typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
-        typeMap.put("l_oiu", new Catalogue("k_l_oiu", false, true, new Varchar(1, false, false)));
+        typeMap.put("l_oiu", new Catalogue("k_l_oiu", false, true, new Varchar(2, false, false)));
         typeMap.put("kr", new Catalogue("k_kr", true, true, new Varchar(10, false, false)));
         typeMap.put("obj_nr", new Numeric(20, 0, false, false));
         typeMap.put("obj_nr_gu", new Varchar(50, false, true));
@@ -71,7 +71,7 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true, new Numeric(1, 0, false, false)));
         typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
-        typeMap.put("br", new Numeric(4, 2, false, true));
+        typeMap.put("br", new Numeric(6, 2, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
