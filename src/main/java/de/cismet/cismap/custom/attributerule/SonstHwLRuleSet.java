@@ -84,7 +84,7 @@ public class SonstHwLRuleSet extends WatergisDefaultRuleSet {
             return AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren");
         } else if (columnName.equals("bearb_wann") || columnName.equals("bearb_wer")
                     || columnName.equals("bearb_komm")) {
-            return SessionManager.getSession().getUser().getUserGroup().getName().equals("lung_edit1")
+            return SessionManager.getSession().getUser().getUserGroup().getName().startsWith("lung")
                         || SessionManager.getSession()
                         .getUser()
                         .getUserGroup()

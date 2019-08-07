@@ -207,7 +207,7 @@ public class LawaCheckAction extends AbstractCheckAction {
                     String user = AppBroker.getInstance().getOwner();
                     this.wd.setMax(getProgressSteps());
 
-                    if (user.equalsIgnoreCase("Administratoren") || user.equalsIgnoreCase("lung_edit1")) {
+                    if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
                         user = null;
                     }
 

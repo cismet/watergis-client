@@ -79,8 +79,8 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ausbaujahr", new Numeric(4, 0, false, true));
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true, new Numeric(1, 0, false, false)));
         typeMap.put("bemerkung", new Varchar(250, false, true));
-        typeMap.put("br_dm_li", new Numeric(7, 3, false, true));
-        typeMap.put("ho_li", new Numeric(7, 3, false, true));
+        typeMap.put("br_dm_li", new Numeric(8, 3, false, true));
+        typeMap.put("ho_li", new Numeric(8, 3, false, true));
         typeMap.put("br_tr_o_li", new Numeric(5, 3, false, true));
         typeMap.put("ho_e", new Numeric(6, 2, false, true));
         typeMap.put("ho_a", new Numeric(6, 2, false, true));

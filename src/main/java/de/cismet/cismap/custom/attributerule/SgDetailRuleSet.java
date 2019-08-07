@@ -48,7 +48,7 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("see_gn", new Varchar(50, false, true));
         typeMap.put("see_gn_t", new Numeric(1, 0, false, true));
         typeMap.put("see_lawa", new Varchar(20, false, true));
-        typeMap.put("gbk_lawa", new Numeric(15, 0, true, true));
+        typeMap.put("gbk_lawa", new Numeric(15, 0, false, true));
         typeMap.put("gwk_lawa", new Numeric(15, 0, false, true));
         typeMap.put("see_sp", new Varchar(8, false, true));
         typeMap.put("see_typ", new Varchar(3, false, true));
@@ -58,7 +58,7 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("see_verm", new Numeric(1, 0, false, true));
         typeMap.put("verm_datum", new Varchar(10, false, true));
         typeMap.put("verm_nhn", new Numeric(6, 2, false, true));
-        typeMap.put("bz", new Numeric(2, 0, true, true));
+        typeMap.put("bz", new Numeric(2, 0, false, true));
         typeMap.put("tmax", new Numeric(5, 2, false, true));
         typeMap.put("td", new Numeric(5, 2, false, true));
         typeMap.put("vol", new Numeric(10, 0, false, true));

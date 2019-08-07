@@ -77,7 +77,7 @@ public class FgBaEaRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true, new Numeric(1, 0, false, false)));
         typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
-        typeMap.put("br", new Numeric(4, 2, false, true));
+        typeMap.put("br", new Numeric(6, 2, false, true));
         typeMap.put("ho_ea", new Numeric(6, 2, false, true));
         typeMap.put("ho_d_ea", new Numeric(4, 2, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));

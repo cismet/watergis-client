@@ -112,8 +112,8 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, true, true, new Numeric(1, 0, false, false)));
         typeMap.put("esw", new BooleanAsInteger(false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
-        typeMap.put("br", new Numeric(4, 2, false, true));
-        typeMap.put("br_li", new Numeric(4, 2, false, true));
+        typeMap.put("br", new Numeric(6, 2, false, true));
+        typeMap.put("br_li", new Numeric(6, 2, false, true));
         typeMap.put("ho_so", new Numeric(6, 2, false, true));
         typeMap.put("sz", new Numeric(6, 2, false, true));
         typeMap.put("az", new Numeric(6, 2, false, true));

@@ -44,7 +44,7 @@ public class FgBaPrAbpRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("zust_kl", new Catalogue("k_zust_kl", false, false, true, new Numeric(1, 0, false, false)));
         typeMap.put("esw", new BooleanAsInteger(false, false));
         typeMap.put("bemerkung", new Varchar(250, false, false));
-        typeMap.put("br", new Numeric(4, 2, false, false));
+        typeMap.put("br", new Numeric(6, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }

@@ -324,13 +324,14 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
      */
     private boolean isLink(final Object value) {
         if (value instanceof String) {
-            final String stringVal = (String)value;
-            if (stringVal.length() > 2) {
-                final boolean firstCharLetter = Character.isUpperCase(stringVal.charAt(0))
-                            || Character.isLowerCase(stringVal.charAt(0));
-
-                return firstCharLetter && stringVal.substring(1, 2).equals(":");
-            }
+            return true; // only a test
+//            final String stringVal = (String)value;
+//            if (stringVal.length() > 2) {
+//                final boolean firstCharLetter = Character.isUpperCase(stringVal.charAt(0))
+//                            || Character.isLowerCase(stringVal.charAt(0));
+//
+//                return firstCharLetter && stringVal.substring(1, 2).equals(":");
+//            }
         }
 
         return false;

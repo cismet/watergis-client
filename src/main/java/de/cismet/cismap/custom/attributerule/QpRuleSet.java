@@ -26,10 +26,14 @@ import java.net.URL;
 
 import java.sql.Timestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 
@@ -38,25 +42,29 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
+
+import de.cismet.cids.server.search.CidsServerSearch;
+
+import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.DateCellEditor;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
 import de.cismet.cismap.commons.gui.piccolo.FeatureAnnotationSymbol;
+import de.cismet.cismap.commons.rasterservice.MapService;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
-import de.cismet.tools.gui.downloadmanager.DownloadManager;
-import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
-
 import de.cismet.watergis.broker.AppBroker;
-
-import de.cismet.watergis.download.QpDownload;
 
 import de.cismet.watergis.gui.actions.gaf.ReportAction;
 import de.cismet.watergis.gui.panels.GafProf;
@@ -272,6 +280,36 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
+        if (model instanceof SimpleAttributeTableModel) {
+            final List<FeatureServiceFeature> removedFeatures = ((SimpleAttributeTableModel)model).getRemovedFeature();
+
+            if ((removedFeatures != null) && !removedFeatures.isEmpty()) {
+                final List<Feature> selectedFeaturesToRemove = new ArrayList<Feature>();
+
+                for (final FeatureServiceFeature feature : removedFeatures) {
+                    final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures();
+
+                    for (final Feature f : selectedFeatures) {
+                        if (f instanceof CidsLayerFeature) {
+                            final CidsLayerFeature clf = (CidsLayerFeature)f;
+
+                            if ((clf.getProperty("qp_nr") != null) && (feature.getProperty("qp_nr") != null)) {
+                                final Integer selectedFeatureBaCd = (Integer)(clf.getProperty("qp_nr"));
+                                final Integer deletedFeatureBaCd = (Integer)(feature.getProperty("qp_nr"));
+
+                                if (selectedFeatureBaCd.equals(deletedFeatureBaCd)) {
+                                    selectedFeaturesToRemove.add(f);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!selectedFeaturesToRemove.isEmpty()) {
+                    SelectionManager.getInstance().removeSelectedFeatures(selectedFeaturesToRemove);
+                }
+            }
+        }
     }
 
     @Override
