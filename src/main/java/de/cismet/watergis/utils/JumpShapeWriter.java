@@ -38,6 +38,8 @@ import java.math.BigDecimal;
 
 import java.net.URL;
 
+import java.nio.charset.Charset;
+
 import java.sql.Timestamp;
 
 import java.util.ArrayList;
@@ -76,8 +78,10 @@ public class JumpShapeWriter implements ShapeWriter {
     private static final Logger LOG = Logger.getLogger(JumpShapeWriter.class);
     private static final boolean WRITE_META_PDF = true;
     private static final boolean WRITE_PRJ = true;
+    private static final boolean WRITE_CPG = true;
     private static final String PRJ_CONTENT =
         "PROJCS[\"ETRS_1989_UTM_Zone_33N\",GEOGCS[\"GCS_ETRS_1989\",DATUM[\"D_ETRS_1989\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",33500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",15.0],PARAMETER[\"Scale_Factor\",0.9996],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]";
+    private static final String DEFAULT_CPG_CONTENT = "UTF-8";
     private static final boolean DATE_AS_STRING = true;
     public static final String DEFAULT_GEOM_PROPERTY_NAME = "the_geom";
 
@@ -95,11 +99,20 @@ public class JumpShapeWriter implements ShapeWriter {
     public void writeShape(final FeatureServiceFeature[] features,
             final List<String[]> aliasAttributeList,
             final File fileToSaveTo) throws Exception {
+        String charset = Charset.defaultCharset().name();
+
+        try {
+            Charset.forName(charset);
+        } catch (Exception e) {
+            LOG.error("Charset " + charset + " not found. Use " + Charset.defaultCharset().name() + " instead.");
+            charset = Charset.defaultCharset().name();
+        }
+
         if (Thread.interrupted()) {
             return;
         }
         try {
-            writeShpFile(features, fileToSaveTo, aliasAttributeList, null);
+            writeShpFile(features, fileToSaveTo, aliasAttributeList, charset);
         } catch (InterruptedException e) {
             clear(fileToSaveTo);
             return;
@@ -110,6 +123,10 @@ public class JumpShapeWriter implements ShapeWriter {
         }
         if (WRITE_PRJ) {
             writePrjFile(fileToSaveTo);
+        }
+
+        if (WRITE_CPG) {
+            writeCpgFile(fileToSaveTo, charset);
         }
 
         if (WRITE_META_PDF && (features.length > 0)) {
@@ -257,6 +274,32 @@ public class JumpShapeWriter implements ShapeWriter {
             bw.close();
         } catch (Exception e) {
             LOG.error("Error while writing prj file");
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  file     DOCUMENT ME!
+     * @param  charset  DOCUMENT ME!
+     */
+    private void writeCpgFile(final File file, final String charset) {
+        try {
+            String fileWithoutExtension = file.getAbsolutePath();
+
+            if (fileWithoutExtension.contains(".")) {
+                fileWithoutExtension = fileWithoutExtension.substring(0, fileWithoutExtension.lastIndexOf("."));
+            }
+
+            final BufferedWriter bw = new BufferedWriter(new FileWriter(fileWithoutExtension + ".cpg"));
+            if (charset == null) {
+                bw.write(DEFAULT_CPG_CONTENT);
+            } else {
+                bw.write(charset);
+            }
+            bw.close();
+        } catch (Exception e) {
+            LOG.error("Error while writing cpg file");
         }
     }
 
@@ -478,7 +521,7 @@ public class JumpShapeWriter implements ShapeWriter {
             } else if (cl.equals(Boolean.class)) {
                 return AttributeType.STRING;
             } else if (cl.equals(BigDecimal.class)) {
-                return AttributeType.STRING;
+                return AttributeType.OBJECT;
             } else {
                 return AttributeType.STRING;
             }

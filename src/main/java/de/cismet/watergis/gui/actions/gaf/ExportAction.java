@@ -29,6 +29,8 @@ import java.io.InputStream;
 
 import java.net.URL;
 
+import java.nio.charset.Charset;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -551,10 +553,12 @@ public class ExportAction extends AbstractAction {
         }
 
         final JumpShapeWriter shapeWriter = new JumpShapeWriter();
+        final String charset = Charset.defaultCharset().name();
+
         shapeWriter.writeShpFile(features.toArray(new FeatureServiceFeature[features.size()]),
             new File(outputFileStem + ".shp"),
             null,
-            null);
+            charset);
 
         if (createPrj) {
             // create prj
@@ -564,6 +568,12 @@ public class ExportAction extends AbstractAction {
             bw.write(PRJ_CONTENT);
             bw.close();
         }
+
+        final BufferedWriter bwCpg = new BufferedWriter(new FileWriter(
+                    outputFileStem
+                            + ".cpg"));
+        bwCpg.write(charset);
+        bwCpg.close();
         // create meta document
         downloadMetaDocument(service, outputFileStem);
     }

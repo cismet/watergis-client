@@ -56,6 +56,8 @@ import org.geotools.shapefile.Shapefile;
 
 import java.io.*;
 
+import java.math.BigDecimal;
+
 import java.net.URL;
 
 import java.nio.charset.Charset;
@@ -585,6 +587,28 @@ public class ShapefileWriter implements JUMPWriter {
                 }
                 fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                 f++;
+            } else if ((columnType == AttributeType.OBJECT) && (ruleSet != null)
+                        && ((ruleSet.getType(columnName) instanceof WatergisDefaultRuleSet.Numeric)
+                            || (getSubType(ruleSet.getType(columnName)) instanceof WatergisDefaultRuleSet.Numeric))) {
+                // numeric value
+                final WatergisDefaultRuleSet.DataType type = ruleSet.getType(columnName);
+                WatergisDefaultRuleSet.Numeric numericType = null;
+
+                if (type instanceof WatergisDefaultRuleSet.SubDataType) {
+                    numericType = (WatergisDefaultRuleSet.Numeric)getSubType(type);
+                } else {
+                    numericType = (WatergisDefaultRuleSet.Numeric)type;
+                }
+
+                final int lengthOfDecimalCharacter = (int)Math.signum((double)numericType.getScale());
+                fields[f] = new DbfFieldDef(
+                        columnName,
+                        'N',
+                        numericType.getPrecision()
+                                + lengthOfDecimalCharacter,
+                        numericType.getScale()); // LDB: previously 16
+                fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+                f++;
             } else if (columnType == AttributeType.STRING) {
                 int maxlength;
 
@@ -682,10 +706,19 @@ public class ShapefileWriter implements JUMPWriter {
                     }
                 } else if (columnType == AttributeType.DATE) {
                     final Object a = feature.getAttribute(u);
+
                     if (a == null) {
                         DBFrow.add("");
                     } else {
                         DBFrow.add(DbfFile.DATE_PARSER.format((Date)a));
+                    }
+                } else if (columnType == AttributeType.OBJECT) {
+                    final Object a = feature.getAttribute(u);
+
+                    if (a instanceof BigDecimal) {
+                        DBFrow.add(((BigDecimal)a).doubleValue());
+                    } else {
+                        DBFrow.add(null);
                     }
                 } else if (columnType == AttributeType.STRING) {
                     final Object a = feature.getAttribute(u);
@@ -707,6 +740,21 @@ public class ShapefileWriter implements JUMPWriter {
         }
 
         dbf.close();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   type  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private WatergisDefaultRuleSet.DataType getSubType(final WatergisDefaultRuleSet.DataType type) {
+        if (type instanceof WatergisDefaultRuleSet.SubDataType) {
+            return ((WatergisDefaultRuleSet.SubDataType)type).getDataType();
+        } else {
+            return null;
+        }
     }
 
     /**

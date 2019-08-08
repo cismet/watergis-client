@@ -120,8 +120,14 @@ public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNode
                 @Override
                 protected List<DefaultFeatureServiceFeature> doInBackground() throws Exception {
                     final CidsLayer layer = new CidsLayer(oNode.getMetaClass());
-
-                    return layer.retrieveFeatures(new XBoundingBox(feature.getGeometry()), 0, 0, null);
+                    layer.initAndWait();
+                    return layer.getFeatureFactory()
+                                .createFeatures(layer.getQuery(),
+                                    new XBoundingBox(feature.getGeometry()),
+                                    null,
+                                    0,
+                                    0,
+                                    null);
                 }
 
                 @Override
@@ -165,12 +171,14 @@ public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNode
     @Override
     public void featureSaved(final FeatureInfoPanelEvent evt) {
         AppBroker.getInstance().getMappingComponent().removeFeatures(visualisedFeatures);
+        AppBroker.getInstance().getInfoWindowAction().removeFeatureInfoPanelListener(this);
         visualisedFeatures.clear();
     }
 
     @Override
     public void dispose(final FeatureInfoPanelEvent evt) {
         AppBroker.getInstance().getMappingComponent().removeFeatures(visualisedFeatures);
+        AppBroker.getInstance().getInfoWindowAction().removeFeatureInfoPanelListener(this);
         visualisedFeatures.clear();
     }
 

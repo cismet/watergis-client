@@ -29,6 +29,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 
+import java.nio.charset.Charset;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -207,16 +209,24 @@ public class ExportAction extends AbstractAction {
 
                                 final File shapeFile = new File(tmpShapeDir, "fotos");
                                 final JumpShapeWriter shapeWriter = new JumpShapeWriter();
+                                final String charset = Charset.defaultCharset().name();
+
                                 shapeWriter.writeShpFile(features.toArray(new FeatureServiceFeature[features.size()]),
                                     new File(shapeFile.toString() + ".shp"),
                                     null,
-                                    null);
+                                    charset);
 
                                 final BufferedWriter bw = new BufferedWriter(new FileWriter(
                                             shapeFile.getAbsolutePath()
                                                     + ".prj"));
                                 bw.write(PRJ_CONTENT);
                                 bw.close();
+
+                                final BufferedWriter bwCpg = new BufferedWriter(new FileWriter(
+                                            shapeFile.getAbsolutePath()
+                                                    + ".cpg"));
+                                bwCpg.write(charset);
+                                bwCpg.close();
 
                                 de.cismet.watergis.gui.actions.gaf.ExportAction.downloadMetaDocument((CidsLayer)
                                     features.get(0).getLayerProperties().getFeatureService(),

@@ -48,6 +48,8 @@ import java.io.OutputStream;
 
 import java.net.URL;
 
+import java.nio.charset.Charset;
+
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -1133,21 +1135,13 @@ public class ExportAction extends AbstractAction implements Configurable {
                             featureArray = new FeatureServiceFeature[] { feature };
                         }
 
-//                        final FeatureCollection fc = new SimpleFeatureCollection(
-//                                id,
-//                                featureArray,
-//                                attribList);
-//                        final ShapeFile shape = new ShapeFile(
-//                                fc,
-//                                filename);
-//                        final ShapeFileWriter writer = new ShapeFileWriter(shape);
-//                        writer.write();
-
                         final JumpShapeWriter shapeWriter = new JumpShapeWriter();
+                        final String charset = Charset.defaultCharset().name();
+
                         shapeWriter.writeShpFile(featureArray,
                             new File(filename + ".shp"),
                             attribList,
-                            null);
+                            charset);
 
                         if (emptyShape) {
                             final String geometryType = service.getGeometryType();
@@ -1174,6 +1168,11 @@ public class ExportAction extends AbstractAction implements Configurable {
                                 }
                             }
                         }
+                        final BufferedWriter bwCpg = new BufferedWriter(new FileWriter(
+                                    filename
+                                            + ".cpg"));
+                        bwCpg.write(charset);
+                        bwCpg.close();
 
                         if (!hasGeometry) {
                             String shpFileName = filename
