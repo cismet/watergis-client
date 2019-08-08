@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import de.cismet.cids.custom.watergis.server.search.AllGewGeschlByGem;
+import de.cismet.cids.custom.watergis.server.search.AllGewWithParts;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
@@ -49,6 +50,7 @@ import de.cismet.watergis.gui.dialog.GerinneGeschlGewaesserReportDialog;
 
 import de.cismet.watergis.reports.types.FeatureDataSource;
 import de.cismet.watergis.reports.types.GmdPartObjGeschl;
+import de.cismet.watergis.reports.types.KatasterGewObj;
 
 /**
  * DOCUMENT ME!
@@ -61,6 +63,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
     //~ Instance fields --------------------------------------------------------
 
     private List<GmdPartObjGeschl> objList;
+    private GerOffenHelper gerOffenHelper;
 
     //~ Methods ----------------------------------------------------------------
 
@@ -69,9 +72,11 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
      *
      * @param   gew  DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createGerinneGewaesserReport(final int[] gew) throws Exception {
+    public File createGerinneGewaesserReport(final int[] gew) throws Exception {
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
 
@@ -184,9 +189,10 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
         // BufferedOutputStream pout = new BufferedOutputStream(pfout);
         // JasperExportManager.exportReportToPdfStream(jasperPrint, pout); pout.close();
 
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    GerinneGeschlGewaesserReportDialog.getInstance().getPath()
-                            + "/Gewaesser.xlsx"));
+        final File file = new File(
+                GerinneGeschlGewaesserReportDialog.getInstance().getPath()
+                        + "/Gerinne_geschlossen_Gewässer.xlsx");
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         final JRXlsxExporter exporter = new JRXlsxExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -208,6 +214,8 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -232,7 +240,8 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
      * @throws  Exception  DOCUMENT ME!
      */
     private void init(final int[] routeIds) throws Exception {
-        objList = getAllRoutes(routeIds);
+        objList = getAllRlDDue(routeIds);
+        gerOffenHelper = new GerOffenHelper(routeIds, getAllowedWdms());
     }
 
     /**
@@ -244,7 +253,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private List<GmdPartObjGeschl> getAllRoutes(final int[] routeIds) throws Exception {
+    private List<GmdPartObjGeschl> getAllRlDDue(final int[] routeIds) throws Exception {
         final CidsServerSearch search = new AllGewGeschlByGem(routeIds, getAllowedWdms());
         final User user = SessionManager.getSession().getUser();
         final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
@@ -286,7 +295,44 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                         (Double)f.get(29),
                         (Double)f.get(30),
                         (Double)f.get(31),
-                        (Double)f.get(32)));
+                        (Double)f.get(32),
+                        (String)f.get(33),
+                        (String)f.get(34)));
+            }
+        }
+
+        return objList;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   routeIds         DOCUMENT ME!
+     * @param   allowedWdmArray  gemId DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private List<KatasterGewObj> getAllRoutes(final int[] routeIds, final int[] allowedWdmArray) throws Exception {
+        final CidsServerSearch search = new AllGewWithParts(routeIds, allowedWdmArray);
+        final User user = SessionManager.getSession().getUser();
+        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(user, search);
+        final List<KatasterGewObj> objList = new ArrayList<KatasterGewObj>();
+
+        if ((attributes != null) && !attributes.isEmpty()) {
+            for (final ArrayList f : attributes) {
+                objList.add(new KatasterGewObj(
+                        (Integer)f.get(0),
+                        (String)f.get(1),
+                        (String)f.get(7),
+                        (String)f.get(8),
+                        (String)f.get(9),
+                        (Integer)f.get(10),
+                        (String)f.get(2),
+                        (Double)f.get(3),
+                        (Double)f.get(4)));
             }
         }
 
@@ -343,7 +389,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
         final String art = createArtString();
         sheetNames.add("Gewässer");
 
-        for (final Integer gew : getGew()) {
+        for (final Integer gew : gerOffenHelper.getGew()) {
             final Map<String, Object> feature = new HashMap<String, Object>();
             double count = 0;
             double length = 0;
@@ -352,7 +398,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
             feature.put("gewName", getGewName(gew));
             feature.put("code", getBaCd(gew));
             feature.put("arten", art);
-            feature.put("laenge", getLengthGew(gew));
+            feature.put("laenge", gerOffenHelper.getLengthGewAll(gew));
 
             if (GerinneGeschlGewaesserReportDialog.getInstance().getClasses() != null) {
                 final List<Integer> l = GerinneGeschlGewaesserReportDialog.getInstance().getClasses();
@@ -420,7 +466,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                     count += colCount;
                     length += colLength;
 
-                    feature.put(lab, l.get(i).name().toUpperCase());
+                    feature.put(lab, toColumnName(l.get(i)));
                     feature.put(anz, colCount);
                     feature.put(laenge, colLength);
                 }
@@ -442,7 +488,10 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
 
             features.add(feature);
         }
-        features.add(createKumFeature(features, false));
+        final Map<String, Object> total = createKumFeature(features, false);
+        total.put("gewName", null);
+        total.put("code", null);
+        features.add(total);
 
         return new FeatureDataSource(features);
     }
@@ -479,7 +528,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
         for (int di = 0; di < d.size(); ++di) {
             final List<Map<String, Object>> featuresKumDim = new ArrayList<Map<String, Object>>();
 
-            for (final Integer gew : getGew()) {
+            for (final Integer gew : gerOffenHelper.getGew()) {
                 final Map<String, Object> feature = new HashMap<String, Object>();
                 final Integer dimFrom = ((di > 0) ? d.get(di - 1) : new Integer(0)); // new Integer(0) to prevent a NPE
                 final Integer dimTill = d.get(di);
@@ -492,7 +541,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                 feature.put("gewName", getGewName(gew));
                 feature.put("code", getBaCd(gew));
                 feature.put("arten", art);
-                feature.put("laenge", getLengthGew(gew));
+                feature.put("laenge", gerOffenHelper.getLengthGewAll(gew));
 
                 if (!isTiefeArt && (GerinneGeschlGewaesserReportDialog.getInstance().getClasses() != null)) {
                     final List<Integer> l = GerinneGeschlGewaesserReportDialog.getInstance().getClasses();
@@ -554,7 +603,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                         count += colCount;
                         length += colLength;
 
-                        feature.put(lab, l.get(i).name().toUpperCase());
+                        feature.put(lab, toColumnName(l.get(i)));
                         feature.put(anz, colCount);
                         feature.put(laenge, colLength);
                     }
@@ -580,7 +629,10 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
             }
             features.add(createKumFeature(featuresKumDim, true));
         }
-        features.add(createKumFeature(featuresKum, false));
+        final Map<String, Object> total = createKumFeature(featuresKum, false);
+        total.put("gewName", null);
+        total.put("code", null);
+        features.add(total);
 
         return new FeatureDataSource(features);
     }
@@ -604,7 +656,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
             final List<Map<String, Object>> featuresKumDim = new ArrayList<Map<String, Object>>();
             final List<Integer> d = GerinneGeschlGewaesserReportDialog.getInstance().getDimensions();
 
-            for (final Integer gew : getGew()) {
+            for (final Integer gew : gerOffenHelper.getGew()) {
                 final Map<String, Object> feature = new HashMap<String, Object>();
                 final Integer dimFrom = ((di > 0) ? d.get(di - 1) : new Integer(0)); // new Integer(0) to prevent a NPE
                 final Integer dimTill = d.get(di);
@@ -616,7 +668,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                 feature.put("gewName", getGewName(gew));
                 feature.put("code", getBaCd(gew));
                 feature.put("arten", art);
-                feature.put("laenge", getLengthGew(gew));
+                feature.put("laenge", gerOffenHelper.getLengthGewAll(gew));
                 feature.put("dimension", ((d.get(di) == null) ? "ohne" : ("bis " + d.get(di))));
 
                 for (final GerinneGeschlGemeindeReportDialog.Art a
@@ -690,7 +742,10 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
             }
             features.add(createKumFeature(featuresKumDim, true));
         }
-        features.add(createKumFeature(featuresKum, false));
+        final Map<String, Object> total = createKumFeature(featuresKum, false);
+        total.put("gewName", null);
+        total.put("code", null);
+        features.add(total);
 
         return new FeatureDataSource(features);
     }
@@ -725,7 +780,9 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                 feature.put("prof", obj.getProf());
                 feature.put("ma", obj.getMa());
                 feature.put("objNr", obj.getObjNr());
+                feature.put("objNr_gu", obj.getObjNrGu());
                 feature.put("tr", obj.getTr());
+                feature.put("tr_gu", obj.getTrGu());
                 feature.put("ausbaujahr", obj.getAusbaujahr());
                 feature.put("wbbl", obj.getWbbl());
                 feature.put("art", obj.getArt());
@@ -747,7 +804,12 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                 features.add(feature);
             }
         }
-        features.add(createKumFeature(features, false));
+        final Map<String, Object> kumFeature = createKumFeature(features, false);
+        kumFeature.put("code", null);
+        kumFeature.put("gewName", null);
+        kumFeature.put("von", null);
+        kumFeature.put("bis", null);
+//        features.add(kumFeature);
 
         return new FeatureDataSource(features);
     }
@@ -842,7 +904,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                     count += colCount;
                     length += colLength;
 
-                    feature.put(lab, l.get(i).name().toUpperCase());
+                    feature.put(lab, toColumnName(l.get(i)));
                     feature.put(anz, colCount);
                     feature.put(laenge, colLength);
                 }
@@ -976,7 +1038,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                         count += colCount;
                         length += colLength;
 
-                        feature.put(lab, l.get(i).name().toUpperCase());
+                        feature.put(lab, toColumnName(l.get(i)));
                         feature.put(anz, colCount);
                         feature.put(laenge, colLength);
                     }
@@ -1112,7 +1174,10 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
             }
             features.add(createKumFeature(featuresKumDim, true));
         }
-        features.add(createKumFeature(featuresKum, false));
+        final Map<String, Object> total = createKumFeature(featuresKum, false);
+        total.put("gu", null);
+        total.put("guName", null);
+        features.add(total);
 
         return new FeatureDataSource(features);
     }
@@ -1212,7 +1277,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                         count += colCount;
                         length += colLength;
 
-                        feature.put(lab, l.get(i).name().toUpperCase());
+                        feature.put(lab, toColumnName(l.get(i)));
                         feature.put(anz, colCount);
                         feature.put(laenge, colLength);
                     }
@@ -1237,7 +1302,11 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
             }
             features.add(createKumFeature(subGroupFeatures, true));
         }
-        features.add(createKumFeature(features, false));
+        final Map<String, Object> total = createKumFeature(features, false);
+        total.put("gu", null);
+        total.put("guName", null);
+        total.put("wdm", null);
+        features.add(total);
 
         return new FeatureDataSource(features);
     }
@@ -1353,7 +1422,7 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
                             count += colCount;
                             length += colLength;
 
-                            feature.put(lab, l.get(i).name().toUpperCase());
+                            feature.put(lab, toColumnName(l.get(i)));
                             feature.put(anz, colCount);
                             feature.put(laenge, colLength);
                         }
@@ -1382,7 +1451,11 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
             }
             features.add(createKumFeature(featuresKumDim, true));
         }
-        features.add(createKumFeature(featuresKum, false));
+        final Map<String, Object> total = createKumFeature(featuresKum, false);
+        total.put("gu", null);
+        total.put("guName", null);
+        total.put("wdm", null);
+        features.add(total);
 
         return new FeatureDataSource(features);
     }
@@ -1527,7 +1600,11 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
             }
             features.add(createKumFeature(featuresKumDim, true));
         }
-        features.add(createKumFeature(featuresKum, false));
+        final Map<String, Object> total = createKumFeature(featuresKum, false);
+        total.put("gu", null);
+        total.put("guName", null);
+        total.put("wdm", null);
+        features.add(total);
 
         return new FeatureDataSource(features);
     }
@@ -1574,13 +1651,14 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
      * @return  DOCUMENT ME!
      */
     private String getGewName(final int gew) {
-        for (final GmdPartObjGeschl tmp : objList) {
-            if (tmp.getId() == gew) {
-                return tmp.getGewName();
-            }
-        }
-
-        return null;
+        return gerOffenHelper.getGewName(gew);
+//        for (final GmdPartObjGeschl tmp : objList) {
+//            if (tmp.getId() == gew) {
+//                return tmp.getGewName();
+//            }
+//        }
+//
+//        return null;
     }
 
     /**
@@ -1591,13 +1669,14 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
      * @return  DOCUMENT ME!
      */
     private String getBaCd(final int gew) {
-        for (final GmdPartObjGeschl tmp : objList) {
-            if (tmp.getId() == gew) {
-                return tmp.getBaCd();
-            }
-        }
-
-        return null;
+        return gerOffenHelper.getBaCd(gew);
+//        for (final GmdPartObjGeschl tmp : objList) {
+//            if (tmp.getId() == gew) {
+//                return tmp.getBaCd();
+//            }
+//        }
+//
+//        return null;
     }
 
     /**
@@ -2796,5 +2875,31 @@ public class GerinneGGewaesserReport extends GerinneGGemeindeReport {
         }
 
         return length;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    @Override
+    protected String createArtString() {
+        String art;
+
+        if (GerinneGeschlGewaesserReportDialog.getInstance().getArt() == null) {
+            art = "RL-D-Due";
+        } else {
+            art = null;
+            for (final GerinneGeschlGemeindeReportDialog.Art a
+                        : GerinneGeschlGewaesserReportDialog.getInstance().getArt()) {
+                if (art == null) {
+                    art = a.name();
+                } else {
+                    art += "-" + a.name();
+                }
+            }
+        }
+
+        return art;
     }
 }

@@ -48,7 +48,7 @@
 	<parameter name="ges" class="java.lang.Boolean"/>
 	<parameter name="fachdata" class="java.lang.Boolean"/>
 	<parameter name="withWdm" class="java.lang.Boolean"/>
-	<field name="anzahlGu" class="java.lang.Integer"/>
+	<field name="anzGu" class="java.lang.Integer"/>
 	<field name="dimension" class="java.lang.String"/>
 	<field name="group" class="java.lang.String"/>
 	<field name="anz1" class="java.lang.Double"/>
@@ -109,7 +109,7 @@
 				<staticText>
 					<reportElement style="column_header_style" mode="Opaque" x="0" y="28" width="285" height="28" backcolor="#BFBFBF" uuid="22d080c3-69cf-48d5-af4d-4bc4bcdccf43"/>
 					<box leftPadding="2" rightPadding="2">
-						<rightPen lineWidth="1.0" lineStyle="Double"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -124,7 +124,7 @@
 					</textElement>
 					<text><![CDATA[Name]]></text>
 				</staticText>
-				<textField>
+				<textField evaluationTime="Report">
 					<reportElement style="column_header_style" mode="Opaque" x="0" y="0" width="285" height="14" backcolor="#FDFD00" uuid="64c87194-d531-463b-9e7a-0122fa0241e5"/>
 					<box leftPadding="5">
 						<pen lineWidth="0.25"/>
@@ -136,14 +136,14 @@
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Statistik Gerinne (geschlossen):" + $F{arten} + " / Gewässer /GU: "  + " Anzahl GU: " + $F{anzahlGu}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Statistik Gerinne (geschlossen):" + $F{arten}+ " / Gewässer /GU: "  + " Anzahl GU: " + $F{anzGu}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement style="column_header_style" mode="Opaque" x="285" y="56" width="70" height="14" backcolor="#D8D8D8" uuid="dc612570-0f2b-4713-ae26-3051f0dc3bf5">
 						<printWhenExpression><![CDATA[$P{withWdm}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2">
-						<rightPen lineWidth="0.25" lineStyle="Double"/>
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -1011,7 +1011,7 @@
 						<printWhenExpression><![CDATA[$P{withWdm}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2">
-						<rightPen lineWidth="0.25" lineStyle="Solid"/>
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -1072,7 +1072,7 @@
 					<printWhenExpression><![CDATA[$P{withWdm}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2">
-					<rightPen lineWidth="0.25" lineStyle="Double"/>
+					<rightPen lineWidth="1.0" lineStyle="Double"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>

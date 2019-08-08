@@ -239,6 +239,7 @@
 	<parameter name="beschreibung" class="java.lang.String"/>
 	<parameter name="bemerkung" class="java.lang.String"/>
 	<parameter name="punkt" class="com.vividsolutions.jts.geom.Geometry"/>
+	<parameter name="isUploader" class="java.lang.Boolean"/>
 	<field name="dateipfad" class="java.lang.String"/>
 	<field name="foto" class="java.lang.String"/>
 	<title>
@@ -501,14 +502,18 @@
 				<textFieldExpression><![CDATA[$P{beschreibung}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="436" width="327" height="14" uuid="527c8e9b-8112-4f68-8a7a-b30468c6a5f7"/>
+				<reportElement x="0" y="436" width="327" height="14" uuid="527c8e9b-8112-4f68-8a7a-b30468c6a5f7">
+					<printWhenExpression><![CDATA[$P{isUploader}]]></printWhenExpression>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font fontName="arial" size="10" isBold="true" isUnderline="true" pdfFontName="de/cismet/cids/custom/reports/fonts/arial.ttf" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Bemerkungen:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="11" y="450" width="465" height="62" uuid="21c49118-ea22-4a6b-90ab-c750aea888e4"/>
+				<reportElement x="11" y="450" width="465" height="62" uuid="21c49118-ea22-4a6b-90ab-c750aea888e4">
+					<printWhenExpression><![CDATA[$P{isUploader}]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font fontName="arial" size="10" isBold="false"/>
 				</textElement>

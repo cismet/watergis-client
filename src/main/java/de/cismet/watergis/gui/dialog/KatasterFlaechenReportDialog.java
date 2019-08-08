@@ -33,6 +33,7 @@ import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.event.TreeModelEvent;
@@ -89,6 +90,7 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox ckb1504;
     private javax.swing.JCheckBox ckb1505;
     private javax.swing.JCheckBox ckbAbschn;
+    private javax.swing.JCheckBox ckbAbschnOffGeschl;
     private javax.swing.JCheckBox ckbAnll;
     private javax.swing.JCheckBox ckbAnlp;
     private javax.swing.JCheckBox ckbAus;
@@ -96,9 +98,11 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox ckbBen;
     private javax.swing.JCheckBox ckbD;
     private javax.swing.JCheckBox ckbDeich;
+    private javax.swing.JCheckBox ckbDok;
     private javax.swing.JCheckBox ckbDue;
     private javax.swing.JCheckBox ckbEa;
     private javax.swing.JCheckBox ckbFlSelection;
+    private javax.swing.JCheckBox ckbFoto;
     private javax.swing.JCheckBox ckbGb;
     private javax.swing.JCheckBox ckbGew;
     private javax.swing.JCheckBox ckbGewSelection;
@@ -107,6 +111,7 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox ckbLeis;
     private javax.swing.JCheckBox ckbPegel;
     private javax.swing.JCheckBox ckbProf;
+    private javax.swing.JCheckBox ckbProj;
     private javax.swing.JCheckBox ckbRl;
     private javax.swing.JCheckBox ckbSb;
     private javax.swing.JCheckBox ckbSbef;
@@ -125,6 +130,7 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -342,6 +348,10 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckbD = new javax.swing.JCheckBox();
         ckbUbef = new javax.swing.JCheckBox();
         ckbBen = new javax.swing.JCheckBox();
+        jLabel13 = new javax.swing.JLabel();
+        ckbDok = new javax.swing.JCheckBox();
+        ckbProj = new javax.swing.JCheckBox();
+        ckbFoto = new javax.swing.JCheckBox();
         ckb1501 = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         butOk = new javax.swing.JButton();
@@ -370,6 +380,7 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         cbbAttr1 = new javax.swing.JComboBox();
         jLabel12 = new javax.swing.JLabel();
         cbbAttr2 = new javax.swing.JComboBox();
+        ckbAbschnOffGeschl = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(
@@ -455,7 +466,6 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
                 KatasterFlaechenReportDialog.class,
                 "KatasterFlaechenReportDialog.ckbGmd.text",
                 new Object[] {})); // NOI18N
-        ckbGmd.setEnabled(false);
         ckbGmd.setMaximumSize(new java.awt.Dimension(260, 24));
         ckbGmd.setMinimumSize(new java.awt.Dimension(260, 24));
         ckbGmd.setPreferredSize(new java.awt.Dimension(260, 24));
@@ -631,11 +641,11 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckbLeis.setMinimumSize(new java.awt.Dimension(260, 24));
         ckbLeis.setPreferredSize(new java.awt.Dimension(260, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 22;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 24;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
         jPanel2.add(ckbLeis, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -849,11 +859,11 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckbTech.setMinimumSize(new java.awt.Dimension(260, 24));
         ckbTech.setPreferredSize(new java.awt.Dimension(260, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 24;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         jPanel2.add(ckbTech, gridBagConstraints);
 
         ckbPegel.setSelected(true);
@@ -964,9 +974,77 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         jPanel2.add(ckbBen, gridBagConstraints);
 
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel13,
+            org.openide.util.NbBundle.getMessage(
+                KatasterFlaechenReportDialog.class,
+                "KatasterFlaechenReportDialog.jLabel13.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 19;
+        gridBagConstraints.gridy = 22;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
+        jPanel2.add(jLabel13, gridBagConstraints);
+
+        ckbDok.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbDok,
+            org.openide.util.NbBundle.getMessage(
+                KatasterFlaechenReportDialog.class,
+                "KatasterFlaechenReportDialog.ckbDok.text",
+                new Object[] {})); // NOI18N
+        ckbDok.setMaximumSize(new java.awt.Dimension(260, 24));
+        ckbDok.setMinimumSize(new java.awt.Dimension(260, 24));
+        ckbDok.setPreferredSize(new java.awt.Dimension(260, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 24;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        jPanel2.add(ckbDok, gridBagConstraints);
+
+        ckbProj.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbProj,
+            org.openide.util.NbBundle.getMessage(
+                KatasterFlaechenReportDialog.class,
+                "KatasterFlaechenReportDialog.ckbProj.text",
+                new Object[] {})); // NOI18N
+        ckbProj.setMaximumSize(new java.awt.Dimension(260, 24));
+        ckbProj.setMinimumSize(new java.awt.Dimension(260, 24));
+        ckbProj.setPreferredSize(new java.awt.Dimension(260, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 25;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
+        jPanel2.add(ckbProj, gridBagConstraints);
+
+        ckbFoto.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbFoto,
+            org.openide.util.NbBundle.getMessage(
+                KatasterFlaechenReportDialog.class,
+                "KatasterFlaechenReportDialog.ckbFoto.text",
+                new Object[] {})); // NOI18N
+        ckbFoto.setMaximumSize(new java.awt.Dimension(260, 24));
+        ckbFoto.setMinimumSize(new java.awt.Dimension(260, 24));
+        ckbFoto.setPreferredSize(new java.awt.Dimension(260, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 22;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        jPanel2.add(ckbFoto, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 20;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -982,6 +1060,13 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckb1501.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1501.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1501.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1501.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1501ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -1141,6 +1226,13 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckb1502.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1502.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1502.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1502.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1502ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
@@ -1159,6 +1251,13 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckb1503.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1503.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1503.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1503.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1503ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
@@ -1177,6 +1276,13 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckb1505.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1505.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1505.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1505.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1505ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 4;
@@ -1207,7 +1313,7 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 20, 5, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 5, 10);
         getContentPane().add(ckbGew, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1232,7 +1338,7 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 15, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
         getContentPane().add(ckbAbschn, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1246,11 +1352,11 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckbSumGu.setPreferredSize(new java.awt.Dimension(260, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 17;
+        gridBagConstraints.gridy = 18;
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         getContentPane().add(ckbSumGu, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1271,11 +1377,11 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 18;
+        gridBagConstraints.gridy = 19;
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 15, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
         getContentPane().add(ckbWdmSeparated, gridBagConstraints);
 
         ckb1504.setSelected(true);
@@ -1288,6 +1394,13 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckb1504.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1504.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1504.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1504.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1504ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 4;
@@ -1387,6 +1500,31 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel4, gridBagConstraints);
 
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbAbschnOffGeschl,
+            org.openide.util.NbBundle.getMessage(
+                KatasterFlaechenReportDialog.class,
+                "KatasterFlaechenReportDialog.ckbAbschnOffGeschl.text",
+                new Object[] {})); // NOI18N
+        ckbAbschnOffGeschl.setMaximumSize(new java.awt.Dimension(350, 24));
+        ckbAbschnOffGeschl.setMinimumSize(new java.awt.Dimension(350, 24));
+        ckbAbschnOffGeschl.setPreferredSize(new java.awt.Dimension(260, 24));
+        ckbAbschnOffGeschl.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbAbschnOffGeschlActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 17;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
+        getContentPane().add(ckbAbschnOffGeschl, gridBagConstraints);
+
         pack();
     } // </editor-fold>//GEN-END:initComponents
 
@@ -1459,8 +1597,10 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void ckbWdmSeparatedActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbWdmSeparatedActionPerformed
-        // TODO add your handling code here:
-    } //GEN-LAST:event_ckbWdmSeparatedActionPerformed
+        if (ckbWdmSeparated.isSelected()) {
+            ckbSumGu.setSelected(true);
+        }
+    }                                                                                   //GEN-LAST:event_ckbWdmSeparatedActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -1502,6 +1642,90 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         refreshFieldModel();
         selectedThemeFeatureCount = refreshSelectedFeatureCount(false);
     }                                                                             //GEN-LAST:event_cbbFlaecheItemStateChanged
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1501ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1501ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1501ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1502ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1502ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1502ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1503ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1503ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1503ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1504ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1504ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1504ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1505ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1505ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1505ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbAbschnOffGeschlActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbAbschnOffGeschlActionPerformed
+        if (ckbAbschnOffGeschl.isSelected()) {
+            ckbAbschn.setSelected(true);
+            ckbGew.setSelected(true);
+        }
+    }                                                                                      //GEN-LAST:event_ckbAbschnOffGeschlActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void deactivateWDM() {
+        final JCheckBox[] boxes = { ckb1501, ckb1502, ckb1503, ckb1504, ckb1505 };
+        int count = 0;
+
+        for (final JCheckBox box : boxes) {
+            if (box.isSelected()) {
+                ++count;
+            }
+        }
+        if (count == 1) {
+            for (final JCheckBox box : boxes) {
+                if (box.isSelected()) {
+                    box.setEnabled(false);
+                }
+            }
+        } else {
+            for (final JCheckBox box : boxes) {
+                if (!box.isEnabled()) {
+                    box.setEnabled(true);
+                }
+            }
+        }
+    }
 
     /**
      * refreshes the ckbSelection1 label.
@@ -2068,6 +2292,33 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
      */
     public boolean isTech() {
         return ckbTech.isSelected();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the ckbTech
+     */
+    public boolean isFoto() {
+        return ckbFoto.isSelected();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the ckbTech
+     */
+    public boolean isDok() {
+        return ckbDok.isSelected();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the ckbTech
+     */
+    public boolean isProj() {
+        return ckbProj.isSelected();
     }
 
     /**

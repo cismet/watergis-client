@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
@@ -280,6 +281,13 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         ckb1501.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1501.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1501.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1501.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1501ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -416,6 +424,13 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         ckb1502.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1502.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1502.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1502.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1502ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
@@ -434,6 +449,13 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         ckb1503.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1503.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1503.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1503.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1503ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
@@ -452,6 +474,13 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         ckb1505.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1505.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1505.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1505.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1505ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 4;
@@ -532,7 +561,7 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         getContentPane().add(ckbSumGu, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -557,7 +586,7 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 15, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
         getContentPane().add(ckbWdmSeparated, gridBagConstraints);
 
         ckb1504.setSelected(true);
@@ -570,6 +599,13 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         ckb1504.setMaximumSize(new java.awt.Dimension(100, 24));
         ckb1504.setMinimumSize(new java.awt.Dimension(100, 24));
         ckb1504.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckb1504.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckb1504ActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 4;
@@ -617,6 +653,13 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         ckbArtRl.setMaximumSize(new java.awt.Dimension(100, 24));
         ckbArtRl.setMinimumSize(new java.awt.Dimension(100, 24));
         ckbArtRl.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckbArtRl.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbArtRlActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -635,6 +678,13 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         ckbArtD.setMaximumSize(new java.awt.Dimension(100, 24));
         ckbArtD.setMinimumSize(new java.awt.Dimension(100, 24));
         ckbArtD.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckbArtD.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbArtDActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 5;
@@ -653,6 +703,13 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         ckbArtDue.setMaximumSize(new java.awt.Dimension(100, 24));
         ckbArtDue.setMinimumSize(new java.awt.Dimension(100, 24));
         ckbArtDue.setPreferredSize(new java.awt.Dimension(100, 24));
+        ckbArtDue.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    ckbArtDueActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 5;
@@ -1050,7 +1107,7 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         getContentPane().add(ckbPerObj, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1075,7 +1132,7 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 15, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
         getContentPane().add(ckbFach, gridBagConstraints);
 
         pack();
@@ -1232,6 +1289,132 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
     }                                                                            //GEN-LAST:event_ckbSumGuActionPerformed
 
     /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1501ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1501ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1501ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1502ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1502ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1502ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1503ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1503ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1503ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1504ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1504ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1504ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckb1505ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckb1505ActionPerformed
+        deactivateWDM();
+    }                                                                           //GEN-LAST:event_ckb1505ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbArtRlActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbArtRlActionPerformed
+        deactivateTyp();
+    }                                                                            //GEN-LAST:event_ckbArtRlActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbArtDActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbArtDActionPerformed
+        deactivateTyp();
+    }                                                                           //GEN-LAST:event_ckbArtDActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void ckbArtDueActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_ckbArtDueActionPerformed
+        deactivateTyp();
+    }                                                                             //GEN-LAST:event_ckbArtDueActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void deactivateTyp() {
+        final JCheckBox[] boxes = { ckbArtD, ckbArtDue, ckbArtRl };
+        int count = 0;
+
+        for (final JCheckBox box : boxes) {
+            if (box.isSelected()) {
+                ++count;
+            }
+        }
+        if (count == 1) {
+            for (final JCheckBox box : boxes) {
+                if (box.isSelected()) {
+                    box.setEnabled(false);
+                }
+            }
+        } else {
+            for (final JCheckBox box : boxes) {
+                if (!box.isEnabled()) {
+                    box.setEnabled(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void deactivateWDM() {
+        final JCheckBox[] boxes = { ckb1501, ckb1502, ckb1503, ckb1504, ckb1505 };
+        int count = 0;
+
+        for (final JCheckBox box : boxes) {
+            if (box.isSelected()) {
+                ++count;
+            }
+        }
+        if (count == 1) {
+            for (final JCheckBox box : boxes) {
+                if (box.isSelected()) {
+                    box.setEnabled(false);
+                }
+            }
+        } else {
+            for (final JCheckBox box : boxes) {
+                if (!box.isEnabled()) {
+                    box.setEnabled(true);
+                }
+            }
+        }
+    }
+
+    /**
      * refreshes the ckbSelection1 label.
      *
      * @param   forceGuiRefresh  DOCUMENT ME!
@@ -1252,7 +1435,7 @@ public class GerinneGeschlGewaesserReportDialog extends javax.swing.JDialog {
                 "GerinneGeschlGemeindeReportDialog.ckbGewSelection.text") + " "
                     + NbBundle.getMessage(
                         BufferDialog.class,
-                        "GewaesserReportDialog.refreshSelectedFeatureCount.text",
+                        "GerinneGeschlGewaesserReportDialog.refreshSelectedFeatureCount.text",
                         count));
 
         ckbGewSelection.setEnabled(true);

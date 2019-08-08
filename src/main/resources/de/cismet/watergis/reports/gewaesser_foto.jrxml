@@ -37,6 +37,7 @@
 	<field name="freigabe" class="java.lang.String"/>
 	<field name="beschreibung" class="java.lang.String"/>
 	<field name="zeit" class="java.lang.String"/>
+	<field name="foto_nr_gu" class="java.lang.String"/>
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
 	</variable>
@@ -57,7 +58,7 @@
 				<text><![CDATA[Station]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="111" y="14" width="50" height="14" backcolor="#DADADA" uuid="95c09c04-6b66-42f2-ae7f-879871eb2328"/>
+				<reportElement style="column_header_style" mode="Opaque" x="131" y="14" width="50" height="14" backcolor="#DADADA" uuid="95c09c04-6b66-42f2-ae7f-879871eb2328"/>
 				<box leftPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -68,7 +69,7 @@
 				<text><![CDATA[Aufn.datum]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="47" y="14" width="64" height="14" backcolor="#DADADA" uuid="0f6add6a-a606-43b7-bf73-f53074601220"/>
+				<reportElement style="column_header_style" mode="Opaque" x="47" y="14" width="84" height="14" backcolor="#DADADA" uuid="0f6add6a-a606-43b7-bf73-f53074601220"/>
 				<box leftPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -93,7 +94,7 @@
 				<textFieldExpression><![CDATA["Fotos: " + $P{ba_cd}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="161" y="14" width="601" height="14" backcolor="#DADADA" uuid="493e400b-d8ff-4040-a807-fea1b55488da"/>
+				<reportElement style="column_header_style" mode="Opaque" x="181" y="14" width="581" height="14" backcolor="#DADADA" uuid="493e400b-d8ff-4040-a807-fea1b55488da"/>
 				<box leftPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -104,7 +105,7 @@
 				<text><![CDATA[Titel]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="47" y="28" width="64" height="14" backcolor="#DADADA" uuid="02e26d22-24d3-406d-86de-a09990bd3e40"/>
+				<reportElement style="column_header_style" mode="Opaque" x="47" y="28" width="84" height="14" backcolor="#DADADA" uuid="02e26d22-24d3-406d-86de-a09990bd3e40"/>
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0"/>
 					<bottomPen lineWidth="0.0"/>
@@ -116,7 +117,7 @@
 				<text><![CDATA[Lage re/li]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="47" y="42" width="64" height="14" backcolor="#DADADA" uuid="ce414b2a-ee84-4bfd-bdce-ba2a3c90b9d4"/>
+				<reportElement style="column_header_style" mode="Opaque" x="47" y="42" width="37" height="14" backcolor="#DADADA" uuid="ce414b2a-ee84-4bfd-bdce-ba2a3c90b9d4"/>
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0"/>
 				</box>
@@ -124,10 +125,10 @@
 					<font fontName="Arial" size="8" isBold="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<text><![CDATA[obj_nr(=Bild-ID)]]></text>
+				<text><![CDATA[foto_nr]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="111" y="42" width="50" height="14" backcolor="#DADADA" uuid="0613cc26-0576-4c4f-b5ec-bf9e07d6248f"/>
+				<reportElement style="column_header_style" mode="Opaque" x="131" y="42" width="50" height="14" backcolor="#DADADA" uuid="0613cc26-0576-4c4f-b5ec-bf9e07d6248f"/>
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0"/>
 				</box>
@@ -138,7 +139,7 @@
 				<text><![CDATA[Freigabe]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="111" y="28" width="50" height="14" backcolor="#DADADA" uuid="21977aa8-2ed6-4333-9404-3f6ddf4e7715"/>
+				<reportElement style="column_header_style" mode="Opaque" x="131" y="28" width="50" height="14" backcolor="#DADADA" uuid="21977aa8-2ed6-4333-9404-3f6ddf4e7715"/>
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0"/>
 					<bottomPen lineWidth="0.0"/>
@@ -150,7 +151,7 @@
 				<text><![CDATA[Aufn.zeit]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="161" y="28" width="601" height="14" backcolor="#DADADA" uuid="e0b56e57-80f0-4d56-af6b-bd3cc0ca542e"/>
+				<reportElement style="column_header_style" mode="Opaque" x="181" y="28" width="581" height="14" backcolor="#DADADA" uuid="e0b56e57-80f0-4d56-af6b-bd3cc0ca542e"/>
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0"/>
 					<bottomPen lineWidth="0.0"/>
@@ -162,7 +163,7 @@
 				<text><![CDATA[Beschreibung]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="161" y="42" width="601" height="14" backcolor="#DADADA" uuid="818c23b6-4358-4fa1-83dd-a4592feb5749"/>
+				<reportElement style="column_header_style" mode="Opaque" x="181" y="42" width="581" height="14" backcolor="#DADADA" uuid="818c23b6-4358-4fa1-83dd-a4592feb5749"/>
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0"/>
 				</box>
@@ -171,6 +172,17 @@
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
 				<text><![CDATA[Bemerkungen]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="column_header_style" mode="Opaque" x="84" y="42" width="47" height="14" backcolor="#DADADA" uuid="afcda1de-f6d2-4ad3-8ce2-1948daf2bf0c"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="html">
+					<font fontName="Arial" size="8" isBold="false"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<text><![CDATA[foto_nr_gu]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -185,7 +197,7 @@
 				<textFieldExpression><![CDATA[$F{station}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="111" y="0" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="401b295f-2439-4c04-82de-a85b2bb0d8aa"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="131" y="0" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="401b295f-2439-4c04-82de-a85b2bb0d8aa"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -195,7 +207,7 @@
 				<textFieldExpression><![CDATA[$F{datum}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="161" y="0" width="601" height="14" isPrintWhenDetailOverflows="true" uuid="ac860c71-f3f1-4405-b2bf-7ffa4ad00862"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="181" y="0" width="581" height="14" isPrintWhenDetailOverflows="true" uuid="ac860c71-f3f1-4405-b2bf-7ffa4ad00862"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 					<rightPen lineWidth="0.25"/>
@@ -206,7 +218,7 @@
 				<textFieldExpression><![CDATA[$F{titel}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="161" y="14" width="601" height="14" isPrintWhenDetailOverflows="true" uuid="df9a7b85-f6a3-4f71-acf9-a55168bc5e4d"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="181" y="14" width="581" height="14" isPrintWhenDetailOverflows="true" uuid="df9a7b85-f6a3-4f71-acf9-a55168bc5e4d"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 					<rightPen lineWidth="0.25"/>
@@ -217,7 +229,7 @@
 				<textFieldExpression><![CDATA[$F{beschreibung}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="111" y="14" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="fda77494-97d3-4243-b1c1-97605d9f99ee"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="131" y="14" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="fda77494-97d3-4243-b1c1-97605d9f99ee"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -227,7 +239,7 @@
 				<textFieldExpression><![CDATA[$F{zeit}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="0" width="64" height="14" isPrintWhenDetailOverflows="true" uuid="2d4d502d-72ea-4bdf-b5c4-893ab46bba6e"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="0" width="84" height="14" isPrintWhenDetailOverflows="true" uuid="2d4d502d-72ea-4bdf-b5c4-893ab46bba6e"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -237,7 +249,7 @@
 				<textFieldExpression><![CDATA[$F{lagestatus}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="14" width="64" height="14" isPrintWhenDetailOverflows="true" uuid="cf35b0c1-b553-4d3b-a5dd-e449f366471e"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="14" width="84" height="14" isPrintWhenDetailOverflows="true" uuid="cf35b0c1-b553-4d3b-a5dd-e449f366471e"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -247,7 +259,7 @@
 				<textFieldExpression><![CDATA[$F{lage}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="28" width="64" height="14" isPrintWhenDetailOverflows="true" uuid="b9628bc3-7434-4a62-b18f-d81611317d44"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="47" y="28" width="37" height="14" isPrintWhenDetailOverflows="true" uuid="b9628bc3-7434-4a62-b18f-d81611317d44"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -257,7 +269,7 @@
 				<textFieldExpression><![CDATA[$F{obj_nr}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="111" y="28" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="89df68c2-de65-44bb-88ea-7926b278d5e6"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="131" y="28" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="89df68c2-de65-44bb-88ea-7926b278d5e6"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.25"/>
 				</box>
@@ -267,7 +279,7 @@
 				<textFieldExpression><![CDATA[$F{freigabe}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="161" y="28" width="601" height="14" isPrintWhenDetailOverflows="true" uuid="88ec346f-10ea-4aec-9901-3ce68d2173da"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="181" y="28" width="581" height="14" isPrintWhenDetailOverflows="true" uuid="88ec346f-10ea-4aec-9901-3ce68d2173da"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<rightPen lineWidth="0.25"/>
 				</box>
@@ -275,6 +287,16 @@
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{bemerkungen}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="84" y="28" width="47" height="14" isPrintWhenDetailOverflows="true" uuid="db7aab4a-9d29-4205-9ade-cad8aeade0bd"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{foto_nr_gu}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

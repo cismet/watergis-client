@@ -151,7 +151,7 @@ public class GerOffenHelper {
             ts.add(tmp.getId());
         }
 
-        return ts.descendingSet();
+        return ts;
     }
 
     /**
@@ -166,7 +166,7 @@ public class GerOffenHelper {
             ts.add(tmp.getOwner());
         }
 
-        return ts.descendingSet();
+        return ts;
     }
 
     /**
@@ -185,7 +185,7 @@ public class GerOffenHelper {
             }
         }
 
-        return ts.descendingSet();
+        return ts;
     }
 
     /**
@@ -205,7 +205,7 @@ public class GerOffenHelper {
 //            }
 //        }
 
-        return ts.descendingSet();
+        return ts;
     }
 
     /**
@@ -304,7 +304,7 @@ public class GerOffenHelper {
                     } while ((profIndex < profObjects.size()) && (tmp.getId() == profObjects.get(profIndex).getId())
                                 && profObjects.get(profIndex).isInGewPart(tmp.getId(), tmp.getFrom(), tmp.getTill()));
 
-                    abschnList.add(tmp);
+//                    abschnList.add(tmp);
                 } else {
                     abschnList.add(tmp);
                 }

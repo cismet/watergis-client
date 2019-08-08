@@ -97,9 +97,11 @@ public class GerinneGGemeindeReport {
      * @param   gemId  baCd DOCUMENT ME!
      * @param   gew    DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createReport(final int[] gemId, final int[] gew) throws Exception {
+    public File createReport(final int[] gemId, final int[] gew) throws Exception {
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
 
@@ -234,9 +236,10 @@ public class GerinneGGemeindeReport {
         // BufferedOutputStream pout = new BufferedOutputStream(pfout);
         // JasperExportManager.exportReportToPdfStream(jasperPrint, pout); pout.close();
 
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    GerinneGeschlGemeindeReportDialog.getInstance().getPath()
-                            + "/Gemeinde.xlsx"));
+        final File file = new File(
+                GerinneGeschlGemeindeReportDialog.getInstance().getPath()
+                        + "/Gerinne_geschlossen_Gemeinden.xlsx");
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         final JRXlsxExporter exporter = new JRXlsxExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -258,6 +261,8 @@ public class GerinneGGemeindeReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -352,7 +357,9 @@ public class GerinneGGemeindeReport {
                         (Double)f.get(29),
                         (Double)f.get(30),
                         (Double)f.get(31),
-                        (Double)f.get(32)));
+                        (Double)f.get(32),
+                        (String)f.get(33),
+                        (String)f.get(34)));
             }
         }
 
@@ -486,7 +493,7 @@ public class GerinneGGemeindeReport {
                     count += colCount;
                     length += colLength;
 
-                    feature.put(lab, l.get(i).name().toUpperCase());
+                    feature.put(lab, toColumnName(l.get(i)));
                     feature.put(anz, colCount);
                     feature.put(laenge, colLength);
                 }
@@ -619,7 +626,7 @@ public class GerinneGGemeindeReport {
                         count += colCount;
                         length += colLength;
 
-                        feature.put(lab, l.get(i).name().toUpperCase());
+                        feature.put(lab, toColumnName(l.get(i)));
                         feature.put(anz, colCount);
                         feature.put(laenge, colLength);
                     }
@@ -853,7 +860,7 @@ public class GerinneGGemeindeReport {
                         count += colCount;
                         length += colLength;
 
-                        feature.put(lab, l.get(i).name().toUpperCase());
+                        feature.put(lab, toColumnName(l.get(i)));
                         feature.put(anz, colCount);
                         feature.put(laenge, colLength);
                     }
@@ -992,7 +999,7 @@ public class GerinneGGemeindeReport {
                             count += colCount;
                             length += colLength;
 
-                            feature.put(lab, l.get(i).name().toUpperCase());
+                            feature.put(lab, toColumnName(l.get(i)));
                             feature.put(anz, colCount);
                             feature.put(laenge, colLength);
                         }
@@ -1233,7 +1240,7 @@ public class GerinneGGemeindeReport {
                         count += colCount;
                         length += colLength;
 
-                        feature.put(lab, l.get(i).name().toUpperCase());
+                        feature.put(lab, toColumnName(l.get(i)));
                         feature.put(anz, colCount);
                         feature.put(laenge, colLength);
                     }
@@ -1372,7 +1379,7 @@ public class GerinneGGemeindeReport {
                             count += colCount;
                             length += colLength;
 
-                            feature.put(lab, l.get(i).name().toUpperCase());
+                            feature.put(lab, toColumnName(l.get(i)));
                             feature.put(anz, colCount);
                             feature.put(laenge, colLength);
                         }
@@ -1616,7 +1623,7 @@ public class GerinneGGemeindeReport {
                             count += colCount;
                             length += colLength;
 
-                            feature.put(lab, l.get(i).name().toUpperCase());
+                            feature.put(lab, toColumnName(l.get(i)));
                             feature.put(anz, colCount);
                             feature.put(laenge, colLength);
                         }
@@ -1761,7 +1768,7 @@ public class GerinneGGemeindeReport {
                                 count += colCount;
                                 length += colLength;
 
-                                feature.put(lab, l.get(i).name().toUpperCase());
+                                feature.put(lab, toColumnName(l.get(i)));
                                 feature.put(anz, colCount);
                                 feature.put(laenge, colLength);
                             }
@@ -2154,7 +2161,7 @@ public class GerinneGGemeindeReport {
         String art;
 
         if (GerinneGeschlGemeindeReportDialog.getInstance().getArt() == null) {
-            art = "RL / D / DUE";
+            art = "RL-D-Due";
         } else {
             art = null;
             for (final GerinneGeschlGemeindeReportDialog.Art a
@@ -2162,7 +2169,7 @@ public class GerinneGGemeindeReport {
                 if (art == null) {
                     art = a.name();
                 } else {
-                    art += " / " + a.name();
+                    art += "-" + a.name();
                 }
             }
         }
@@ -3955,7 +3962,7 @@ public class GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final String gu, final Integer wdm) {
+    private double getLengthGew(final String gu, final int wdm) {
         double length = 0;
 
         for (final Integer gemNr : gemPartMap.keySet()) {
@@ -3999,7 +4006,7 @@ public class GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGew(final String gu, final Integer wdm) {
+    private int getCountGew(final String gu, final int wdm) {
         int count = 0;
 
         for (final Integer gemNr : gemPartMap.keySet()) {
@@ -4054,5 +4061,24 @@ public class GerinneGGemeindeReport {
         }
 
         return km + "+" + mString;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   a  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected String toColumnName(final GerinneGeschlGemeindeReportDialog.Art a) {
+        if (a.equals(GerinneGeschlGemeindeReportDialog.Art.d)) {
+            return "D";
+        } else if (a.equals(GerinneGeschlGemeindeReportDialog.Art.due)) {
+            return "Due";
+        } else if (a.equals(GerinneGeschlGemeindeReportDialog.Art.rl)) {
+            return "RL";
+        } else {
+            return a.name();
+        }
     }
 }

@@ -222,7 +222,9 @@
 				<subreportExpression><![CDATA["de/cismet/watergis/reports/gerinneGeschlGew_gewaesserKomp.jasper"]]></subreportExpression>
 			</subreport>
 			<break>
-				<reportElement positionType="Float" x="0" y="31" width="100" height="1" uuid="55c56f25-ffb8-434f-aceb-d2556dc5b92a"/>
+				<reportElement positionType="Float" x="0" y="31" width="100" height="1" uuid="55c56f25-ffb8-434f-aceb-d2556dc5b92a">
+					<printWhenExpression><![CDATA[$P{perObject}]]></printWhenExpression>
+				</reportElement>
 			</break>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="32" width="902" height="30" uuid="31b20fbc-5e12-4e24-942b-c0a468f45a74">
@@ -307,7 +309,9 @@
 				<subreportExpression><![CDATA["de/cismet/watergis/reports/gerinneGeschlGew_objekt.jasper"]]></subreportExpression>
 			</subreport>
 			<break>
-				<reportElement positionType="Float" x="0" y="62" width="100" height="1" uuid="124b1d64-0b0a-443a-a0c8-ef9010b664f2"/>
+				<reportElement positionType="Float" x="0" y="62" width="100" height="1" uuid="124b1d64-0b0a-443a-a0c8-ef9010b664f2">
+					<printWhenExpression><![CDATA[($P{sumGu} && !$P{gemKomp}) || ($P{sumGu} && $P{gemKomp})]]></printWhenExpression>
+				</reportElement>
 			</break>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="63" width="902" height="30" uuid="64dadea7-83b7-4438-9179-2c5fac46dc24">
