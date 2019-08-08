@@ -30,10 +30,12 @@ import java.io.File;
 import java.io.InputStream;
 
 import java.net.URL;
+import java.net.URLEncoder;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
@@ -367,7 +369,7 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
 
                     try {
                         final URL[] lua = wl.getSelectedStyle().getLegendURL();
-                        url = lua[0].toString();
+                        url = getValidUrlString(lua[0]);
 
                         if (url != null) {
                             legendImage = getImageFromUrl(url);
@@ -382,6 +384,46 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
         }
 
         return legendImage;
+    }
+
+    /**
+     * The legend url can contains umlaute and colons, which cannot be handled by the ImageRetrieval class. So this
+     * characters should be encoded
+     *
+     * @param   url  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private String getValidUrlString(final URL url) throws Exception {
+        String urlString = null;
+
+        try {
+            urlString = url.toURI().toASCIIString();
+        } catch (final Exception t) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Cannot convert legend url to ascii string", t); // NOI18N
+            }
+            urlString = url.toString();
+
+            if (urlString.contains("?")) {
+                final String param = urlString.substring(urlString.indexOf("?") + 1);
+                urlString = urlString.substring(0, urlString.indexOf("?")) + "?";
+                final StringTokenizer stParam = new StringTokenizer(param, "&");
+
+                while (stParam.hasMoreTokens()) {
+                    final StringTokenizer stKeyVal = new StringTokenizer(stParam.nextToken(), "=");
+
+                    if (stKeyVal.countTokens() == 2) {
+                        urlString += "&" + stKeyVal.nextToken() + "="
+                                    + URLEncoder.encode(stKeyVal.nextToken(), "UTF-8");
+                    }
+                }
+            }
+        }
+
+        return urlString;
     }
 
     /**

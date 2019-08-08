@@ -207,6 +207,9 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
                                 if (i == 1) {
                                     // adjust the master stations only one time
                                     adjustLineStation((CidsBean)origLineBean, splittedGeom[0], false);
+                                    ((DefaultFeatureServiceFeature)masterFeature).setProperty(
+                                        linePropertyName,
+                                        origLineBean);
                                 }
                             }
                         }
@@ -254,6 +257,7 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
         cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gn2"));
         cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gn3"));
         cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_gwk"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak_wk"));
 
         for (final MetaClass cl : cat2Classes) {
             try {

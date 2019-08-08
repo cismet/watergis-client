@@ -49,6 +49,8 @@ import de.cismet.cids.custom.watergis.server.search.AllPunktObjects;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
+import de.cismet.tools.gui.WaitDialog;
+
 import de.cismet.watergis.gui.dialog.KatasterGewaesserReportDialog;
 
 import de.cismet.watergis.reports.types.FeatureDataSource;
@@ -93,16 +95,20 @@ public class KatasterGewaesserReport {
      * DOCUMENT ME!
      *
      * @param   gew  DOCUMENT ME!
+     * @param   wd   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createGewaesserReport(final int[] gew) throws Exception {
+    public File createGewaesserReport(final int[] gew, final WaitDialog wd) throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
 
         parameters.put("datum", df.format(new Date()));
         parameters.put("gemeinden", 0);
+        parameters.put("gmd", KatasterGewaesserReportDialog.getInstance().isGmd());
         parameters.put("wasserschutz", KatasterGewaesserReportDialog.getInstance().isWsg());
         parameters.put("ueber", KatasterGewaesserReportDialog.getInstance().isSchutzgebiete());
         parameters.put("ben", KatasterGewaesserReportDialog.getInstance().isBen());
@@ -128,6 +134,9 @@ public class KatasterGewaesserReport {
         parameters.put("ughz", KatasterGewaesserReportDialog.getInstance().isUghz());
         parameters.put("leis", KatasterGewaesserReportDialog.getInstance().isLeis());
         parameters.put("tech", KatasterGewaesserReportDialog.getInstance().isTech());
+        parameters.put("dok", KatasterGewaesserReportDialog.getInstance().isDok());
+        parameters.put("proj", KatasterGewaesserReportDialog.getInstance().isProj());
+        parameters.put("foto", KatasterGewaesserReportDialog.getInstance().isFoto());
         parameters.put("perGew", false);
         parameters.put("perAbschn", KatasterGewaesserReportDialog.getInstance().isPerPart());
         parameters.put("sumGu", KatasterGewaesserReportDialog.getInstance().isSumGu());
@@ -139,12 +148,12 @@ public class KatasterGewaesserReport {
         final JasperReport jasperReport = (JasperReport)JRLoader.loadObject(KatasterGewaesserReport.class
                         .getResourceAsStream("/de/cismet/watergis/reports/stat_gewaesser.jasper"));
 
-        init(gew);
+        init(gew, wd);
 
         if (KatasterGewaesserReportDialog.getInstance().isPerPart()) {
-            dataSources.put("gewaesser", getGewaesser());
-        } else {
             dataSources.put("gewaesserAbschn", getGewaesserAbschnitt());
+        } else {
+            dataSources.put("gewaesser", getGewaesser());
         }
 
         if (KatasterGewaesserReportDialog.getInstance().isSumGu()) {
@@ -168,9 +177,10 @@ public class KatasterGewaesserReport {
 //        JasperExportManager.exportReportToPdfStream(jasperPrint, pout);
 //        pout.close();
 
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    KatasterGewaesserReportDialog.getInstance().getPath()
-                            + "/Gewässer.xlsx"));
+        final File file = new File(
+                KatasterGewaesserReportDialog.getInstance().getPath()
+                        + "/Kataster_Gewässer.xlsx");
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         final JRXlsxExporter exporter = new JRXlsxExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -197,6 +207,8 @@ public class KatasterGewaesserReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -206,21 +218,22 @@ public class KatasterGewaesserReport {
      */
     public static void main(final String[] args) {
         final KatasterGewaesserReport report = new KatasterGewaesserReport();
-        try {
-            report.createGewaesserReport(new int[] { 2 });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            report.createGewaesserReport(new int[] { 2 });
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
      * DOCUMENT ME!
      *
      * @param   routeIds  DOCUMENT ME!
+     * @param   wd        DOCUMENT ME!
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private void init(final int[] routeIds) throws Exception {
+    private void init(final int[] routeIds, final WaitDialog wd) throws Exception {
         parts = getAllRoutes(routeIds);
         int[] routes = routeIds;
 
@@ -335,6 +348,8 @@ public class KatasterGewaesserReport {
             feature.put("pegel_a", getCountPointObjects(AllPunktObjects.Table.mn_ow_pegel, gew));
             feature.put("gb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_gb, gew));
             feature.put("gb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, gew));
+            feature.put("gmd_a", getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, gew));
+            feature.put("gmd_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gmd, gew));
             feature.put("sb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sb, gew));
             feature.put("sb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, gew));
             feature.put("prof_a", getCountLineObjects(AllLineObjects.Table.fg_ba_prof, gew));
@@ -359,6 +374,7 @@ public class KatasterGewaesserReport {
             feature.put("anll_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, gew));
             feature.put("kr_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, gew));
             feature.put("ea_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, gew));
+            feature.put("foto_a", getCountPointObjects(AllPunktObjects.Table.foto, gew));
             feature.put("deich_a", getCountLineObjects(AllLineObjects.Table.fg_ba_deich, gew));
             feature.put("deich_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, gew));
             feature.put("ughz_a", getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, gew));
@@ -367,11 +383,18 @@ public class KatasterGewaesserReport {
             feature.put("leis_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_leis, gew));
             feature.put("tech_a", getCountLineObjects(AllLineObjects.Table.fg_ba_tech, gew));
             feature.put("tech_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_tech, gew));
+            feature.put("dok_a", getCountLineObjects(AllLineObjects.Table.fg_ba_doku, gew));
+            feature.put("dok_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_doku, gew));
+            feature.put("proj_a", getCountLineObjects(AllLineObjects.Table.fg_ba_proj, gew));
+            feature.put("proj_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_proj, gew));
 
             features.add(feature);
             featureListKum.add(feature);
         }
-        features.add(createKumFeature(featureListKum, false));
+        final Map<String, Object> kumObj = createKumFeature(featureListKum, false);
+        kumObj.put("code", null);
+        kumObj.put("gewName", null);
+        features.add(kumObj);
         return new FeatureDataSource(features);
     }
 
@@ -472,6 +495,16 @@ public class KatasterGewaesserReport {
                 "gb_l",
                 getLengthLineObjects(
                     AllLineObjects.Table.fg_ba_gb,
+                    gew.getId(),
+                    gew.getFrom(),
+                    gew.getTill()));
+            feature.put(
+                "gmd_a",
+                getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, gew.getId(), gew.getFrom(), gew.getTill()));
+            feature.put(
+                "gmd_l",
+                getLengthLineObjects(
+                    AllLineObjects.Table.fg_ba_gmd,
                     gew.getId(),
                     gew.getFrom(),
                     gew.getTill()));
@@ -628,6 +661,12 @@ public class KatasterGewaesserReport {
                     gew.getFrom(),
                     gew.getTill()));
             feature.put(
+                "foto_a",
+                getCountPointObjects(AllPunktObjects.Table.foto,
+                    gew.getId(),
+                    gew.getFrom(),
+                    gew.getTill()));
+            feature.put(
                 "deich_a",
                 getCountLineObjects(
                     AllLineObjects.Table.fg_ba_deich,
@@ -683,11 +722,43 @@ public class KatasterGewaesserReport {
                     gew.getId(),
                     gew.getFrom(),
                     gew.getTill()));
+            feature.put(
+                "dok_a",
+                getCountLineObjects(
+                    AllLineObjects.Table.fg_ba_doku,
+                    gew.getId(),
+                    gew.getFrom(),
+                    gew.getTill()));
+            feature.put(
+                "dok_l",
+                getLengthLineObjects(
+                    AllLineObjects.Table.fg_ba_doku,
+                    gew.getId(),
+                    gew.getFrom(),
+                    gew.getTill()));
+            feature.put(
+                "proj_a",
+                getCountLineObjects(
+                    AllLineObjects.Table.fg_ba_proj,
+                    gew.getId(),
+                    gew.getFrom(),
+                    gew.getTill()));
+            feature.put(
+                "proj_l",
+                getLengthLineObjects(
+                    AllLineObjects.Table.fg_ba_proj,
+                    gew.getId(),
+                    gew.getFrom(),
+                    gew.getTill()));
 
             final String newCode = getBaCd(gew.getId());
 
             if ((code != null) && !code.equals(newCode)) {
-                features.add(createKumFeature(featureListGewKum, true));
+                final Map<String, Object> kumObj = createKumFeature(featureListGewKum, true);
+                kumObj.remove("von");
+                kumObj.remove("bis");
+                kumObj.remove("gewLaenge");
+                features.add(kumObj);
                 featureListGewKum.clear();
             }
 
@@ -696,7 +767,29 @@ public class KatasterGewaesserReport {
             featureListKum.add(feature);
             featureListGewKum.add(feature);
         }
-        features.add(createKumFeature(featureListKum, false));
+        // generate the last sub total (start)
+        Map<String, Object> kumObj = createKumFeature(featureListGewKum, true);
+        kumObj.remove("von");
+        kumObj.remove("bis");
+        kumObj.remove("gewLaenge");
+        features.add(kumObj);
+        featureListGewKum.clear();
+        // generate the last sub total (end)
+
+        kumObj = createKumFeature(featureListKum, false);
+        kumObj.remove("code");
+        kumObj.remove("gewName");
+        kumObj.remove("von");
+        kumObj.remove("bis");
+        kumObj.remove("gewLaenge");
+        features.add(kumObj);
+
+        for (final Map<String, Object> f : features) {
+            if (f.get("summe") == null) {
+                f.remove("code");
+                f.remove("gewName");
+            }
+        }
 
         return new FeatureDataSource(features);
     }
@@ -742,6 +835,8 @@ public class KatasterGewaesserReport {
             feature.put("pegel_a", getCountPointObjects(AllPunktObjects.Table.mn_ow_pegel, guName));
             feature.put("gb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_gb, guName));
             feature.put("gb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, guName));
+            feature.put("gmd_a", getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, guName));
+            feature.put("gmd_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gmd, guName));
             feature.put("sb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sb, guName));
             feature.put("sb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, guName));
             feature.put("prof_a", getCountLineObjects(AllLineObjects.Table.fg_ba_prof, guName));
@@ -766,6 +861,7 @@ public class KatasterGewaesserReport {
             feature.put("anll_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, guName));
             feature.put("kr_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, guName));
             feature.put("ea_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, guName));
+            feature.put("foto_a", getCountPointObjects(AllPunktObjects.Table.foto, guName));
             feature.put("deich_a", getCountLineObjects(AllLineObjects.Table.fg_ba_deich, guName));
             feature.put("deich_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, guName));
             feature.put("ughz_a", getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, guName));
@@ -774,11 +870,18 @@ public class KatasterGewaesserReport {
             feature.put("leis_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_leis, guName));
             feature.put("tech_a", getCountLineObjects(AllLineObjects.Table.fg_ba_tech, guName));
             feature.put("tech_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_tech, guName));
+            feature.put("dok_a", getCountLineObjects(AllLineObjects.Table.fg_ba_doku, guName));
+            feature.put("dok_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_doku, guName));
+            feature.put("proj_a", getCountLineObjects(AllLineObjects.Table.fg_ba_proj, guName));
+            feature.put("proj_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_proj, guName));
 
             features.add(feature);
             featureListKum.add(feature);
         }
-        features.add(createKumFeature(featureListKum, false));
+        final Map<String, Object> kumObj = createKumFeature(featureListKum, false);
+        kumObj.remove("gu");
+        kumObj.remove("guName");
+        features.add(kumObj);
 
         return new FeatureDataSource(features);
     }
@@ -875,6 +978,18 @@ public class KatasterGewaesserReport {
                     "gb_l",
                     getLengthLineObjects(
                         AllLineObjects.Table.fg_ba_gb,
+                        guName,
+                        wdm));
+                feature.put(
+                    "gmd_a",
+                    getCountLineObjects(
+                        AllLineObjects.Table.fg_ba_gmd,
+                        guName,
+                        wdm));
+                feature.put(
+                    "gmd_l",
+                    getLengthLineObjects(
+                        AllLineObjects.Table.fg_ba_gmd,
                         guName,
                         wdm));
                 feature.put(
@@ -1022,6 +1137,11 @@ public class KatasterGewaesserReport {
                         guName,
                         wdm));
                 feature.put(
+                    "foto_a",
+                    getCountPointObjects(AllPunktObjects.Table.foto,
+                        guName,
+                        wdm));
+                feature.put(
                     "deich_a",
                     getCountLineObjects(
                         AllLineObjects.Table.fg_ba_deich,
@@ -1069,15 +1189,52 @@ public class KatasterGewaesserReport {
                         AllLineObjects.Table.fg_ba_tech,
                         guName,
                         wdm));
+                feature.put(
+                    "dok_a",
+                    getCountLineObjects(
+                        AllLineObjects.Table.fg_ba_doku,
+                        guName,
+                        wdm));
+                feature.put(
+                    "dok_l",
+                    getLengthLineObjects(
+                        AllLineObjects.Table.fg_ba_doku,
+                        guName,
+                        wdm));
+                feature.put(
+                    "proj_a",
+                    getCountLineObjects(
+                        AllLineObjects.Table.fg_ba_proj,
+                        guName,
+                        wdm));
+                feature.put(
+                    "proj_l",
+                    getLengthLineObjects(
+                        AllLineObjects.Table.fg_ba_proj,
+                        guName,
+                        wdm));
 
                 features.add(feature);
                 featureListKum.add(feature);
                 featureListGuKum.add(feature);
             }
-            features.add(createKumFeature(featureListGuKum, true));
+            final Map<String, Object> kumObj = createKumFeature(featureListGuKum, true);
+            kumObj.remove("widmung");
+            features.add(kumObj);
         }
-        features.add(createKumFeature(featureListKum, false));
-//        }
+        final Map<String, Object> kumObj = createKumFeature(featureListKum, false);
+        kumObj.remove("gu");
+        kumObj.remove("guName");
+        kumObj.remove("widmung");
+        features.add(kumObj);
+
+        for (final Map<String, Object> f : features) {
+            if (f.get("summe") != null) {
+                kumObj.remove("gu");
+                kumObj.remove("guName");
+            }
+        }
+
         return new FeatureDataSource(features);
     }
 
@@ -1336,7 +1493,7 @@ public class KatasterGewaesserReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final String gu, final Integer wdm) {
+    private double getLengthGew(final String gu, final int wdm) {
         double length = 0;
 
         for (final KatasterGewObj tmp : parts) {
@@ -1372,46 +1529,6 @@ public class KatasterGewaesserReport {
      *
      * @param   gu   DOCUMENT ME!
      * @param   wdm  gemNr DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountGew(final String gu, final Integer wdm) {
-        int count = 0;
-
-        for (final KatasterGewObj tmp : parts) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
-                ++count;
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   gu   DOCUMENT ME!
-     * @param   wdm  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private double getLengthGew(final String gu, final int wdm) {
-        double length = 0;
-
-        for (final KatasterGewObj tmp : parts) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
-                length += tmp.getLength();
-            }
-        }
-
-        return length;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   gu   DOCUMENT ME!
-     * @param   wdm  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
@@ -1731,94 +1848,6 @@ public class KatasterGewaesserReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountOffeneAbschn(final String owner, final Integer wdm) {
-        int count = 0;
-
-        for (final KatasterGewObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                if (tmp.getArt().equals("p")) {
-                    ++count;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   owner  DOCUMENT ME!
-     * @param   wdm    gemNr DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private double getLengthOffeneAbschn(final String owner, final Integer wdm) {
-        double length = 0;
-
-        for (final KatasterGewObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                if (tmp.getArt().equals("p")) {
-                    length += tmp.getLength();
-                }
-            }
-        }
-
-        return length;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   owner  DOCUMENT ME!
-     * @param   wdm    gemNr DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountGeschlAbschn(final String owner, final Integer wdm) {
-        int count = 0;
-
-        for (final KatasterGewObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                if (tmp.getArt().equals("g")) {
-                    ++count;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   owner  DOCUMENT ME!
-     * @param   wdm    gemNr DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private double getLengthGeschlAbschn(final String owner, final Integer wdm) {
-        double length = 0;
-
-        for (final KatasterGewObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                if (tmp.getArt().equals("g")) {
-                    length += tmp.getLength();
-                }
-            }
-        }
-
-        return length;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   owner  DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
     private int getCountOffeneAbschn(final String owner, final int wdm) {
         int count = 0;
 
@@ -1837,7 +1866,7 @@ public class KatasterGewaesserReport {
      * DOCUMENT ME!
      *
      * @param   owner  DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
+     * @param   wdm    gemNr DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
@@ -1845,8 +1874,8 @@ public class KatasterGewaesserReport {
         double length = 0;
 
         for (final KatasterGewObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
-                if (tmp.getArt().equals("p") && (tmp.getWidmung() == wdm)) {
+            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+                if (tmp.getArt().equals("p")) {
                     length += tmp.getLength();
                 }
             }
@@ -1859,7 +1888,7 @@ public class KatasterGewaesserReport {
      * DOCUMENT ME!
      *
      * @param   owner  DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
+     * @param   wdm    gemNr DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
@@ -1881,7 +1910,7 @@ public class KatasterGewaesserReport {
      * DOCUMENT ME!
      *
      * @param   owner  DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
+     * @param   wdm    gemNr DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
@@ -1897,61 +1926,6 @@ public class KatasterGewaesserReport {
         }
 
         return length;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   table  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountLineObjectsAll(final AllLineObjects.Table table) {
-        return getCountLineObjects(table, -1);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   table  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private double getLengthLineObjectsAll(final AllLineObjects.Table table) {
-        return getLengthLineObjects(table, -1);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   table  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountLineObjectsAll(final GewaesserData.LineFromPolygonTable table) {
-        return getCountLineObjects(table, -1);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   table  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private double getLengthLineObjectsAll(final GewaesserData.LineFromPolygonTable table) {
-        return getLengthLineObjects(table, -1);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   table  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountPointObjectsAll(final AllPunktObjects.Table table) {
-        return getCountPointObjects(table, -1);
     }
 
     /**
@@ -2086,7 +2060,7 @@ public class KatasterGewaesserReport {
             final int gewId,
             final double from,
             final double till) {
-        return gd.getCount(table, gewId, from, till);
+        return gd.getLength(table, gewId, from, till);
     }
 
     /**
@@ -2120,7 +2094,7 @@ public class KatasterGewaesserReport {
             final int gewId,
             final double from,
             final double till) {
-        return gd.getCount(table, gewId, from, till);
+        return gd.getLength(table, gewId, from, till);
     }
 
     /**
@@ -2256,7 +2230,7 @@ public class KatasterGewaesserReport {
      */
     private int getCountLineObjects(final AllLineObjects.Table table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         int count = 0;
 
         for (final KatasterGewObj tmp : parts) {
@@ -2279,7 +2253,7 @@ public class KatasterGewaesserReport {
      */
     private double getLengthLineObjects(final AllLineObjects.Table table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         double length = 0;
 
         for (final KatasterGewObj tmp : parts) {
@@ -2302,7 +2276,7 @@ public class KatasterGewaesserReport {
      */
     private int getCountLineObjects(final GewaesserData.LineFromPolygonTable table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         int count = 0;
 
         for (final KatasterGewObj tmp : parts) {
@@ -2325,7 +2299,7 @@ public class KatasterGewaesserReport {
      */
     private double getLengthLineObjects(final GewaesserData.LineFromPolygonTable table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         double length = 0;
 
         for (final KatasterGewObj tmp : parts) {
@@ -2348,7 +2322,7 @@ public class KatasterGewaesserReport {
      */
     private int getCountPointObjects(final AllPunktObjects.Table table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         int count = 0;
 
         for (final KatasterGewObj tmp : parts) {

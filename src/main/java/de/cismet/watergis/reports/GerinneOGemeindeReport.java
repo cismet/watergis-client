@@ -21,10 +21,12 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
 import org.apache.log4j.Logger;
 
@@ -95,9 +97,11 @@ public class GerinneOGemeindeReport {
      * @param   gemId  baCd DOCUMENT ME!
      * @param   gew    DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createGemeindeReport(final int[] gemId, final int[] gew) throws Exception {
+    public File createGemeindeReport(final int[] gemId, final int[] gew) throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
@@ -139,13 +143,14 @@ public class GerinneOGemeindeReport {
         }
 
         // create print from report and data
+        final File file = new File(
+                GerinneOGemeindeReportDialog.getInstance().getPath()
+                        + "/Gerinne_offen_Gemeinden.xls");
         final JasperPrint jasperPrint = JasperFillManager.fillReport(
                 jasperReport,
                 parameters,
                 dummyDataSource);
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    GerinneOGemeindeReportDialog.getInstance().getPath()
-                            + "/GerinneOffenGem.xls"));
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         final JRXlsExporter exporter = new JRXlsExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -167,6 +172,8 @@ public class GerinneOGemeindeReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -248,7 +255,7 @@ public class GerinneOGemeindeReport {
                         (Double)f.get(16),
                         (Double)f.get(17),
                         (Double)f.get(18),
-                        (Double)f.get(18),
+                        (Double)f.get(19),
                         (Double)f.get(20),
                         (Double)f.get(21),
                         (Double)f.get(22),
@@ -1386,7 +1393,7 @@ public class GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthMw(final int gemNr, final String gu, final Integer wdm) {
+    private double getLengthMw(final int gemNr, final String gu, final int wdm) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(gemNr);
         double length = 0;
 
@@ -1493,7 +1500,7 @@ public class GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthProf(final String prof, final int gemNr, final String gu, final Integer wdm) {
+    private double getLengthProf(final String prof, final int gemNr, final String gu, final int wdm) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(gemNr);
         double length = 0;
 
@@ -1563,7 +1570,7 @@ public class GerinneOGemeindeReport {
     private double getMinMax(final String field, final int gemNr, final int gewId, final boolean min) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(gemNr);
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : gemList) {
             if (((gewId == -1) || (tmp.getId() == gewId))) {
@@ -1575,6 +1582,7 @@ public class GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1595,7 +1603,7 @@ public class GerinneOGemeindeReport {
     private double getMinMax(final String field, final int gemNr, final String gu, final boolean min) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(gemNr);
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : gemList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))) {
@@ -1607,6 +1615,7 @@ public class GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1628,11 +1637,11 @@ public class GerinneOGemeindeReport {
     private double getMinMax(final String field,
             final int gemNr,
             final String gu,
-            final Integer wdm,
+            final int wdm,
             final boolean min) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(gemNr);
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : gemList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))
@@ -1645,6 +1654,7 @@ public class GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1672,7 +1682,7 @@ public class GerinneOGemeindeReport {
             final boolean min) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(gemNr);
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : gemList) {
             if ((tmp.getId() == gewId) && tmp.isInGewPart(gewId, from, till)) {
@@ -1684,6 +1694,7 @@ public class GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1781,7 +1792,7 @@ public class GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getMit(final String field, final int gemNr, final String gu, final Integer wdm) {
+    private double getMit(final String field, final int gemNr, final String gu, final int wdm) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(gemNr);
         double currentVal = 0;
         double length = 0;
@@ -1936,7 +1947,7 @@ public class GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getSum(final String field, final int gemNr, final String gu, final Integer wdm) {
+    private double getSum(final String field, final int gemNr, final String gu, final int wdm) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(gemNr);
         double currentVal = 0;
 
@@ -2019,7 +2030,7 @@ public class GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    public int getCountProf(final String prof, final int gemNr, final String gu, final Integer wdm) {
+    public int getCountProf(final String prof, final int gemNr, final String gu, final int wdm) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(gemNr);
         int count = 0;
 

@@ -446,21 +446,21 @@ public class CustomGafCatalogueReader {
      * @throws  IllegalArgumentException  DOCUMENT ME!
      */
     public List<Integer> getAllBk() {
-        final List<Integer> rk = new ArrayList<Integer>();
+        final List<Integer> bk = new ArrayList<Integer>();
 
-        if (!type.equals(FILE_TYPE.RK)) {
+        if (!type.equals(FILE_TYPE.BK)) {
             throw new IllegalArgumentException("The getAllBk method is only allowed on a bk file type");
         }
 
         for (final String[] line : content) {
             try {
-                rk.add(Integer.parseInt(line[columnIndex[BK_FIELDS.BK.ordinal()]]));
+                bk.add(Integer.parseInt(line[columnIndex[BK_FIELDS.BK.ordinal()]]));
             } catch (NumberFormatException e) {
-                LOG.error("Rk is not a number", e);
+                LOG.error("Bk is not a number", e);
             }
         }
 
-        return rk;
+        return bk;
     }
 
     /**

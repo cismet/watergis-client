@@ -327,6 +327,7 @@ public class GafReader {
                 st = new StringTokenizer(line, " \t");
                 final List<String> contFields = new ArrayList<String>();
                 int tokenIndex = 0;
+                final int tokenCount = st.countTokens();
 
                 while (st.hasMoreTokens()) {
                     String token = st.nextToken();
@@ -334,8 +335,29 @@ public class GafReader {
                     if ((tokenIndex != GAF_FIELDS.ID.ordinal()) && (tokenIndex != GAF_FIELDS.HYK.ordinal())) {
                         token = token.toUpperCase();
                     }
+                    if ((tokenIndex == GAF_FIELDS.RK.ordinal()) || (tokenIndex == GAF_FIELDS.BK.ordinal())) {
+                        if (token.equals("0")) {
+                            token = "-1";
+                        }
+                    }
+                    if ((tokenIndex == GAF_FIELDS.RK.ordinal()) || (tokenIndex == GAF_FIELDS.BK.ordinal())) {
+                        if (token.contains(".") || (token.length() > 6)) {
+                            contFields.add("-1");
+                            ++tokenIndex;
+                        }
+                    }
+                    if ((tokenIndex == GAF_FIELDS.RK.ordinal()) || (tokenIndex == GAF_FIELDS.BK.ordinal())) {
+                        if (token.contains(".") || (token.length() > 6)) {
+                            contFields.add("-1");
+                            ++tokenIndex;
+                        }
+                    }
                     contFields.add(token);
                     ++tokenIndex;
+                }
+
+                if (contFields.size() < 10) {
+                    contFields.add("X");
                 }
                 final String[] contentFields = contFields.toArray(new String[contFields.size()]);
 
@@ -725,6 +747,22 @@ public class GafReader {
                 }
             } catch (NumberFormatException e) {
                 LOG.error("Invalid value found. Not a number.", e);
+            }
+        }
+
+        if (schlamm.size() > 0) {
+            ChartCreator.Point lastPoint = null;
+
+            for (final ChartCreator.Point point : schlamm) {
+                if (lastPoint != null) {
+                    final ChartCreator.HorizontalLine sLine = new ChartCreator.HorizontalLine(
+                            Color.CYAN,
+                            lastPoint,
+                            point,
+                            Color.CYAN);
+                    chart.addHorizontalLines(sLine);
+                }
+                lastPoint = point;
             }
         }
 
@@ -1345,6 +1383,10 @@ public class GafReader {
             return errorListToStrings(errorList);
         }
 
+        replacePaPe();
+        replaceXanXen("OK");
+        replaceXanXen("UK");
+
         errorList.addAll(Arrays.asList(checkNP()));
         errorList.addAll(Arrays.asList(checkMGError()));
         errorList.addAll(Arrays.asList(checkOGError()));
@@ -1372,6 +1414,140 @@ public class GafReader {
         Collections.sort(errorList);
 
         return errorListToStrings(errorList);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  profileId  DOCUMENT ME!
+     * @param  y          DOCUMENT ME!
+     * @param  oldKZ      DOCUMENT ME!
+     * @param  newKZ      DOCUMENT ME!
+     */
+    private void changeKZ(final Double profileId, final double y, final String oldKZ, final String newKZ) {
+        final List<String[]> profileContent = getProfileContent(profileId);
+
+        for (final String[] line : profileContent) {
+            final double yVal = Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]);
+
+            if ((yVal == y) && line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equals(oldKZ)) {
+                line[gafIndex[GAF_FIELDS.KZ.ordinal()]] = newKZ;
+
+                break;
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void replacePaPe() {
+        for (final Double profileId : profiles.keySet()) {
+            final List<String[]> profileContent = getProfileContent(profileId);
+            double yMin = Double.MAX_VALUE;
+            double yMax = Double.MIN_VALUE;
+            String minKZ = null;
+            String maxKZ = null;
+            boolean paFound = false;
+            boolean peFound = false;
+            boolean sameMin = false;
+            boolean sameMax = false;
+
+            for (final String[] line : profileContent) {
+                final double y = Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]);
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PE")) {
+                    peFound = true;
+                }
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase("PA")) {
+                    paFound = true;
+                }
+
+                if (y == yMin) {
+                    sameMin = true;
+                }
+                if (y == yMax) {
+                    sameMax = true;
+                }
+
+                if (y < yMin) {
+                    yMin = y;
+                    minKZ = line[gafIndex[GAF_FIELDS.KZ.ordinal()]];
+                    sameMin = false;
+                }
+                if (y > yMax) {
+                    yMax = y;
+                    maxKZ = line[gafIndex[GAF_FIELDS.KZ.ordinal()]];
+                    sameMax = false;
+                }
+            }
+
+            if (!paFound && !sameMin && (yMin == 0.0) && (minKZ != null) && minKZ.equalsIgnoreCase("PP")) {
+                changeKZ(profileId, yMin, minKZ, "PA");
+            }
+            if (!peFound && !sameMax && (maxKZ != null) && maxKZ.equalsIgnoreCase("PP")) {
+                changeKZ(profileId, yMax, maxKZ, "PE");
+            }
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  x  DOCUMENT ME!
+     */
+    private void replaceXanXen(final String x) {
+        for (final Double profileId : profiles.keySet()) {
+            final List<String[]> profileContent = getProfileContent(profileId);
+            double yMin = Double.MAX_VALUE;
+            double yMax = Double.MIN_VALUE;
+            String minKZ = null;
+            String maxKZ = null;
+            boolean paFound = false;
+            boolean peFound = false;
+            boolean sameMin = false;
+            boolean sameMax = false;
+            boolean okppFound = false;
+
+            for (final String[] line : profileContent) {
+                final double y = Double.parseDouble(line[gafIndex[GAF_FIELDS.Y.ordinal()]]);
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(x + "PP")) {
+                    okppFound = true;
+                }
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(x + "EN")) {
+                    peFound = true;
+                }
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(x + "AN")) {
+                    paFound = true;
+                }
+
+                if (line[gafIndex[GAF_FIELDS.KZ.ordinal()]].equalsIgnoreCase(x + "PP")) {
+                    if (y == yMin) {
+                        sameMin = true;
+                    }
+                    if (y == yMax) {
+                        sameMax = true;
+                    }
+
+                    if (y < yMin) {
+                        yMin = y;
+                        minKZ = line[gafIndex[GAF_FIELDS.KZ.ordinal()]];
+                        sameMin = false;
+                    }
+                    if (y > yMax) {
+                        yMax = y;
+                        maxKZ = line[gafIndex[GAF_FIELDS.KZ.ordinal()]];
+                        sameMax = false;
+                    }
+                }
+            }
+
+            if (okppFound && !paFound && !sameMin && (minKZ != null) && minKZ.equalsIgnoreCase(x + "PP")) {
+                changeKZ(profileId, yMin, minKZ, x + "AN");
+            }
+            if (okppFound && !peFound && !sameMax && (maxKZ != null) && maxKZ.equalsIgnoreCase(x + "PP")) {
+                changeKZ(profileId, yMax, maxKZ, x + "EN");
+            }
+        }
     }
 
     /**

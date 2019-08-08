@@ -22,6 +22,8 @@ import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
+import java.io.File;
+
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -44,8 +46,12 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
+import de.cismet.tools.gui.downloadmanager.MultipleDownload;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.download.FakeFileDownload;
 
 import de.cismet.watergis.gui.actions.*;
 import de.cismet.watergis.gui.dialog.GewaesserReportDialog;
@@ -166,18 +172,28 @@ public class GewaesserReportAction extends AbstractAction {
                             final GewaesserReport gr = new GewaesserReport();
                             int index = 0;
                             final int listSize = baCdList.size();
-
+                            final List<FakeFileDownload> downloads = new ArrayList<FakeFileDownload>();
                             wd.setMax(listSize);
 
                             for (final String baCd : baCdList) {
                                 wd.setProgress(index);
                                 wd.setText("Erstelle " + (index++) + " / " + listSize);
-                                gr.createReport(baCd);
+                                final File f = gr.createReport(baCd);
 
                                 if (Thread.interrupted() || canceled) {
-                                    return false;
+                                    break;
                                 }
-//                                gr.createReport("2:0:226");
+
+                                if (f != null) {
+                                    downloads.add(new FakeFileDownload(f));
+                                }
+                            }
+
+                            if (downloads.size() > 1) {
+                                final MultipleDownload d = new MultipleDownload(downloads, "Gewässer");
+                                DownloadManager.instance().add(d);
+                            } else if (downloads.size() == 1) {
+                                DownloadManager.instance().add(downloads.get(0));
                             }
 
                             gr.cleanup();

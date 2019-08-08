@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="802" pageHeight="595" orientation="Landscape" columnWidth="762" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.2100000000000006"/>
-	<property name="ireport.x" value="106"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -185,7 +185,9 @@
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="310" y="14" width="403" height="14" isPrintWhenDetailOverflows="true" uuid="1cf5ab9a-e153-426f-b5a8-6c3113cd4ecd"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="310" y="14" width="403" height="14" isPrintWhenDetailOverflows="true" uuid="1cf5ab9a-e153-426f-b5a8-6c3113cd4ecd">
+					<printWhenExpression><![CDATA[$F{gbk_von} != null]]></printWhenExpression>
+				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.0"/>
 				</box>
@@ -195,12 +197,23 @@
 				<textFieldExpression><![CDATA["von: " + $F{gbk_von}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="310" y="28" width="403" height="14" isPrintWhenDetailOverflows="true" uuid="fc2eb3b7-6407-4ddb-b92a-91d8d6c854cd"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="310" y="28" width="403" height="14" isPrintWhenDetailOverflows="true" uuid="fc2eb3b7-6407-4ddb-b92a-91d8d6c854cd">
+					<printWhenExpression><![CDATA[$F{gbk_bis} != null]]></printWhenExpression>
+				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["bis: " + $F{gbk_bis}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="310" y="28" width="403" height="14" isPrintWhenDetailOverflows="true" uuid="ffc587b8-95b3-423d-a301-799f15ed8a36">
+					<printWhenExpression><![CDATA[$F{gbk_bis} == null]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
 			</textField>
 		</band>
 	</detail>

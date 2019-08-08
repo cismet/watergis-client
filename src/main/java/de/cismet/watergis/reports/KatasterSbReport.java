@@ -94,9 +94,11 @@ public class KatasterSbReport {
      *
      * @param   gew  DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createGewaesserReport(final int[] gew) throws Exception {
+    public File createGewaesserReport(final int[] gew) throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
@@ -110,6 +112,7 @@ public class KatasterSbReport {
         parameters.put("pegel", KatasterSbReportDialog.getInstance().isPegel());
         parameters.put("gb", KatasterSbReportDialog.getInstance().isGb());
         parameters.put("sb", KatasterSbReportDialog.getInstance().isSb());
+        parameters.put("gmd", KatasterSbReportDialog.getInstance().isGmd());
         parameters.put("prof", KatasterSbReportDialog.getInstance().isProf());
         parameters.put("sbef", KatasterSbReportDialog.getInstance().isSbef());
         parameters.put("ubef", KatasterSbReportDialog.getInstance().isUbef());
@@ -120,6 +123,7 @@ public class KatasterSbReport {
         parameters.put("scha", KatasterSbReportDialog.getInstance().isScha());
         parameters.put("wehr", KatasterSbReportDialog.getInstance().isWehr());
         parameters.put("schw", KatasterSbReportDialog.getInstance().isSchw());
+        parameters.put("foto", KatasterSbReportDialog.getInstance().isFoto());
         parameters.put("anlp", KatasterSbReportDialog.getInstance().isAnlp());
         parameters.put("anll", KatasterSbReportDialog.getInstance().isAnll());
         parameters.put("kr", KatasterSbReportDialog.getInstance().isKr());
@@ -128,6 +132,8 @@ public class KatasterSbReport {
         parameters.put("ughz", KatasterSbReportDialog.getInstance().isUghz());
         parameters.put("leis", KatasterSbReportDialog.getInstance().isLeis());
         parameters.put("tech", KatasterSbReportDialog.getInstance().isTech());
+        parameters.put("dok", KatasterSbReportDialog.getInstance().isDok());
+        parameters.put("proj", KatasterSbReportDialog.getInstance().isProj());
         parameters.put("perGew", KatasterSbReportDialog.getInstance().isPerGew());
         parameters.put("perAbschn", false);
         parameters.put("sumGu", false);
@@ -160,9 +166,10 @@ public class KatasterSbReport {
 //        JasperExportManager.exportReportToPdfStream(jasperPrint, pout);
 //        pout.close();
 
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    KatasterSbReportDialog.getInstance().getPath()
-                            + "/Schaubezirke.xlsx"));
+        final File file = new File(
+                KatasterSbReportDialog.getInstance().getPath()
+                        + "/Kataster_Schaubezirke.xlsx");
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         final JRXlsxExporter exporter = new JRXlsxExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -189,6 +196,8 @@ public class KatasterSbReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -253,7 +262,8 @@ public class KatasterSbReport {
                         (Double)f.get(4),
                         (Integer)f.get(5),
                         (String)f.get(6),
-                        (Double)f.get(11)));
+                        (Double)f.get(11),
+                        (String)f.get(12)));
             }
         }
 
@@ -314,7 +324,7 @@ public class KatasterSbReport {
                 final List<Map<String, Object>> featureListKumWdm = new ArrayList<Map<String, Object>>();
                 for (final int sb : getSb(guName, wdm)) {
                     final Map<String, Object> feature = new HashMap<String, Object>();
-                    feature.put("anzahlSb", getCountGew(guName, wdm, sb));
+                    feature.put("anzahlSb", getSb(guName, wdm).size());
                     feature.put("gu", getGuId(guName));
                     feature.put("guName", guName);
                     feature.put("group", guName);
@@ -322,6 +332,8 @@ public class KatasterSbReport {
                     feature.put("sb", sb);
                     feature.put("sbName", getSbName(sb));
                     feature.put("gewAnz", getCountGew(guName, wdm, sb));
+                    feature.put("gewLaenge", getLengthGew(guName, wdm, sb));
+                    feature.put("gew_a", getCountGew(guName, wdm, sb));
                     feature.put("gewLaenge", getLengthGew(guName, wdm, sb));
                     feature.put("offene_a", getCountOffeneAbschn(guName, wdm, sb));
                     feature.put("offene_l", getLengthOffeneAbschn(guName, wdm, sb));
@@ -350,8 +362,8 @@ public class KatasterSbReport {
                     feature.put("pegel_a", getCountPointObjects(AllPunktObjects.Table.mn_ow_pegel, guName, wdm, sb));
                     feature.put("gb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_gb, guName, wdm, sb));
                     feature.put("gb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, guName, wdm, sb));
-                    feature.put("sb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sb, guName, wdm, sb));
-                    feature.put("sb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, guName, wdm, sb));
+                    feature.put("gmd_a", getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, guName, wdm, sb));
+                    feature.put("gmd_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gmd, guName, wdm, sb));
                     feature.put("prof_a", getCountLineObjects(AllLineObjects.Table.fg_ba_prof, guName, wdm, sb));
                     feature.put("prof_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName, wdm, sb));
                     feature.put("sbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, guName, wdm, sb));
@@ -374,6 +386,7 @@ public class KatasterSbReport {
                     feature.put("anll_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, guName, wdm, sb));
                     feature.put("kr_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, guName, wdm, sb));
                     feature.put("ea_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, guName, wdm, sb));
+                    feature.put("foto_a", getCountPointObjects(AllPunktObjects.Table.foto, guName, wdm, sb));
                     feature.put("deich_a", getCountLineObjects(AllLineObjects.Table.fg_ba_deich, guName, wdm, sb));
                     feature.put("deich_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, guName, wdm, sb));
                     feature.put("ughz_a", getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, guName, wdm, sb));
@@ -382,6 +395,10 @@ public class KatasterSbReport {
                     feature.put("leis_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_leis, guName, wdm, sb));
                     feature.put("tech_a", getCountLineObjects(AllLineObjects.Table.fg_ba_tech, guName, wdm, sb));
                     feature.put("tech_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_tech, guName, wdm, sb));
+                    feature.put("dok_a", getCountLineObjects(AllLineObjects.Table.fg_ba_doku, guName, wdm, sb));
+                    feature.put("dok_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_doku, guName, wdm, sb));
+                    feature.put("proj_a", getCountLineObjects(AllLineObjects.Table.fg_ba_proj, guName, wdm, sb));
+                    feature.put("proj_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_proj, guName, wdm, sb));
 
                     features.add(feature);
                     featureListKum.add(feature);
@@ -391,6 +408,15 @@ public class KatasterSbReport {
             }
             features.add(createKumFeature(featureListKum, false));
         }
+
+        for (final Map<String, Object> f : features) {
+            if ((f.get("summe") == null) || (f.get("zwischenSumme") == null) || !((Boolean)f.get("zwischenSumme"))) {
+                f.remove("guName");
+                f.remove("gu");
+                f.remove("widmung");
+            }
+        }
+
         return new FeatureDataSource(features);
     }
 
@@ -422,7 +448,10 @@ public class KatasterSbReport {
                 feature.put("gewName", getGewName(gew));
                 feature.put("von", convertStation(startGew(sb, gew)));
                 feature.put("bis", convertStation(endGew(sb, gew)));
-                feature.put("gewLaenge", getLengthGew(gew));
+                final double gewAll = getLengthGew(gew);
+
+                feature.put("teil", ((Math.abs(gewAll - (endGew(sb, gew) - startGew(sb, gew))) < 0.01) ? null : "x"));
+                feature.put("gewLaenge", getLengthGew(gew, sb));
                 feature.put("offene_a", getCountOffeneAbschn(sb, gew));
                 feature.put("offene_l", getLengthOffeneAbschn(sb, gew));
                 feature.put(
@@ -491,12 +520,12 @@ public class KatasterSbReport {
                         sb,
                         gew));
                 feature.put(
-                    "sb_a",
-                    getCountLineObjects(AllLineObjects.Table.fg_ba_sb, sb, gew));
+                    "gmd_a",
+                    getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, sb, gew));
                 feature.put(
-                    "sb_l",
+                    "gmd_l",
                     getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_sb,
+                        AllLineObjects.Table.fg_ba_gmd,
                         sb,
                         gew));
                 feature.put(
@@ -668,6 +697,30 @@ public class KatasterSbReport {
                     "tech_l",
                     getLengthLineObjects(
                         AllLineObjects.Table.fg_ba_tech,
+                        sb,
+                        gew));
+                feature.put(
+                    "dok_a",
+                    getCountLineObjects(
+                        AllLineObjects.Table.fg_ba_doku,
+                        sb,
+                        gew));
+                feature.put(
+                    "dok_l",
+                    getLengthLineObjects(
+                        AllLineObjects.Table.fg_ba_doku,
+                        sb,
+                        gew));
+                feature.put(
+                    "proj_a",
+                    getCountLineObjects(
+                        AllLineObjects.Table.fg_ba_proj,
+                        sb,
+                        gew));
+                feature.put(
+                    "proj_l",
+                    getLengthLineObjects(
+                        AllLineObjects.Table.fg_ba_proj,
                         sb,
                         gew));
 
@@ -1156,7 +1209,7 @@ public class KatasterSbReport {
         final TreeSet<String> ts = new TreeSet<String>();
 
         for (final SbObj tmp : parts) {
-            ts.add(tmp.getOwner());
+            ts.add(tmp.getGuName());
         }
 
         return ts.descendingSet();
@@ -1171,7 +1224,7 @@ public class KatasterSbReport {
      */
     private String getGuId(final String owner) {
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 return tmp.getGu();
             }
         }
@@ -1206,7 +1259,7 @@ public class KatasterSbReport {
     private String getOwner(final int gew) {
         for (final SbObj tmp : parts) {
             if (tmp.getId() == gew) {
-                return tmp.getOwner();
+                return tmp.getGuName();
             }
         }
 
@@ -1220,7 +1273,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private String getSbName(final Integer sb) {
+    private String getSbName(final int sb) {
         for (final SbObj tmp : parts) {
             if (tmp.getSb() == sb) {
                 return tmp.getSbName();
@@ -1258,12 +1311,12 @@ public class KatasterSbReport {
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj gmdPart : parts) {
-            if (gmdPart.getOwner().equals(guName)) {
+            if (gmdPart.getGuName().equals(guName)) {
                 ts.add(gmdPart.getWidmung());
             }
         }
 
-        return ts.descendingSet();
+        return ts;
     }
 
     /**
@@ -1291,16 +1344,16 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private Collection<Integer> getSb(final String guName, final Integer wdm) {
+    private Collection<Integer> getSb(final String guName, final int wdm) {
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj gmdPart : parts) {
-            if (gmdPart.getOwner().equals(guName) && (gmdPart.getWidmung() == wdm)) {
+            if (gmdPart.getGuName().equals(guName) && (gmdPart.getWidmung() == wdm)) {
                 ts.add(gmdPart.getSb());
             }
         }
 
-        return ts.descendingSet();
+        return ts;
     }
 
     /**
@@ -1350,8 +1403,8 @@ public class KatasterSbReport {
         double max = Double.MIN_VALUE;
 
         for (final SbObj gmdPart : parts) {
-            if ((gmdPart.getId() == gew) && gmdPart.getSb().equals(sb) && (gmdPart.getFrom() > max)) {
-                max = gmdPart.getFrom();
+            if ((gmdPart.getId() == gew) && gmdPart.getSb().equals(sb) && (gmdPart.getTill() > max)) {
+                max = gmdPart.getTill();
             }
         }
 
@@ -1367,7 +1420,7 @@ public class KatasterSbReport {
         final TreeSet<String> ts = new TreeSet<String>();
 
         for (final SbObj tmp : parts) {
-            ts.add(tmp.getOwner());
+            ts.add(tmp.getGuName());
         }
 
         return ts.size();
@@ -1441,13 +1494,33 @@ public class KatasterSbReport {
      *
      * @param   gewId  DOCUMENT ME!
      *
-     * @return  DOCUMENT ME!
+     * @return  The length of the whole ba_cd
      */
     private double getLengthGew(final int gewId) {
-        double length = 0;
+        final double length = 0;
 
         for (final SbObj tmp : parts) {
             if (tmp.getId() == gewId) {
+                return tmp.getBaLen();
+            }
+        }
+
+        return length;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   gewId  DOCUMENT ME!
+     * @param   sb     DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private double getLengthGew(final int gewId, final int sb) {
+        double length = 0;
+
+        for (final SbObj tmp : parts) {
+            if ((tmp.getId() == gewId) && (tmp.getSb() == sb)) {
                 length += tmp.getLength();
             }
         }
@@ -1466,7 +1539,7 @@ public class KatasterSbReport {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(gu)) {
+            if (tmp.getGuName().equals(gu)) {
                 length += tmp.getLength();
             }
         }
@@ -1482,11 +1555,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final String gu, final Integer wdm) {
+    private double getLengthGew(final String gu, final int wdm) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)) {
                 length += tmp.getLength();
             }
         }
@@ -1503,11 +1576,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final String gu, final Integer wdm, final Integer sb) {
+    private double getLengthGew(final String gu, final int wdm, final Integer sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 length += tmp.getLength();
             }
         }
@@ -1526,7 +1599,7 @@ public class KatasterSbReport {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(gu)) {
+            if (tmp.getGuName().equals(gu)) {
                 ++count;
             }
         }
@@ -1561,11 +1634,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGew(final String gu, final Integer wdm) {
+    private int getCountGew(final String gu, final int wdm) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)) {
                 ++count;
             }
         }
@@ -1582,31 +1655,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGew(final String gu, final Integer wdm, final Integer sb) {
+    private int getCountGew(final String gu, final int wdm, final Integer sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
-                ++count;
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   gu   DOCUMENT ME!
-     * @param   wdm  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountGew(final String gu, final int wdm) {
-        int count = 0;
-
-        for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 ++count;
             }
         }
@@ -1837,7 +1890,7 @@ public class KatasterSbReport {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 if (tmp.getArt().equals("p")) {
                     ++count;
                 }
@@ -1858,7 +1911,7 @@ public class KatasterSbReport {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 if (tmp.getArt().equals("p")) {
                     length += tmp.getLength();
                 }
@@ -1879,7 +1932,7 @@ public class KatasterSbReport {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 if (tmp.getArt().equals("g")) {
                     ++count;
                 }
@@ -1900,7 +1953,7 @@ public class KatasterSbReport {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 if (tmp.getArt().equals("g")) {
                     length += tmp.getLength();
                 }
@@ -1918,11 +1971,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountOffeneAbschn(final String owner, final Integer wdm) {
+    private int getCountOffeneAbschn(final String owner, final int wdm) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 if (tmp.getArt().equals("p")) {
                     ++count;
                 }
@@ -1940,11 +1993,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthOffeneAbschn(final String owner, final Integer wdm) {
+    private double getLengthOffeneAbschn(final String owner, final int wdm) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 if (tmp.getArt().equals("p")) {
                     length += tmp.getLength();
                 }
@@ -1962,11 +2015,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGeschlAbschn(final String owner, final Integer wdm) {
+    private int getCountGeschlAbschn(final String owner, final int wdm) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 if (tmp.getArt().equals("g")) {
                     ++count;
                 }
@@ -1984,11 +2037,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGeschlAbschn(final String owner, final Integer wdm) {
+    private double getLengthGeschlAbschn(final String owner, final int wdm) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 if (tmp.getArt().equals("g")) {
                     length += tmp.getLength();
                 }
@@ -2007,11 +2060,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountOffeneAbschn(final String owner, final Integer wdm, final Integer sb) {
+    private int getCountOffeneAbschn(final String owner, final int wdm, final Integer sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 if (tmp.getArt().equals("p")) {
                     ++count;
                 }
@@ -2030,11 +2083,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthOffeneAbschn(final String owner, final Integer wdm, final Integer sb) {
+    private double getLengthOffeneAbschn(final String owner, final int wdm, final Integer sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 if (tmp.getArt().equals("p")) {
                     length += tmp.getLength();
                 }
@@ -2053,11 +2106,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGeschlAbschn(final String owner, final Integer wdm, final Integer sb) {
+    private int getCountGeschlAbschn(final String owner, final int wdm, final Integer sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 if (tmp.getArt().equals("g")) {
                     ++count;
                 }
@@ -2076,11 +2129,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGeschlAbschn(final String owner, final Integer wdm, final Integer sb) {
+    private double getLengthGeschlAbschn(final String owner, final int wdm, final Integer sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 if (tmp.getArt().equals("g")) {
                     length += tmp.getLength();
                 }
@@ -2169,94 +2222,6 @@ public class KatasterSbReport {
 
         for (final SbObj tmp : parts) {
             if ((tmp.getId() == gew) && tmp.getSb().equals(sb)) {
-                if (tmp.getArt().equals("g")) {
-                    length += tmp.getLength();
-                }
-            }
-        }
-
-        return length;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   owner  DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountOffeneAbschn(final String owner, final int wdm) {
-        int count = 0;
-
-        for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                if (tmp.getArt().equals("p")) {
-                    ++count;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   owner  DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private double getLengthOffeneAbschn(final String owner, final int wdm) {
-        double length = 0;
-
-        for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
-                if (tmp.getArt().equals("p") && (tmp.getWidmung() == wdm)) {
-                    length += tmp.getLength();
-                }
-            }
-        }
-
-        return length;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   owner  DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountGeschlAbschn(final String owner, final int wdm) {
-        int count = 0;
-
-        for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                if (tmp.getArt().equals("g")) {
-                    ++count;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   owner  DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private double getLengthGeschlAbschn(final String owner, final int wdm) {
-        double length = 0;
-
-        for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
                 if (tmp.getArt().equals("g")) {
                     length += tmp.getLength();
                 }
@@ -2453,7 +2418,7 @@ public class KatasterSbReport {
             final int gewId,
             final double from,
             final double till) {
-        return gd.getCount(table, gewId, from, till);
+        return gd.getLength(table, gewId, from, till);
     }
 
     /**
@@ -2487,7 +2452,7 @@ public class KatasterSbReport {
             final int gewId,
             final double from,
             final double till) {
-        return gd.getCount(table, gewId, from, till);
+        return gd.getLength(table, gewId, from, till);
     }
 
     /**
@@ -2519,7 +2484,7 @@ public class KatasterSbReport {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2539,7 +2504,7 @@ public class KatasterSbReport {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 length += gd.getLength(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2560,7 +2525,7 @@ public class KatasterSbReport {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2583,7 +2548,7 @@ public class KatasterSbReport {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 length += gd.getLength(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2604,7 +2569,7 @@ public class KatasterSbReport {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2623,11 +2588,11 @@ public class KatasterSbReport {
      */
     private int getCountLineObjects(final AllLineObjects.Table table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2646,11 +2611,11 @@ public class KatasterSbReport {
      */
     private double getLengthLineObjects(final AllLineObjects.Table table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 length += gd.getLength(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2669,11 +2634,11 @@ public class KatasterSbReport {
      */
     private int getCountLineObjects(final GewaesserData.LineFromPolygonTable table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2692,11 +2657,11 @@ public class KatasterSbReport {
      */
     private double getLengthLineObjects(final GewaesserData.LineFromPolygonTable table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 length += gd.getLength(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2715,11 +2680,11 @@ public class KatasterSbReport {
      */
     private int getCountPointObjects(final AllPunktObjects.Table table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2739,12 +2704,12 @@ public class KatasterSbReport {
      */
     private int getCountLineObjects(final AllLineObjects.Table table,
             final String owner,
-            final Integer wdm,
+            final int wdm,
             final Integer sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2764,12 +2729,12 @@ public class KatasterSbReport {
      */
     private double getLengthLineObjects(final AllLineObjects.Table table,
             final String owner,
-            final Integer wdm,
+            final int wdm,
             final Integer sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 length += gd.getLength(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2789,12 +2754,12 @@ public class KatasterSbReport {
      */
     private int getCountLineObjects(final GewaesserData.LineFromPolygonTable table,
             final String owner,
-            final Integer wdm,
+            final int wdm,
             final Integer sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2814,12 +2779,12 @@ public class KatasterSbReport {
      */
     private double getLengthLineObjects(final GewaesserData.LineFromPolygonTable table,
             final String owner,
-            final Integer wdm,
+            final int wdm,
             final Integer sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 length += gd.getLength(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2839,12 +2804,12 @@ public class KatasterSbReport {
      */
     private int getCountPointObjects(final AllPunktObjects.Table table,
             final String owner,
-            final Integer wdm,
+            final int wdm,
             final Integer sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2972,7 +2937,7 @@ public class KatasterSbReport {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 length += gd.getLength(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }
@@ -2992,7 +2957,7 @@ public class KatasterSbReport {
         int count = 0;
 
         for (final SbObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
             }
         }

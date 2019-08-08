@@ -279,6 +279,15 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new SimpleMemoryMonitoringToolbarWidget()"/>
       </AuxValues>
     </Component>
+    <Component class="de.cismet.watergis.gui.actions.ShowWindowAction" name="showLegend">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ShowWindowAction(org.openide.util.NbBundle.getMessage(WatergisApp.class, &quot;WatergisApp.initInfoNode().Legend&quot;))"/>
+      </AuxValues>
+    </Component>
+    <Component class="de.cismet.watergis.gui.actions.map.RemoveModeAction" name="removeModeAction1">
+    </Component>
+    <Component class="de.cismet.watergis.gui.actions.map.ChangePolygonModeAction" name="changePolygonModeAction1">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menFile">
@@ -903,43 +912,6 @@
                     </MenuItem>
                   </SubComponents>
                 </Menu>
-                <Menu class="javax.swing.JMenu" name="menGewaesser1">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.menGewaesser1.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-                    </Property>
-                  </Properties>
-                  <SubComponents>
-                    <MenuItem class="javax.swing.JMenuItem" name="mniGewaesserRep1">
-                      <Properties>
-                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                          <ComponentRef name="gerinneGGewaesserReportAction1"/>
-                        </Property>
-                      </Properties>
-                    </MenuItem>
-                    <MenuItem class="javax.swing.JMenuItem" name="mniGemeinde1">
-                      <Properties>
-                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                          <ComponentRef name="rlDDueReportAction"/>
-                        </Property>
-                      </Properties>
-                    </MenuItem>
-                    <MenuItem class="javax.swing.JMenuItem" name="mniSb1">
-                      <Properties>
-                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                          <ComponentRef name="gerinneGSbReportAction1"/>
-                        </Property>
-                      </Properties>
-                    </MenuItem>
-                    <MenuItem class="javax.swing.JMenuItem" name="mniFl1">
-                      <Properties>
-                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                          <ComponentRef name="gerinneGFlReportAction1"/>
-                        </Property>
-                      </Properties>
-                    </MenuItem>
-                  </SubComponents>
-                </Menu>
                 <Menu class="javax.swing.JMenu" name="menGewaesser2">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -972,6 +944,43 @@
                       <Properties>
                         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                           <ComponentRef name="gerinneOFlReportAction1"/>
+                        </Property>
+                      </Properties>
+                    </MenuItem>
+                  </SubComponents>
+                </Menu>
+                <Menu class="javax.swing.JMenu" name="menGewaesser1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.menGewaesser1.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                  <SubComponents>
+                    <MenuItem class="javax.swing.JMenuItem" name="mniGewaesserRep1">
+                      <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                          <ComponentRef name="gerinneGGewaesserReportAction1"/>
+                        </Property>
+                      </Properties>
+                    </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="mniGemeinde1">
+                      <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                          <ComponentRef name="rlDDueReportAction"/>
+                        </Property>
+                      </Properties>
+                    </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="mniSb1">
+                      <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                          <ComponentRef name="gerinneGSbReportAction1"/>
+                        </Property>
+                      </Properties>
+                    </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="mniFl1">
+                      <Properties>
+                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                          <ComponentRef name="gerinneGFlReportAction1"/>
                         </Property>
                       </Properties>
                     </MenuItem>
@@ -1414,6 +1423,16 @@
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniShowProfiles.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
+                </Property>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="mniShowLegend">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="showLegend"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniShowLegend.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -2367,6 +2386,36 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmdNodeRemoveActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JToggleButton" name="tbtnAddMode">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="changePolygonModeAction1"/>
+            </Property>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="btnGroupMapMode"/>
+            </Property>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="hideActionText" type="boolean" value="true"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JToggleButton" name="tbtnRemoveMode">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="removeModeAction1"/>
+            </Property>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="btnGroupMapMode"/>
+            </Property>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="hideActionText" type="boolean" value="true"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="cmdSnappingMode">
           <Properties>

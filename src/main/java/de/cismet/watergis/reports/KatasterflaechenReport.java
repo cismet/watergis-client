@@ -98,9 +98,11 @@ public class KatasterflaechenReport {
      * @param   fl   baCd DOCUMENT ME!
      * @param   gew  DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createFlaechenReport(final Flaeche[] fl, final int[] gew) throws Exception {
+    public File createFlaechenReport(final Flaeche[] fl, final int[] gew) throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
@@ -186,9 +188,10 @@ public class KatasterflaechenReport {
 //        JasperExportManager.exportReportToPdfStream(jasperPrint, pout);
 //        pout.close();
 
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    KatasterFlaechenReportDialog.getInstance().getPath()
-                            + "/Flächen.xlsx"));
+        final File file = new File(
+                KatasterFlaechenReportDialog.getInstance().getPath()
+                        + "/Kataster_Flächen.xlsx");
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         final JRXlsxExporter exporter = new JRXlsxExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -215,6 +218,8 @@ public class KatasterflaechenReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -2017,7 +2022,7 @@ public class KatasterflaechenReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final String gu, final Integer wdm) {
+    private double getLengthGew(final String gu, final int wdm) {
         double length = 0;
 
         for (final Object attr1 : flPartMap.keySet()) {
@@ -2061,7 +2066,7 @@ public class KatasterflaechenReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGew(final String gu, final Integer wdm) {
+    private int getCountGew(final String gu, final int wdm) {
         int count = 0;
 
         for (final Object attr1 : flPartMap.keySet()) {
@@ -2502,7 +2507,7 @@ public class KatasterflaechenReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountOffeneAbschn(final String owner, final Integer wdm) {
+    private int getCountOffeneAbschn(final String owner, final int wdm) {
         int count = 0;
 
         for (final Object attr1 : flPartMap.keySet()) {
@@ -2527,7 +2532,7 @@ public class KatasterflaechenReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthOffeneAbschn(final String owner, final Integer wdm) {
+    private double getLengthOffeneAbschn(final String owner, final int wdm) {
         double length = 0;
 
         for (final Object attr1 : flPartMap.keySet()) {
@@ -2551,7 +2556,7 @@ public class KatasterflaechenReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGeschlAbschn(final String owner, final Integer wdm) {
+    private int getCountGeschlAbschn(final String owner, final int wdm) {
         int count = 0;
 
         for (final Object attr1 : flPartMap.keySet()) {
@@ -2576,7 +2581,7 @@ public class KatasterflaechenReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGeschlAbschn(final String owner, final Integer wdm) {
+    private double getLengthGeschlAbschn(final String owner, final int wdm) {
         double length = 0;
 
         for (final Object attr1 : flPartMap.keySet()) {
@@ -3003,7 +3008,7 @@ public class KatasterflaechenReport {
             final double till) {
         final KatasterFlaechenData gemData = flDataMap.get(attr1);
 
-        return gemData.getCount(table, gewId, from, till);
+        return gemData.getLength(table, gewId, from, till);
     }
 
     /**
@@ -3045,7 +3050,7 @@ public class KatasterflaechenReport {
             final double till) {
         final KatasterFlaechenData gemData = flDataMap.get(attr1);
 
-        return gemData.getCount(table, gewId, from, till);
+        return gemData.getLength(table, gewId, from, till);
     }
 
     /**
@@ -3201,7 +3206,7 @@ public class KatasterflaechenReport {
     private int getCountLineObjects(final AllLineObjects.Table table,
             final Object attr1,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         final KatasterFlaechenData gemData = flDataMap.get(attr1);
         final List<GewFlObj> gemList = flPartMap.get(attr1);
         int count = 0;
@@ -3228,7 +3233,7 @@ public class KatasterflaechenReport {
     private double getLengthLineObjects(final AllLineObjects.Table table,
             final Object attr1,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         final KatasterFlaechenData gemData = flDataMap.get(attr1);
         final List<GewFlObj> gemList = flPartMap.get(attr1);
         double length = 0;
@@ -3255,7 +3260,7 @@ public class KatasterflaechenReport {
     private int getCountLineObjects(final KatasterFlaechenData.LineFromPolygonTable table,
             final Object attr1,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         final KatasterFlaechenData gemData = flDataMap.get(attr1);
         final List<GewFlObj> gemList = flPartMap.get(attr1);
         int count = 0;
@@ -3282,7 +3287,7 @@ public class KatasterflaechenReport {
     private double getLengthLineObjects(final KatasterFlaechenData.LineFromPolygonTable table,
             final Object attr1,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         final KatasterFlaechenData gemData = flDataMap.get(attr1);
         final List<GewFlObj> gemList = flPartMap.get(attr1);
         double length = 0;
@@ -3309,7 +3314,7 @@ public class KatasterflaechenReport {
     private int getCountPointObjects(final AllPunktObjects.Table table,
             final Object attr1,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         final KatasterFlaechenData gemData = flDataMap.get(attr1);
         final List<GewFlObj> gemList = flPartMap.get(attr1);
         int count = 0;
@@ -3332,7 +3337,7 @@ public class KatasterflaechenReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountLineObjects(final AllLineObjects.Table table, final String owner, final Integer wdm) {
+    private int getCountLineObjects(final AllLineObjects.Table table, final String owner, final int wdm) {
         int count = 0;
 
         for (final Object attr1 : flDataMap.keySet()) {
@@ -3357,7 +3362,7 @@ public class KatasterflaechenReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthLineObjects(final AllLineObjects.Table table, final String owner, final Integer wdm) {
+    private double getLengthLineObjects(final AllLineObjects.Table table, final String owner, final int wdm) {
         double length = 0;
 
         for (final Object attr1 : flDataMap.keySet()) {
@@ -3384,7 +3389,7 @@ public class KatasterflaechenReport {
      */
     private int getCountLineObjects(final KatasterFlaechenData.LineFromPolygonTable table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         int count = 0;
 
         for (final Object attr1 : flDataMap.keySet()) {
@@ -3411,7 +3416,7 @@ public class KatasterflaechenReport {
      */
     private double getLengthLineObjects(final KatasterFlaechenData.LineFromPolygonTable table,
             final String owner,
-            final Integer wdm) {
+            final int wdm) {
         double length = 0;
 
         for (final Object attr1 : flDataMap.keySet()) {
@@ -3436,7 +3441,7 @@ public class KatasterflaechenReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountPointObjects(final AllPunktObjects.Table table, final String owner, final Integer wdm) {
+    private int getCountPointObjects(final AllPunktObjects.Table table, final String owner, final int wdm) {
         int count = 0;
 
         for (final Object attr1 : flDataMap.keySet()) {

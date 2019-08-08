@@ -54,7 +54,7 @@ public class BothSnappingModeAction extends AbstractAction implements SnappingMo
                 "BothSnappingModeAction.text");
         putValue(NAME, text);
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
-                    "/de/cismet/watergis/res/icons16/icon-abacus.png"));
+                    "/de/cismet/watergis/res/icons16/icon-vector.png"));
         putValue(SMALL_ICON, icon);
     }
 

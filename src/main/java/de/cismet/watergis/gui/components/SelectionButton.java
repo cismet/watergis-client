@@ -143,7 +143,7 @@ public class SelectionButton extends JPopupMenuButton implements PropertyChangeL
 
         setPopupMenu(popup);
         setUI(new JToggleButton().getUI());
-
+        setFireOnArrow(true);
 //        AppBroker.getInstance().addSelecionModeListener(this);
     }
 

@@ -32,6 +32,7 @@
 	</parameter>
 	<parameter name="dataSources" class="java.util.Map"/>
 	<parameter name="perSb" class="java.lang.Boolean"/>
+	<parameter name="datum" class="java.lang.String"/>
 	<field name="name" class="java.lang.String"/>
 	<detail>
 		<band height="300">
@@ -45,6 +46,9 @@
 				</subreportParameter>
 				<subreportParameter name="dataSources">
 					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesser")]]></dataSourceExpression>
 				<subreportExpression><![CDATA["de/cismet/watergis/reports/gerinneOffenSbSb.jasper"]]></subreportExpression>
@@ -64,6 +68,9 @@
 				</subreportParameter>
 				<subreportParameter name="dataSources">
 					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesserAbschnitt")]]></dataSourceExpression>
 				<subreportExpression><![CDATA["de/cismet/watergis/reports/gerinneOffenSbGewaesser.jasper"]]></subreportExpression>

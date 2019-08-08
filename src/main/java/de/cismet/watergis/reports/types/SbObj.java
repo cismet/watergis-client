@@ -33,6 +33,7 @@ public class SbObj {
     private double till;
     private Integer sb;
     private String sbName;
+    private String guName;
     private Double baLen;
 
     //~ Constructors -----------------------------------------------------------
@@ -52,6 +53,7 @@ public class SbObj {
      * @param  sb       nr_re DOCUMENT ME!
      * @param  sbName   nr_li DOCUMENT ME!
      * @param  baLen    DOCUMENT ME!
+     * @param  guName   DOCUMENT ME!
      */
     public SbObj(final int id,
             final String art,
@@ -64,7 +66,8 @@ public class SbObj {
             final double till,
             final Integer sb,
             final String sbName,
-            final Double baLen) {
+            final Double baLen,
+            final String guName) {
         this.id = id;
         this.art = art;
         this.owner = owner;
@@ -76,6 +79,7 @@ public class SbObj {
         this.till = till;
         this.sb = sb;
         this.sbName = sbName;
+        this.guName = guName;
         this.baLen = baLen;
     }
 
@@ -220,8 +224,17 @@ public class SbObj {
      *
      * @return  the owner
      */
+    public String getGuName() {
+        return guName;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     public String getOwner() {
-        return owner;
+        return this.owner;
     }
 
     /**
@@ -249,6 +262,15 @@ public class SbObj {
      */
     public void setGu(final String gu) {
         this.gu = gu;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  guName  gu the gu to set
+     */
+    public void setGuName(final String guName) {
+        this.guName = guName;
     }
 
     /**

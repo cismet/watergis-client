@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="802" pageHeight="595" orientation="Landscape" columnWidth="762" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.1000000000000008"/>
-	<property name="ireport.x" value="16"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -35,6 +35,7 @@
 	<field name="esw" class="java.lang.String"/>
 	<field name="bis" class="java.lang.String"/>
 	<field name="laenge" class="java.lang.String"/>
+	<field name="objnr_gu" class="java.lang.String"/>
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
 	</variable>
@@ -121,7 +122,7 @@
 				<text><![CDATA[]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="258" y="14" width="119" height="28" backcolor="#DADADA" uuid="aad03196-eeff-492f-b9ca-0d597b8f6c62"/>
+				<reportElement style="column_header_style" mode="Opaque" x="258" y="14" width="49" height="28" backcolor="#DADADA" uuid="aad03196-eeff-492f-b9ca-0d597b8f6c62"/>
 				<box leftPadding="2" rightPadding="2">
 					<rightPen lineWidth="0.0"/>
 				</box>
@@ -194,6 +195,19 @@
 				</textElement>
 				<text><![CDATA[Lage re/li]]></text>
 			</staticText>
+			<staticText>
+				<reportElement style="column_header_style" mode="Opaque" x="307" y="14" width="70" height="28" backcolor="#DADADA" uuid="662fc9fc-bd49-4699-99ac-4650290824b1"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Top">
+					<font fontName="Arial" size="8" isBold="false"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<text><![CDATA[obj_nr_gu]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -233,7 +247,7 @@
 				<textFieldExpression><![CDATA[$F{laenge}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="258" y="0" width="119" height="28" isPrintWhenDetailOverflows="true" uuid="ac860c71-f3f1-4405-b2bf-7ffa4ad00862"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="258" y="0" width="49" height="28" isPrintWhenDetailOverflows="true" uuid="ac860c71-f3f1-4405-b2bf-7ffa4ad00862"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
@@ -383,6 +397,17 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="307" y="0" width="70" height="28" isPrintWhenDetailOverflows="true" uuid="6465072b-22a8-44d9-aa2a-562940a1d9e8"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{objnr_gu}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -98,7 +98,8 @@ public class SbHelper {
                         (Double)f.get(4),
                         (Integer)f.get(5),
                         (String)f.get(6),
-                        (Double)f.get(11)));
+                        (Double)f.get(11),
+                        (String)f.get(12)));
             }
         }
 
@@ -184,7 +185,7 @@ public class SbHelper {
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm) && (tmp.getSb() != null)
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm) && (tmp.getSb() != null)
                         && tmp.getSb().equals(sb)) {
                 ts.add(tmp.getId());
             }
@@ -202,7 +203,7 @@ public class SbHelper {
         final TreeSet<String> ts = new TreeSet<String>();
 
         for (final SbObj tmp : objList) {
-            ts.add(tmp.getOwner());
+            ts.add(tmp.getGuName());
         }
 
         return ts.descendingSet();
@@ -219,7 +220,7 @@ public class SbHelper {
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : objList) {
-            if ((tmp.getOwner() != null) && tmp.getOwner().equals(gu)) {
+            if ((tmp.getGuName() != null) && tmp.getGuName().equals(gu)) {
                 ts.add(tmp.getWidmung());
             }
         }
@@ -239,7 +240,7 @@ public class SbHelper {
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : objList) {
-            if ((tmp.getOwner() != null) && tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
+            if ((tmp.getGuName() != null) && tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)) {
                 ts.add(tmp.getSb());
             }
         }
@@ -258,7 +259,7 @@ public class SbHelper {
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : objList) {
-            if ((tmp.getOwner() != null) && tmp.getOwner().equals(gu)) {
+            if ((tmp.getGuName() != null) && tmp.getGuName().equals(gu)) {
                 ts.add(tmp.getSb());
             }
         }
@@ -279,7 +280,7 @@ public class SbHelper {
         final List<SbObj> ts = new ArrayList<SbObj>();
 
         for (final SbObj tmp : objList) {
-            if ((tmp.getOwner() != null) && tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)
+            if ((tmp.getGuName() != null) && tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)
                         && (tmp.getSb() != null) && tmp.getSb().equals(sb)) {
                 ts.add(tmp);
             }
@@ -302,7 +303,7 @@ public class SbHelper {
         final List<SbObj> ts = new ArrayList<SbObj>();
 
         for (final SbObj tmp : objList) {
-            if ((tmp.getId() == gewId) && (tmp.getOwner() != null) && tmp.getOwner().equals(gu)
+            if ((tmp.getId() == gewId) && (tmp.getGuName() != null) && tmp.getGuName().equals(gu)
                         && (tmp.getWidmung() == wdm)
                         && (tmp.getSb() != null) && tmp.getSb().equals(sb)) {
                 ts.add(tmp);
@@ -321,7 +322,7 @@ public class SbHelper {
      */
     public String getGuId(final String owner) {
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 return tmp.getGu();
             }
         }
@@ -476,7 +477,7 @@ public class SbHelper {
         double length = 0;
 
         for (final SbObj tmp : objList) {
-            if ((tmp.getOwner() != null) && tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)
+            if ((tmp.getGuName() != null) && tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)
                         && (tmp.getSb() != null) && tmp.getSb().equals(sb)) {
                 if (tmp.getArt().equals("p")) {
                     length += tmp.getLength();
@@ -501,7 +502,7 @@ public class SbHelper {
         double length = 0;
 
         for (final SbObj tmp : objList) {
-            if ((tmp.getId() == gew) && (tmp.getOwner() != null) && tmp.getOwner().equals(gu)
+            if ((tmp.getId() == gew) && (tmp.getGuName() != null) && tmp.getGuName().equals(gu)
                         && (tmp.getWidmung() == wdm)
                         && (tmp.getSb() != null) && tmp.getSb().equals(sb)) {
                 if (tmp.getArt().equals("p")) {
@@ -524,7 +525,7 @@ public class SbHelper {
         int count = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 if (tmp.getArt().equals("p")) {
                     ++count;
                 }
@@ -545,7 +546,7 @@ public class SbHelper {
         double length = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(owner)) {
+            if (tmp.getGuName().equals(owner)) {
                 if (tmp.getArt().equals("p")) {
                     length += tmp.getLength();
                 }
@@ -567,7 +568,7 @@ public class SbHelper {
         double length = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
                 if (tmp.getArt().equals("p")) {
                     length += tmp.getLength();
                 }
@@ -588,7 +589,7 @@ public class SbHelper {
         int count = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(gu)) {
+            if (tmp.getGuName().equals(gu)) {
                 ++count;
             }
         }
@@ -608,7 +609,7 @@ public class SbHelper {
         int count = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)) {
                 ++count;
             }
         }
@@ -629,7 +630,7 @@ public class SbHelper {
         int count = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm) && (tmp.getSb() != null)
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm) && (tmp.getSb() != null)
                         && tmp.getSb().equals(sb)) {
                 ++count;
             }
@@ -652,7 +653,7 @@ public class SbHelper {
         int count = 0;
 
         for (final SbObj tmp : objList) {
-            if ((tmp.getId() == gewId) && tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)
+            if ((tmp.getId() == gewId) && tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)
                         && (tmp.getSb() != null) && tmp.getSb().equals(sb)) {
                 ++count;
             }
@@ -672,7 +673,7 @@ public class SbHelper {
         double length = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(gu)) {
+            if (tmp.getGuName().equals(gu)) {
                 length += tmp.getLength();
             }
         }
@@ -692,7 +693,7 @@ public class SbHelper {
         double length = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)) {
                 length += tmp.getLength();
             }
         }
@@ -713,7 +714,7 @@ public class SbHelper {
         double length = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)
                         && ((tmp.getSb() != null) && tmp.getSb().equals(sb))) {
                 length += tmp.getLength();
             }
@@ -736,7 +737,7 @@ public class SbHelper {
         double length = 0;
 
         for (final SbObj tmp : objList) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)
+            if (tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)
                         && ((tmp.getSb() != null) && tmp.getSb().equals(sb))) {
                 length += tmp.getLength();
             }

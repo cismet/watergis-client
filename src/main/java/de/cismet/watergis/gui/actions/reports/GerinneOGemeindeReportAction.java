@@ -21,6 +21,8 @@ import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
+import java.io.File;
+
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -38,8 +40,11 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.download.FakeFileDownload;
 
 import de.cismet.watergis.gui.dialog.GerinneOGemeindeReportDialog;
 
@@ -101,7 +106,7 @@ public class GerinneOGemeindeReportAction extends AbstractAction {
             StaticSwingTools.showDialog(GerinneOGemeindeReportDialog.getInstance());
 
             if (!GerinneOGemeindeReportDialog.getInstance().isCancelled()) {
-                final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
+                final WaitingDialogThread<File> wdt = new WaitingDialogThread<File>(
                         StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                         true,
                         // NbBundle.getMessage(SonstigeCheckAction.class,
@@ -112,7 +117,7 @@ public class GerinneOGemeindeReportAction extends AbstractAction {
                         true) {
 
                         @Override
-                        protected Boolean doInBackground() throws Exception {
+                        protected File doInBackground() throws Exception {
                             final List<Integer> baCdList = new ArrayList<Integer>();
                             final List<Integer> gmdList = new ArrayList<Integer>();
 
@@ -157,14 +162,13 @@ public class GerinneOGemeindeReportAction extends AbstractAction {
                                     gew[i] = baCdList.get(i);
                                 }
                             }
-                            gr.createGemeindeReport(gmd, gew);
-                            return true;
+                            return gr.createGemeindeReport(gmd, gew);
                         }
 
                         @Override
                         protected void done() {
                             try {
-                                get();
+                                DownloadManager.instance().add(new FakeFileDownload(get()));
                             } catch (Exception e) {
                                 LOG.error("Error while performing the offene Gerinne report.", e);
                             }

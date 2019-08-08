@@ -39,6 +39,7 @@
 	<parameter name="gewaesser" class="java.lang.Integer"/>
 	<parameter name="offeneAbschnitte" class="java.lang.Integer"/>
 	<parameter name="profile" class="java.lang.Integer"/>
+	<parameter name="datum" class="java.lang.String"/>
 	<field name="name" class="java.lang.String"/>
 	<detail>
 		<band height="300">
@@ -59,20 +60,23 @@
 				<subreportParameter name="perGew">
 					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="gewaesser">
 					<subreportParameterExpression><![CDATA[$P{gewaesser}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="profile">
-					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="profile">
+					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesser")]]></dataSourceExpression>
 				<subreportExpression><![CDATA["de/cismet/watergis/reports/gerinneOffenGewGewaesser.jasper"]]></subreportExpression>
@@ -99,20 +103,23 @@
 				<subreportParameter name="perGew">
 					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="gewaesser">
 					<subreportParameterExpression><![CDATA[$P{gewaesser}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="profile">
-					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="profile">
+					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesserAbschnitt")]]></dataSourceExpression>
 				<subreportExpression><![CDATA["de/cismet/watergis/reports/gerinneOffenGewGewaesserAbschnitt.jasper"]]></subreportExpression>
@@ -139,20 +146,23 @@
 				<subreportParameter name="perGew">
 					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="gewaesser">
 					<subreportParameterExpression><![CDATA[$P{gewaesser}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="profile">
-					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="profile">
+					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesserAbschnittProf")]]></dataSourceExpression>
 				<subreportExpression><![CDATA["de/cismet/watergis/reports/gerinneOffenGewGewaesserAbschnittProfil.jasper"]]></subreportExpression>
@@ -179,20 +189,23 @@
 				<subreportParameter name="perGew">
 					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="gewaesser">
 					<subreportParameterExpression><![CDATA[$P{gewaesser}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="profile">
-					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="profile">
+					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesserGu")]]></dataSourceExpression>
 				<subreportExpression><![CDATA["de/cismet/watergis/reports/gerinneOffenGewGewaesserGu.jasper"]]></subreportExpression>
@@ -214,20 +227,23 @@
 				<subreportParameter name="perGew">
 					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="gewaesser">
 					<subreportParameterExpression><![CDATA[$P{gewaesser}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="profile">
-					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="profile">
+					<subreportParameterExpression><![CDATA[$P{profile}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[(JRDataSource)$P{dataSources}.get("gewaesserGuAbschnitt")]]></dataSourceExpression>
 				<subreportExpression><![CDATA["de/cismet/watergis/reports/gerinneOffenGewGewaesserGuWdm.jasper"]]></subreportExpression>

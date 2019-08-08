@@ -40,45 +40,45 @@ public class DuplicatedPointCheck implements GeometryCheckInterface {
     public boolean check(final Geometry g,
             final Coordinate lastCoordinate,
             final boolean ignoreLastGeometryCoordinate) {
-        if (g.getCoordinates().length > 0) {
-            final Coordinate c = g.getCoordinates()[g.getCoordinates().length - 1];
-
-            if ((lastCoordinate != null) && c.equals(lastCoordinate) && !ignoreLastGeometryCoordinate) {
-                return false;
-            }
-        }
-
-        if (g instanceof LineString) {
-            final Coordinate[] coords = g.getCoordinates();
-            for (int i = 1; i < coords.length; ++i) {
-                if (coords[i - 1].equals(coords[i])) {
-                    return false;
-                }
-            }
-        } else if (g instanceof Polygon) {
-            final Polygon p = (Polygon)g;
-            boolean valid = check(p.getExteriorRing(), null, ignoreLastGeometryCoordinate);
-
-            if (!valid) {
-                return false;
-            }
-
-            for (int i = 0; i < p.getNumInteriorRing(); ++i) {
-                valid = check(p.getInteriorRingN(i), null, ignoreLastGeometryCoordinate);
-
-                if (!valid) {
-                    return false;
-                }
-            }
-        } else if (g.getNumGeometries() > 1) {
-            for (int i = 0; i < g.getNumGeometries(); ++i) {
-                final boolean valid = check(g.getGeometryN(i), null, ignoreLastGeometryCoordinate);
-
-                if (!valid) {
-                    return false;
-                }
-            }
-        }
+//        if (g.getCoordinates().length > 0) {
+//            final Coordinate c = g.getCoordinates()[g.getCoordinates().length - 1];
+//
+//            if ((lastCoordinate != null) && c.equals(lastCoordinate) && !ignoreLastGeometryCoordinate) {
+//                return false;
+//            }
+//        }
+//
+//        if (g instanceof LineString) {
+//            final Coordinate[] coords = g.getCoordinates();
+//            for (int i = 1; i < coords.length; ++i) {
+//                if (coords[i - 1].equals(coords[i])) {
+//                    return false;
+//                }
+//            }
+//        } else if (g instanceof Polygon) {
+//            final Polygon p = (Polygon)g;
+//            boolean valid = check(p.getExteriorRing(), null, ignoreLastGeometryCoordinate);
+//
+//            if (!valid) {
+//                return false;
+//            }
+//
+//            for (int i = 0; i < p.getNumInteriorRing(); ++i) {
+//                valid = check(p.getInteriorRingN(i), null, ignoreLastGeometryCoordinate);
+//
+//                if (!valid) {
+//                    return false;
+//                }
+//            }
+//        } else if (g.getNumGeometries() > 1) {
+//            for (int i = 0; i < g.getNumGeometries(); ++i) {
+//                final boolean valid = check(g.getGeometryN(i), null, ignoreLastGeometryCoordinate);
+//
+//                if (!valid) {
+//                    return false;
+//                }
+//            }
+//        }
 
         return true;
     }

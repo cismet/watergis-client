@@ -90,6 +90,7 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.cismap.custom.attributerule.MessageDialog;
 
+import de.cismet.cismap.linearreferencing.RouteCombo;
 import de.cismet.cismap.linearreferencing.RouteTableCellEditor;
 import de.cismet.cismap.linearreferencing.TableStationEditor;
 
@@ -1649,6 +1650,7 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
                     @Override
                     public void focusLost(final FocusEvent e) {
                         feature.setProperty("ba_cd", routeCellEditor.getCellEditorValue());
+                        refreshGui();
                     }
                 });
 
@@ -2030,21 +2032,23 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
             }
             relocateFeature();
         } else if (evt.getPropertyName().equals("ba_cd")) {
-            panRouteCombo.removeAll();
-            final Component routeComp = routeCellEditor.getFeatureComponent(feature, feature.getProperty("ba_cd"));
-            panRouteCombo.add(routeComp);
-            routeComp.addFocusListener(new FocusListener() {
+            if (panRouteCombo.getComponentCount() < 1) {
+                // if the component count is >= 1, then the route combo was already added
+                final Component routeComp = routeCellEditor.getFeatureComponent(feature, feature.getProperty("ba_cd"));
+                panRouteCombo.add(routeComp);
+                routeComp.addFocusListener(new FocusListener() {
 
-                    @Override
-                    public void focusGained(final FocusEvent e) {
-                    }
+                        @Override
+                        public void focusGained(final FocusEvent e) {
+                        }
 
-                    @Override
-                    public void focusLost(final FocusEvent e) {
-                        feature.setProperty("ba_cd", routeCellEditor.getCellEditorValue());
-                        refreshGui();
-                    }
-                });
+                        @Override
+                        public void focusLost(final FocusEvent e) {
+                            feature.setProperty("ba_cd", routeCellEditor.getCellEditorValue());
+                            refreshGui();
+                        }
+                    });
+            }
         }
     }
 

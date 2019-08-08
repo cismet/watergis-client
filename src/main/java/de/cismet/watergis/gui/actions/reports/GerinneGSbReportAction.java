@@ -17,6 +17,8 @@ import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
+import java.io.File;
+
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -30,8 +32,11 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.download.FakeFileDownload;
 
 import de.cismet.watergis.gui.dialog.GerinneGeschlSbReportDialog;
 
@@ -92,7 +97,7 @@ public class GerinneGSbReportAction extends AbstractAction {
             StaticSwingTools.showDialog(GerinneGeschlSbReportDialog.getInstance());
 
             if (!GerinneGeschlSbReportDialog.getInstance().isCancelled()) {
-                final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
+                final WaitingDialogThread<File> wdt = new WaitingDialogThread<File>(
                         StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                         true,
                         // NbBundle.getMessage(SonstigeCheckAction.class,
@@ -103,7 +108,7 @@ public class GerinneGSbReportAction extends AbstractAction {
                         true) {
 
                         @Override
-                        protected Boolean doInBackground() throws Exception {
+                        protected File doInBackground() throws Exception {
                             final List<Integer> baCdList = new ArrayList<Integer>();
 
                             if (GerinneGeschlSbReportDialog.getInstance().isSelectionGew()) {
@@ -123,14 +128,13 @@ public class GerinneGSbReportAction extends AbstractAction {
                                     gew[i] = baCdList.get(i);
                                 }
                             }
-                            gr.createGerinneGewaesserReport(gew);
-                            return true;
+                            return gr.createGerinneGewaesserReport(gew);
                         }
 
                         @Override
                         protected void done() {
                             try {
-                                get();
+                                DownloadManager.instance().add(new FakeFileDownload(get()));
                             } catch (Exception e) {
                                 LOG.error("Error while performing the geschlossene Gerinne sb report.", e);
                             }

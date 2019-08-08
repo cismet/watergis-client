@@ -113,6 +113,8 @@ public class GemeindenData {
         lineMap.put(AllLineObjects.Table.fg_ba_ubef, createDataObjects(AllLineObjects.Table.fg_ba_ubef, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_ughz, createDataObjects(AllLineObjects.Table.fg_ba_ughz, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_deich, createDataObjects(AllLineObjects.Table.fg_ba_deich, gew));
+        lineMap.put(AllLineObjects.Table.fg_ba_doku, createDataObjects(AllLineObjects.Table.fg_ba_doku, gew));
+        lineMap.put(AllLineObjects.Table.fg_ba_proj, createDataObjects(AllLineObjects.Table.fg_ba_proj, gew));
 
         pointMap.put(AllPunktObjects.Table.fg_ba_anlp, createPointDataObjects(AllPunktObjects.Table.fg_ba_anlp, gew));
         pointMap.put(AllPunktObjects.Table.wr_wbu_aus, createPointDataObjects(AllPunktObjects.Table.wr_wbu_aus, gew));
@@ -123,6 +125,7 @@ public class GemeindenData {
         pointMap.put(AllPunktObjects.Table.fg_ba_schw, createPointDataObjects(AllPunktObjects.Table.fg_ba_schw, gew));
         pointMap.put(AllPunktObjects.Table.fg_ba_wehr, createPointDataObjects(AllPunktObjects.Table.fg_ba_wehr, gew));
         pointMap.put(AllPunktObjects.Table.fg_ba_ea, createPointDataObjects(AllPunktObjects.Table.fg_ba_ea, gew));
+        pointMap.put(AllPunktObjects.Table.foto, createPointDataObjects(AllPunktObjects.Table.foto, gew));
 
         lineFromPolygonMap.put(LineFromPolygonTable.sg_see, createSee(gew));
         lineFromPolygonMap.put(LineFromPolygonTable.wr_sg_uesg, createSchutzUeber(gew));
@@ -198,9 +201,9 @@ public class GemeindenData {
      *
      * @return  DOCUMENT ME!
      */
-    public int getLength(final AllLineObjects.Table table, final int gew, final double from, final double till) {
+    public double getLength(final AllLineObjects.Table table, final int gew, final double from, final double till) {
         final List<LineObjectData> lines = lineMap.get(table);
-        int length = 0;
+        double length = 0;
 
         if (lines != null) {
             for (final LineObjectData lineObj : lines) {
@@ -246,9 +249,38 @@ public class GemeindenData {
      *
      * @return  DOCUMENT ME!
      */
-    public int getLength(final LineFromPolygonTable table, final int gew, final double from, final double till) {
+    public List<Integer> getIds(final LineFromPolygonTable table, final int gew, final double from, final double till) {
         final List<LineObjectData> lines = lineFromPolygonMap.get(table);
-        int length = 0;
+        final List<Integer> ids = new ArrayList<Integer>();
+
+        if (lines != null) {
+            for (int i = 0; i < lines.size(); ++i) {
+                final LineObjectData lineObj = lines.get(i);
+                if (lineObj.isInGewPart(gew, from, till)) {
+                    ids.add(lineObj.getId());
+                }
+            }
+        }
+
+        return ids;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   table  DOCUMENT ME!
+     * @param   gew    DOCUMENT ME!
+     * @param   from   DOCUMENT ME!
+     * @param   till   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public double getLength(final LineFromPolygonTable table, final int gew, final double from, final double till) {
+        List<LineObjectData> lines = lineFromPolygonMap.get(table);
+        if (table.equals(LineFromPolygonTable.wr_sg_wsg)) {
+            lines = mergeLines(lines);
+        }
+        double length = 0;
 
         if (lines != null) {
             for (final LineObjectData lineObj : lines) {
@@ -257,6 +289,110 @@ public class GemeindenData {
         }
 
         return length;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   table  DOCUMENT ME!
+     * @param   gew    DOCUMENT ME!
+     * @param   from   DOCUMENT ME!
+     * @param   till   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public List<LineObjectData> getLengthFromTill(final LineFromPolygonTable table,
+            final int gew,
+            final double from,
+            final double till) {
+        List<LineObjectData> lines = lineFromPolygonMap.get(table);
+        if (table.equals(LineFromPolygonTable.wr_sg_wsg)) {
+            lines = mergeLines(lines);
+        }
+        final List<LineObjectData> res = new ArrayList<LineObjectData>();
+
+        if (lines != null) {
+            for (final LineObjectData lineObj : lines) {
+                if (lineObj.getLengthInGewPart(gew, from, till) > 0) {
+                    final double lineFrom = Math.max(from, lineObj.getFrom());
+                    final double lineTill = Math.min(till, lineObj.getTo());
+                    final LineObjectData tmp = new LineObjectData(lineObj.getGewId(),
+                            lineObj.getBaCd(),
+                            lineFrom,
+                            lineTill,
+                            Math.abs(lineTill - lineFrom));
+                    res.add(tmp);
+                }
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   lines  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public static List<LineObjectData> mergeLines(final List<LineObjectData> lines) {
+        final List<LineObjectData> newLines = new ArrayList<LineObjectData>();
+
+        for (int i = 0; i < lines.size(); ++i) {
+            final LineObjectData lod = lines.get(i);
+            boolean merged = false;
+
+            for (int ni = 0; ni < newLines.size(); ++ni) {
+                final LineObjectData nlod = newLines.get(ni);
+
+                if (nlod.isInGewPart(lod.getGewId(), lod.from, lod.to)) {
+                    merged = true;
+                    if (lod.getFrom() < nlod.getFrom()) {
+                        final LineObjectData data = new LineObjectData(lod.getGewId(),
+                                lod.getBaCd(),
+                                lod.getFrom(),
+                                nlod.getFrom(),
+                                Math.abs(nlod.getFrom() - lod.getFrom()));
+                        newLines.add(data);
+
+                        if (lod.getTo() > nlod.getTo()) {
+                            final LineObjectData data2 = new LineObjectData(lod.getGewId(),
+                                    lod.getBaCd(),
+                                    nlod.getTo(),
+                                    lod.getTo(),
+                                    Math.abs(lod.getTo() - nlod.getTo()));
+                            newLines.add(data2);
+                        }
+                    } else if (lod.getFrom() == nlod.getFrom()) {
+                        if (lod.getTo() > nlod.getTo()) {
+                            final LineObjectData data2 = new LineObjectData(lod.getGewId(),
+                                    lod.getBaCd(),
+                                    nlod.getTo(),
+                                    lod.getTo(),
+                                    Math.abs(lod.getTo() - nlod.getTo()));
+                            newLines.add(data2);
+                        }
+                    } else if (lod.getFrom() > nlod.getFrom()) {
+                        if (lod.getTo() > nlod.getTo()) {
+                            final LineObjectData data2 = new LineObjectData(lod.getGewId(),
+                                    lod.getBaCd(),
+                                    nlod.getTo(),
+                                    lod.getTo(),
+                                    Math.abs(lod.getTo() - nlod.getTo()));
+                            newLines.add(data2);
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (!merged) {
+                newLines.add(lod);
+            }
+        }
+
+        return newLines;
     }
 
     /**
@@ -282,7 +418,8 @@ public class GemeindenData {
                         (Double)f.get(0),
                         (Double)f.get(1),
                         (Double)f.get(1)
-                                - (Double)f.get(0)));
+                                - (Double)f.get(0),
+                        (Integer)f.get(4)));
             }
         }
 
@@ -312,7 +449,8 @@ public class GemeindenData {
                         (Double)f.get(0),
                         (Double)f.get(1),
                         (Double)f.get(1)
-                                - (Double)f.get(0)));
+                                - (Double)f.get(0),
+                        (Integer)f.get(4)));
             }
         }
 
@@ -329,22 +467,24 @@ public class GemeindenData {
      * @throws  Exception  DOCUMENT ME!
      */
     private List<LineObjectData> createSee(final int[] gew) throws Exception {
-//        final User user = SessionManager.getSession().getUser();
-//        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
-//                    .customServerSearch(user, new SeeReport(gew));
+        final User user = SessionManager.getSession().getUser();
+        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(user, new SeeReport(gew));
         final List<LineObjectData> objList = new ArrayList<LineObjectData>();
 
-//        if ((attributes != null) && !attributes.isEmpty()) {
-//            for (final ArrayList f : attributes) {
-//                objList.add(new LineObjectData(
-//                        (Integer)f.get(3),
-//                        (String)f.get(2),
-//                        (Double)f.get(0),
-//                        (Double)f.get(1),
-//                        (Double)f.get(1)
-//                                - (Double)f.get(0)));
-//            }
-//        }
+        if ((attributes != null) && !attributes.isEmpty()) {
+            for (final ArrayList f : attributes) {
+                if ((f.get(0) != null) && (f.get(1) != null)) {
+                    objList.add(new LineObjectData(
+                            (Integer)f.get(3),
+                            (String)f.get(2),
+                            (Double)f.get(0),
+                            (Double)f.get(1),
+                            (Double)f.get(1)
+                                    - (Double)f.get(0)));
+                }
+            }
+        }
 
         return objList;
     }
@@ -479,7 +619,7 @@ public class GemeindenData {
          * @return  DOCUMENT ME!
          */
         public boolean isInGewPart(final int gew, final double from, final double till) {
-            return (gew == gewId) && (Math.min(from, till) <= this.from) && (Math.max(from, till) >= from);
+            return (gew == gewId) && (Math.min(from, till) <= this.from) && (Math.max(from, till) >= this.from);
         }
 
         /**
@@ -524,7 +664,7 @@ public class GemeindenData {
      *
      * @version  $Revision$, $Date$
      */
-    private class LineObjectData {
+    public static class LineObjectData {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -533,6 +673,7 @@ public class GemeindenData {
         private double from;
         private double to;
         private double length;
+        private int id;
 
         //~ Constructors -------------------------------------------------------
 
@@ -563,7 +704,67 @@ public class GemeindenData {
             this.length = length;
         }
 
+        /**
+         * Creates a new LineObjectData object.
+         *
+         * @param  gewId   DOCUMENT ME!
+         * @param  baCd    DOCUMENT ME!
+         * @param  from    DOCUMENT ME!
+         * @param  to      DOCUMENT ME!
+         * @param  length  DOCUMENT ME!
+         * @param  id      DOCUMENT ME!
+         */
+        public LineObjectData(final int gewId,
+                final String baCd,
+                final double from,
+                final double to,
+                final double length,
+                final int id) {
+            this.gewId = gewId;
+            this.baCd = baCd;
+            this.from = from;
+            this.to = to;
+            this.length = length;
+            this.id = id;
+        }
+
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the id
+         */
+        public int getId() {
+            return id;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  id  the id to set
+         */
+        public void setId(final int id) {
+            this.id = id;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the gewId
+         */
+        public int getGewId() {
+            return gewId;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  gewId  the gewId to set
+         */
+        public void setGewId(final int gewId) {
+            this.gewId = gewId;
+        }
 
         /**
          * DOCUMENT ME!
