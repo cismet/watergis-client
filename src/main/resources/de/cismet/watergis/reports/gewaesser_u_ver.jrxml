@@ -41,7 +41,7 @@
 		<band/>
 	</background>
 	<title>
-		<band height="70">
+		<band height="40">
 			<staticText>
 				<reportElement x="300" y="0" width="162" height="28" forecolor="#000000" uuid="a3d4df21-7653-4eba-bdfb-153ee28ce834"/>
 				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">

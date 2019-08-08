@@ -17,6 +17,8 @@ import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
+import java.io.File;
+
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -31,8 +33,11 @@ import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import de.cismet.watergis.download.FakeFileDownload;
 
 import de.cismet.watergis.gui.dialog.GerinneGeschlFlaechenReportDialog;
 
@@ -94,7 +99,7 @@ public class GerinneGFlReportAction extends AbstractAction {
             StaticSwingTools.showDialog(GerinneGeschlFlaechenReportDialog.getInstance());
 
             if (!GerinneGeschlFlaechenReportDialog.getInstance().isCancelled()) {
-                final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
+                final WaitingDialogThread<File> wdt = new WaitingDialogThread<File>(
                         StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                         true,
                         // NbBundle.getMessage(SonstigeCheckAction.class,
@@ -105,7 +110,7 @@ public class GerinneGFlReportAction extends AbstractAction {
                         true) {
 
                         @Override
-                        protected Boolean doInBackground() throws Exception {
+                        protected File doInBackground() throws Exception {
                             final List<Integer> baCdList = new ArrayList<Integer>();
                             final List<Flaeche> flList = new ArrayList<Flaeche>();
 
@@ -157,15 +162,13 @@ public class GerinneGFlReportAction extends AbstractAction {
                                 }
                             }
 
-                            gr.createFlaechenReport(flList.toArray(new Flaeche[flList.size()]), gew);
-
-                            return true;
+                            return gr.createFlaechenReport(flList.toArray(new Flaeche[flList.size()]), gew);
                         }
 
                         @Override
                         protected void done() {
                             try {
-                                get();
+                                DownloadManager.instance().add(new FakeFileDownload(get()));
                             } catch (Exception e) {
                                 LOG.error("Error while performing the geschlossene Gerinne report.", e);
                             }

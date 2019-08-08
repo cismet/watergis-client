@@ -47,7 +47,7 @@
 	<parameter name="spalte11" class="java.lang.Boolean"/>
 	<parameter name="ges" class="java.lang.Boolean"/>
 	<parameter name="fachdata" class="java.lang.Boolean"/>
-	<field name="anzahlGew" class="java.lang.Integer"/>
+	<field name="anzGew" class="java.lang.Integer"/>
 	<field name="dimension" class="java.lang.String"/>
 	<field name="group" class="java.lang.String"/>
 	<field name="anz1" class="java.lang.Double"/>
@@ -134,7 +134,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Statistik Gerinne (geschlossen): " + $F{arten} + " / Gewässer "  + " Anzahl Gewässer: " + $F{anzahlGew}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Statistik Gerinne (geschlossen): " + $F{arten} + " / Gewässer "  + " Anzahl Gewässer: " + $F{anzGew}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement style="column_header_style" positionType="FixRelativeToBottom" mode="Opaque" x="285" y="56" width="70" height="14" backcolor="#D8D8D8" uuid="dc612570-0f2b-4713-ae26-3051f0dc3bf5"/>
@@ -1028,7 +1028,7 @@
 				<box leftPadding="2" rightPadding="2">
 					<rightPen lineWidth="1.0" lineStyle="Double"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Top">
+				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{laenge}]]></textFieldExpression>

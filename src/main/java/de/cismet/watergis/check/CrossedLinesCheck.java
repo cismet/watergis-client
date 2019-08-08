@@ -36,34 +36,34 @@ public class CrossedLinesCheck implements GeometryCheckInterface {
     public boolean check(final Geometry g,
             final Coordinate lastCoordinate,
             final boolean ignoreLastGeometryCoordinate) {
-        if ((g instanceof LineString) && (g.getCoordinates().length > 3)) {
-            if (!g.isSimple()) {
-                return false;
-            }
-        } else if (g instanceof Polygon) {
-            final Polygon p = (Polygon)g;
-            boolean valid = check(p.getExteriorRing(), lastCoordinate, ignoreLastGeometryCoordinate);
-
-            if (!valid) {
-                return false;
-            }
-
-            for (int i = 0; i < p.getNumInteriorRing(); ++i) {
-                valid = check(p.getInteriorRingN(i), lastCoordinate, ignoreLastGeometryCoordinate);
-
-                if (!valid) {
-                    return false;
-                }
-            }
-        } else if (g.getNumGeometries() > 1) {
-            for (int i = 0; i < g.getNumGeometries(); ++i) {
-                final boolean valid = check(g.getGeometryN(i), lastCoordinate, ignoreLastGeometryCoordinate);
-
-                if (!valid) {
-                    return false;
-                }
-            }
-        }
+//        if ((g instanceof LineString) && (g.getCoordinates().length > 3)) {
+//            if (!g.isSimple()) {
+//                return false;
+//            }
+//        } else if (g instanceof Polygon) {
+//            final Polygon p = (Polygon)g;
+//            boolean valid = check(p.getExteriorRing(), lastCoordinate, ignoreLastGeometryCoordinate);
+//
+//            if (!valid) {
+//                return false;
+//            }
+//
+//            for (int i = 0; i < p.getNumInteriorRing(); ++i) {
+//                valid = check(p.getInteriorRingN(i), lastCoordinate, ignoreLastGeometryCoordinate);
+//
+//                if (!valid) {
+//                    return false;
+//                }
+//            }
+//        } else if (g.getNumGeometries() > 1) {
+//            for (int i = 0; i < g.getNumGeometries(); ++i) {
+//                final boolean valid = check(g.getGeometryN(i), lastCoordinate, ignoreLastGeometryCoordinate);
+//
+//                if (!valid) {
+//                    return false;
+//                }
+//            }
+//        }
 
         return true;
     }

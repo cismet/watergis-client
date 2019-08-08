@@ -43,8 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import de.cismet.cids.custom.watergis.server.search.AllGewGeschlBySb;
-import de.cismet.cids.custom.watergis.server.search.AllGewOffenByGem;
 import de.cismet.cids.custom.watergis.server.search.AllGewOffenBySb;
 
 import de.cismet.cids.server.search.CidsServerSearch;
@@ -52,11 +50,7 @@ import de.cismet.cids.server.search.CidsServerSearch;
 import de.cismet.watergis.gui.dialog.GerinneOSbReportDialog;
 
 import de.cismet.watergis.reports.types.FeatureDataSource;
-import de.cismet.watergis.reports.types.GemeindenDataLightweight;
-import de.cismet.watergis.reports.types.GmdPartObj;
-import de.cismet.watergis.reports.types.GmdPartObjGeschl;
 import de.cismet.watergis.reports.types.GmdPartObjOffen;
-import de.cismet.watergis.reports.types.KatasterGewObj;
 import de.cismet.watergis.reports.types.SbObj;
 
 /**
@@ -97,9 +91,11 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      *
      * @param   gew  DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createSbReport(final int[] gew) throws Exception {
+    public File createSbReport(final int[] gew) throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
@@ -123,13 +119,14 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         }
 
         // create print from report and data
+        final File file = new File(
+                GerinneOSbReportDialog.getInstance().getPath()
+                        + "/GerinneOffenSchaubezirke.xls");
         final JasperPrint jasperPrint = JasperFillManager.fillReport(
                 jasperReport,
                 parameters,
                 dummyDataSource);
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    GerinneOSbReportDialog.getInstance().getPath()
-                            + "/GerinneOffenSchaubezirke.xls"));
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         final JRXlsExporter exporter = new JRXlsExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -151,6 +148,8 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -216,7 +215,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
                         (Double)f.get(16),
                         (Double)f.get(17),
                         (Double)f.get(18),
-                        (Double)f.get(18),
+                        (Double)f.get(19),
                         (Double)f.get(20),
                         (Double)f.get(21),
                         (Double)f.get(22),
@@ -358,6 +357,15 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
                     feature.put("blLiMin", getMinMax("blLi", sbParts, true));
                     feature.put("blLiMit", getMit("blLi", sbParts));
                     feature.put("blLiMax", getMinMax("blLi", sbParts, false));
+                    feature.put("mwMin", getMinMax("mw", sbParts, true));
+                    feature.put("mwMit", getMit("mw", sbParts));
+                    feature.put("mwMax", getMinMax("mw", sbParts, false));
+                    feature.put("flQsGerMin", getMinMax("flQsGer", sbParts, true));
+                    feature.put("flQsGerMit", getMit("flQsGer", sbParts));
+                    feature.put("flQsGerMax", getMinMax("flQsGer", sbParts, false));
+                    feature.put("flQsGewMin", getMinMax("flQsGew", sbParts, true));
+                    feature.put("flQsGewMit", getMit("flQsGew", sbParts));
+                    feature.put("flQsGewMax", getMinMax("flQsGew", sbParts, false));
                     feature.put("flSohle", getSum("flSo", sbParts));
                     feature.put("flBoeRe", getSum("flBRe", sbParts));
                     feature.put("flBoeLi", getSum("flBLi", sbParts));
@@ -470,6 +478,9 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
                         feature.put("blLiMin", getMinMax("blLi", sbParts, true));
                         feature.put("blLiMit", getMit("blLi", sbParts));
                         feature.put("blLiMax", getMinMax("blLi", sbParts, false));
+                        feature.put("mwMin", getMinMax("mw", sbParts, true));
+                        feature.put("mwMit", getMit("mw", sbParts));
+                        feature.put("mwMax", getMinMax("mw", sbParts, false));
                         feature.put("flQsGerMin", getMinMax("flQsGer", sbParts, true));
                         feature.put("flQsGerMit", getMit("flQsGer", sbParts));
                         feature.put("flQsGerMax", getMinMax("flQsGer", sbParts, false));
@@ -896,7 +907,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthMw(final String gu, final Integer wdm) {
+    private double getLengthMw(final String gu, final int wdm) {
         double length = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
@@ -1005,7 +1016,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthProf(final String prof, final String gu, final Integer wdm) {
+    private double getLengthProf(final String prof, final String gu, final int wdm) {
         double length = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
@@ -1053,7 +1064,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      */
     private double getMinMax(final String field, final Collection<SbObj> sbParts, final boolean min) {
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : objList) {
             for (final SbObj sb : sbParts) {
@@ -1066,6 +1077,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
 
                     if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                         currentVal = value;
+                        firstValue = false;
                     }
                 }
             }
@@ -1085,7 +1097,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      */
     private double getMinMax(final String field, final String gu, final boolean min) {
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))) {
@@ -1097,6 +1109,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1114,9 +1127,9 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getMinMax(final String field, final String gu, final Integer wdm, final boolean min) {
+    private double getMinMax(final String field, final String gu, final int wdm, final boolean min) {
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))
@@ -1129,6 +1142,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1153,7 +1167,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
             final double till,
             final boolean min) {
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : objList) {
             if ((tmp.getId() == gewId) && tmp.isInGewPart(gewId, from, till)) {
@@ -1165,6 +1179,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1279,7 +1294,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getMit(final String field, final String gu, final Integer wdm) {
+    private double getMit(final String field, final String gu, final int wdm) {
         double currentVal = 0;
         double length = 0;
 
@@ -1437,7 +1452,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getSum(final String field, final String gu, final Integer wdm) {
+    private double getSum(final String field, final String gu, final int wdm) {
         double currentVal = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
@@ -1526,7 +1541,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    public int getCountProf(final String prof, final String gu, final Integer wdm) {
+    public int getCountProf(final String prof, final String gu, final int wdm) {
         int count = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
@@ -1591,7 +1606,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final String gu, final Integer wdm) {
+    private double getLengthGew(final String gu, final int wdm) {
         double length = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
@@ -1620,46 +1635,6 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         }
 
         return count;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   gu   DOCUMENT ME!
-     * @param   wdm  gemNr DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountGew(final String gu, final Integer wdm) {
-        int count = 0;
-
-        for (final GmdPartObjOffen tmp : objList) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWdm() == wdm)) {
-                ++count;
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   gu   DOCUMENT ME!
-     * @param   wdm  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private double getLengthGew(final String gu, final int wdm) {
-        double length = 0;
-
-        for (final GmdPartObjOffen tmp : objList) {
-            if (tmp.getOwner().equals(gu) && (tmp.getWdm() == wdm)) {
-                length += tmp.getLength();
-            }
-        }
-
-        return length;
     }
 
     /**

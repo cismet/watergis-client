@@ -35,6 +35,8 @@ import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKBReader;
 
@@ -70,7 +72,6 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import org.jdom.Element;
 
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 
 import java.awt.BorderLayout;
@@ -88,10 +89,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.awt.event.InputEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -109,7 +106,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -143,7 +139,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import de.cismet.cids.custom.watergis.server.search.DeleteInvalidFgBaExp;
 import de.cismet.cids.custom.watergis.server.search.RemoveOldLocks;
 import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
 import de.cismet.cids.custom.watergis.server.search.RouteEnvelopes;
@@ -179,6 +174,7 @@ import de.cismet.cismap.commons.gui.attributetable.AttributeTableListener;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.capabilitywidget.CapabilityWidget;
+import de.cismet.cismap.commons.gui.infowidgets.Legend;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.LayerDropUtils;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerEvent;
@@ -234,8 +230,10 @@ import de.cismet.veto.VetoException;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
+import de.cismet.watergis.broker.listener.DeleteFeatureListener;
 import de.cismet.watergis.broker.listener.DrawingCountChangedEvent;
 import de.cismet.watergis.broker.listener.DrawingsListener;
+import de.cismet.watergis.broker.listener.PolygonChangeListener;
 
 import de.cismet.watergis.gui.actions.AnnexAction;
 import de.cismet.watergis.gui.actions.InfoWindowAction;
@@ -333,6 +331,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private JScrollPane pTablePane = new JScrollPane();
     private OverviewComponent pOverview;
     private CapabilityWidget pCapabilities;
+    private Legend pLegend;
     // Views
     private View vMap;
     private View vPhoto;
@@ -341,6 +340,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private View vTable;
     private View vOverview;
     private View vCapability;
+    private View vLegend;
     private MappingComponent mappingComponent;
     private ActiveLayerModel mappingModel = new ActiveLayerModel();
     private MetaClass routeMc;
@@ -363,6 +363,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JComboBox cbRoute;
     private javax.swing.JComboBox cboScale;
     private de.cismet.watergis.gui.actions.CentralConfigAction centralConfigAction;
+    private de.cismet.watergis.gui.actions.map.ChangePolygonModeAction changePolygonModeAction1;
     private de.cismet.watergis.gui.actions.gaf.CheckAction checkAction1;
     private de.cismet.watergis.gui.actions.geoprocessing.ClipGeoprocessingAction clipGeoprocessingAction;
     private de.cismet.watergis.gui.actions.CloseAction closeAction;
@@ -580,6 +581,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniShowDatasource;
     private javax.swing.JMenuItem mniShowDefaultConfig2;
     private javax.swing.JMenuItem mniShowInfo;
+    private javax.swing.JMenuItem mniShowLegend;
     private javax.swing.JMenuItem mniShowMap;
     private javax.swing.JMenuItem mniShowOverview;
     private javax.swing.JMenuItem mniShowPhotos;
@@ -618,6 +620,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.ReleaseAction releaseAction;
     private de.cismet.watergis.gui.actions.map.ReloadAction reloadAction1;
     private de.cismet.watergis.gui.actions.map.RemoveDrawingModeAction removeDrawingModeAction;
+    private de.cismet.watergis.gui.actions.map.RemoveModeAction removeModeAction1;
     private de.cismet.watergis.gui.actions.selection.RemoveSelectionAllTopicsAction removeSelectionAllTopicsAction;
     private de.cismet.watergis.gui.actions.foto.ReportAction reportAction1;
     private de.cismet.watergis.gui.actions.gaf.ReportAction reportActionGaf;
@@ -645,6 +648,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.window.ShowHideOverviewWindowAction showHideOverviewWindowAction;
     private de.cismet.watergis.gui.actions.ShowWindowAction showInfo;
     private de.cismet.watergis.gui.actions.InfoWindowAction showInfoWindowAction;
+    private de.cismet.watergis.gui.actions.ShowWindowAction showLegend;
     private de.cismet.watergis.gui.actions.bookmarks.ShowManageBookmarksDialogAction showManageBookmarksDialogAction;
     private de.cismet.watergis.gui.actions.ShowWindowAction showMap;
     private de.cismet.watergis.gui.actions.ShowWindowAction showOverview;
@@ -657,12 +661,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.SplitAction splitAction;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
     private javax.swing.JToggleButton tbtNewObject;
+    private javax.swing.JToggleButton tbtnAddMode;
     private javax.swing.JToggleButton tbtnInfo;
     private javax.swing.JButton tbtnMeasure;
     private javax.swing.JToggleButton tbtnMeasureLineMode;
     private javax.swing.JToggleButton tbtnPanMode;
     private javax.swing.JToggleButton tbtnPhotoInfoMode;
     private javax.swing.JToggleButton tbtnProfileInfoMode;
+    private javax.swing.JToggleButton tbtnRemoveMode;
     private javax.swing.JToggleButton tbtnZoomMode;
     private javax.swing.JToolBar tobDLM25W;
     private de.cismet.watergis.gui.actions.geoprocessing.UnionGeoprocessingAction unionGeoprocessingAction;
@@ -716,6 +722,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
             ExceptionManager.getManager()
                     .showExceptionDialog(this, ExceptionManager.ERROR, "Exception", e.getMessage(), messages);
+        }
+        try {
+            // clear all locks from the previous session
+            H2FeatureService.clearLocks();
+        } catch (IllegalStateException e) {
+            System.err.println("Database is already in use");
+            System.exit(1);
         }
         final Map<HostConfiguration, Integer> maxHostConnections = new HashMap<HostConfiguration, Integer>();
         maxHostConnections.put(HostConfiguration.ANY_HOST_CONFIGURATION, 128);
@@ -786,8 +799,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdZoomToAllDrawings.setEnabled(drawingsExists);
         cmdSelectAllDrawings.setEnabled(drawingsExists);
         mniSelectAllDrawing.setEnabled(drawingsExists);
-        // clear all locks from the previous session
-        H2FeatureService.clearLocks();
         initDefaultPanels();
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
@@ -853,6 +864,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     cmdUnselectDrawings.setEnabled(drawsSelected);
                 }
             });
+
+        mappingComponent.addCustomInputListener("REMOVE_MULTIPOLYGON", new DeleteFeatureListener(mappingComponent));
+        mappingComponent.addCustomInputListener("CHANGE_MULTIPOLYGON", new PolygonChangeListener(mappingComponent));
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -1113,6 +1127,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         pCapabilities = new CapabilityWidget();
         CapabilityWidgetOptionsPanel.setCapabilityWidget(pCapabilities);
         CismapBroker.getInstance().addMapBoundsListener(pCapabilities);
+//        pLegend = new Legend();
         configManager.addConfigurable(exportAction1);
         configManager.configure(exportAction1);
         configManager.addConfigurable(pCapabilities);
@@ -1232,6 +1247,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Capabilities");
         vCapability = new View(title, null, pCapabilities);
         viewMap.addView(title, vCapability);
+
+//        title = org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.initInfoNode().Legend");
+//        vLegend = new View(title, null, pLegend);
+//        viewMap.addView(title, vLegend);
 
         rootWindow = DockingUtil.createRootWindow(viewMap, true);
         rootWindow.getRootWindowProperties().getFloatingWindowProperties().setUseFrame(true);
@@ -1587,8 +1606,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                             final AbstractFeatureService service = table.getFeatureService();
                             final Object masterBaCd = feature.getProperty("ba_cd");
 
-                            if (((CidsLayer)service.getLayerProperties().getFeatureService()).getMetaClass()
-                                        .getTableName().equalsIgnoreCase("dlm25w.fg_bak")) {
+                            if ((service instanceof CidsLayer)
+                                        && ((CidsLayer)service).getMetaClass().getTableName().equalsIgnoreCase(
+                                            "dlm25w.fg_bak")) {
                                 continue;
                             }
 
@@ -2002,7 +2022,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         CidsServerSearch search;
 
                         if (AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("lung_edit1")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("admin_edit")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("gäste")
+                                    || AppBroker.getInstance().getOwner().startsWith("lung")
                                     || AppBroker.getInstance().getOwner().equalsIgnoreCase("lung")
                                     || AppBroker.getInstance().getOwner().equalsIgnoreCase("lv_wbv")
                                     || AppBroker.getInstance().getOwner().equalsIgnoreCase("lu")
@@ -2236,6 +2258,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         saveToSameFileProjectAction1 = new de.cismet.watergis.gui.actions.SaveToSameFileProjectAction();
         zoomSelectedThemesAction1 = new de.cismet.watergis.gui.actions.selection.ZoomSelectedThemesAction();
         simpleMemoryMonitoringToolbarWidget1 = new SimpleMemoryMonitoringToolbarWidget();
+        showLegend = new ShowWindowAction(org.openide.util.NbBundle.getMessage(
+                    WatergisApp.class,
+                    "WatergisApp.initInfoNode().Legend"));
+        removeModeAction1 = new de.cismet.watergis.gui.actions.map.RemoveModeAction();
+        changePolygonModeAction1 = new de.cismet.watergis.gui.actions.map.ChangePolygonModeAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveSameFileProject = new javax.swing.JButton();
@@ -2283,6 +2310,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdNodeMove = new javax.swing.JToggleButton();
         cmdNodeAdd = new javax.swing.JToggleButton();
         cmdNodeRemove = new javax.swing.JToggleButton();
+        tbtnAddMode = new javax.swing.JToggleButton();
+        tbtnRemoveMode = new javax.swing.JToggleButton();
         cmdSnappingMode = new SnappingButton();
         cmdPresentation = new javax.swing.JButton();
         cmdMoveGeometry = new javax.swing.JToggleButton();
@@ -2382,16 +2411,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGemeinde = new javax.swing.JMenuItem();
         mniSb = new javax.swing.JMenuItem();
         mniFl = new javax.swing.JMenuItem();
-        menGewaesser1 = new javax.swing.JMenu();
-        mniGewaesserRep1 = new javax.swing.JMenuItem();
-        mniGemeinde1 = new javax.swing.JMenuItem();
-        mniSb1 = new javax.swing.JMenuItem();
-        mniFl1 = new javax.swing.JMenuItem();
         menGewaesser2 = new javax.swing.JMenu();
         mniGewaesserRep2 = new javax.swing.JMenuItem();
         mniGemeinde2 = new javax.swing.JMenuItem();
         mniSb2 = new javax.swing.JMenuItem();
         mniFl2 = new javax.swing.JMenuItem();
+        menGewaesser1 = new javax.swing.JMenu();
+        mniGewaesserRep1 = new javax.swing.JMenuItem();
+        mniGemeinde1 = new javax.swing.JMenuItem();
+        mniSb1 = new javax.swing.JMenuItem();
+        mniFl1 = new javax.swing.JMenuItem();
         menGewaesser3 = new javax.swing.JMenu();
         mniGewaesserRep3 = new javax.swing.JMenuItem();
         menPhoto = new javax.swing.JMenu();
@@ -2436,6 +2465,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniShowProblems = new javax.swing.JMenuItem();
         mniShowPhotos = new javax.swing.JMenuItem();
         mniShowProfiles = new javax.swing.JMenuItem();
+        mniShowLegend = new javax.swing.JMenuItem();
         sepWindowSeparator = new javax.swing.JPopupMenu.Separator();
         mniDefaultConfig = new javax.swing.JMenuItem();
         mniShowDefaultConfig2 = new javax.swing.JMenuItem();
@@ -2932,6 +2962,24 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 }
             });
         jToolBar1.add(cmdNodeRemove);
+
+        tbtnAddMode.setAction(changePolygonModeAction1);
+        btnGroupMapMode.add(tbtnAddMode);
+        tbtnAddMode.setEnabled(false);
+        tbtnAddMode.setFocusable(false);
+        tbtnAddMode.setHideActionText(true);
+        tbtnAddMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbtnAddMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(tbtnAddMode);
+
+        tbtnRemoveMode.setAction(removeModeAction1);
+        btnGroupMapMode.add(tbtnRemoveMode);
+        tbtnRemoveMode.setEnabled(false);
+        tbtnRemoveMode.setFocusable(false);
+        tbtnRemoveMode.setHideActionText(true);
+        tbtnRemoveMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbtnRemoveMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(tbtnRemoveMode);
 
         cmdSnappingMode.setIcon(new javax.swing.ImageIcon(
                 getClass().getResource("/de/cismet/watergis/res/icons16/icon-snaptogrid.png"))); // NOI18N
@@ -3658,24 +3706,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         menStatistik.add(menGewaesser);
 
         org.openide.awt.Mnemonics.setLocalizedText(
-            menGewaesser1,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menGewaesser1.text")); // NOI18N
-
-        mniGewaesserRep1.setAction(gerinneGGewaesserReportAction1);
-        menGewaesser1.add(mniGewaesserRep1);
-
-        mniGemeinde1.setAction(rlDDueReportAction);
-        menGewaesser1.add(mniGemeinde1);
-
-        mniSb1.setAction(gerinneGSbReportAction1);
-        menGewaesser1.add(mniSb1);
-
-        mniFl1.setAction(gerinneGFlReportAction1);
-        menGewaesser1.add(mniFl1);
-
-        menStatistik.add(menGewaesser1);
-
-        org.openide.awt.Mnemonics.setLocalizedText(
             menGewaesser2,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menGewaesser2.text")); // NOI18N
 
@@ -3692,6 +3722,24 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         menGewaesser2.add(mniFl2);
 
         menStatistik.add(menGewaesser2);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            menGewaesser1,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menGewaesser1.text")); // NOI18N
+
+        mniGewaesserRep1.setAction(gerinneGGewaesserReportAction1);
+        menGewaesser1.add(mniGewaesserRep1);
+
+        mniGemeinde1.setAction(rlDDueReportAction);
+        menGewaesser1.add(mniGemeinde1);
+
+        mniSb1.setAction(gerinneGSbReportAction1);
+        menGewaesser1.add(mniSb1);
+
+        mniFl1.setAction(gerinneGFlReportAction1);
+        menGewaesser1.add(mniFl1);
+
+        menStatistik.add(menGewaesser1);
 
         menReport.add(menStatistik);
 
@@ -4004,6 +4052,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 "WatergisApp.mniShowProfiles.toolTipText",
                 new Object[] {})); // NOI18N
         menWindow.add(mniShowProfiles);
+
+        mniShowLegend.setAction(showLegend);
+        mniShowLegend.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniShowLegend.toolTipText",
+                new Object[] {})); // NOI18N
+        menWindow.add(mniShowLegend);
 
         sepWindowSeparator.setName("sepCentralFilesStart"); // NOI18N
         menWindow.add(sepWindowSeparator);
@@ -4867,6 +4922,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     final boolean profileSelected = containsAnyRelevantFeature(selectedFeatures, "qp");
                     final boolean drawsSelected = !RemoveDrawingModeAction.getSelectedDrawings().isEmpty();
                     boolean oneEditableFeature = false;
+                    boolean selectedFeatueIsPolygon = false;
                     boolean mergeAllowed = false;
                     AbstractFeatureService editableService = null;
                     boolean editFeature = false;
@@ -4899,6 +4955,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                                         if (editableService == null) {
                                             editableService = serviceFeature.getLayerProperties().getFeatureService();
                                             oneEditableFeature = true;
+                                            if ((serviceFeature.getGeometry() instanceof Polygon)
+                                                        || (serviceFeature.getGeometry() instanceof MultiPolygon)) {
+                                                selectedFeatueIsPolygon = true;
+                                            }
                                         } else if (
                                             !editableService.equals(
                                                         serviceFeature.getLayerProperties().getFeatureService())) {
@@ -4943,6 +5003,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
 
                     final boolean splitEnabled = oneEditableFeature;
+                    final boolean polygonOperationEnabled = oneEditableFeature && selectedFeatueIsPolygon;
                     final boolean mergeEnabled = mergeAllowed;
                     final boolean editOperationsEnabled = editFeature;
 
@@ -4983,6 +5044,12 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                                 cmdNodeRemove.setEnabled(editOperationsEnabled);
                                 cmdPresentation.setEnabled(editOperationsEnabled);
                                 cmdMoveGeometry.setEnabled(editOperationsEnabled);
+                                tbtnAddMode.setEnabled(polygonOperationEnabled);
+                                tbtnRemoveMode.setEnabled(polygonOperationEnabled);
+                                if (!polygonOperationEnabled
+                                            && (tbtnAddMode.isSelected() || tbtnRemoveMode.isSelected())) {
+                                    cmdSelectionMode.getAction().actionPerformed(null);
+                                }
                                 topicTreeSelectionChanged(null);
                             }
                         });
@@ -5244,11 +5311,12 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 try {
                     afs.initAndWait();
                 } catch (Exception ex) {
-                    LOG.error("CAnnot initialise service.", ex);
+                    LOG.error("Cannot initialise service.", ex);
                 }
+                final String geometryType = afs.getGeometryType();
 
-                if ((afs.getGeometryType() == null) || afs.getGeometryType().equals(AbstractFeatureService.UNKNOWN)
-                            || afs.getGeometryType().equals(AbstractFeatureService.NONE)) {
+                if ((geometryType == null) || geometryType.equals(AbstractFeatureService.UNKNOWN)
+                            || geometryType.equals(AbstractFeatureService.NONE)) {
                     outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
                             lastExportPath,
                             true,

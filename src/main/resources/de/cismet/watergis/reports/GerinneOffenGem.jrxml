@@ -37,31 +37,35 @@
 	<parameter name="sumGu" class="java.lang.Boolean"/>
 	<parameter name="wdm" class="java.lang.Boolean"/>
 	<parameter name="perAbschnProf" class="java.lang.Boolean"/>
+	<parameter name="datum" class="java.lang.String"/>
 	<field name="name" class="java.lang.String"/>
 	<detail>
 		<band height="300">
 			<subreport>
 				<reportElement positionType="Float" x="0" y="0" width="902" height="30" uuid="3f921b1a-ee9f-43c3-aa0f-3e560dfda7c9"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="gemeinden">
 					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="sumGu">
 					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="perGew">
-					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="perAbschnProf">
 					<subreportParameterExpression><![CDATA[$P{perAbschnProf}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
@@ -76,26 +80,29 @@
 			</break>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="31" width="902" height="30" uuid="b3d1871a-76ea-4ecc-b2ed-4222d07c7ec7"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="gemeinden">
 					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="sumGu">
 					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="perGew">
-					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="perAbschnProf">
 					<subreportParameterExpression><![CDATA[$P{perAbschnProf}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
@@ -105,26 +112,29 @@
 			</subreport>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="61" width="902" height="30" uuid="c56c76b2-c5fa-4b14-a45a-202d6facc3e3"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="gemeinden">
 					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="sumGu">
 					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="perGew">
-					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="perAbschnProf">
 					<subreportParameterExpression><![CDATA[$P{perAbschnProf}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
@@ -134,26 +144,29 @@
 			</subreport>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="91" width="902" height="30" uuid="201dbccc-62e2-41ac-8334-b5d0a7163546"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="gemeinden">
 					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="sumGu">
 					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="perGew">
-					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="perAbschnProf">
 					<subreportParameterExpression><![CDATA[$P{perAbschnProf}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
@@ -168,26 +181,29 @@
 			</break>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="121" width="902" height="30" uuid="70f7bbe1-40f3-45d0-b24a-cf39626f3075"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="gemeinden">
 					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="sumGu">
 					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="perGew">
-					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="perAbschnProf">
 					<subreportParameterExpression><![CDATA[$P{perAbschnProf}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>
@@ -197,26 +213,29 @@
 			</subreport>
 			<subreport>
 				<reportElement positionType="Float" x="0" y="151" width="902" height="30" uuid="2d341680-7a96-429f-872c-2353f5857c1f"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="gemeinden">
 					<subreportParameterExpression><![CDATA[$P{gemeinden}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="sumGu">
 					<subreportParameterExpression><![CDATA[$P{sumGu}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="perGew">
-					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="perAbschnProf">
 					<subreportParameterExpression><![CDATA[$P{perAbschnProf}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				<subreportParameter name="perGew">
+					<subreportParameterExpression><![CDATA[$P{perGew}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dataSources">
+					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="perAbschn">
 					<subreportParameterExpression><![CDATA[$P{perAbschn}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="dataSources">
-					<subreportParameterExpression><![CDATA[$P{dataSources}]]></subreportParameterExpression>
+				<subreportParameter name="datum">
+					<subreportParameterExpression><![CDATA[$P{datum}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="wdm">
 					<subreportParameterExpression><![CDATA[$P{wdm}]]></subreportParameterExpression>

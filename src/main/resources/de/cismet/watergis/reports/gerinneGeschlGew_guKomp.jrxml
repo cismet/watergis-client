@@ -47,7 +47,7 @@
 	<parameter name="spalte11" class="java.lang.Boolean"/>
 	<parameter name="ges" class="java.lang.Boolean"/>
 	<parameter name="withWdm" class="java.lang.Boolean"/>
-	<field name="anzahlGu" class="java.lang.Integer"/>
+	<field name="anzGu" class="java.lang.Integer"/>
 	<field name="dimension" class="java.lang.String"/>
 	<field name="group" class="java.lang.String"/>
 	<field name="anz1" class="java.lang.Double"/>
@@ -206,14 +206,14 @@
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Statistik Gerinne (geschlossen):" + $F{arten} + " / Gewässer /GU: " + " Anzahl GU: " + $F{anzahlGu}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Statistik Gerinne (geschlossen):" + $F{arten} + " / Gewässer /GU: " + " Anzahl GU: " + $F{anzGu}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement style="column_header_style" mode="Opaque" x="285" y="56" width="70" height="14" backcolor="#D8D8D8" uuid="dc612570-0f2b-4713-ae26-3051f0dc3bf5">
 						<printWhenExpression><![CDATA[$P{withWdm}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2">
-						<rightPen lineWidth="0.25" lineStyle="Solid"/>
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -258,7 +258,7 @@
 						<printWhenExpression><![CDATA[$P{dimension}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2">
-						<leftPen lineWidth="1.0" lineStyle="Double"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -345,7 +345,7 @@
 						<printWhenExpression><![CDATA[$P{spalte1}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2">
-						<leftPen lineWidth="1.0" lineStyle="Double"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -1080,8 +1080,7 @@
 						<printWhenExpression><![CDATA[$P{withWdm}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2">
-						<leftPen lineWidth="0.25"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid"/>
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -1142,7 +1141,7 @@
 					<printWhenExpression><![CDATA[$P{withWdm}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2">
-					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Double"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
@@ -1174,7 +1173,7 @@
 					<printWhenExpression><![CDATA[$P{dimension}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2">
-					<leftPen lineWidth="1.0" lineStyle="Double"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
@@ -1191,7 +1190,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl1} + $F{anzD1} + $F{anzDue1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToTallestObject" x="576" y="0" width="70" height="42" isPrintWhenDetailOverflows="true" uuid="59d67904-2b38-4bf2-8054-49a09f5d76af">
@@ -1207,7 +1206,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl1} + $F{laengeD1} + $F{laengeDue1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="506" y="14" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="920aa38a-05b1-4540-a518-e3a53f3b45fe">
@@ -1259,7 +1258,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl2} + $F{anzD2} + $F{anzDue2}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="646" y="28" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="c7cd1f6e-fcd0-4289-a526-dd3742085855">
@@ -1301,7 +1300,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz3}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl3} + $F{anzD3} + $F{anzDue3}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="876" y="28" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="4baa0e26-30e3-4377-843e-eb7fb7345e56">
@@ -1367,7 +1366,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl2} + $F{laengeD2} + $F{laengeDue2}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="736" y="28" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="4a7b4b1d-435f-4a6b-af97-9e90588d97ff">
@@ -1413,7 +1412,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge3}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl3} + $F{laengeD3} + $F{laengeDue3}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="966" y="28" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="721291fc-fd93-41c7-b2d6-7f345c4fa05f">
@@ -1465,7 +1464,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz4}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl4} + $F{anzD4} + $F{anzDue4}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="1336" y="14" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="92bae125-ddee-4f11-a53f-2ccaf1c2c296">
@@ -1507,7 +1506,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz5}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl5} + $F{anzD5} + $F{anzDue5}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="1566" y="14" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="203649d2-eae3-4821-afd6-3f4012bd953e">
@@ -1549,7 +1548,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz6}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl6} + $F{anzD6} + $F{anzDue6}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="1196" y="14" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="566622c6-f0a2-4b99-8a1f-00dad8b7ad6c">
@@ -1575,7 +1574,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge4}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl4} + $F{laengeD4} + $F{laengeDue4}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="1196" y="28" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="17752c40-c27c-4b5c-a13a-ebce2c32e593">
@@ -1621,7 +1620,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge5}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl5} + $F{laengeD5} + $F{laengeDue5}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="1426" y="28" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="b6a5a7c1-58b3-43e2-ae66-7cacebc5b73d">
@@ -1667,7 +1666,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge6}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl6} + $F{laengeD6} + $F{laengeDue6}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="1656" y="28" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="ee258b89-7db4-4c12-8e81-941e55c1bb83">
@@ -1709,7 +1708,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz7}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl7} + $F{anzD7} + $F{anzDue7}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="1796" y="14" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="62353193-8fb6-438e-8894-4234e034d50f">
@@ -1751,7 +1750,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz8}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl8} + $F{anzD8} + $F{anzDue8}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="2026" y="14" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="025d47f8-a524-42d8-860e-3c3eca2294e1">
@@ -1793,7 +1792,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz9}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl9} + $F{anzD9} + $F{anzDue9}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="2256" y="14" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="099fd2a3-404a-48e5-b199-e1e25ae2d41a">
@@ -1849,7 +1848,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge7}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl7} + $F{laengeD7} + $F{laengeDue7}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="1886" y="28" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="2c42ab4c-7a7d-4dec-a634-5e09f53a57b7">
@@ -1895,7 +1894,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge8}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl8} + $F{laengeD8} + $F{laengeDue8}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="2116" y="28" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="d323b460-a7dd-47eb-9341-f1279bf53d84">
@@ -1941,7 +1940,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge9}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl9} + $F{laengeD9} + $F{laengeDue9}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="2346" y="28" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="900bf27d-641e-43b8-a9e3-b51fe876baa5">
@@ -1993,7 +1992,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz10}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl10} + $F{anzD10} + $F{anzDue10}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="2946" y="14" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="e12d49ff-6c2b-49ee-9047-fb1feec93b10">
@@ -2051,7 +2050,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge10}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl10} + $F{laengeD10} + $F{laengeDue10}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="2576" y="0" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="c09a7d99-4ca1-419f-9691-75b0effb4766">
@@ -2169,7 +2168,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{anz11}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{anzRl11} + $F{anzD11} + $F{anzDue11}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToTallestObject" x="2876" y="0" width="70" height="42" isPrintWhenDetailOverflows="true" uuid="77191da9-c60a-430c-9219-39dd7f78d714">
@@ -2185,7 +2184,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{laenge11}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{laengeRl11} + $F{laengeD11} + $F{laengeDue11}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" positionType="Float" x="2806" y="14" width="70" height="14" isPrintWhenDetailOverflows="true" uuid="aae16df7-71ee-42ec-8f42-669cbfcea031">

@@ -93,7 +93,7 @@ public class GerogaRsAction extends AbstractAction {
     public void actionPerformed(final ActionEvent e) {
         if (dialog == null) {
             dialog = FgGerogaRsDialog.getInstance();
-            dialog.pack();
+            dialog.setSize(980, 690);
         }
 
         StaticSwingTools.centerWindowOnScreen(dialog);

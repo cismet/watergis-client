@@ -17,6 +17,8 @@ import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
+import java.io.File;
+
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -31,11 +33,13 @@ import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.download.FakeFileDownload;
+
 import de.cismet.watergis.gui.dialog.KatasterFlaechenReportDialog;
-import de.cismet.watergis.gui.dialog.KatasterGewaesserReportDialog;
 
 import de.cismet.watergis.reports.KatasterflaechenReport;
 import de.cismet.watergis.reports.types.Flaeche;
@@ -96,7 +100,7 @@ public class KatasterFlaechenReportAction extends AbstractAction {
             StaticSwingTools.showDialog(KatasterFlaechenReportDialog.getInstance());
 
             if (!KatasterFlaechenReportDialog.getInstance().isCancelled()) {
-                final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
+                final WaitingDialogThread<File> wdt = new WaitingDialogThread<File>(
                         StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                         true,
                         // NbBundle.getMessage(SonstigeCheckAction.class,
@@ -107,7 +111,7 @@ public class KatasterFlaechenReportAction extends AbstractAction {
                         true) {
 
                         @Override
-                        protected Boolean doInBackground() throws Exception {
+                        protected File doInBackground() throws Exception {
                             final List<Flaeche> flList = new ArrayList<Flaeche>();
                             final List<Integer> baCdList = new ArrayList<Integer>();
 
@@ -143,7 +147,7 @@ public class KatasterFlaechenReportAction extends AbstractAction {
 
                             if (KatasterFlaechenReportDialog.getInstance().isSelectionGew()) {
                                 for (final FeatureServiceFeature feature
-                                            : KatasterGewaesserReportDialog.getInstance().getSelectedGew()) {
+                                            : KatasterFlaechenReportDialog.getInstance().getSelectedGew()) {
                                     baCdList.add((Integer)feature.getProperty("id"));
                                 }
                             }
@@ -159,15 +163,13 @@ public class KatasterFlaechenReportAction extends AbstractAction {
                                 }
                             }
 
-                            gr.createFlaechenReport(flList.toArray(new Flaeche[flList.size()]), gew);
-
-                            return true;
+                            return gr.createFlaechenReport(flList.toArray(new Flaeche[flList.size()]), gew);
                         }
 
                         @Override
                         protected void done() {
                             try {
-                                get();
+                                DownloadManager.instance().add(new FakeFileDownload(get()));
                             } catch (Exception e) {
                                 LOG.error("Error while performing the gewaesser report.", e);
                             }

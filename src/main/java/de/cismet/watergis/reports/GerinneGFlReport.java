@@ -48,6 +48,7 @@ import de.cismet.cids.custom.watergis.server.search.AllGewGeschlByGeom;
 import de.cismet.cids.server.search.CidsServerSearch;
 
 import de.cismet.watergis.gui.dialog.GerinneGeschlFlaechenReportDialog;
+import de.cismet.watergis.gui.dialog.GerinneGeschlGemeindeReportDialog;
 
 import de.cismet.watergis.reports.types.FeatureDataSource;
 import de.cismet.watergis.reports.types.Flaeche;
@@ -96,9 +97,11 @@ public class GerinneGFlReport {
      * @param   fl   gemId baCd DOCUMENT ME!
      * @param   gew  DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createFlaechenReport(final Flaeche[] fl, final int[] gew) throws Exception {
+    public File createFlaechenReport(final Flaeche[] fl, final int[] gew) throws Exception {
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
 
@@ -236,9 +239,10 @@ public class GerinneGFlReport {
         // BufferedOutputStream pout = new BufferedOutputStream(pfout);
         // JasperExportManager.exportReportToPdfStream(jasperPrint, pout); pout.close();
 
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    GerinneGeschlFlaechenReportDialog.getInstance().getPath()
-                            + "/Flächen.xlsx"));
+        final File file = new File(
+                GerinneGeschlFlaechenReportDialog.getInstance().getPath()
+                        + "/Flächen.xlsx");
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         final JRXlsxExporter exporter = new JRXlsxExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -260,6 +264,8 @@ public class GerinneGFlReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -354,7 +360,9 @@ public class GerinneGFlReport {
                         (Double)f.get(29),
                         (Double)f.get(30),
                         (Double)f.get(31),
-                        (Double)f.get(32)));
+                        (Double)f.get(32),
+                        (String)f.get(33),
+                        (String)f.get(34)));
             }
         }
 
@@ -488,7 +496,7 @@ public class GerinneGFlReport {
                     count += colCount;
                     length += colLength;
 
-                    feature.put(lab, l.get(i).name().toUpperCase());
+                    feature.put(lab, toColumnName(l.get(i)));
                     feature.put(anz, colCount);
                     feature.put(laenge, colLength);
                 }
@@ -621,7 +629,7 @@ public class GerinneGFlReport {
                         count += colCount;
                         length += colLength;
 
-                        feature.put(lab, l.get(i).name().toUpperCase());
+                        feature.put(lab, toColumnName(l.get(i)));
                         feature.put(anz, colCount);
                         feature.put(laenge, colLength);
                     }
@@ -855,7 +863,7 @@ public class GerinneGFlReport {
                         count += colCount;
                         length += colLength;
 
-                        feature.put(lab, l.get(i).name().toUpperCase());
+                        feature.put(lab, toColumnName(l.get(i)));
                         feature.put(anz, colCount);
                         feature.put(laenge, colLength);
                     }
@@ -994,7 +1002,7 @@ public class GerinneGFlReport {
                             count += colCount;
                             length += colLength;
 
-                            feature.put(lab, l.get(i).name().toUpperCase());
+                            feature.put(lab, toColumnName(l.get(i)));
                             feature.put(anz, colCount);
                             feature.put(laenge, colLength);
                         }
@@ -2156,7 +2164,7 @@ public class GerinneGFlReport {
         String art;
 
         if (GerinneGeschlFlaechenReportDialog.getInstance().getArt() == null) {
-            art = "RL / D / DUE";
+            art = "RL / D / Due";
         } else {
             art = null;
             for (final GerinneGeschlFlaechenReportDialog.Art a
@@ -3957,7 +3965,7 @@ public class GerinneGFlReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final String gu, final Integer wdm) {
+    private double getLengthGew(final String gu, final int wdm) {
         double length = 0;
 
         for (final Object gemNr : gemPartMap.keySet()) {
@@ -4001,7 +4009,7 @@ public class GerinneGFlReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGew(final String gu, final Integer wdm) {
+    private int getCountGew(final String gu, final int wdm) {
         int count = 0;
 
         for (final Object gemNr : gemPartMap.keySet()) {
@@ -4056,5 +4064,24 @@ public class GerinneGFlReport {
         }
 
         return km + "+" + mString;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   a  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected String toColumnName(final GerinneGeschlFlaechenReportDialog.Art a) {
+        if (a.equals(GerinneGeschlFlaechenReportDialog.Art.d)) {
+            return "D";
+        } else if (a.equals(GerinneGeschlFlaechenReportDialog.Art.due)) {
+            return "Due";
+        } else if (a.equals(GerinneGeschlFlaechenReportDialog.Art.rl)) {
+            return "RL";
+        } else {
+            return a.name();
+        }
     }
 }

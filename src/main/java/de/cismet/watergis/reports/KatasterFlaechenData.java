@@ -93,12 +93,15 @@ public class KatasterFlaechenData {
         lineMap.put(AllLineObjects.Table.fg_ba_bbef, createDataObjects(AllLineObjects.Table.fg_ba_bbef, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_due, createDataObjects(AllLineObjects.Table.fg_ba_due, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_gb, createDataObjects(AllLineObjects.Table.fg_ba_gb, gew));
+        lineMap.put(AllLineObjects.Table.fg_ba_gmd, createDataObjects(AllLineObjects.Table.fg_ba_gmd, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_leis, createDataObjects(AllLineObjects.Table.fg_ba_leis, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_prof, createDataObjects(AllLineObjects.Table.fg_ba_prof, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_rl, createDataObjects(AllLineObjects.Table.fg_ba_rl, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_sb, createDataObjects(AllLineObjects.Table.fg_ba_sb, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_sbef, createDataObjects(AllLineObjects.Table.fg_ba_sbef, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_tech, createDataObjects(AllLineObjects.Table.fg_ba_tech, gew));
+        lineMap.put(AllLineObjects.Table.fg_ba_doku, createDataObjects(AllLineObjects.Table.fg_ba_doku, gew));
+        lineMap.put(AllLineObjects.Table.fg_ba_proj, createDataObjects(AllLineObjects.Table.fg_ba_proj, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_ubef, createDataObjects(AllLineObjects.Table.fg_ba_ubef, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_ughz, createDataObjects(AllLineObjects.Table.fg_ba_ughz, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_deich, createDataObjects(AllLineObjects.Table.fg_ba_deich, gew));
@@ -112,6 +115,7 @@ public class KatasterFlaechenData {
         pointMap.put(AllPunktObjects.Table.fg_ba_schw, createPointDataObjects(AllPunktObjects.Table.fg_ba_schw, gew));
         pointMap.put(AllPunktObjects.Table.fg_ba_wehr, createPointDataObjects(AllPunktObjects.Table.fg_ba_wehr, gew));
         pointMap.put(AllPunktObjects.Table.fg_ba_ea, createPointDataObjects(AllPunktObjects.Table.fg_ba_ea, gew));
+        pointMap.put(AllPunktObjects.Table.foto, createPointDataObjects(AllPunktObjects.Table.foto, gew));
 
         lineFromPolygonMap.put(LineFromPolygonTable.sg_see, createSee(gew));
         lineFromPolygonMap.put(LineFromPolygonTable.wr_sg_uesg, createSchutzUeber(gew));

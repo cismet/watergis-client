@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="2952" pageHeight="595" orientation="Landscape" columnWidth="2912" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="3652" pageHeight="595" orientation="Landscape" columnWidth="3612" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -58,6 +58,11 @@
 	<parameter name="ughz" class="java.lang.Boolean"/>
 	<parameter name="leis" class="java.lang.Boolean"/>
 	<parameter name="tech" class="java.lang.Boolean"/>
+	<parameter name="gmd" class="java.lang.Boolean"/>
+	<parameter name="foto" class="java.lang.Boolean"/>
+	<parameter name="dok" class="java.lang.Boolean"/>
+	<parameter name="proj" class="java.lang.Boolean"/>
+	<parameter name="datum" class="java.lang.String"/>
 	<field name="gewName" class="java.lang.String"/>
 	<field name="code" class="java.lang.String"/>
 	<field name="gewLaenge" class="java.lang.Double"/>
@@ -76,8 +81,8 @@
 	<field name="pegel_a" class="java.lang.Integer"/>
 	<field name="gb_a" class="java.lang.Integer"/>
 	<field name="gb_l" class="java.lang.Double"/>
-	<field name="sb_a" class="java.lang.Integer"/>
-	<field name="sb_l" class="java.lang.Double"/>
+	<field name="gmd_a" class="java.lang.Integer"/>
+	<field name="gmd_l" class="java.lang.Double"/>
 	<field name="prof_a" class="java.lang.Integer"/>
 	<field name="prof_l" class="java.lang.Double"/>
 	<field name="sbef_a" class="java.lang.Integer"/>
@@ -117,6 +122,14 @@
 	<field name="anzahlGew" class="java.lang.Integer"/>
 	<field name="guName" class="java.lang.String"/>
 	<field name="gu" class="java.lang.String"/>
+	<field name="foto_a" class="java.lang.Integer"/>
+	<field name="dok_a" class="java.lang.Integer"/>
+	<field name="dok_l" class="java.lang.Double"/>
+	<field name="proj_a" class="java.lang.Integer"/>
+	<field name="proj_l" class="java.lang.Double"/>
+	<field name="von" class="java.lang.String"/>
+	<field name="bis" class="java.lang.String"/>
+	<field name="teil" class="java.lang.String"/>
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
 	</variable>
@@ -126,23 +139,23 @@
 	<group name="GewaesserGroup" isStartNewPage="true" keepTogether="true">
 		<groupExpression><![CDATA[$F{group}]]></groupExpression>
 		<groupHeader>
-			<band height="56">
+			<band height="70">
 				<textField>
-					<reportElement style="column_header_style" mode="Opaque" x="0" y="0" width="724" height="14" backcolor="#FDFD00" uuid="64c87194-d531-463b-9e7a-0122fa0241e5"/>
+					<reportElement style="column_header_style" mode="Opaque" x="0" y="0" width="871" height="14" backcolor="#FDFD00" uuid="64c87194-d531-463b-9e7a-0122fa0241e5"/>
 					<box leftPadding="5">
 						<pen lineWidth="0.25"/>
 						<topPen lineWidth="0.25"/>
 						<leftPen lineWidth="0.25"/>
 						<bottomPen lineWidth="0.25"/>
-						<rightPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Statistik Gewässer / Schaubezirke / GU: " + $F{guName}  + " " + $F{widmung} + " " + $F{sb} + " " + $F{sbName} + ": Anzahl: " + $F{anzahlGew}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Statistik Gewässer / Schaubezirke / GU: " + $F{guName}  + " " + $F{widmung} + " " + $F{sb} + " " + $F{sbName} + ": Anzahl Gewässer: " + $F{anzahlGew}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="160" y="42" width="233" height="14" backcolor="#D8D8D8" uuid="c0a5fa37-7b48-4a19-9e30-d2f6f17ae6ad"/>
+					<reportElement style="column_header_style" mode="Opaque" x="160" y="56" width="233" height="14" backcolor="#D8D8D8" uuid="c0a5fa37-7b48-4a19-9e30-d2f6f17ae6ad"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -150,7 +163,7 @@
 					<text><![CDATA[Name]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="393" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="fb86c1fc-fc90-4e80-ad85-5993b0bec0f0"/>
+					<reportElement style="column_header_style" mode="Opaque" x="491" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="fb86c1fc-fc90-4e80-ad85-5993b0bec0f0"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -158,7 +171,7 @@
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="0" y="14" width="442" height="28" backcolor="#BFBFBF" uuid="62270c9e-bf74-4347-abeb-35dda11df187"/>
+					<reportElement style="column_header_style" mode="Opaque" x="0" y="28" width="589" height="28" backcolor="#BFBFBF" uuid="62270c9e-bf74-4347-abeb-35dda11df187"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -166,7 +179,7 @@
 					<text><![CDATA[Gewässer]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="442" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="c0fd1a37-2183-4ea6-b3a7-c502f8171eff"/>
+					<reportElement style="column_header_style" mode="Opaque" x="589" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="c0fd1a37-2183-4ea6-b3a7-c502f8171eff"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -175,7 +188,7 @@
 Abschnitte]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="442" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="3a6a75b8-a41a-4b7a-a352-e51691e89002"/>
+					<reportElement style="column_header_style" mode="Opaque" x="589" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="3a6a75b8-a41a-4b7a-a352-e51691e89002"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -183,7 +196,7 @@ Abschnitte]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="487" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="192d8a41-dc31-4529-8af0-20cfd1d27ab4"/>
+					<reportElement style="column_header_style" mode="Opaque" x="634" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="192d8a41-dc31-4529-8af0-20cfd1d27ab4"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -191,7 +204,7 @@ Abschnitte]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="536" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="c4ac5291-8d16-4333-a361-9fa4d269e029"/>
+					<reportElement style="column_header_style" mode="Opaque" x="683" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="c4ac5291-8d16-4333-a361-9fa4d269e029"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -199,7 +212,7 @@ Abschnitte]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="581" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="4fe534bc-ee51-4f8f-943c-4c19668e265d"/>
+					<reportElement style="column_header_style" mode="Opaque" x="728" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="4fe534bc-ee51-4f8f-943c-4c19668e265d"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -207,7 +220,7 @@ Abschnitte]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="536" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="e5f0a477-5244-4f7f-8985-85e2f2dab90d"/>
+					<reportElement style="column_header_style" mode="Opaque" x="683" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="e5f0a477-5244-4f7f-8985-85e2f2dab90d"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -216,7 +229,7 @@ Abschnitte]]></text>
 (lt. GU)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="630" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="bf837177-6318-48f8-aa88-18e8647729f0"/>
+					<reportElement style="column_header_style" mode="Opaque" x="777" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="bf837177-6318-48f8-aa88-18e8647729f0"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -224,16 +237,20 @@ Abschnitte]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="675" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="54d18d21-5303-4b45-a07d-82377d862cd3"/>
-					<box leftPadding="2" rightPadding="2"/>
+					<reportElement style="column_header_style" mode="Opaque" x="822" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="54d18d21-5303-4b45-a07d-82377d862cd3"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="630" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="c579b362-05c8-46bd-8d46-b1ac5055bf36"/>
-					<box leftPadding="2" rightPadding="2"/>
+					<reportElement style="column_header_style" mode="Opaque" x="777" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="c579b362-05c8-46bd-8d46-b1ac5055bf36"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					</textElement>
@@ -241,7 +258,7 @@ Abschnitte]]></text>
 Abschnitte]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="724" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="0babe4df-b69b-43db-8a96-492e0e09617c">
+					<reportElement style="column_header_style" mode="Opaque" x="871" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="0babe4df-b69b-43db-8a96-492e0e09617c">
 						<printWhenExpression><![CDATA[$P{wasserschutz}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -252,7 +269,7 @@ Abschnitte]]></text>
 gebiete]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="769" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="1f958ae2-5372-4dce-bf66-a5267f0b130e">
+					<reportElement style="column_header_style" mode="Opaque" x="916" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="1f958ae2-5372-4dce-bf66-a5267f0b130e">
 						<printWhenExpression><![CDATA[$P{wasserschutz}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -262,7 +279,7 @@ gebiete]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="724" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="9a5e24a4-64f2-481c-bf8c-f9a9fe8ee203">
+					<reportElement style="column_header_style" mode="Opaque" x="871" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="9a5e24a4-64f2-481c-bf8c-f9a9fe8ee203">
 						<printWhenExpression><![CDATA[$P{wasserschutz}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -272,7 +289,7 @@ gebiete]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="724" y="0" width="94" height="14" backcolor="#FDFD00" uuid="9a650bcf-5fba-41f2-9abd-4e207b3590e0">
+					<reportElement style="column_header_style" mode="Opaque" x="871" y="0" width="94" height="14" backcolor="#FDFD00" uuid="9a650bcf-5fba-41f2-9abd-4e207b3590e0">
 						<printWhenExpression><![CDATA[$P{wasserschutz}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -287,7 +304,7 @@ gebiete]]></text>
 					</textElement>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="818" y="0" width="94" height="14" backcolor="#FDFD00" uuid="1553ad1d-af73-4728-818a-09d56f424d31">
+					<reportElement style="column_header_style" mode="Opaque" x="965" y="0" width="94" height="14" backcolor="#FDFD00" uuid="1553ad1d-af73-4728-818a-09d56f424d31">
 						<printWhenExpression><![CDATA[$P{ueber}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -302,7 +319,7 @@ gebiete]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="818" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="8a1f1873-e430-488c-9e02-109bfaeabff4">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="965" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="8a1f1873-e430-488c-9e02-109bfaeabff4">
 						<printWhenExpression><![CDATA[$P{ueber}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -313,7 +330,7 @@ gebiete]]></text>
 mungsgebiete]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="818" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="fede0a22-18a2-4300-b67a-6dc11748f0c6">
+					<reportElement style="column_header_style" mode="Opaque" x="965" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="fede0a22-18a2-4300-b67a-6dc11748f0c6">
 						<printWhenExpression><![CDATA[$P{ueber}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -323,7 +340,7 @@ mungsgebiete]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="863" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="e55247d8-8cfa-49b1-afe9-86446933cfff">
+					<reportElement style="column_header_style" mode="Opaque" x="1010" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="e55247d8-8cfa-49b1-afe9-86446933cfff">
 						<printWhenExpression><![CDATA[$P{ueber}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -333,7 +350,7 @@ mungsgebiete]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1140" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="5f919ea3-2f92-4aaa-99f9-577d5ddd6a89">
+					<reportElement style="column_header_style" mode="Opaque" x="1381" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="5f919ea3-2f92-4aaa-99f9-577d5ddd6a89">
 						<printWhenExpression><![CDATA[$P{gb}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -343,18 +360,20 @@ mungsgebiete]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1185" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="8d2032cb-f12b-4b6b-83f1-194888ff8288">
+					<reportElement style="column_header_style" mode="Opaque" x="1426" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="8d2032cb-f12b-4b6b-83f1-194888ff8288">
 						<printWhenExpression><![CDATA[$P{gb}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1234" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="399c9303-09f3-4d45-add8-167bb69a530c">
-						<printWhenExpression><![CDATA[$P{sb}]]></printWhenExpression>
+					<reportElement style="column_header_style" mode="Opaque" x="1287" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="399c9303-09f3-4d45-add8-167bb69a530c">
+						<printWhenExpression><![CDATA[$P{gmd}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -363,8 +382,8 @@ mungsgebiete]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1279" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="d991d3aa-8ca0-4313-9008-82a24acddbe0">
-						<printWhenExpression><![CDATA[$P{sb}]]></printWhenExpression>
+					<reportElement style="column_header_style" mode="Opaque" x="1332" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="d991d3aa-8ca0-4313-9008-82a24acddbe0">
+						<printWhenExpression><![CDATA[$P{gmd}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -373,10 +392,12 @@ mungsgebiete]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1140" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="13364fd9-9e4f-4fbc-bb01-13969775a820">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1381" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="13364fd9-9e4f-4fbc-bb01-13969775a820">
 						<printWhenExpression><![CDATA[$P{gb}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					</textElement>
@@ -384,17 +405,17 @@ mungsgebiete]]></text>
 behörden]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1234" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="47485858-afc6-462d-b920-fb69f7f3c2ff">
-						<printWhenExpression><![CDATA[$P{sb}]]></printWhenExpression>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1287" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="47485858-afc6-462d-b920-fb69f7f3c2ff">
+						<printWhenExpression><![CDATA[$P{gmd}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					</textElement>
-					<text><![CDATA[Schaubezirke]]></text>
+					<text><![CDATA[Gemeinden]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1140" y="0" width="94" height="14" backcolor="#FDFD00" uuid="8978f486-4d64-4c50-ae58-80f21fd82172">
+					<reportElement style="column_header_style" mode="Opaque" x="1381" y="0" width="94" height="14" backcolor="#FDFD00" uuid="8978f486-4d64-4c50-ae58-80f21fd82172">
 						<printWhenExpression><![CDATA[$P{gb}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -409,8 +430,8 @@ behörden]]></text>
 					</textElement>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1234" y="0" width="94" height="14" backcolor="#FDFD00" uuid="4e301ee7-6527-43cc-8126-c4327f9c63ba">
-						<printWhenExpression><![CDATA[$P{sb}]]></printWhenExpression>
+					<reportElement style="column_header_style" mode="Opaque" x="1287" y="0" width="94" height="14" backcolor="#FDFD00" uuid="4e301ee7-6527-43cc-8126-c4327f9c63ba">
+						<printWhenExpression><![CDATA[$P{gmd}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
 						<pen lineWidth="0.25"/>
@@ -424,7 +445,7 @@ behörden]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1373" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="b021db63-3af4-450c-8815-f4c32ce63656">
+					<reportElement style="column_header_style" mode="Opaque" x="1520" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="b021db63-3af4-450c-8815-f4c32ce63656">
 						<printWhenExpression><![CDATA[$P{prof}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -434,7 +455,7 @@ behörden]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1328" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="4a3f0fcd-6600-492c-a70f-1c3fce10c809">
+					<reportElement style="column_header_style" mode="Opaque" x="1475" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="4a3f0fcd-6600-492c-a70f-1c3fce10c809">
 						<printWhenExpression><![CDATA[$P{prof}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -444,7 +465,7 @@ behörden]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1328" y="0" width="94" height="14" backcolor="#FDFD00" uuid="d28c1bc3-9c96-4279-a42e-b4142e46a65f">
+					<reportElement style="column_header_style" mode="Opaque" x="1475" y="0" width="94" height="14" backcolor="#FDFD00" uuid="d28c1bc3-9c96-4279-a42e-b4142e46a65f">
 						<printWhenExpression><![CDATA[$P{prof}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -459,7 +480,7 @@ behörden]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1328" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="3249d4d3-168e-452a-a75c-5e21f0ff1cbb">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1475" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="3249d4d3-168e-452a-a75c-5e21f0ff1cbb">
 						<printWhenExpression><![CDATA[$P{prof}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -469,7 +490,7 @@ behörden]]></text>
 					<text><![CDATA[Profile]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="988" y="14" width="76" height="28" backcolor="#BFBFBF" uuid="2dd75d97-ea39-4584-9a1e-ac07589d3dc6">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1135" y="28" width="76" height="28" backcolor="#BFBFBF" uuid="2dd75d97-ea39-4584-9a1e-ac07589d3dc6">
 						<printWhenExpression><![CDATA[$P{aus}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -480,7 +501,7 @@ behörden]]></text>
 Ausbau]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="988" y="0" width="76" height="14" backcolor="#FDFD00" uuid="abce943d-a011-4a59-8fb6-79c2d1e1f810">
+					<reportElement style="column_header_style" mode="Opaque" x="1135" y="0" width="76" height="14" backcolor="#FDFD00" uuid="abce943d-a011-4a59-8fb6-79c2d1e1f810">
 						<printWhenExpression><![CDATA[$P{aus}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -495,7 +516,7 @@ Ausbau]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="988" y="42" width="76" height="14" backcolor="#D8D8D8" uuid="11870a89-0133-47b6-a322-f5eaa8ae94da">
+					<reportElement style="column_header_style" mode="Opaque" x="1135" y="56" width="76" height="14" backcolor="#D8D8D8" uuid="11870a89-0133-47b6-a322-f5eaa8ae94da">
 						<printWhenExpression><![CDATA[$P{aus}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -505,27 +526,31 @@ Ausbau]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1064" y="42" width="76" height="14" backcolor="#D8D8D8" uuid="7e56bd94-4afc-40c5-8a1e-6d8c4c7cbc3f">
+					<reportElement style="column_header_style" mode="Opaque" x="1211" y="56" width="76" height="14" backcolor="#D8D8D8" uuid="7e56bd94-4afc-40c5-8a1e-6d8c4c7cbc3f">
 						<printWhenExpression><![CDATA[$P{pegel}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1064" y="14" width="76" height="28" backcolor="#BFBFBF" uuid="6a3ad7a2-7e10-4f82-a0e5-54263fbb5622">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1211" y="28" width="76" height="28" backcolor="#BFBFBF" uuid="6a3ad7a2-7e10-4f82-a0e5-54263fbb5622">
 						<printWhenExpression><![CDATA[$P{pegel}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Pegel]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1064" y="0" width="76" height="14" backcolor="#FDFD00" uuid="f1f16f85-07e1-4f4a-9ee9-c432b1f713ad">
+					<reportElement style="column_header_style" mode="Opaque" x="1211" y="0" width="76" height="14" backcolor="#FDFD00" uuid="f1f16f85-07e1-4f4a-9ee9-c432b1f713ad">
 						<printWhenExpression><![CDATA[$P{pegel}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -540,7 +565,7 @@ Ausbau]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="912" y="42" width="76" height="14" backcolor="#D8D8D8" uuid="3cd336f6-048c-4c4b-93a3-82fd5f42d79a">
+					<reportElement style="column_header_style" mode="Opaque" x="1059" y="56" width="76" height="14" backcolor="#D8D8D8" uuid="3cd336f6-048c-4c4b-93a3-82fd5f42d79a">
 						<printWhenExpression><![CDATA[$P{ben}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -550,7 +575,7 @@ Ausbau]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="912" y="14" width="76" height="28" backcolor="#BFBFBF" uuid="8e08870b-1478-42af-8f77-e23387c09451">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1059" y="28" width="76" height="28" backcolor="#BFBFBF" uuid="8e08870b-1478-42af-8f77-e23387c09451">
 						<printWhenExpression><![CDATA[$P{ben}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -561,7 +586,7 @@ Ausbau]]></text>
 Benutzungen]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="912" y="0" width="76" height="14" backcolor="#FDFD00" uuid="681ad651-670c-493c-98b9-bc4bdfd92e10">
+					<reportElement style="column_header_style" mode="Opaque" x="1059" y="0" width="76" height="14" backcolor="#FDFD00" uuid="681ad651-670c-493c-98b9-bc4bdfd92e10">
 						<printWhenExpression><![CDATA[$P{ben}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -576,7 +601,7 @@ Benutzungen]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1467" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="d8dd892a-fee6-4d22-affe-1a7bc4d6f0c1">
+					<reportElement style="column_header_style" mode="Opaque" x="1614" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="d8dd892a-fee6-4d22-affe-1a7bc4d6f0c1">
 						<printWhenExpression><![CDATA[$P{sbef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -586,7 +611,7 @@ Benutzungen]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1422" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="b3abff09-02a7-4361-8447-ccd2d60e31d6">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1569" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="b3abff09-02a7-4361-8447-ccd2d60e31d6">
 						<printWhenExpression><![CDATA[$P{sbef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -594,10 +619,10 @@ Benutzungen]]></text>
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Sohl-
-befestigung]]></text>
+befestigungen]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1422" y="0" width="94" height="14" backcolor="#FDFD00" uuid="d0626d4c-2a00-4e87-b6a3-d52894389d21">
+					<reportElement style="column_header_style" mode="Opaque" x="1569" y="0" width="94" height="14" backcolor="#FDFD00" uuid="d0626d4c-2a00-4e87-b6a3-d52894389d21">
 						<printWhenExpression><![CDATA[$P{sbef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -612,7 +637,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1422" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="03ff1fc1-ac07-4982-83ee-ee4e080b6c04">
+					<reportElement style="column_header_style" mode="Opaque" x="1569" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="03ff1fc1-ac07-4982-83ee-ee4e080b6c04">
 						<printWhenExpression><![CDATA[$P{sbef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -622,7 +647,7 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1561" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="683dbe7a-3388-4066-b9d0-0a619948cb35">
+					<reportElement style="column_header_style" mode="Opaque" x="1708" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="683dbe7a-3388-4066-b9d0-0a619948cb35">
 						<printWhenExpression><![CDATA[$P{ubef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -632,7 +657,7 @@ befestigung]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1516" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="9965453d-9bef-4938-89c1-f8752042eced">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1663" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="9965453d-9bef-4938-89c1-f8752042eced">
 						<printWhenExpression><![CDATA[$P{ubef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -640,10 +665,10 @@ befestigung]]></text>
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Ufer-
-befestigung]]></text>
+befestigungen]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1516" y="0" width="94" height="14" backcolor="#FDFD00" uuid="76afa58b-1c64-4d38-a85a-2431f4c1229c">
+					<reportElement style="column_header_style" mode="Opaque" x="1663" y="0" width="94" height="14" backcolor="#FDFD00" uuid="76afa58b-1c64-4d38-a85a-2431f4c1229c">
 						<printWhenExpression><![CDATA[$P{ubef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -658,7 +683,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1516" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="b4173530-75ce-4824-a058-41fbc8b9a38e">
+					<reportElement style="column_header_style" mode="Opaque" x="1663" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="b4173530-75ce-4824-a058-41fbc8b9a38e">
 						<printWhenExpression><![CDATA[$P{ubef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -668,28 +693,32 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1655" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="6310b8c2-a4ff-4a17-b294-ff6e9d03d088">
+					<reportElement style="column_header_style" mode="Opaque" x="1802" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="6310b8c2-a4ff-4a17-b294-ff6e9d03d088">
 						<printWhenExpression><![CDATA[$P{bbef}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1610" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="18b4f1a4-08b3-4692-b7f9-2c748521ca36">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1757" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="18b4f1a4-08b3-4692-b7f9-2c748521ca36">
 						<printWhenExpression><![CDATA[$P{bbef}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Böschungs-
-befestigung]]></text>
+befestigungen]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1610" y="0" width="94" height="14" backcolor="#FDFD00" uuid="800b446e-591c-45d1-b16f-c594518c36b8">
+					<reportElement style="column_header_style" mode="Opaque" x="1757" y="0" width="94" height="14" backcolor="#FDFD00" uuid="800b446e-591c-45d1-b16f-c594518c36b8">
 						<printWhenExpression><![CDATA[$P{bbef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -704,7 +733,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1610" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="275450a3-1527-4a92-b4f8-3a33e0eb19db">
+					<reportElement style="column_header_style" mode="Opaque" x="1757" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="275450a3-1527-4a92-b4f8-3a33e0eb19db">
 						<printWhenExpression><![CDATA[$P{bbef}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -714,7 +743,7 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1843" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="581f9b3a-92da-4cfb-a87d-5936bce0bf61">
+					<reportElement style="column_header_style" mode="Opaque" x="1990" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="581f9b3a-92da-4cfb-a87d-5936bce0bf61">
 						<printWhenExpression><![CDATA[$P{d}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -724,7 +753,7 @@ befestigung]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1798" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="a4f7a437-5247-48d9-9839-84bd4f5c3a7f">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1945" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="a4f7a437-5247-48d9-9839-84bd4f5c3a7f">
 						<printWhenExpression><![CDATA[$P{d}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -734,7 +763,7 @@ befestigung]]></text>
 					<text><![CDATA[Durchlässe]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1798" y="0" width="94" height="14" backcolor="#FDFD00" uuid="71db065f-ef31-4650-9ad9-f0768cbc0d3a">
+					<reportElement style="column_header_style" mode="Opaque" x="1945" y="0" width="94" height="14" backcolor="#FDFD00" uuid="71db065f-ef31-4650-9ad9-f0768cbc0d3a">
 						<printWhenExpression><![CDATA[$P{d}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -749,7 +778,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1798" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="dc828aee-7c71-434a-ba8c-ba7aeb40842c">
+					<reportElement style="column_header_style" mode="Opaque" x="1945" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="dc828aee-7c71-434a-ba8c-ba7aeb40842c">
 						<printWhenExpression><![CDATA[$P{d}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -759,27 +788,31 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1937" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="c86e2530-c32f-4a54-9987-fcbd14ecdd5c">
+					<reportElement style="column_header_style" mode="Opaque" x="2084" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="c86e2530-c32f-4a54-9987-fcbd14ecdd5c">
 						<printWhenExpression><![CDATA[$P{due}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1892" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="fa0bc468-75f8-46e8-b904-4fe97470891c">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2039" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="fa0bc468-75f8-46e8-b904-4fe97470891c">
 						<printWhenExpression><![CDATA[$P{due}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					</textElement>
-					<text><![CDATA[Dücker]]></text>
+					<text><![CDATA[Düker]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1892" y="0" width="94" height="14" backcolor="#FDFD00" uuid="93aa77a7-e5a1-4e56-ba7a-9051682035c0">
+					<reportElement style="column_header_style" mode="Opaque" x="2039" y="0" width="94" height="14" backcolor="#FDFD00" uuid="93aa77a7-e5a1-4e56-ba7a-9051682035c0">
 						<printWhenExpression><![CDATA[$P{due}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -794,7 +827,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1892" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="74d067b9-fd68-4b2a-b26d-59873f8dab05">
+					<reportElement style="column_header_style" mode="Opaque" x="2039" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="74d067b9-fd68-4b2a-b26d-59873f8dab05">
 						<printWhenExpression><![CDATA[$P{due}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -804,7 +837,7 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2290" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="2d544cd8-7285-416f-b802-75807869b604">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2437" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="2d544cd8-7285-416f-b802-75807869b604">
 						<printWhenExpression><![CDATA[$P{anll}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -815,7 +848,7 @@ befestigung]]></text>
 (L)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2290" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="57963c06-fda3-4829-a969-8838a0923f69">
+					<reportElement style="column_header_style" mode="Opaque" x="2437" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="57963c06-fda3-4829-a969-8838a0923f69">
 						<printWhenExpression><![CDATA[$P{anll}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -825,7 +858,7 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2290" y="0" width="94" height="14" backcolor="#FDFD00" uuid="288d0808-2498-4733-8b4c-58c6dab68b3c">
+					<reportElement style="column_header_style" mode="Opaque" x="2437" y="0" width="94" height="14" backcolor="#FDFD00" uuid="288d0808-2498-4733-8b4c-58c6dab68b3c">
 						<printWhenExpression><![CDATA[$P{anll}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -840,7 +873,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2335" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="27c2c65f-2dbd-4b65-b023-292228c690e8">
+					<reportElement style="column_header_style" mode="Opaque" x="2482" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="27c2c65f-2dbd-4b65-b023-292228c690e8">
 						<printWhenExpression><![CDATA[$P{anll}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -850,7 +883,7 @@ befestigung]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1986" y="42" width="76" height="14" backcolor="#D8D8D8" uuid="85177f73-565c-4f70-adbd-109ab1ab044f">
+					<reportElement style="column_header_style" mode="Opaque" x="2133" y="56" width="76" height="14" backcolor="#D8D8D8" uuid="85177f73-565c-4f70-adbd-109ab1ab044f">
 						<printWhenExpression><![CDATA[$P{scha}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -860,7 +893,7 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1986" y="14" width="76" height="28" backcolor="#BFBFBF" uuid="5a7cb485-2346-4453-8367-138433c6dd1d">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2133" y="28" width="76" height="28" backcolor="#BFBFBF" uuid="5a7cb485-2346-4453-8367-138433c6dd1d">
 						<printWhenExpression><![CDATA[$P{scha}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -870,7 +903,7 @@ befestigung]]></text>
 					<text><![CDATA[Schächte]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1986" y="0" width="76" height="14" backcolor="#FDFD00" uuid="c5ee5aee-8057-4024-8908-fce1d46d2a84">
+					<reportElement style="column_header_style" mode="Opaque" x="2133" y="0" width="76" height="14" backcolor="#FDFD00" uuid="c5ee5aee-8057-4024-8908-fce1d46d2a84">
 						<printWhenExpression><![CDATA[$P{scha}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -885,7 +918,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2062" y="42" width="76" height="14" backcolor="#D8D8D8" uuid="8744c6f9-6a3c-4b94-93b7-32e2328342a6">
+					<reportElement style="column_header_style" mode="Opaque" x="2209" y="56" width="76" height="14" backcolor="#D8D8D8" uuid="8744c6f9-6a3c-4b94-93b7-32e2328342a6">
 						<printWhenExpression><![CDATA[$P{wehr}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -895,7 +928,7 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2062" y="14" width="76" height="28" backcolor="#BFBFBF" uuid="b7a28d7c-07a6-4e65-951e-7247f530e1d2">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2209" y="28" width="76" height="28" backcolor="#BFBFBF" uuid="b7a28d7c-07a6-4e65-951e-7247f530e1d2">
 						<printWhenExpression><![CDATA[$P{wehr}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -905,7 +938,7 @@ befestigung]]></text>
 					<text><![CDATA[Wehre]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2062" y="0" width="76" height="14" backcolor="#FDFD00" uuid="3a074a56-ca54-4aa3-abce-d9a904c7660e">
+					<reportElement style="column_header_style" mode="Opaque" x="2209" y="0" width="76" height="14" backcolor="#FDFD00" uuid="3a074a56-ca54-4aa3-abce-d9a904c7660e">
 						<printWhenExpression><![CDATA[$P{wehr}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -920,7 +953,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2138" y="42" width="76" height="14" backcolor="#D8D8D8" uuid="15f62baa-c8e3-45d0-bc3c-d29292fcf4f0">
+					<reportElement style="column_header_style" mode="Opaque" x="2285" y="56" width="76" height="14" backcolor="#D8D8D8" uuid="15f62baa-c8e3-45d0-bc3c-d29292fcf4f0">
 						<printWhenExpression><![CDATA[$P{schw}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -930,7 +963,7 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2138" y="14" width="76" height="28" backcolor="#BFBFBF" uuid="f1d81fce-5a70-4bdf-ac0f-e0c6651dd173">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2285" y="28" width="76" height="28" backcolor="#BFBFBF" uuid="f1d81fce-5a70-4bdf-ac0f-e0c6651dd173">
 						<printWhenExpression><![CDATA[$P{schw}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -940,7 +973,7 @@ befestigung]]></text>
 					<text><![CDATA[Schöpfwerke]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2138" y="0" width="76" height="14" backcolor="#FDFD00" uuid="b76e5638-4cc3-4cc9-b421-8f99d91d115d">
+					<reportElement style="column_header_style" mode="Opaque" x="2285" y="0" width="76" height="14" backcolor="#FDFD00" uuid="b76e5638-4cc3-4cc9-b421-8f99d91d115d">
 						<printWhenExpression><![CDATA[$P{schw}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -955,7 +988,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2214" y="0" width="76" height="14" backcolor="#FDFD00" uuid="062f233b-2e30-4f2d-8bb3-7d62863ef4e2">
+					<reportElement style="column_header_style" mode="Opaque" x="2361" y="0" width="76" height="14" backcolor="#FDFD00" uuid="062f233b-2e30-4f2d-8bb3-7d62863ef4e2">
 						<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -970,7 +1003,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2214" y="42" width="76" height="14" backcolor="#D8D8D8" uuid="65911bba-21a8-428f-a421-ed3edaeddedb">
+					<reportElement style="column_header_style" mode="Opaque" x="2361" y="56" width="76" height="14" backcolor="#D8D8D8" uuid="65911bba-21a8-428f-a421-ed3edaeddedb">
 						<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -980,7 +1013,7 @@ befestigung]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2214" y="14" width="76" height="28" backcolor="#BFBFBF" uuid="987a8772-e6b9-4b45-a519-2d71aa2aa7e5">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2361" y="28" width="76" height="28" backcolor="#BFBFBF" uuid="987a8772-e6b9-4b45-a519-2d71aa2aa7e5">
 						<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -991,7 +1024,7 @@ befestigung]]></text>
 (P)]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="1704" y="0" width="94" height="14" backcolor="#FDFD00" uuid="db14c225-3029-4782-8e6f-dd7680e0f883">
+					<reportElement style="column_header_style" mode="Opaque" x="1851" y="0" width="94" height="14" backcolor="#FDFD00" uuid="db14c225-3029-4782-8e6f-dd7680e0f883">
 						<printWhenExpression><![CDATA[$P{rl}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -1006,7 +1039,7 @@ befestigung]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1704" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="0990a5e6-2461-43a9-9cb7-1e4564028636">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="1851" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="0990a5e6-2461-43a9-9cb7-1e4564028636">
 						<printWhenExpression><![CDATA[$P{rl}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1017,7 +1050,7 @@ befestigung]]></text>
 leitungen]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1704" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="f7d31b7a-5afe-4668-9235-4ca1210162aa">
+					<reportElement style="column_header_style" mode="Opaque" x="1851" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="f7d31b7a-5afe-4668-9235-4ca1210162aa">
 						<printWhenExpression><![CDATA[$P{rl}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1027,7 +1060,7 @@ leitungen]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="1749" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="2e891677-99b0-4fe4-b84a-64b829468476">
+					<reportElement style="column_header_style" mode="Opaque" x="1896" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="2e891677-99b0-4fe4-b84a-64b829468476">
 						<printWhenExpression><![CDATA[$P{rl}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1037,7 +1070,7 @@ leitungen]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2384" y="14" width="76" height="28" backcolor="#BFBFBF" uuid="cd565130-634f-4a7b-a61d-baf318aefbcc">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2531" y="28" width="76" height="28" backcolor="#BFBFBF" uuid="cd565130-634f-4a7b-a61d-baf318aefbcc">
 						<printWhenExpression><![CDATA[$P{kr}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1047,7 +1080,7 @@ leitungen]]></text>
 					<text><![CDATA[Kreuzungen]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2384" y="0" width="76" height="14" backcolor="#FDFD00" uuid="13c50ecd-b046-498a-8b12-6817f24bd96e">
+					<reportElement style="column_header_style" mode="Opaque" x="2531" y="0" width="76" height="14" backcolor="#FDFD00" uuid="13c50ecd-b046-498a-8b12-6817f24bd96e">
 						<printWhenExpression><![CDATA[$P{kr}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -1062,7 +1095,7 @@ leitungen]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2384" y="42" width="76" height="14" backcolor="#D8D8D8" uuid="d868847d-fab1-4d3c-9276-ddac0f7aea88">
+					<reportElement style="column_header_style" mode="Opaque" x="2531" y="56" width="76" height="14" backcolor="#D8D8D8" uuid="d868847d-fab1-4d3c-9276-ddac0f7aea88">
 						<printWhenExpression><![CDATA[$P{kr}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1072,10 +1105,12 @@ leitungen]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2460" y="14" width="76" height="28" backcolor="#BFBFBF" uuid="6901f056-83c0-45de-acc3-087117282f31">
-						<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2607" y="28" width="76" height="28" backcolor="#BFBFBF" uuid="6901f056-83c0-45de-acc3-087117282f31">
+						<printWhenExpression><![CDATA[$P{ea}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					</textElement>
@@ -1083,7 +1118,7 @@ leitungen]]></text>
 leitungen]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2460" y="0" width="76" height="14" backcolor="#FDFD00" uuid="2649b45a-ba0c-406a-aa7a-c643525bb389">
+					<reportElement style="column_header_style" mode="Opaque" x="2607" y="0" width="76" height="14" backcolor="#FDFD00" uuid="2649b45a-ba0c-406a-aa7a-c643525bb389">
 						<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -1098,17 +1133,19 @@ leitungen]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2460" y="42" width="76" height="14" backcolor="#D8D8D8" uuid="d6062d63-10c5-4ec4-bc8e-6267199f66e7">
-						<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
+					<reportElement style="column_header_style" mode="Opaque" x="2607" y="56" width="76" height="14" backcolor="#D8D8D8" uuid="d6062d63-10c5-4ec4-bc8e-6267199f66e7">
+						<printWhenExpression><![CDATA[$P{ea}]]></printWhenExpression>
 					</reportElement>
-					<box leftPadding="2" rightPadding="2"/>
+					<box leftPadding="2" rightPadding="2">
+						<rightPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2581" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="c8538a15-6347-47a3-8808-7aa234e43176">
+					<reportElement style="column_header_style" mode="Opaque" x="2728" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="c8538a15-6347-47a3-8808-7aa234e43176">
 						<printWhenExpression><![CDATA[$P{deich}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1118,7 +1155,7 @@ leitungen]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2536" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="f371561b-2abb-40a2-854e-26ef39b48fc7">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2683" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="f371561b-2abb-40a2-854e-26ef39b48fc7">
 						<printWhenExpression><![CDATA[$P{deich}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1128,7 +1165,7 @@ leitungen]]></text>
 					<text><![CDATA[Deiche]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2536" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="d876a0ae-d709-4717-88df-4c18cf14d7ed">
+					<reportElement style="column_header_style" mode="Opaque" x="2683" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="d876a0ae-d709-4717-88df-4c18cf14d7ed">
 						<printWhenExpression><![CDATA[$P{deich}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1138,7 +1175,7 @@ leitungen]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2536" y="0" width="94" height="14" backcolor="#FDFD00" uuid="5b0be2f9-1f4e-479b-b2e1-6169e2ef4a9c">
+					<reportElement style="column_header_style" mode="Opaque" x="2683" y="0" width="94" height="14" backcolor="#FDFD00" uuid="5b0be2f9-1f4e-479b-b2e1-6169e2ef4a9c">
 						<printWhenExpression><![CDATA[$P{deich}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -1153,7 +1190,7 @@ leitungen]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2675" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="60badef1-65b0-41c0-81a1-862774fcf45a">
+					<reportElement style="column_header_style" mode="Opaque" x="2867" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="60badef1-65b0-41c0-81a1-862774fcf45a">
 						<printWhenExpression><![CDATA[$P{ughz}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1163,7 +1200,7 @@ leitungen]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2630" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="af1fc0e3-d012-4447-b27b-9cc96d6486e2">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2822" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="af1fc0e3-d012-4447-b27b-9cc96d6486e2">
 						<printWhenExpression><![CDATA[$P{ughz}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1173,7 +1210,7 @@ leitungen]]></text>
 					<text><![CDATA[Ufergehölze]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2630" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="0e41aa00-0515-4177-8109-7b537f89d39e">
+					<reportElement style="column_header_style" mode="Opaque" x="2822" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="0e41aa00-0515-4177-8109-7b537f89d39e">
 						<printWhenExpression><![CDATA[$P{ughz}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1183,7 +1220,7 @@ leitungen]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2630" y="0" width="94" height="14" backcolor="#FDFD00" uuid="27766e15-6d34-4983-b75d-31e2c8669486">
+					<reportElement style="column_header_style" mode="Opaque" x="2822" y="0" width="94" height="14" backcolor="#FDFD00" uuid="27766e15-6d34-4983-b75d-31e2c8669486">
 						<printWhenExpression><![CDATA[$P{ughz}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -1198,7 +1235,7 @@ leitungen]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2769" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="04a3672e-a224-4c8e-ac3a-c62a9e9375ba">
+					<reportElement style="column_header_style" mode="Opaque" x="2961" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="04a3672e-a224-4c8e-ac3a-c62a9e9375ba">
 						<printWhenExpression><![CDATA[$P{leis}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1208,7 +1245,7 @@ leitungen]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2724" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="2f478b47-34a6-491d-a1a1-c1759fe98507">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2916" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="2f478b47-34a6-491d-a1a1-c1759fe98507">
 						<printWhenExpression><![CDATA[$P{leis}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1218,7 +1255,7 @@ leitungen]]></text>
 					<text><![CDATA[Leistungen]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2724" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="6ca78062-a254-48e3-85ac-e9221883a461">
+					<reportElement style="column_header_style" mode="Opaque" x="2916" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="6ca78062-a254-48e3-85ac-e9221883a461">
 						<printWhenExpression><![CDATA[$P{leis}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1228,7 +1265,7 @@ leitungen]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2724" y="0" width="94" height="14" backcolor="#FDFD00" uuid="ffc4de0c-b149-4a63-8c7d-0c06561a0453">
+					<reportElement style="column_header_style" mode="Opaque" x="2916" y="0" width="94" height="14" backcolor="#FDFD00" uuid="ffc4de0c-b149-4a63-8c7d-0c06561a0453">
 						<printWhenExpression><![CDATA[$P{leis}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -1243,7 +1280,7 @@ leitungen]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2863" y="42" width="49" height="14" backcolor="#D8D8D8" uuid="14e6eb59-4d47-4891-9659-8c7c611479f8">
+					<reportElement style="column_header_style" mode="Opaque" x="3055" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="14e6eb59-4d47-4891-9659-8c7c611479f8">
 						<printWhenExpression><![CDATA[$P{tech}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1253,7 +1290,7 @@ leitungen]]></text>
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2818" y="14" width="94" height="28" backcolor="#BFBFBF" uuid="a3f61979-03fc-4812-920f-c57f1f95ab77">
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3010" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="a3f61979-03fc-4812-920f-c57f1f95ab77">
 						<printWhenExpression><![CDATA[$P{tech}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1263,7 +1300,7 @@ leitungen]]></text>
 					<text><![CDATA[Technologien]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="2818" y="42" width="45" height="14" backcolor="#D8D8D8" uuid="2d01b71b-b2f7-429f-9797-0b2cc8a4905f">
+					<reportElement style="column_header_style" mode="Opaque" x="3010" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="2d01b71b-b2f7-429f-9797-0b2cc8a4905f">
 						<printWhenExpression><![CDATA[$P{tech}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="2" rightPadding="2"/>
@@ -1273,7 +1310,7 @@ leitungen]]></text>
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="2818" y="0" width="94" height="14" backcolor="#FDFD00" uuid="573b9ebc-cd73-41dc-9fd3-e09295e4db1b">
+					<reportElement style="column_header_style" mode="Opaque" x="3010" y="0" width="94" height="14" backcolor="#FDFD00" uuid="573b9ebc-cd73-41dc-9fd3-e09295e4db1b">
 						<printWhenExpression><![CDATA[$P{tech}]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="5">
@@ -1288,12 +1325,594 @@ leitungen]]></text>
 					</textElement>
 				</textField>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="0" y="42" width="160" height="14" backcolor="#D8D8D8" uuid="e3e5c4f7-2a75-4919-ba45-e811c8ff123e"/>
+					<reportElement style="column_header_style" mode="Opaque" x="0" y="56" width="160" height="14" backcolor="#D8D8D8" uuid="e3e5c4f7-2a75-4919-ba45-e811c8ff123e"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 					</textElement>
 					<text><![CDATA[Code]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="2777" y="28" width="45" height="28" backcolor="#BFBFBF" uuid="c798248a-5a40-4a4a-99a6-c04a7d124421">
+						<printWhenExpression><![CDATA[$P{foto}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Fotos]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="2777" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="a72c6e54-baa6-4822-a577-8d1b861490ee">
+						<printWhenExpression><![CDATA[$P{foto}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Anzahl]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2777" y="0" width="45" height="14" backcolor="#FDFD00" uuid="e2ff664d-7b24-4f32-a2c4-b790b252a4fd">
+						<printWhenExpression><![CDATA[$P{foto}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3198" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="e9450594-1827-4b91-a8ff-1491bb81700f">
+						<printWhenExpression><![CDATA[$P{proj}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Anzahl]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3198" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="2d84518a-6d11-4518-93f0-a69eee0fc152">
+						<printWhenExpression><![CDATA[$P{proj}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Projekte]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3149" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="d77c9663-33d5-4d84-82e0-7dda98b126b2">
+						<printWhenExpression><![CDATA[$P{dok}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Länge]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" positionType="Float" mode="Opaque" x="3104" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="d2bd6eb9-361c-4be4-af6c-db3fc888853f">
+						<printWhenExpression><![CDATA[$P{dok}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Dokumente]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3104" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="a97694c6-afdf-4b4f-a783-3c9d36caabf3">
+						<printWhenExpression><![CDATA[$P{dok}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Anzahl]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="3243" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="0c13aeb6-8041-49ac-a113-3cb35f6e7b51">
+						<printWhenExpression><![CDATA[$P{proj}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Länge]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="3104" y="0" width="94" height="14" backcolor="#FDFD00" uuid="99619afc-e7f9-4746-bf36-b6dea5119115">
+						<printWhenExpression><![CDATA[$P{dok}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="3198" y="0" width="94" height="14" backcolor="#FDFD00" uuid="98e45e7b-4581-41e9-a040-852dc894971c">
+						<printWhenExpression><![CDATA[$P{proj}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2133" y="14" width="76" height="14" backcolor="#FDFD00" uuid="752e0e40-952c-4eef-96b9-52694b26e9f0">
+						<printWhenExpression><![CDATA[$P{scha}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2437" y="14" width="94" height="14" backcolor="#FDFD00" uuid="24a4e0ca-d564-4e0e-ae93-c95e959e6126">
+						<printWhenExpression><![CDATA[$P{anll}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1475" y="14" width="94" height="14" backcolor="#FDFD00" uuid="247046e5-0f80-4980-8698-7407b1106943">
+						<printWhenExpression><![CDATA[$P{prof}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2531" y="14" width="76" height="14" backcolor="#FDFD00" uuid="086a1ad2-23b8-4867-9d17-b227b8dbceec">
+						<printWhenExpression><![CDATA[$P{kr}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="965" y="14" width="94" height="14" backcolor="#FDFD00" uuid="dd2b1451-a58d-4c31-bf96-5f36fef47516">
+						<printWhenExpression><![CDATA[$P{ueber}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2607" y="14" width="76" height="14" backcolor="#FDFD00" uuid="10226411-bd36-4292-8407-940b3e538671">
+						<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2683" y="14" width="94" height="14" backcolor="#FDFD00" uuid="8d2c0483-0ada-43a9-816c-f825316f0c36">
+						<printWhenExpression><![CDATA[$P{deich}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1381" y="14" width="94" height="14" backcolor="#FDFD00" uuid="69a89c31-2915-4fcb-a350-f605b64e41a8">
+						<printWhenExpression><![CDATA[$P{sb}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="3104" y="14" width="94" height="14" backcolor="#FDFD00" uuid="c8be7fd7-8d3e-4477-8b51-eba28c0d4bbc">
+						<printWhenExpression><![CDATA[$P{dok}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2361" y="14" width="76" height="14" backcolor="#FDFD00" uuid="6ff04267-489f-4a7c-a9d2-c8768816523f">
+						<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1663" y="14" width="94" height="14" backcolor="#FDFD00" uuid="85fba290-08f8-41a6-a93c-9be03e082c8b">
+						<printWhenExpression><![CDATA[$P{ubef}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1059" y="14" width="76" height="14" backcolor="#FDFD00" uuid="79268b75-78a6-4c4c-8df1-9385065e53df">
+						<printWhenExpression><![CDATA[$P{ben}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2777" y="14" width="94" height="14" backcolor="#FDFD00" uuid="3fcdea5c-916c-4640-8de6-547b652d708a">
+						<printWhenExpression><![CDATA[$P{ughz}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2285" y="14" width="76" height="14" backcolor="#FDFD00" uuid="e9122021-8b31-4204-8666-50ce30435b01">
+						<printWhenExpression><![CDATA[$P{schw}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1851" y="14" width="94" height="14" backcolor="#FDFD00" uuid="dbd49a08-9eb3-4deb-8ac2-88db71078fcf">
+						<printWhenExpression><![CDATA[$P{rl}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2209" y="14" width="76" height="14" backcolor="#FDFD00" uuid="8bd117b4-d3cd-48b2-a462-5801781ec8e6">
+						<printWhenExpression><![CDATA[$P{wehr}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2039" y="14" width="94" height="14" backcolor="#FDFD00" uuid="ec55a3a6-dc71-46e1-a2f1-8732519ab2c1">
+						<printWhenExpression><![CDATA[$P{due}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2916" y="14" width="94" height="14" backcolor="#FDFD00" uuid="97f17519-3dfa-4673-a553-80317e1a6d07">
+						<printWhenExpression><![CDATA[$P{leis}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1569" y="14" width="94" height="14" backcolor="#FDFD00" uuid="524ad286-f5cf-4dd5-9bf1-73e150976517">
+						<printWhenExpression><![CDATA[$P{sbef}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="3198" y="14" width="94" height="14" backcolor="#FDFD00" uuid="7421dbaa-ce23-43fc-afac-913c7bf5e54a">
+						<printWhenExpression><![CDATA[$P{proj}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1135" y="14" width="76" height="14" backcolor="#FDFD00" uuid="a07ff9f4-c2af-4c21-afcb-a4a7d8932a9e">
+						<printWhenExpression><![CDATA[$P{aus}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1211" y="14" width="76" height="14" backcolor="#FDFD00" uuid="1ba14cbf-0119-4074-92a0-370b0f96db71">
+						<printWhenExpression><![CDATA[$P{pegel}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1287" y="14" width="94" height="14" backcolor="#FDFD00" uuid="ee3bd23a-8dee-40a1-989b-daf170fa34ed">
+						<printWhenExpression><![CDATA[$P{gb}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="3010" y="14" width="94" height="14" backcolor="#FDFD00" uuid="152a2171-3209-4e00-853e-bf61f7a7ed65">
+						<printWhenExpression><![CDATA[$P{tech}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField>
+					<reportElement style="column_header_style" mode="Opaque" x="0" y="14" width="871" height="14" backcolor="#FDFD00" uuid="c8fc270a-e2cb-4e49-be3b-a12ac0939fa3"/>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Stand: "  + $P{datum}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1945" y="14" width="94" height="14" backcolor="#FDFD00" uuid="082f7cab-8a9e-4bb3-a5c1-b6c09ae542d1">
+						<printWhenExpression><![CDATA[$P{d}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="871" y="14" width="94" height="14" backcolor="#FDFD00" uuid="353a453a-a508-40e4-99a2-f3af3eb3582f">
+						<printWhenExpression><![CDATA[$P{wasserschutz}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="1757" y="14" width="94" height="14" backcolor="#FDFD00" uuid="dc73cd30-3d64-45c6-ab01-e46c34c37c1d">
+						<printWhenExpression><![CDATA[$P{bbef}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement style="column_header_style" mode="Opaque" x="2871" y="14" width="45" height="14" backcolor="#FDFD00" uuid="d9537807-2333-4698-8d2f-2ec2511543aa">
+						<printWhenExpression><![CDATA[$P{foto}]]></printWhenExpression>
+					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+				</textField>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="393" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="97934dd2-4218-4a96-83ef-db370259511f"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[von]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="442" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="85d2f75b-1308-4699-8fee-e6cb155541db"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[bis]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="column_header_style" mode="Opaque" x="540" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="3c922ac6-ee49-4124-ac85-0aef9dbfa103"/>
+					<box leftPadding="2" rightPadding="2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Teil]]></text>
 				</staticText>
 			</band>
 		</groupHeader>
@@ -1309,21 +1928,13 @@ leitungen]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="160" y="0" width="233" height="14" isPrintWhenDetailOverflows="true" uuid="6779a625-d5ce-4620-bbd9-f393a720f814"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Right" verticalAlignment="Top">
+				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{gewName}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="393" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="5d6804cd-b110-4b5d-80bb-1c7153ae826a"/>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Right" verticalAlignment="Top">
-					<font fontName="SansSerif" size="10"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{gewLaenge}]]></textFieldExpression>
-			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="442" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="c5168806-f72f-4275-9cbc-1feac2f320f6"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="589" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="c5168806-f72f-4275-9cbc-1feac2f320f6"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
@@ -1331,7 +1942,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{offene_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="487" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="76b3ec43-5d95-4923-8df5-3677e27b3982"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="634" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="76b3ec43-5d95-4923-8df5-3677e27b3982"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
@@ -1339,7 +1950,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{offene_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="536" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="1138e8c3-20ba-4c55-838a-2f7b30ca4427"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="683" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="1138e8c3-20ba-4c55-838a-2f7b30ca4427"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
@@ -1347,7 +1958,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{see_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="581" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="b6a8d37d-01ae-4bf8-8521-5f4aff7a2851"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="728" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="b6a8d37d-01ae-4bf8-8521-5f4aff7a2851"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
@@ -1355,7 +1966,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{see_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="630" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="a362a032-d740-495f-9497-e4ecf5da1fd6"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="777" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="a362a032-d740-495f-9497-e4ecf5da1fd6"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
@@ -1363,15 +1974,17 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{geschl_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="675" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="98ce4c60-9330-4ee0-8380-fe84511db0c7"/>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="822" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="98ce4c60-9330-4ee0-8380-fe84511db0c7"/>
+				<box leftPadding="2" rightPadding="2">
+					<rightPen lineWidth="1.0" lineStyle="Double"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{geschl_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="724" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="49fbc5e4-283f-41be-9438-c70b3ad92899">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="871" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="49fbc5e4-283f-41be-9438-c70b3ad92899">
 					<printWhenExpression><![CDATA[$P{wasserschutz}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1381,7 +1994,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{wschutz_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="769" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="af12c3f7-a4fa-45e2-b96c-3de6776cd368">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="916" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="af12c3f7-a4fa-45e2-b96c-3de6776cd368">
 					<printWhenExpression><![CDATA[$P{wasserschutz}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1391,7 +2004,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{wschutz_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="818" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="3acf3169-9292-497c-8b96-64696625b6a7">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="965" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="3acf3169-9292-497c-8b96-64696625b6a7">
 					<printWhenExpression><![CDATA[$P{ueber}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1401,7 +2014,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{ueber_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="863" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="5c8e8c8c-57e5-4e69-a21f-ea358067ee66">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1010" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="5c8e8c8c-57e5-4e69-a21f-ea358067ee66">
 					<printWhenExpression><![CDATA[$P{ueber}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1411,17 +2024,19 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{ueber_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1185" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="f6e991b0-274f-4b9e-95e5-a1c4d8ee00be">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1426" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="f6e991b0-274f-4b9e-95e5-a1c4d8ee00be">
 					<printWhenExpression><![CDATA[$P{gb}]]></printWhenExpression>
 				</reportElement>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<box leftPadding="2" rightPadding="2">
+					<rightPen lineWidth="1.0" lineStyle="Double"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{gb_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1140" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="de053021-4fec-45e5-bf8f-7449842d9aba">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1381" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="de053021-4fec-45e5-bf8f-7449842d9aba">
 					<printWhenExpression><![CDATA[$P{gb}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1431,27 +2046,27 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{gb_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1279" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="8947cdff-dfe5-415c-b285-cfcf10b133f3">
-					<printWhenExpression><![CDATA[$P{sb}]]></printWhenExpression>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1332" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="8947cdff-dfe5-415c-b285-cfcf10b133f3">
+					<printWhenExpression><![CDATA[$P{gmd}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{sb_l}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{gmd_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1234" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="2ba2042f-06f6-4702-95b3-c9f257910803">
-					<printWhenExpression><![CDATA[$P{sb}]]></printWhenExpression>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1287" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="2ba2042f-06f6-4702-95b3-c9f257910803">
+					<printWhenExpression><![CDATA[$P{gmd}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{sb_a}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{gmd_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1328" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="221a13b7-7c1b-4c9c-a7d2-079d72321503">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1475" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="221a13b7-7c1b-4c9c-a7d2-079d72321503">
 					<printWhenExpression><![CDATA[$P{prof}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1461,7 +2076,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{prof_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1373" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="10313dc0-5a82-4bf2-96b9-e17c2f5b4047">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1520" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="10313dc0-5a82-4bf2-96b9-e17c2f5b4047">
 					<printWhenExpression><![CDATA[$P{prof}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1470,8 +2085,8 @@ leitungen]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{prof_l}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="988" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="b0ea2899-35a2-46a4-86b4-7d5713878ea1">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1135" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="b0ea2899-35a2-46a4-86b4-7d5713878ea1">
 					<printWhenExpression><![CDATA[$P{aus}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1480,18 +2095,20 @@ leitungen]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{aus_a}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1064" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="476c2006-7c45-4d82-8dfc-66818786bb2f">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1211" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="476c2006-7c45-4d82-8dfc-66818786bb2f">
 					<printWhenExpression><![CDATA[$P{pegel}]]></printWhenExpression>
 				</reportElement>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<box leftPadding="2" rightPadding="2">
+					<rightPen lineWidth="1.0" lineStyle="Double"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{pegel_a}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="912" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="113c5455-525f-408d-99db-6b99f1261670">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1059" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="113c5455-525f-408d-99db-6b99f1261670">
 					<printWhenExpression><![CDATA[$P{ben}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1501,7 +2118,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{ben_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1422" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="0f785d5f-efab-466a-93e2-ab821a71f150">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1569" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="0f785d5f-efab-466a-93e2-ab821a71f150">
 					<printWhenExpression><![CDATA[$P{sbef}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1511,7 +2128,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{sbef_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1467" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="40904985-ebc8-42da-9d1a-0b1ea5c11c59">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1614" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="40904985-ebc8-42da-9d1a-0b1ea5c11c59">
 					<printWhenExpression><![CDATA[$P{sbef}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1521,7 +2138,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{sbef_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1516" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="e3f1294a-bc3a-4027-b7ff-35a5f75648ce">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1663" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="e3f1294a-bc3a-4027-b7ff-35a5f75648ce">
 					<printWhenExpression><![CDATA[$P{ubef}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1531,7 +2148,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{ubef_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1561" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="da8db4f8-d3b1-476d-83b3-d7e761812e17">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1708" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="da8db4f8-d3b1-476d-83b3-d7e761812e17">
 					<printWhenExpression><![CDATA[$P{ubef}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1541,7 +2158,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{ubef_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1610" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="9c309130-5af2-4d6e-8908-c9f61e5c092a">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1757" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="9c309130-5af2-4d6e-8908-c9f61e5c092a">
 					<printWhenExpression><![CDATA[$P{bbef}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1551,17 +2168,19 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{bbef_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1655" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="cbfccd60-55d8-4cd3-b5f2-b1c79f7da485">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1802" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="cbfccd60-55d8-4cd3-b5f2-b1c79f7da485">
 					<printWhenExpression><![CDATA[$P{bbef}]]></printWhenExpression>
 				</reportElement>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<box leftPadding="2" rightPadding="2">
+					<rightPen lineWidth="1.0" lineStyle="Double"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{bbef_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1798" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="dc97945f-003e-47bc-a65b-9d197fb61fea">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1945" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="dc97945f-003e-47bc-a65b-9d197fb61fea">
 					<printWhenExpression><![CDATA[$P{d}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1571,7 +2190,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{d_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1843" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="46e31108-b442-40d2-8c53-a0715c7eee66">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1990" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="46e31108-b442-40d2-8c53-a0715c7eee66">
 					<printWhenExpression><![CDATA[$P{d}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1581,7 +2200,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{d_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1892" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="4ba83972-964b-49cb-b335-195e88c12d15">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2039" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="4ba83972-964b-49cb-b335-195e88c12d15">
 					<printWhenExpression><![CDATA[$P{due}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1591,17 +2210,19 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{due_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1937" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="66299b4c-aadc-4615-8f93-9fc9863ed1c2">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2084" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="66299b4c-aadc-4615-8f93-9fc9863ed1c2">
 					<printWhenExpression><![CDATA[$P{due}]]></printWhenExpression>
 				</reportElement>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<box leftPadding="2" rightPadding="2">
+					<rightPen lineWidth="1.0" lineStyle="Double"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{due_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2290" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="fb36a35d-5981-49e2-8cff-b845d6926dae">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2437" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="fb36a35d-5981-49e2-8cff-b845d6926dae">
 					<printWhenExpression><![CDATA[$P{anll}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1611,7 +2232,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{anll_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2335" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="1d95a319-68d7-4158-8b60-c6dabc29286b">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2482" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="1d95a319-68d7-4158-8b60-c6dabc29286b">
 					<printWhenExpression><![CDATA[$P{anll}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1620,8 +2241,8 @@ leitungen]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{anll_l}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1986" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="8fda4491-770c-4e32-a51f-d3ca943ece8c">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2133" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="8fda4491-770c-4e32-a51f-d3ca943ece8c">
 					<printWhenExpression><![CDATA[$P{scha}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1630,8 +2251,8 @@ leitungen]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{scha_a}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2062" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="b51a155c-1d70-48be-b2c5-0aafa39bed08">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2209" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="b51a155c-1d70-48be-b2c5-0aafa39bed08">
 					<printWhenExpression><![CDATA[$P{wehr}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1640,8 +2261,8 @@ leitungen]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{wehr_a}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2138" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="914608dd-af4b-4419-8912-15a4b7114caa">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2285" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="914608dd-af4b-4419-8912-15a4b7114caa">
 					<printWhenExpression><![CDATA[$P{schw}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1650,8 +2271,8 @@ leitungen]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{schw_a}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2214" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="ee884e0d-5be2-44c0-9126-914346c8c3a6">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2361" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="ee884e0d-5be2-44c0-9126-914346c8c3a6">
 					<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1661,7 +2282,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{anlp_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1704" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="13679765-c3dd-4169-a52b-ca228f8d01e1">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1851" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="13679765-c3dd-4169-a52b-ca228f8d01e1">
 					<printWhenExpression><![CDATA[$P{rl}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1671,7 +2292,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{rl_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1749" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="90aa95c0-6ab8-488e-8a60-79e2d95d27d4">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="1896" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="90aa95c0-6ab8-488e-8a60-79e2d95d27d4">
 					<printWhenExpression><![CDATA[$P{rl}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1681,7 +2302,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{rl_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2384" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="ab97a69c-e381-484f-b257-5f0f2448b662">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2531" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="ab97a69c-e381-484f-b257-5f0f2448b662">
 					<printWhenExpression><![CDATA[$P{kr}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1691,17 +2312,19 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{kr_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2460" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="42737b8b-71ce-4421-bf10-01176df352da">
-					<printWhenExpression><![CDATA[$P{anlp}]]></printWhenExpression>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2607" y="0" width="76" height="14" isPrintWhenDetailOverflows="true" uuid="42737b8b-71ce-4421-bf10-01176df352da">
+					<printWhenExpression><![CDATA[$P{ea}]]></printWhenExpression>
 				</reportElement>
-				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<box leftPadding="2" rightPadding="2">
+					<rightPen lineWidth="1.0" lineStyle="Double"/>
+				</box>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ea_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2581" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="b08f37c5-41dc-41af-9c4a-ea85680c21e3">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2728" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="b08f37c5-41dc-41af-9c4a-ea85680c21e3">
 					<printWhenExpression><![CDATA[$P{deich}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1711,7 +2334,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{deich_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2536" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="53600d79-8380-401d-a12b-8f5ad772d5e5">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2683" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="53600d79-8380-401d-a12b-8f5ad772d5e5">
 					<printWhenExpression><![CDATA[$P{deich}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1721,7 +2344,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{deich_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2675" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="c99d5800-02af-48ec-bba6-1f4cc5473fc9">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2867" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="c99d5800-02af-48ec-bba6-1f4cc5473fc9">
 					<printWhenExpression><![CDATA[$P{ughz}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1731,7 +2354,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{ughz_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2630" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="a818cbc5-5fd9-45f1-ae01-497f762b16f8">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2822" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="a818cbc5-5fd9-45f1-ae01-497f762b16f8">
 					<printWhenExpression><![CDATA[$P{ughz}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1741,7 +2364,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{ughz_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2769" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="d2fc5fa9-ac57-40a4-8ad3-a86fc2e37d8e">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2961" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="d2fc5fa9-ac57-40a4-8ad3-a86fc2e37d8e">
 					<printWhenExpression><![CDATA[$P{leis}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1751,7 +2374,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{leis_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2724" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="9cc887b8-c8f9-4a1f-b800-5d706c36a99a">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2916" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="9cc887b8-c8f9-4a1f-b800-5d706c36a99a">
 					<printWhenExpression><![CDATA[$P{leis}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1761,7 +2384,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{leis_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2863" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="7bce58d0-2970-47f1-b809-6436e1684adf">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3055" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="7bce58d0-2970-47f1-b809-6436e1684adf">
 					<printWhenExpression><![CDATA[$P{tech}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1771,7 +2394,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{tech_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2818" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="0f33298c-6998-4222-a4b3-8757ebad3aad">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3010" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="0f33298c-6998-4222-a4b3-8757ebad3aad">
 					<printWhenExpression><![CDATA[$P{tech}]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
@@ -1783,10 +2406,92 @@ leitungen]]></text>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="0" y="0" width="160" height="14" isPrintWhenDetailOverflows="true" uuid="9a7e6a08-89dc-4f78-8dea-9c463f7e45f5"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
-				<textElement textAlignment="Right" verticalAlignment="Top">
+				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="2777" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="632399df-e22c-4cf1-894c-4552ddbc93be">
+					<printWhenExpression><![CDATA[$P{foto}]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{foto_a}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3149" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="176f63ae-ca27-4a73-9aab-b979c4b6ce0f">
+					<printWhenExpression><![CDATA[$P{dok}]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dok_l}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3198" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="d3492c3c-0904-4c14-94f6-df3ea4e23bb5">
+					<printWhenExpression><![CDATA[$P{proj}]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{proj_a}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3243" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="02d7a3d6-aa06-45ef-becd-426d2583c015">
+					<printWhenExpression><![CDATA[$P{proj}]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{proj_l}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="3104" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="d84d14a5-7351-4d10-8743-b50de10c73c3">
+					<printWhenExpression><![CDATA[$P{dok}]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dok_a}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="491" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="5d6804cd-b110-4b5d-80bb-1c7153ae826a"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gewLaenge}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="442" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="cf0b38c0-a1b7-44fe-acd3-6951ee76d0e9"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bis}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="393" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="d3555533-65ec-41c0-b361-e214c633766f"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{von}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="540" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="bf62de4e-c69d-4109-b401-fac8913c9cde"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{teil}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -28,6 +28,8 @@ import de.cismet.cids.custom.watergis.server.search.SchuWasserReport;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
+import static de.cismet.watergis.reports.types.GemeindenData.mergeLines;
+
 /**
  * DOCUMENT ME!
  *
@@ -87,12 +89,15 @@ public class SbData {
         lineMap.put(AllLineObjects.Table.fg_ba_bbef, createDataObjects(AllLineObjects.Table.fg_ba_bbef, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_due, createDataObjects(AllLineObjects.Table.fg_ba_due, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_gb, createDataObjects(AllLineObjects.Table.fg_ba_gb, gew));
+        lineMap.put(AllLineObjects.Table.fg_ba_gmd, createDataObjects(AllLineObjects.Table.fg_ba_gmd, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_leis, createDataObjects(AllLineObjects.Table.fg_ba_leis, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_prof, createDataObjects(AllLineObjects.Table.fg_ba_prof, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_rl, createDataObjects(AllLineObjects.Table.fg_ba_rl, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_sb, createDataObjects(AllLineObjects.Table.fg_ba_sb, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_sbef, createDataObjects(AllLineObjects.Table.fg_ba_sbef, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_tech, createDataObjects(AllLineObjects.Table.fg_ba_tech, gew));
+        lineMap.put(AllLineObjects.Table.fg_ba_doku, createDataObjects(AllLineObjects.Table.fg_ba_doku, gew));
+        lineMap.put(AllLineObjects.Table.fg_ba_proj, createDataObjects(AllLineObjects.Table.fg_ba_proj, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_ubef, createDataObjects(AllLineObjects.Table.fg_ba_ubef, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_ughz, createDataObjects(AllLineObjects.Table.fg_ba_ughz, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_deich, createDataObjects(AllLineObjects.Table.fg_ba_deich, gew));
@@ -106,6 +111,7 @@ public class SbData {
         pointMap.put(AllPunktObjects.Table.fg_ba_schw, createPointDataObjects(AllPunktObjects.Table.fg_ba_schw, gew));
         pointMap.put(AllPunktObjects.Table.fg_ba_wehr, createPointDataObjects(AllPunktObjects.Table.fg_ba_wehr, gew));
         pointMap.put(AllPunktObjects.Table.fg_ba_ea, createPointDataObjects(AllPunktObjects.Table.fg_ba_ea, gew));
+        pointMap.put(AllPunktObjects.Table.foto, createPointDataObjects(AllPunktObjects.Table.foto, gew));
 
         lineFromPolygonMap.put(LineFromPolygonTable.sg_see, createSee(gew));
         lineFromPolygonMap.put(LineFromPolygonTable.wr_sg_uesg, createSchutzUeber(gew));
@@ -221,7 +227,10 @@ public class SbData {
      * @return  DOCUMENT ME!
      */
     public int getLength(final LineFromPolygonTable table, final int gew, final double from, final double till) {
-        final List<LineObjectData> lines = lineFromPolygonMap.get(table);
+        List<LineObjectData> lines = lineFromPolygonMap.get(table);
+        if (table.equals(GemeindenData.LineFromPolygonTable.wr_sg_wsg)) {
+            lines = mergeLines(lines);
+        }
         int length = 0;
 
         if (lines != null) {
@@ -231,6 +240,73 @@ public class SbData {
         }
 
         return length;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   lines  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private List<LineObjectData> mergeLines(final List<LineObjectData> lines) {
+        final List<LineObjectData> newLines = new ArrayList<LineObjectData>();
+
+        for (int i = 0; i < lines.size(); ++i) {
+            final LineObjectData lod = lines.get(i);
+            boolean merged = false;
+
+            for (int ni = 0; ni < newLines.size(); ++ni) {
+                final LineObjectData nlod = newLines.get(ni);
+
+                if (nlod.isInGewPart(lod.getGewId(), lod.from, lod.to)) {
+                    merged = true;
+                    if (lod.getFrom() < nlod.getFrom()) {
+                        final LineObjectData data = new LineObjectData(lod.getGewId(),
+                                lod.getBaCd(),
+                                lod.getFrom(),
+                                nlod.getFrom(),
+                                Math.abs(nlod.getFrom() - lod.getFrom()));
+                        newLines.add(data);
+
+                        if (lod.getTo() > nlod.getTo()) {
+                            final LineObjectData data2 = new LineObjectData(lod.getGewId(),
+                                    lod.getBaCd(),
+                                    nlod.getTo(),
+                                    lod.getTo(),
+                                    Math.abs(lod.getTo() - nlod.getTo()));
+                            newLines.add(data2);
+                        }
+                    } else if (lod.getFrom() == nlod.getFrom()) {
+                        if (lod.getTo() > nlod.getTo()) {
+                            final LineObjectData data2 = new LineObjectData(lod.getGewId(),
+                                    lod.getBaCd(),
+                                    nlod.getTo(),
+                                    lod.getTo(),
+                                    Math.abs(lod.getTo() - nlod.getTo()));
+                            newLines.add(data2);
+                        }
+                    } else if (lod.getFrom() > nlod.getFrom()) {
+                        if (lod.getTo() > nlod.getTo()) {
+                            final LineObjectData data2 = new LineObjectData(lod.getGewId(),
+                                    lod.getBaCd(),
+                                    nlod.getTo(),
+                                    lod.getTo(),
+                                    Math.abs(lod.getTo() - nlod.getTo()));
+                            newLines.add(data2);
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            if (!merged) {
+                newLines.add(lod);
+            }
+        }
+
+        return newLines;
     }
 
     /**
@@ -429,7 +505,7 @@ public class SbData {
          * @return  DOCUMENT ME!
          */
         public boolean isInGewPart(final int gew, final double from, final double till) {
-            return (gew == gewId) && (Math.min(from, till) <= this.from) && (Math.max(from, till) >= from);
+            return (gew == gewId) && (Math.min(from, till) <= this.from) && (Math.max(from, till) >= this.from);
         }
 
         /**
@@ -514,6 +590,24 @@ public class SbData {
         }
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the gewId
+         */
+        public int getGewId() {
+            return gewId;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  gewId  the gewId to set
+         */
+        public void setGewId(final int gewId) {
+            this.gewId = gewId;
+        }
 
         /**
          * DOCUMENT ME!

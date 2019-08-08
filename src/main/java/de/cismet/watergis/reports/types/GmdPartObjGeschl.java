@@ -41,6 +41,8 @@ public class GmdPartObjGeschl implements Comparable<GmdPartObjGeschl> {
     private final String ma;
     private final String objNr;
     private final String tr;
+    private final String trGu;
+    private final String objNrGu;
     private final Integer ausbaujahr;
     private final String wbbl;
     private final String code;
@@ -95,6 +97,8 @@ public class GmdPartObjGeschl implements Comparable<GmdPartObjGeschl> {
      * @param  hAb         DOCUMENT ME!
      * @param  hAuf        DOCUMENT ME!
      * @param  aufstieg    DOCUMENT ME!
+     * @param  trGu        DOCUMENT ME!
+     * @param  objNrGu     DOCUMENT ME!
      */
     public GmdPartObjGeschl(final int id,
             final String art,
@@ -128,7 +132,9 @@ public class GmdPartObjGeschl implements Comparable<GmdPartObjGeschl> {
             final Double dhEin,
             final Double hAb,
             final Double hAuf,
-            final Double aufstieg) {
+            final Double aufstieg,
+            final String trGu,
+            final String objNrGu) {
         this.id = id;
         this.art = art;
         this.owner = owner;
@@ -162,9 +168,29 @@ public class GmdPartObjGeschl implements Comparable<GmdPartObjGeschl> {
         this.hAb = hAb;
         this.hAuf = hAuf;
         this.aufstieg = aufstieg;
+        this.trGu = trGu;
+        this.objNrGu = objNrGu;
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the trGu
+     */
+    public String getTrGu() {
+        return trGu;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the objNrGu
+     */
+    public String getObjNrGu() {
+        return objNrGu;
+    }
 
     /**
      * DOCUMENT ME!

@@ -1655,16 +1655,16 @@ public class Photo extends javax.swing.JPanel {
                     }
                 }
 
-                if (PhotoOptionsDialog.getInstance().isAutomatic()) {
-                    tryStationCreation(feature, newFotoBean);
-                }
-
                 final CidsBean freigabeBean = getCatalogueElement("dlm25w.k_freigabe", "name", "alle Nutzer");
                 if (freigabeBean != null) {
                     newFotoBean.setProperty("freigabe", freigabeBean);
                 }
 
                 feature.setMetaObject(newFotoBean.getMetaObject());
+
+                if (PhotoOptionsDialog.getInstance().isAutomatic()) {
+                    tryStationCreation(feature, null);
+                }
 
                 final AttributeTableRuleSet ruleSet = feature.getLayerProperties().getAttributeTableRuleSet();
 
@@ -1673,6 +1673,7 @@ public class Photo extends javax.swing.JPanel {
                 }
 
                 final CidsLayerFeature newFeature = (CidsLayerFeature)feature.saveChanges();
+                feature.removeStations();
                 newBeans.add(newFeature);
             }
             return newBeans;

@@ -41,6 +41,27 @@ public class GmdPartObj {
     /**
      * Creates a new GmdPartObj object.
      *
+     * @param  other  DOCUMENT ME!
+     */
+    public GmdPartObj(final GmdPartObj other) {
+        this.id = other.id;
+        this.art = other.art;
+        this.owner = other.owner;
+        this.gewName = other.gewName;
+        this.gu = other.gu;
+        this.widmung = other.widmung;
+        this.baCd = other.baCd;
+        this.from = other.from;
+        this.till = other.till;
+        this.nr_re = other.nr_re;
+        this.nr_li = other.nr_li;
+        this.tf = other.tf;
+        this.dim = other.dim;
+    }
+
+    /**
+     * Creates a new GmdPartObj object.
+     *
      * @param  id       DOCUMENT ME!
      * @param  art      DOCUMENT ME!
      * @param  owner    DOCUMENT ME!

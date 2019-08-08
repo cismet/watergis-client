@@ -43,8 +43,6 @@ import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.WatergisApp;
-
 import de.cismet.watergis.utils.FeatureServiceHelper;
 
 /**
@@ -64,6 +62,9 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
     private boolean cancelled = false;
     private int selectedThemeFeatureCount = -1;
     private String lastPath = null;
+    private boolean isGu = AppBroker.getInstance().isAdminOrLungUser() || AppBroker.getInstance()
+                .isGu();
+    private boolean isWawi = AppBroker.getInstance().isWawiOrAdminUser();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;
@@ -76,6 +77,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox ckbBen;
     private javax.swing.JCheckBox ckbD;
     private javax.swing.JCheckBox ckbDeich;
+    private javax.swing.JCheckBox ckbDoku;
     private javax.swing.JCheckBox ckbDue;
     private javax.swing.JCheckBox ckbEa;
     private javax.swing.JCheckBox ckbFoto;
@@ -88,6 +90,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox ckbLeis;
     private javax.swing.JCheckBox ckbPegel;
     private javax.swing.JCheckBox ckbProf;
+    private javax.swing.JCheckBox ckbProj;
     private javax.swing.JCheckBox ckbRl;
     private javax.swing.JCheckBox ckbSb;
     private javax.swing.JCheckBox ckbSbef;
@@ -130,6 +133,44 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
     private GewaesserReportDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+
+        if (!isGu) {
+            ckbAnll.setEnabled(false);
+            ckbAnll.setSelected(false);
+            ckbAnlp.setEnabled(false);
+            ckbAnlp.setSelected(false);
+            ckbKr.setEnabled(false);
+            ckbKr.setSelected(false);
+            ckbEa.setEnabled(false);
+            ckbEa.setSelected(false);
+            ckbUghz.setEnabled(false);
+            ckbUghz.setSelected(false);
+            ckbLeis.setEnabled(false);
+            ckbLeis.setSelected(false);
+            ckbTech.setEnabled(false);
+            ckbTech.setSelected(false);
+            ckbDoku.setEnabled(false);
+            ckbDoku.setSelected(false);
+            ckbProj.setEnabled(false);
+            ckbProj.setSelected(false);
+        }
+
+        if (!isWawi) {
+            ckbGmd.setEnabled(false);
+            ckbGmd.setSelected(false);
+            ckbGb.setEnabled(false);
+            ckbGb.setSelected(false);
+            ckbSb.setEnabled(false);
+            ckbSb.setSelected(false);
+            ckbProf.setEnabled(false);
+            ckbProf.setSelected(false);
+            ckbSbef.setEnabled(false);
+            ckbSbef.setSelected(false);
+            ckbUbef.setEnabled(false);
+            ckbUbef.setSelected(false);
+            ckbBbef.setEnabled(false);
+            ckbBbef.setSelected(false);
+        }
 
         if (!modal) {
             // is not required, if the dialog is modal
@@ -259,6 +300,8 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         ckbTech = new javax.swing.JCheckBox();
         ckbAus = new javax.swing.JCheckBox();
         ckbBen = new javax.swing.JCheckBox();
+        ckbDoku = new javax.swing.JCheckBox();
+        ckbProj = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(
@@ -342,7 +385,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 25;
+        gridBagConstraints.gridy = 26;
         gridBagConstraints.gridwidth = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
@@ -1112,6 +1155,40 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         getContentPane().add(ckbBen, gridBagConstraints);
 
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbDoku,
+            org.openide.util.NbBundle.getMessage(
+                GewaesserReportDialog.class,
+                "GewaesserReportDialog.ckbDoku.text",
+                new Object[] {})); // NOI18N
+        ckbDoku.setMaximumSize(new java.awt.Dimension(260, 24));
+        ckbDoku.setMinimumSize(new java.awt.Dimension(260, 24));
+        ckbDoku.setPreferredSize(new java.awt.Dimension(260, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 24;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        getContentPane().add(ckbDoku, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            ckbProj,
+            org.openide.util.NbBundle.getMessage(
+                GewaesserReportDialog.class,
+                "GewaesserReportDialog.ckbProj.text",
+                new Object[] {})); // NOI18N
+        ckbProj.setMaximumSize(new java.awt.Dimension(260, 24));
+        ckbProj.setMinimumSize(new java.awt.Dimension(260, 24));
+        ckbProj.setPreferredSize(new java.awt.Dimension(260, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 25;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
+        getContentPane().add(ckbProj, gridBagConstraints);
+
         pack();
     } // </editor-fold>//GEN-END:initComponents
 
@@ -1529,6 +1606,24 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
      */
     public boolean isTech() {
         return ckbTech.isSelected();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the ckbTech
+     */
+    public boolean isProj() {
+        return ckbProj.isSelected();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the ckbTech
+     */
+    public boolean isDoku() {
+        return ckbDoku.isSelected();
     }
 
     /**

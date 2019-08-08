@@ -20,11 +20,11 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
 import org.apache.log4j.Logger;
 
@@ -95,9 +95,11 @@ public class GerinneOFlaecheReport {
      * @param   fl   gemId baCd DOCUMENT ME!
      * @param   gew  DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createFlaechenReport(final Flaeche[] fl, final int[] gew) throws Exception {
+    public File createFlaechenReport(final Flaeche[] fl, final int[] gew) throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
@@ -141,20 +143,21 @@ public class GerinneOFlaecheReport {
         }
 
         // create print from report and data
+        final File file = new File(
+                GerinneOFlaechenReportDialog.getInstance().getPath()
+                        + "/Gerinne_offen_Flächen.xlsx");
         final JasperPrint jasperPrint = JasperFillManager.fillReport(
                 jasperReport,
                 parameters,
                 dummyDataSource);
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    GerinneOFlaechenReportDialog.getInstance().getPath()
-                            + "/GerinneOffenFläche.xls"));
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
-        final JRXlsExporter exporter = new JRXlsExporter();
+        final JRXlsxExporter exporter = new JRXlsxExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
         final SimpleOutputStreamExporterOutput exportOut = new SimpleOutputStreamExporterOutput(out);
         exporter.setExporterOutput(exportOut);
 
-        final SimpleXlsReportConfiguration config = new SimpleXlsReportConfiguration();
+        final SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
         config.setOnePagePerSheet(Boolean.TRUE);
         config.setSheetNames(sheetNames.toArray(new String[sheetNames.size()]));
         config.setShowGridLines(true);
@@ -169,6 +172,8 @@ public class GerinneOFlaecheReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -250,7 +255,7 @@ public class GerinneOFlaecheReport {
                         (Double)f.get(16),
                         (Double)f.get(17),
                         (Double)f.get(18),
-                        (Double)f.get(18),
+                        (Double)f.get(19),
                         (Double)f.get(20),
                         (Double)f.get(21),
                         (Double)f.get(22),
@@ -1565,7 +1570,7 @@ public class GerinneOFlaecheReport {
     private double getMinMax(final String field, final Object flNr, final int gewId, final boolean min) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(flNr);
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : gemList) {
             if (((gewId == -1) || (tmp.getId() == gewId))) {
@@ -1577,6 +1582,7 @@ public class GerinneOFlaecheReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1597,7 +1603,7 @@ public class GerinneOFlaecheReport {
     private double getMinMax(final String field, final Object flNr, final String gu, final boolean min) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(flNr);
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : gemList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))) {
@@ -1609,6 +1615,7 @@ public class GerinneOFlaecheReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1634,7 +1641,7 @@ public class GerinneOFlaecheReport {
             final boolean min) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(flNr);
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : gemList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))
@@ -1647,6 +1654,7 @@ public class GerinneOFlaecheReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1674,7 +1682,7 @@ public class GerinneOFlaecheReport {
             final boolean min) {
         final List<GmdPartObjOffen> gemList = gemPartMap.get(flNr);
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : gemList) {
             if ((tmp.getId() == gewId) && tmp.isInGewPart(gewId, from, till)) {
@@ -1686,6 +1694,7 @@ public class GerinneOFlaecheReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }

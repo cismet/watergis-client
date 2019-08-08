@@ -21,10 +21,12 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
 import org.apache.log4j.Logger;
 
@@ -88,9 +90,11 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      *
      * @param   gew  DOCUMENT ME!
      *
+     * @return  DOCUMENT ME!
+     *
      * @throws  Exception  DOCUMENT ME!
      */
-    public void createGewaesserReport(final int[] gew) throws Exception {
+    public File createGewaesserReport(final int[] gew) throws Exception {
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.YYYY");
@@ -133,13 +137,14 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
         parameters.put("profile", objList.size());
 
         // create print from report and data
+        final File file = new File(
+                GerinneOGewaesserReportDialog.getInstance().getPath()
+                        + "/Gerinne_offen_Gewässer.xls");
         final JasperPrint jasperPrint = JasperFillManager.fillReport(
                 jasperReport,
                 parameters,
                 dummyDataSource);
-        final FileOutputStream fout = new FileOutputStream(new File(
-                    GerinneOGewaesserReportDialog.getInstance().getPath()
-                            + "/GerinneOffenGewässer.xls"));
+        final FileOutputStream fout = new FileOutputStream(file);
         final BufferedOutputStream out = new BufferedOutputStream(fout);
         final JRXlsExporter exporter = new JRXlsExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -161,6 +166,8 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
         exportOut.close();
         // without this close, the file will be corrupted
         out.close();
+
+        return file;
     }
 
     /**
@@ -226,7 +233,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
                         (Double)f.get(16),
                         (Double)f.get(17),
                         (Double)f.get(18),
-                        (Double)f.get(18),
+                        (Double)f.get(19),
                         (Double)f.get(20),
                         (Double)f.get(21),
                         (Double)f.get(22),
@@ -354,6 +361,9 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
             feature.put("blLiMin", getMinMax("blLi", gew, true));
             feature.put("blLiMit", getMit("blLi", gew));
             feature.put("blLiMax", getMinMax("blLi", gew, false));
+            feature.put("mwMin", getMinMax("mw", gew, true));
+            feature.put("mwMit", getMit("mw", gew));
+            feature.put("mwMax", getMinMax("mw", gew, false));
             feature.put("flSohle", getSum("flSo", gew));
             feature.put("flBoeRe", getSum("flBRe", gew));
             feature.put("flBoeLi", getSum("flBLi", gew));
@@ -411,6 +421,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      */
     private FeatureDataSource getGewaesserAbschnitt() throws Exception {
         final List<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> simpleFeatures = new ArrayList<Map<String, Object>>();
 
         final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
         final List<Map<String, Object>> featureListGewKum = new ArrayList<Map<String, Object>>();
@@ -463,6 +474,9 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
             feature.put("blLiMin", getMinMax("blLi", id, from, till, true));
             feature.put("blLiMit", getMit("blLi", id, from, till));
             feature.put("blLiMax", getMinMax("blLi", id, from, till, false));
+            feature.put("mwMin", getMinMax("mw", id, from, till, true));
+            feature.put("mwMit", getMit("mw", id, from, till));
+            feature.put("mwMax", getMinMax("mw", id, from, till, false));
             feature.put("flSohle", getSum("flSo", id, from, till));
             feature.put("flBoeRe", getSum("flBRe", id, from, till));
             feature.put("flBoeLi", getSum("flBLi", id, from, till));
@@ -503,16 +517,37 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
             final String newCode = helper.getBaCd(gewAbschn.getId());
 
             if ((code != null) && !code.equals(newCode)) {
-                features.add(createKumFeature(featureListGewKum, true));
+                final Map<String, Object> kumFeature = createKumFeature(featureListGewKum, true);
+                kumFeature.put("laenge", featureListGewKum.get(0).get("laenge"));
+                kumFeature.put("code", featureListGewKum.get(0).get("code"));
+                kumFeature.put("name", featureListGewKum.get(0).get("name"));
+                features.add(kumFeature);
                 featureListGewKum.clear();
             }
 
             code = newCode;
             features.add(feature);
+            simpleFeatures.add(feature);
             featureListKum.add(feature);
             featureListGewKum.add(feature);
         }
-        features.add(createKumFeature(featureListKum, false, PROFSTAT));
+        final Map<String, Object> kumFeature = createKumFeature(featureListKum, false, PROFSTAT);
+
+        for (final Map<String, Object> tmp : simpleFeatures) {
+            tmp.put("code", null);
+            tmp.put("name", null);
+            tmp.put("laenge", null);
+        }
+        double laenge = 0.0;
+
+        for (final Map<String, Object> tmp : features) {
+            if (tmp.get("laenge") != null) {
+                laenge += (Double)tmp.get("laenge");
+            }
+        }
+
+        kumFeature.put("laenge", laenge);
+        features.add(kumFeature);
 
         if (features.isEmpty()) {
             return null;
@@ -533,6 +568,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
 
         final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
         final List<Map<String, Object>> featureListGewKum = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> simpleFeatures = new ArrayList<Map<String, Object>>();
         String code = null;
         sheetNames.add("Profile");
 
@@ -554,7 +590,8 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
             feature.put("group", "group");
             feature.put("name", helper.getGewName(id));
             feature.put("code", helper.getBaCd(id));
-            feature.put("gew_l_ges", helper.getLengthGewAll(id));
+            feature.put("laenge", gewAbschn.getLength());
+            feature.put("gew_l", helper.getLengthGewAll(id));
             feature.put("von", convertStation(from));
             feature.put("bis", convertStation(till));
             feature.put("laenge", gewAbschn.getLength());
@@ -569,6 +606,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
             feature.put("bvLiMit", getMit("bvLi", id, from, till));
             feature.put("bhLiMit", getMit("bhLi", id, from, till));
             feature.put("blLiMit", getMit("blLi", id, from, till));
+            feature.put("mwMit", getMit("mw", id, from, till));
             feature.put("flSohle", getSum("flSo", id, from, till));
             feature.put("flBoeRe", getSum("flBRe", id, from, till));
             feature.put("flBoeLi", getSum("flBLi", id, from, till));
@@ -595,16 +633,37 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
             final String newCode = helper.getBaCd(gewAbschn.getId());
 
             if ((code != null) && !code.equals(newCode)) {
-                features.add(createKumFeature(featureListGewKum, true));
+                final Map<String, Object> kumFeature = createKumFeature(featureListGewKum, true);
+                kumFeature.put("gew_l", featureListGewKum.get(0).get("gew_l"));
+                kumFeature.put("code", featureListGewKum.get(0).get("code"));
+                kumFeature.put("name", featureListGewKum.get(0).get("name"));
+
+                features.add(kumFeature);
                 featureListGewKum.clear();
             }
 
             code = newCode;
             features.add(feature);
+            simpleFeatures.add(feature);
             featureListKum.add(feature);
             featureListGewKum.add(feature);
         }
-        features.add(createKumFeature(featureListKum, false, PROFSTAT));
+        final Map<String, Object> kumFeature = createKumFeature(featureListKum, false, PROFSTAT);
+
+        for (final Map<String, Object> tmp : simpleFeatures) {
+            tmp.put("code", null);
+            tmp.put("name", null);
+            tmp.put("gew_l", null);
+        }
+        double laenge = 0.0;
+
+        for (final Map<String, Object> tmp : features) {
+            if (tmp.get("gew_l") != null) {
+                laenge += (Double)tmp.get("gew_l");
+            }
+        }
+        kumFeature.put("gew_l", laenge);
+        features.add(kumFeature);
 
         if (features.isEmpty()) {
             return null;
@@ -669,6 +728,9 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
             feature.put("blLiMin", getMinMax("blLi", guName, true));
             feature.put("blLiMit", getMit("blLi", guName));
             feature.put("blLiMax", getMinMax("blLi", guName, false));
+            feature.put("mwMin", getMinMax("mw", guName, true));
+            feature.put("mwMit", getMit("mw", guName));
+            feature.put("mwMax", getMinMax("mw", guName, false));
             feature.put("flSohle", getSum("flSo", guName));
             feature.put("flBoeRe", getSum("flBRe", guName));
             feature.put("flBoeLi", getSum("flBLi", guName));
@@ -729,6 +791,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      */
     private FeatureDataSource getGewaesserGuWidmung() throws Exception {
         final List<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> simpleFeatures = new ArrayList<Map<String, Object>>();
 
         sheetNames.add("GU");
         final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
@@ -780,6 +843,9 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
                 feature.put("blLiMin", getMinMax("blLi", guName, wdm, true));
                 feature.put("blLiMit", getMit("blLi", guName, wdm));
                 feature.put("blLiMax", getMinMax("blLi", guName, wdm, false));
+                feature.put("mwMin", getMinMax("mw", guName, wdm, true));
+                feature.put("mwMit", getMit("mw", guName, wdm));
+                feature.put("mwMax", getMinMax("mw", guName, wdm, false));
                 feature.put("flSohle", getSum("flSo", guName, wdm));
                 feature.put("flBoeRe", getSum("flBRe", guName, wdm));
                 feature.put("flBoeLi", getSum("flBLi", guName, wdm));
@@ -817,13 +883,26 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
                 feature.put("summe", false);
                 feature.put("zwischenSumme", false);
 
+                simpleFeatures.add(feature);
                 features.add(feature);
                 featureListKum.add(feature);
                 featureListGuKum.add(feature);
             }
-            features.add(createKumFeature(featureListGuKum, true));
+            final Map<String, Object> kumFeature = createKumFeature(featureListGuKum, true);
+            kumFeature.put("wdm", null);
+            kumFeature.put("name", helper.getGuId(guName));
+            kumFeature.put("gu", guName);
+            features.add(kumFeature);
         }
-        features.add(createKumFeature(featureListKum, false));
+        final Map<String, Object> kumFeature = createKumFeature(featureListKum, false);
+
+        for (final Map<String, Object> tmp : simpleFeatures) {
+            tmp.put("name", null);
+            tmp.put("gu", null);
+        }
+
+        kumFeature.put("wdm", null);
+        features.add(kumFeature);
 
         if (features.isEmpty()) {
             return null;
@@ -890,8 +969,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
                 } else {
                     kumFeature.put(key, (lengthSpecific * 100 / lengthTotal));
                 }
-            }
-            if (key.endsWith("prof_a") && (value instanceof Double)) {
+            } else if (key.endsWith("prof_a") && (value instanceof Double)) {
                 double lengthTotal = 0;
                 double lengthSpecific = 0;
 
@@ -908,8 +986,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
                 } else {
                     kumFeature.put(key, (lengthSpecific * 100 / lengthTotal));
                 }
-            }
-            if (key.endsWith("mw_a") && (value instanceof Double)) {
+            } else if (key.endsWith("mw_a") && (value instanceof Double)) {
                 double lengthTotal = 0;
                 double lengthSpecific = 0;
 
@@ -927,7 +1004,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
                     kumFeature.put(key, (lengthSpecific * 100 / lengthTotal));
                 }
             } else if (key.endsWith("Min") && (value instanceof Double)) {
-                double min = ((value != null) ? (Double)value : Double.MAX_VALUE);
+                double min = toDouble(value);
 
                 for (final Map<String, Object> f : featureListKum) {
                     final double val = toDouble(f.get(key));
@@ -936,12 +1013,12 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
                         f.put("key", null);
                     }
 
-                    if (val < min) {
+                    if ((val != 0.0) && (val < min)) {
                         min = val;
                     }
                 }
 
-                if (min != Double.MAX_VALUE) {
+                if (min != 0.0) {
                     kumFeature.put(key, min);
                 }
             } else if (key.endsWith("Max") && (value instanceof Double)) {
@@ -1103,7 +1180,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthMw(final String gu, final Integer wdm) {
+    private double getLengthMw(final String gu, final int wdm) {
         double length = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
@@ -1190,7 +1267,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthProf(final String prof, final String gu, final Integer wdm) {
+    private double getLengthProf(final String prof, final String gu, final int wdm) {
         double length = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
@@ -1238,7 +1315,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      */
     private double getMinMax(final String field, final int gewId, final boolean min) {
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : objList) {
             if (((gewId == -1) || (tmp.getId() == gewId))) {
@@ -1250,6 +1327,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1268,7 +1346,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      */
     private double getMinMax(final String field, final String gu, final boolean min) {
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))) {
@@ -1280,6 +1358,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1297,9 +1376,9 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getMinMax(final String field, final String gu, final Integer wdm, final boolean min) {
+    private double getMinMax(final String field, final String gu, final int wdm, final boolean min) {
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))
@@ -1312,6 +1391,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1336,7 +1416,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
             final double till,
             final boolean min) {
         double currentVal = 0;
-        final boolean firstValue = true;
+        boolean firstValue = true;
 
         for (final GmdPartObjOffen tmp : objList) {
             if ((tmp.getId() == gewId) && tmp.isInGewPart(gewId, from, till)) {
@@ -1348,6 +1428,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
 
                 if (firstValue || (min && (value < currentVal)) || (!min && (value > currentVal))) {
                     currentVal = value;
+                    firstValue = false;
                 }
             }
         }
@@ -1428,7 +1509,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getMit(final String field, final String gu, final Integer wdm) {
+    private double getMit(final String field, final String gu, final int wdm) {
         double currentVal = 0;
         double length = 0;
 
@@ -1561,7 +1642,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getSum(final String field, final String gu, final Integer wdm) {
+    private double getSum(final String field, final String gu, final int wdm) {
         double currentVal = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
@@ -1627,7 +1708,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    public int getCountProf(final String prof, final String gu, final Integer wdm) {
+    public int getCountProf(final String prof, final String gu, final int wdm) {
         int count = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
@@ -1692,7 +1773,7 @@ public class GerinneOGewaesserReport extends GerinneOGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final String gu, final Integer wdm) {
+    private double getLengthGew(final String gu, final int wdm) {
         double length = 0;
 
         for (final GmdPartObjOffen tmp : objList) {
