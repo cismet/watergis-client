@@ -911,8 +911,7 @@ public class GafProf extends javax.swing.JPanel {
         final User user = SessionManager.getSession().getUser();
         Boolean hasPermissionforBemerkung;
 
-        if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                    || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+        if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
             hasPermissionforBemerkung = true;
         } else {
             hasPermissionforBemerkung = (feature.getProperty("upl_name") != null)

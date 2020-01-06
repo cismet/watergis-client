@@ -62,8 +62,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
     private boolean cancelled = false;
     private int selectedThemeFeatureCount = -1;
     private String lastPath = null;
-    private boolean isGu = AppBroker.getInstance().isAdminOrLungUser() || AppBroker.getInstance()
-                .isGu();
+    private boolean isGu = AppBroker.getInstance().isAdminUser() || AppBroker.getInstance().isGu();
     private boolean isWawi = AppBroker.getInstance().isWawiOrAdminUser();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -588,12 +588,11 @@ public class FeatureServiceHelper {
                 featureList.add(lastFeature);
             }
 
-            H2FeatureService.removeTableIfExists(tableName + "_1");
+            H2FeatureService.removeTableIfExists(tableName);
             final H2FeatureService internalService = new H2FeatureService(
                     tableName,
                     H2FeatureServiceFactory.DB_NAME,
-                    tableName
-                            + "_1",
+                    tableName,
                     featureServiceAttributes,
                     featureList);
             if (LOG.isDebugEnabled()) {

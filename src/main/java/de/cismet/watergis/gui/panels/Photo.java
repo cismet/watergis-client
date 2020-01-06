@@ -837,8 +837,7 @@ public class Photo extends javax.swing.JPanel {
         final User user = SessionManager.getSession().getUser();
         Boolean hasPermissionforBemerkung;
 
-        if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                    || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+        if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
             hasPermissionforBemerkung = true;
         } else {
             hasPermissionforBemerkung = (feature.getProperty("upl_name") != null)
@@ -1501,8 +1500,9 @@ public class Photo extends javax.swing.JPanel {
             final Station laStat = getNextFgLaStat(stat.getPoint());
 
             if (laStat != null) {
-                newFotoBean.setProperty("la_cd", laStat.getLaCd());
-                newFotoBean.setProperty("la_st", laStat.getStat());
+                // it does not make a difference, if the ls values will be set in the bean
+// newFotoBean.setProperty("la_cd", laStat.getLaCd());
+// newFotoBean.setProperty("la_st", laStat.getStat());
                 feature.setProperty("la_cd", laStat.getLaCd());
                 feature.setProperty("la_st", laStat.getStat());
             }

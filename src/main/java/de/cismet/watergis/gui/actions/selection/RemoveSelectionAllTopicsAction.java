@@ -28,6 +28,7 @@ import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
+import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -77,20 +78,21 @@ public class RemoveSelectionAllTopicsAction extends AbstractAction {
      * Removes the selection of all features.
      */
     public static void removeSelectionInAllTopics() {
-        final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
-        final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
-        final List<PFeature> sel = sl.getAllSelectedPFeatures();
-        final List<Feature> toBeUnselected = new ArrayList<Feature>();
-
-        for (final PFeature feature : sel) {
-            if (feature.isSelected()) {
-                feature.setSelected(false);
-                sl.removeSelectedFeature(feature);
-                toBeUnselected.add(feature.getFeature());
-            }
-        }
-        ((DefaultFeatureCollection)CismapBroker.getInstance().getMappingComponent().getFeatureCollection()).unselect(
-            toBeUnselected);
+//        final MappingComponent map = CismapBroker.getInstance().getMappingComponent();
+//        final SelectionListener sl = (SelectionListener)map.getInputEventListener().get(MappingComponent.SELECT);
+//        final List<PFeature> sel = sl.getAllSelectedPFeatures();
+//        final List<Feature> toBeUnselected = new ArrayList<Feature>();
+//
+//        for (final PFeature feature : sel) {
+//            if (feature.isSelected()) {
+//                feature.setSelected(false);
+//                sl.removeSelectedFeature(feature);
+//                toBeUnselected.add(feature.getFeature());
+//            }
+//        }
+//        ((DefaultFeatureCollection)CismapBroker.getInstance().getMappingComponent().getFeatureCollection()).unselect(
+//            toBeUnselected);
+        SelectionManager.getInstance().setSelectedFeatures(new ArrayList<Feature>());
     }
 
     @Override

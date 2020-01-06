@@ -16,9 +16,15 @@ import Sirius.server.newuser.UserGroup;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+
 import org.apache.log4j.Logger;
 
 import org.deegree.commons.utils.Pair;
+
+import org.openide.util.Exceptions;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -27,11 +33,14 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 
 import java.net.URL;
 import java.net.URLEncoder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -162,11 +171,20 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
         }
 
         try {
-            final BufferedImage legend = getLegend();
+            final List<BufferedImage> legend = getLegend();
 
             if (legend != null) {
 //                ImageIO.write(legend, "jpg", new File("/home/therter/legende.jpg"));
-                hm.put("legend", ConversionUtils.image2String(rescaleImage(legend))); // NOI18N
+//                hm.put("legend", ConversionUtils.image2String(rescaleImage(legend))); // NOI18N
+                final List<String> legendStrings = new ArrayList<String>();
+
+                for (final BufferedImage image : legend) {
+                    legendStrings.add(ConversionUtils.image2String(rescaleImage(image)));
+                }
+
+                hm.put(
+                    "legend",
+                    ConversionUtils.jrDataSource2String(new ImageDataSource(legendStrings)));
             }
         } catch (Exception e) {
             LOG.error("Error while reading image data", e);
@@ -180,9 +198,10 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
      *
      * @return  DOCUMENT ME!
      */
-    protected BufferedImage getLegend() {
+    protected List<BufferedImage> getLegend() {
         final MappingModel model = CismapBroker.getInstance().getMappingComponent().getMappingModel();
         final TreeMap<Integer, MapService> serviceMap = model.getRasterServices();
+        final List<BufferedImage> legendArray = new ArrayList<BufferedImage>();
         BufferedImage legend = null;
 
         for (final Integer key : serviceMap.keySet()) {
@@ -218,7 +237,16 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
                     if (legend == null) {
                         legend = image;
                     } else {
-                        legend = Static2DTools.appendImage(legend, image);
+                        if ((legend.getHeight() + image.getHeight()) <= getLegendHeight()) {
+                            legend = Static2DTools.appendImage(legend, image);
+                        } else {
+                            legendArray.add(legend);
+                            if (image.getHeight() <= getLegendHeight()) {
+                                legend = image;
+                            } else {
+                                legend = rescaleImage(image);
+                            }
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -234,7 +262,11 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
             }
         }
 
-        return legend;
+        if (legend != null) {
+            legendArray.add(legend);
+        }
+
+        return legendArray;
     }
 
     /**
@@ -317,6 +349,30 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
      * @return  DOCUMENT ME!
      */
     protected BufferedImage rescaleImage(final BufferedImage legend) {
+        final BufferedImage image = new BufferedImage((int)(getLegendWidth() * 1.3),
+                (int)(getLegendHeight() * 1.3),
+                BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D graphics2D = image.createGraphics();
+        graphics2D.drawImage(legend.getScaledInstance(
+                (int)(legend.getWidth() / 1.0),
+                (int)(legend.getHeight() / 1.0),
+                BufferedImage.SCALE_SMOOTH),
+            0,
+            0,
+            null);
+        graphics2D.dispose();
+
+        return image;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   legend  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected BufferedImage downScaleImage(final BufferedImage legend) {
         final BufferedImage image = new BufferedImage((int)(getLegendWidth() * 1.3),
                 (int)(getLegendHeight() * 1.3),
                 BufferedImage.TYPE_INT_ARGB);
@@ -539,4 +595,47 @@ public abstract class AbstractWatergisPrintingTemplate extends AbstractPrintingI
      */
     private void txtZeile1ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_txtZeile1ActionPerformed
     }                                                                             //GEN-LAST:event_txtZeile1ActionPerformed
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private static class ImageDataSource implements JRDataSource, Serializable {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private int index = -1;
+        private List<String> image;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new ImageDataSource object.
+         *
+         * @param  image  DOCUMENT ME!
+         */
+        public ImageDataSource(final List<String> image) {
+            this.image = image;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public boolean next() throws JRException {
+            return ++index < image.size();
+        }
+
+        @Override
+        public Object getFieldValue(final JRField jrf) throws JRException {
+            try {
+                return ConversionUtils.String2Image(image.get(index));
+            } catch (IOException ex) {
+                LOG.error("Error while converting image");
+            }
+            return null;
+        }
+    }
 }
