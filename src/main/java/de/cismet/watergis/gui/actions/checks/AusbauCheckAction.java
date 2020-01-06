@@ -142,8 +142,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
         if ((FG_BA_SBEF != null) && (FG_BA_UBEF != null) && (FG_BA_BBEF != null) && (FG_BA_PROF != null)) {
             final User user = SessionManager.getSession().getUser();
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_PROF_ATTR = "select distinct " + FG_BA_PROF.getID() + ", bef." + FG_BA_PROF.getPrimaryKey()
                             + " from dlm25w.fg_ba_prof bef\n"
                             + "join dlm25w.fg_ba_linie linie on (bef.ba_st = linie.id)\n"
@@ -216,8 +215,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + user.getUserGroup().getName() + "' or %2$s);";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_UBEF_ATTR = "select distinct " + FG_BA_UBEF.getID() + ", bef." + FG_BA_UBEF.getPrimaryKey()
                             + " from dlm25w.fg_ba_ubef bef\n"
                             + "join dlm25w.fg_ba_linie linie on (bef.ba_st = linie.id)\n"
@@ -286,8 +284,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + user.getUserGroup().getName() + "' or %2$s);";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_SBEF_ATTR = "select distinct " + FG_BA_SBEF.getID() + ", bef." + FG_BA_SBEF.getPrimaryKey()
                             + " from dlm25w.fg_ba_sbef bef\n"
                             + "join dlm25w.fg_ba_linie linie on (bef.ba_st = linie.id)\n"
@@ -361,8 +358,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + user.getUserGroup().getName() + "' or %2$s);";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_BBEF_ATTR = "select distinct " + FG_BA_BBEF.getID() + ", bef." + FG_BA_BBEF.getPrimaryKey()
                             + " from dlm25w.fg_ba_bbef bef\n"
                             + "join dlm25w.fg_ba_linie linie on (bef.ba_st = linie.id)\n"
@@ -638,7 +634,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
         String user = AppBroker.getInstance().getOwner();
         int[] selectedIds = null;
 
-        if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
+        if (user.equalsIgnoreCase("Administratoren")) {
             user = null;
         }
 
