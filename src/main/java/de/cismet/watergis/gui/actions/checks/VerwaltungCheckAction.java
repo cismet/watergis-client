@@ -129,8 +129,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                     && (FG_BA_EXP != null)) {
             final User user = SessionManager.getSession().getUser();
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_GMD_CATALOGUE = "select distinct " + FG_BA_GMD.getID() + ", t." + FG_BA_GMD.getPrimaryKey()
                             + " from " + FG_BA_GMD.getTableName() + " t\n"
                             + "join dlm25w.fg_ba_linie linie on (ba_st = linie.id) "
@@ -155,8 +154,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_GB_CATALOGUE = "select distinct " + FG_BA_GB.getID() + ", t." + FG_BA_GB.getPrimaryKey()
                             + " from " + FG_BA_GB.getTableName() + " t\n"
                             + "join dlm25w.fg_ba_linie linie on (ba_st = linie.id) "
@@ -176,8 +174,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_GMD_STATUS = "select distinct " + FG_BA_GMD.getID() + ", t." + FG_BA_GMD.getPrimaryKey()
                             + " from " + FG_BA_GMD.getTableName() + " t\n"
                             + "join dlm25w.fg_ba_linie linie on (ba_st = linie.id) "
@@ -197,8 +194,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_GB_STATUS = "select distinct " + FG_BA_GB.getID() + ", t." + FG_BA_GB.getPrimaryKey()
                             + " from " + FG_BA_GB.getTableName() + " t\n"
                             + "join dlm25w.fg_ba_linie linie on (ba_st = linie.id) "
@@ -218,8 +214,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_SB_CATALOGUE = "select distinct " + FG_BA_SB.getID() + ", t." + FG_BA_SB.getPrimaryKey()
                             + " from " + FG_BA_SB.getTableName() + " t\n"
                             + "left join dlm25w.k_sb k on (k.id = t.sb) \n"
@@ -245,8 +240,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_EXP = "select distinct " + FG_BA_EXP.getID() + ", unnest(array_append(exp.id)) as id "
                             + " from " + FG_BA_EXP.getTableName() + " exp\n"
                             + "join dlm25w.fg_ba_linie linie on (exp.ba_st = linie.id)\n"
@@ -480,7 +474,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
         String user = AppBroker.getInstance().getOwner();
         int[] selectedIds = null;
 
-        if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
+        if (user.equalsIgnoreCase("Administratoren")) {
             user = null;
         }
 

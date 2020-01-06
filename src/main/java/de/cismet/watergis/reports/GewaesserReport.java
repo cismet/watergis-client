@@ -213,8 +213,7 @@ public class GewaesserReport {
      * @throws  Exception  DOCUMENT ME!
      */
     public File createReport(final String baCd) throws Exception {
-        final boolean isGu = AppBroker.getInstance().isAdminOrLungUser() || AppBroker.getInstance()
-                    .isGu();
+        final boolean isGu = AppBroker.getInstance().isAdminUser() || AppBroker.getInstance().isGu();
         final boolean isWawi = AppBroker.getInstance().isWawiOrAdminUser();
         final HashMap<String, Object> parameters = new HashMap<String, Object>();
         final Map<String, JRDataSource> dataSources = new HashMap<String, JRDataSource>();

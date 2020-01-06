@@ -13,6 +13,8 @@ package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
@@ -60,6 +62,7 @@ public class WrSgUesgRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("src_quelle", new Varchar(50, false, true));
         typeMap.put("recht", new Link(250, false, true));
         typeMap.put("info", new Link(250, false, true));
+        typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
@@ -69,7 +72,7 @@ public class WrSgUesgRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("id");
+                    && !columnName.equals("geom") && !columnName.equals("id") && !columnName.equals("flaeche");
     }
 
     @Override
@@ -125,5 +128,46 @@ public class WrSgUesgRuleSet extends WatergisDefaultRuleSet {
                 downloadDocumentFromWebDav(getWbblPath(), addExtension(value.toString(), "pdf"));
             }
         }
+    }
+
+    @Override
+    public String[] getAdditionalFieldNames() {
+        return new String[] { "flaeche" };
+    }
+
+    @Override
+    public int getIndexOfAdditionalFieldName(final String name) {
+        if (name.equals("flaeche")) {
+            return -3;
+        } else {
+            return super.getIndexOfAdditionalFieldName(name);
+        }
+    }
+
+    @Override
+    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
+        Long value = null;
+
+        final Geometry geom = ((Geometry)feature.getProperty("geom"));
+
+        if (geom != null) {
+            value = Math.round(geom.getArea());
+        }
+
+        return value;
+    }
+
+    @Override
+    public String getAdditionalFieldFormula(final String propertyName) {
+        if (propertyName.equals("flaeche")) {
+            return "round(st_area(geom))";
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Class getAdditionalFieldClass(final int index) {
+        return Long.class;
     }
 }

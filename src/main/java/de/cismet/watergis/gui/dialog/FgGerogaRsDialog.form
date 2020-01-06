@@ -300,7 +300,6 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="ckbOstsee">
       <Properties>
-        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="FgGerogaRsDialog.ckbOstsee.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
         </Property>
@@ -871,7 +870,6 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="ckbOstseeSelected">
       <Properties>
-        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="FgGerogaRsDialog.ckbOstseeSelected.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
         </Property>

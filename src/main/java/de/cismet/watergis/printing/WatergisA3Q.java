@@ -23,7 +23,7 @@ public class WatergisA3Q extends AbstractWatergisPrintingTemplate {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final int LEGEND_HEIGHT = 758;
-    private static final int LEGEND_WIDTH = 1104;
+    private static final int LEGEND_WIDTH = 1130;
 
     //~ Methods ----------------------------------------------------------------
 

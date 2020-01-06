@@ -110,12 +110,23 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(WatergisDefaultRuleSet.class);
-    private static final String PROTECTEC_WBBL_PATH = "http://fry.fis-wasser-mv.de/watergis_secure/wr_wbu_wbbl_g/";
-    private static final String UNPROTECTEC_WBBL_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_wbu_wbbl_o/";
-    private static final String SG_LINK_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/sg_link_tabelle/";
-    protected static final String WR_SG_WSG_uk_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_sg_wsg_uk/";
-    protected static final String WR_SG_WSG_lk_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_sg_wsg_lk/";
+    private static final String PROTECTEC_WBBL_PATH =
+        "https://files.cismet.de/remote.php/webdav/watergis/watergis_secure/wr_wbu_wbbl_g/";
+    private static final String UNPROTECTEC_WBBL_PATH =
+        "https://files.cismet.de/remote.php/webdav/watergis/watergis/wr_wbu_wbbl_o/";
+    private static final String SG_LINK_TABLE_PATH =
+        "https://files.cismet.de/remote.php/webdav/watergis/watergis/sg_link_tabelle/";
+    protected static final String WR_SG_WSG_UK_TABLE_PATH =
+        "https://files.cismet.de/remote.php/webdav/watergis/watergis/wr_sg_wsg_uk/";
+    protected static final String WR_SG_WSG_LK_TABLE_PATH =
+        "https://files.cismet.de/remote.php/webdav/watergis/watergis/wr_sg_wsg_lk/";
     private static final String PHOTO_PATH = "http://fry.fis-wasser-mv.de/watergis/";
+//    private static final String PROTECTEC_WBBL_PATH = "http://fry.fis-wasser-mv.de/watergis_secure/wr_wbu_wbbl_g/";
+//    private static final String UNPROTECTEC_WBBL_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_wbu_wbbl_o/";
+//    private static final String SG_LINK_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/sg_link_tabelle/";
+//    protected static final String WR_SG_WSG_uk_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_sg_wsg_uk/";
+//    protected static final String WR_SG_WSG_lk_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_sg_wsg_lk/";
+//    private static final String PHOTO_PATH = "http://fry.fis-wasser-mv.de/watergis/";
     private static String WEB_DAV_PASSWORD = null;
     private static String WEB_DAV_USER = null;
     private static Boolean accessToProtectedWbbl = null;
@@ -164,27 +175,22 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         // The ResourceBundle cannot be used in a static block. Don't know why
 
         if (WEB_DAV_USER == null) {
-            if (hasAccessToProtectedWbbl()) {
-                final ResourceBundle bundle = ResourceBundle.getBundle(
-                        "de/cismet/watergis/configuration/wbblWebDev");
+            final ResourceBundle bundle = ResourceBundle.getBundle(
+                    "de/cismet/watergis/configuration/wbblWebDev");
 
-                if (bundle == null) {
-                    WEB_DAV_PASSWORD = null;
-                    WEB_DAV_USER = "unknown";
-                    LOG.error("wbblWebDav.properties not found");
-                } else {
-                    String pass = bundle.getString("password");
-
-                    if ((pass != null)) {
-                        pass = new String(PasswordEncrypter.decrypt(pass.toCharArray(), true));
-                    }
-
-                    WEB_DAV_PASSWORD = pass;
-                    WEB_DAV_USER = bundle.getString("username");
-                }
-            } else {
+            if (bundle == null) {
                 WEB_DAV_PASSWORD = null;
                 WEB_DAV_USER = "unknown";
+                LOG.error("wbblWebDav.properties not found");
+            } else {
+                String pass = bundle.getString("password");
+
+                if ((pass != null)) {
+                    pass = new String(PasswordEncrypter.decrypt(pass.toCharArray(), true));
+                }
+
+                WEB_DAV_PASSWORD = pass;
+                WEB_DAV_USER = bundle.getString("username");
             }
         }
     }
@@ -1649,6 +1655,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
             for (final FeatureServiceFeature feature : features) {
                 idOfCurrentlyCheckedFeature = feature.getId();
+                final String fieldId = "ID: " + idOfCurrentlyCheckedFeature + " Feld: " + attribute;
                 if (type.isUnique()) {
                     final TreeSet<FeatureServiceFeature> changedObjects = changedObjectMap.get(type);
 
@@ -1666,7 +1673,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                         "Das Attribut "
                                 + attribute
-                                + " darf nicht leer sein");
+                                + " darf nicht leer sein",
+                        fieldId,
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 } else if (result.getValidationResult() == Validation.SIZE_CORRECTION) {
                     try {
@@ -1680,7 +1689,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 + attribute
                                 + " muss den Datentyp "
                                 + type.toString()
-                                + " haben");
+                                + " haben",
+                        fieldId,
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 } else if (result.getValidationResult() == Validation.WRONG_DATA_TYPE) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -1688,14 +1699,18 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 + attribute
                                 + " muss den Datentyp "
                                 + type.toString()
-                                + " haben");
+                                + " haben",
+                        fieldId,
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 } else if (result.getValidationResult() == Validation.WRONG_RANGE) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                         "Das Attribut "
                                 + attribute
                                 + " hat folgenden Wertebereich: "
-                                + type.range(attribute));
+                                + type.range(attribute),
+                        fieldId,
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 } else if (result.getValidationResult() == Validation.NOT_BINARY) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -1703,11 +1718,15 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 + attribute
                                 + " hat einen ungültigen Wert. Der Wertebereich ist (0/1"
                                 + (type.isNotNull() ? "" : "/NULL")
-                                + ")");
+                                + ")",
+                        fieldId,
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 } else if (result.getValidationResult() == Validation.WBBL_NOT_ACCESSIBLE) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wert nicht zulässig, weil Wasserbuchblatt nicht existiert");
+                        "Wert nicht zulässig, weil Wasserbuchblatt nicht existiert",
+                        fieldId,
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -1723,6 +1742,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         final ArrayList list = attributes.get(0);
 
                         if ((list != null) && !list.isEmpty()) {
+                            final String fieldId = "ID: " + idOfCurrentlyCheckedFeature + " Feld: " + attribute;
                             JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                                 NbBundle.getMessage(
                                     WatergisDefaultRuleSet.class,
@@ -1732,12 +1752,15 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 NbBundle.getMessage(
                                     WatergisDefaultRuleSet.class,
                                     "WatergisDefaultRuleSet.prepareForSave().title",
-                                    type.field),
+                                    type.field)
+                                        + " "
+                                        + fieldId,
                                 JOptionPane.ERROR_MESSAGE);
                             return false;
                         }
                     }
                 } catch (final Exception e) {
+                    final String fieldId = "ID: " + idOfCurrentlyCheckedFeature + " Feld: " + attribute;
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                         NbBundle.getMessage(
                             WatergisDefaultRuleSet.class,
@@ -1745,7 +1768,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                             type.field),
                         NbBundle.getMessage(
                             WatergisDefaultRuleSet.class,
-                            "WatergisDefaultRuleSet.prepareForSave().error.title"),
+                            "WatergisDefaultRuleSet.prepareForSave().error.title")
+                                + " "
+                                + fieldId,
                         JOptionPane.ERROR_MESSAGE);
                     LOG.error("Error while checking the uniqueness of the ba_cd field.", e);
                     return false;

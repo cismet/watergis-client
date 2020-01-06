@@ -124,7 +124,7 @@ public class WrSgWsgRuleSet extends WatergisDefaultRuleSet {
             if ((value instanceof String) && !value.equals("") && (wbbl instanceof String) && !wbbl.equals("")
                         && (clickCount == 1)) {
 //                try {
-                final String linkBase = (columnName.equals("uk") ? WR_SG_WSG_uk_TABLE_PATH : WR_SG_WSG_lk_TABLE_PATH);
+                final String linkBase = (columnName.equals("uk") ? WR_SG_WSG_UK_TABLE_PATH : WR_SG_WSG_LK_TABLE_PATH);
                 final String linkExt = (columnName.equals("uk") ? "_uk" : "_lk");
                 downloadDocumentFromWebDav(linkBase, wbbl.toString() + linkExt + ".zip");
 //                    final URL u = new URL(linkBase + wbbl.toString() + ".zip");

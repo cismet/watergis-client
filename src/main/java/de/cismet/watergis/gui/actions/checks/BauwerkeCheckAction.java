@@ -228,8 +228,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                     && (FG_BA_SCHW != null)) {
             final User user = SessionManager.getSession().getUser();
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_RL_ATTR = "select " + FG_BA_RL.getID() + ", rl." + FG_BA_RL.getPrimaryKey()
                             + " from dlm25w.fg_ba_rl rl\n"
                             + "join dlm25w.fg_ba_linie linie on (rl.ba_st = linie.id)\n"
@@ -285,8 +284,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_D_ATTR = "select " + FG_BA_D.getID() + ", d." + FG_BA_D.getPrimaryKey()
                             + " from dlm25w.fg_ba_d d\n"
                             + "join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
@@ -344,8 +342,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_DUE_ATTR = "select " + FG_BA_DUE.getID() + ", d." + FG_BA_DUE.getPrimaryKey()
                             + " from dlm25w.fg_ba_due d\n"
                             + "join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
@@ -407,8 +404,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_ANLL_ATTR = "select " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
                             + " from dlm25w.fg_ba_anll a\n"
                             + "join dlm25w.fg_ba_linie linie on (a.ba_st = linie.id)\n"
@@ -448,8 +444,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_ANLP_ATTR = "select " + FG_BA_ANLP.getID() + ", a." + FG_BA_ANLP.getPrimaryKey()
                             + " from dlm25w.fg_ba_anlp a\n"
                             + "join dlm25w.fg_ba_punkt von on (a.ba_st = von.id)\n"
@@ -491,8 +486,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_KR_ATTR = "select " + FG_BA_KR.getID() + ", kr." + FG_BA_KR.getPrimaryKey()
                             + " from dlm25w.fg_ba_kr kr\n"
                             + "join dlm25w.fg_ba_punkt von on (kr.ba_st = von.id)\n"
@@ -530,8 +524,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_EA_ATTR = "select " + FG_BA_EA.getID() + ", ea." + FG_BA_EA.getPrimaryKey()
                             + " from dlm25w.fg_ba_ea ea\n"
                             + "join dlm25w.fg_ba_punkt von on (ea.ba_st = von.id)\n"
@@ -565,8 +558,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_SCHA_ATTR = "select " + FG_BA_SCHA.getID() + ", scha." + FG_BA_SCHA.getPrimaryKey()
                             + " from dlm25w.fg_ba_scha scha\n"
                             + "join dlm25w.fg_ba_punkt von on (scha.ba_st = von.id)\n"
@@ -596,8 +588,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_WEHR_ATTR = "select " + FG_BA_WEHR.getID() + ", wehr." + FG_BA_WEHR.getPrimaryKey()
                             + " from dlm25w.fg_ba_wehr wehr\n"
                             + "join dlm25w.fg_ba_punkt von on (wehr.ba_st = von.id)\n"
@@ -685,8 +676,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_SCHW_ATTR = "select " + FG_BA_SCHW.getID() + ", schw." + FG_BA_SCHW.getPrimaryKey()
                             + " from dlm25w.fg_ba_schw schw\n"
                             + "join dlm25w.fg_ba_punkt von on (schw.ba_st = von.id)\n"
@@ -740,8 +730,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_SCHA_DISTANCE = "select distinct " + FG_BA_SCHA.getID() + ", s1." + FG_BA_SCHA.getPrimaryKey()
                             + " from (\n"
                             + "select scha.id, st.route, st.wert\n"
@@ -785,8 +774,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 0.5";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_WEHR_DISTANCE = "select distinct " + FG_BA_WEHR.getID() + ", s1." + FG_BA_WEHR.getPrimaryKey()
                             + " from (\n"
                             + "select scha.id, st.route, st.wert\n"
@@ -830,8 +818,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 0.5";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_SCHW_DISTANCE = "select distinct " + FG_BA_SCHW.getID() + ", s1." + FG_BA_SCHW.getPrimaryKey()
                             + " from (\n"
                             + "select scha.id, st.route, st.wert\n"
@@ -875,8 +862,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 20";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_KR_DISTANCE = "select distinct " + FG_BA_KR.getID() + ", s1." + FG_BA_KR.getPrimaryKey()
                             + " from (\n"
                             + "select scha.id, st.route, st.wert\n"
@@ -971,8 +957,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 //                            + "where (%1$s is null or s1.route = any(%1$s)) and s1.id <> s2.id and s1.route = s2.route and abs(s1.wert - s2.wert) < 0.5";
 //            }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_SCHA_OFFEN = "select distinct " + FG_BA_SCHA.getID() + ", scha." + FG_BA_SCHA.getPrimaryKey()
                             + " from dlm25w.fg_ba_scha scha\n"
                             + "join dlm25w.fg_ba_punkt s on (scha.ba_st = s.id)\n"
@@ -1045,8 +1030,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 //                            + ")";
 //            }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_ANLP_OFFEN = "select distinct " + FG_BA_ANLP.getID() + ", a." + FG_BA_ANLP.getPrimaryKey()
                             + " from dlm25w.fg_ba_anlp a\n"
                             + "join dlm25w.fg_ba_punkt s on (a.ba_st = s.id)\n"
@@ -1085,8 +1069,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + ")";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_ANLP_GESCHL = "select distinct " + FG_BA_ANLP.getID() + ", a." + FG_BA_ANLP.getPrimaryKey()
                             + " from dlm25w.fg_ba_anlp a\n"
                             + "join dlm25w.fg_ba_punkt s on (a.ba_st = s.id)\n"
@@ -1126,8 +1109,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + ")";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_ANLP_ESW = "select distinct " + FG_BA_ANLP.getID() + ", a." + FG_BA_ANLP.getPrimaryKey()
                             + " from dlm25w.fg_ba_anlp a\n"
                             + "join dlm25w.fg_ba_punkt s on (a.ba_st = s.id)\n"
@@ -1166,8 +1148,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + ")";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_KR_ESW = "select distinct " + FG_BA_KR.getID() + ", a." + FG_BA_KR.getPrimaryKey()
                             + " from dlm25w.fg_ba_kr a\n"
                             + "join dlm25w.fg_ba_punkt s on (a.ba_st = s.id)\n"
@@ -1243,8 +1224,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 //                            + ")";
 //            }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_EA_ESW = "select distinct " + FG_BA_EA.getID() + ", a." + FG_BA_EA.getPrimaryKey()
                             + " from dlm25w.fg_ba_ea a\n"
                             + "join dlm25w.fg_ba_punkt s on (a.ba_st = s.id)\n"
@@ -1281,8 +1261,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + ")";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
                             + " from dlm25w.fg_ba_anll a\n"
                             + "join dlm25w.fg_ba_linie linie on (a.ba_st = linie.id)\n"
@@ -1331,8 +1310,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + ")) >= 0.01";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
                             + " from dlm25w.fg_ba_anll a\n"
                             + "join dlm25w.fg_ba_linie linie on (a.ba_st = linie.id)\n"
@@ -1381,8 +1359,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + ")) > 0.01";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_KR_MARKED_TWICE = "select distinct " + FG_BA_KR.getID() + ", k1." + FG_BA_KR.getPrimaryKey()
                             + " from \n"
                             + "(select kr.id, g.geo_field, s.route, kkr.kr kr\n"
@@ -1428,8 +1405,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or k1.route = any(%1$s)) and k1.id <> k2.id and k1.kr = 'Gew' and k2.kr = 'Gew' and not st_isempty(st_intersection(k1.geo_field, st_buffer(k2.geo_field, 3)));";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_KR_KEIN_FG_BA = "select distinct " + FG_BA_KR.getID() + ", kr." + FG_BA_KR.getPrimaryKey()
                             + " from dlm25w.fg_ba_kr kr\n"
                             + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
@@ -1453,8 +1429,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "' or %2$s) and (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and (select count(ba.id) from dlm25w.fg_ba ba join geom on (ba.geom = geom.id) where st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) ) < 2;";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_KR_INVALID = "select distinct " + FG_BA_KR.getID() + ", kr." + FG_BA_KR.getPrimaryKey()
                             + " from dlm25w.fg_ba_kr kr\n"
                             + "join dlm25w.fg_ba_punkt s on (kr.ba_st = s.id)\n"
@@ -1775,7 +1750,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         String user = AppBroker.getInstance().getOwner();
         int[] selectedIds = null;
 
-        if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
+        if (user.equalsIgnoreCase("Administratoren")) {
             user = null;
         }
 

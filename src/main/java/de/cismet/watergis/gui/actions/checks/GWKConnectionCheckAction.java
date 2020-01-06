@@ -153,7 +153,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                     String user = AppBroker.getInstance().getOwner();
                     this.wd.setMax(getProgressSteps());
 
-                    if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
+                    if (user.equalsIgnoreCase("Administratoren")) {
                         user = null;
                     }
 

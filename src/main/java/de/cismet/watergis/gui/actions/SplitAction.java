@@ -405,6 +405,9 @@ public class SplitAction extends AbstractAction {
                                         final AttributeTableRuleSet featureRuleSet = getRuleSet(newFeature);
                                         if ((newFeature instanceof DefaultFeatureServiceFeature)
                                                     && (featureRuleSet != null)) {
+//                                            DefaultFeatureServiceFeature f = (DefaultFeatureServiceFeature)newFeature;
+//                                            f.setProperties("", "");
+
                                             featureRuleSet.beforeSave((DefaultFeatureServiceFeature)newFeature);
                                         }
                                         // Save the splitted feature

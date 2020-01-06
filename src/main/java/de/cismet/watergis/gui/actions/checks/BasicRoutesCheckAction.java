@@ -95,8 +95,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
         if ((BAK_AE_MC != null) && (BAK_MC != null)) {
             final User user = SessionManager.getSession().getUser();
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_FG_BAK_LENGTH = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join geom g on (bak.geom = g.id) \n"
@@ -110,8 +109,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + user.getUserGroup().getName() + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_CROSSING_LINES = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "join geom g on (bak.geom = g.id) \n"
@@ -125,8 +123,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "and (gr.owner = '" + user.getUserGroup().getName() + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_WITHOUT_BA_CD = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and ba_cd is null OR ba_cd = ''";
@@ -139,8 +136,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_DUPLICATED_BA_CD = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "where (%1$s is null or bak.id = any(%1$s)) and ba_cd in (select ba_cd from dlm25w.fg_bak group by ba_cd having count(ba_cd) > 1)";
@@ -152,8 +148,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "and (gr.owner = '" + user.getUserGroup().getName() + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_PREFIX = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak \n"
                             + "left join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
@@ -166,8 +161,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "and (gr.owner = '" + user.getUserGroup().getName() + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_PREFIX_ME_WW_GR_OTHER = "select " + BAK_MC.getID() + ", bak." + BAK_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak bak "
                             + "join dlm25w.k_ww_gr gr on (substr(ba_cd, 1, length(gr.praefix) + 1) = (gr.praefix || ':'))\n"
@@ -182,8 +176,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                             + "and (gr1.owner = '" + user.getUserGroup().getName() + "' or %2$s)";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_AE = "select " + BAK_AE_MC.getID() + ", ae." + BAK_AE_MC.getPrimaryKey()
                             + " from dlm25w.fg_bak_ae ae \n"
                             + "join dlm25w.fg_bak_linie linie on (ae.bak_st = linie.id) \n"
@@ -385,7 +378,7 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
         String user = AppBroker.getInstance().getOwner();
         int[] selectedIds = null;
 
-        if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
+        if (user.equalsIgnoreCase("Administratoren")) {
             user = null;
         }
 
