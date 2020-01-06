@@ -25,9 +25,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
-import org.deegree.io.shpapi.shape_new.ShapeFile;
-import org.deegree.io.shpapi.shape_new.ShapeFileWriter;
-import org.deegree.model.feature.FeatureCollection;
 
 import org.jdom.Element;
 
@@ -42,9 +39,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import java.net.URL;
 
@@ -92,7 +87,6 @@ import de.cismet.cismap.commons.featureservice.H2FeatureService;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.rasterservice.MapService;
 import de.cismet.cismap.commons.tools.ExportCsvDownload;
-import de.cismet.cismap.commons.tools.SimpleFeatureCollection;
 import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.security.WebAccessManager;
@@ -110,7 +104,6 @@ import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.download.FakeFileDownload;
 
-import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.actions.checks.AbstractCheckAction;
 import de.cismet.watergis.gui.dialog.ExportDialog;
 
@@ -137,8 +130,6 @@ public class ExportAction extends AbstractAction implements Configurable {
     private static final String CHECK = "Check";
     private static final String THEME_FOLDER = "Themen";
     private static final String CATALOGUE_FOLDER = "Kataloge";
-    private static final String PRJ_CONTENT =
-        "PROJCS[\"ETRS_1989_UTM_Zone_33N\",GEOGCS[\"GCS_ETRS_1989\",DATUM[\"D_ETRS_1989\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",33500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",15.0],PARAMETER[\"Scale_Factor\",0.9996],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]";
 
     //~ Instance fields --------------------------------------------------------
 
@@ -1192,7 +1183,7 @@ public class ExportAction extends AbstractAction implements Configurable {
                 private void createPrjFile(final String filename) {
                     try {
                         final BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
-                        bw.write(PRJ_CONTENT);
+                        bw.write(AppBroker.PRJ_CONTENT);
                         bw.close();
                     } catch (Exception e) {
                         LOG.error("Error while writing .prj file.", e);

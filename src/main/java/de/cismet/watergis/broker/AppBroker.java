@@ -130,6 +130,8 @@ public class AppBroker implements Configurable {
     private static ConfigurationManager configManager;
     public static final String DOMAIN_NAME = "DLM25W";
     public static final String DOMAIN_NAME_WRRL = "WRRL_DB_MV";
+    public static final String PRJ_CONTENT =
+        "PROJCS[\"ETRS_1989_UTM_Zone_33N_zE-N\",GEOGCS[\"GCS_ETRS_1989\",DATUM[\"D_ETRS_1989\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",33500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",15.0],PARAMETER[\"Scale_Factor\",0.9996],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0],AUTHORITY[\"EPSG\",5650]]";
 
     //~ Instance fields --------------------------------------------------------
 
@@ -743,7 +745,7 @@ public class AppBroker implements Configurable {
     public boolean isWawiOrAdminUser() {
         final User user = SessionManager.getSession().getUser();
 
-        if (user.getUserGroup().getName().startsWith("lung")
+        if (user.getUserGroup().getName().startsWith("lung_edit")
                     || user.getUserGroup().getName().equalsIgnoreCase("administratoren")
                     || user.getUserGroup().getName().contains("lu")
                     || user.getUserGroup().getName().contains("wbv")
@@ -761,11 +763,10 @@ public class AppBroker implements Configurable {
      *
      * @return  DOCUMENT ME!
      */
-    public boolean isAdminOrLungUser() {
+    public boolean isAdminUser() {
         final User user = SessionManager.getSession().getUser();
 
-        if (user.getUserGroup().getName().startsWith("lung")
-                    || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+        if (user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
             return true;
         } else {
             return false;
