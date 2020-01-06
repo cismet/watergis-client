@@ -2,9 +2,9 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="A3Q" pageWidth="1190" pageHeight="842" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1130" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="4b6f25a6-4fdf-446e-9f0a-f5eb00cde7fe">
 	<property name="ireport.scriptlethandling" value="0"/>
 	<property name="ireport.encoding" value="UTF-8"/>
-	<property name="ireport.zoom" value="1.7715610000000015"/>
-	<property name="ireport.x" value="1159"/>
-	<property name="ireport.y" value="881"/>
+	<property name="ireport.zoom" value="0.6830134553650712"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="460"/>
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<import value="net.sf.jasperreports.engine.data.*"/>
@@ -228,26 +228,11 @@
 	</pageFooter>
 	<summary>
 		<band height="802" splitType="Stretch">
-			<image scaleImage="FillFrame">
-				<reportElement key="image-3" x="10" y="44" width="1104" height="758" uuid="72d3011c-2312-4606-b5d3-558fdd6db8f5"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<graphicElement>
-					<pen lineWidth="0.0" lineStyle="Solid"/>
-				</graphicElement>
-				<imageExpression><![CDATA[de.cismet.watergis.utils.ConversionUtils.String2Image((String)$P{legend})]]></imageExpression>
-			</image>
-			<staticText>
-				<reportElement x="10" y="6" width="1104" height="28" uuid="5d8adf18-f74a-4c44-93bb-ae187f0ee09f"/>
-				<textElement textAlignment="Center">
-					<font size="16" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Legende]]></text>
-			</staticText>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="1130" height="802" uuid="fd75f461-36d1-46bc-8367-fc2c898e2362"/>
+				<dataSourceExpression><![CDATA[(JRDataSource)de.cismet.watergis.utils.ConversionUtils.String2JRDataSource((String)$P{legend})]]></dataSourceExpression>
+				<subreportExpression><![CDATA["de/cismet/watergis/printing/A3Q_legend_sub.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</summary>
 </jasperReport>
