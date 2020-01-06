@@ -19,6 +19,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.apache.log4j.Logger;
 
+import org.deegree.datatypes.Types;
+
 import java.sql.Timestamp;
 
 import javax.swing.table.TableCellEditor;
@@ -27,9 +29,12 @@ import javax.swing.table.TableModel;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
@@ -38,6 +43,7 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.reports.WkFgReportAction;
 
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -60,7 +66,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("bak_cd", new Varchar(50, false, false));
         typeMap.put("bak_st_von", new Numeric(10, 2, false, true));
         typeMap.put("bak_st_bis", new Numeric(10, 2, false, true));
-        typeMap.put("wk_nr", new Varchar(10, true, true));
+        typeMap.put("wk_nr", new Catalogue("k_wk_fg", true, true, new Varchar(10, false, false)));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("laenge_wk", new Numeric(10, 2, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -73,7 +79,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("laenge") && !columnName.equals("geom")
-                    && !columnName.equals("bak_cd") && !columnName.equals("id") && !columnName.equals("laenge_wk");
+                    && !columnName.equals("ba_cd") && !columnName.equals("id") && !columnName.equals("laenge_wk");
     }
 
     @Override
@@ -91,6 +97,23 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
             return new StationTableCellEditor(columnName);
         } else if (columnName.equals("bak_st_bis")) {
             return new StationTableCellEditor(columnName);
+        } else if (columnName.equals("wk_nr")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(false);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return (String)bean.getProperty("wk_nr");
+                    }
+                });
+
+            return editor;
         } else {
             return null;
         }
@@ -150,7 +173,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
-        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
+//        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
 
         final StationLineCreator creator = new StationLineCreator(
                 "bak_st",
@@ -158,7 +181,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
                 "Basisgewässer/komplett (FG/k)",
                 new LinearReferencingWatergisHelper());
 
-        creator.setCheck(check);
+//        creator.setCheck(check);
 
         return creator;
     }

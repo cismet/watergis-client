@@ -117,8 +117,7 @@ public class FgBaGmdRuleSet extends WatergisDefaultRuleSet {
             CidsLayerFeatureFilter filter;
             final String owner = AppBroker.getInstance().getOwner();
 
-            if (!owner.equalsIgnoreCase("Administratoren")
-                        && !owner.startsWith("lung")) {
+            if (!owner.equalsIgnoreCase("Administratoren")) {
                 filter = new CidsLayerFeatureFilter() {
 
                         @Override

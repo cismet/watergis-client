@@ -15,16 +15,24 @@ import Sirius.navigator.connection.SessionManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import org.deegree.datatypes.Types;
+
 import java.sql.Timestamp;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
+
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -38,7 +46,7 @@ public class GwWkRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("wk_nr", new Varchar(10, true, true));
+        typeMap.put("wk_nr", new Catalogue("k_wk_gw", true, true, new Varchar(50, false, false)));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
@@ -59,6 +67,25 @@ public class GwWkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
+        if (columnName.equals("wk_nr")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(false);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return (String)bean.getProperty("wk_nr");
+                    }
+                });
+
+            return editor;
+        }
+
         return null;
     }
 
