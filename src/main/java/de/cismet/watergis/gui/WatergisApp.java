@@ -86,6 +86,7 @@ import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -191,6 +192,8 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.MapDnDListener;
 import de.cismet.cismap.commons.interaction.events.MapDnDEvent;
 import de.cismet.cismap.commons.interaction.memento.MementoInterface;
+import de.cismet.cismap.commons.rasterservice.ImageFileMetaData;
+import de.cismet.cismap.commons.rasterservice.ImageFileUtils;
 import de.cismet.cismap.commons.tools.ExportCsvDownload;
 import de.cismet.cismap.commons.tools.ExportDbfDownload;
 import de.cismet.cismap.commons.tools.ExportDownload;
@@ -260,6 +263,9 @@ import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.WatergisTreeNodeVisualizationService;
 
 import static java.awt.Frame.MAXIMIZED_BOTH;
+
+import static de.cismet.cismap.commons.gui.layerwidget.LayerDropUtils.LOG;
+import static de.cismet.cismap.commons.gui.layerwidget.LayerDropUtils.drop;
 
 /**
  * DOCUMENT ME!
@@ -770,14 +776,12 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         exportIgmAction.setExport(exportAction1);
         retrievePermissionbeans();
 
-        if (!SessionManager.getSession().getUser().getUserGroup().getName().equalsIgnoreCase("administratoren")
-                    && !SessionManager.getSession().getUser().getUserGroup().getName().toLowerCase().startsWith(
-                        "lung")) {
+        if (!SessionManager.getSession().getUser().getUserGroup().getName().equalsIgnoreCase("administratoren")) {
             mniCheckLawa.setEnabled(false);
             mniCheckLawaConnection.setEnabled(false);
         }
 
-        if (!AppBroker.getInstance().isAdminOrLungUser() && !AppBroker.getInstance().isGu()) {
+        if (!AppBroker.getInstance().isAdminUser() && !AppBroker.getInstance().isGu()) {
             mniCheckAusbau.setEnabled(false);
             mniCheckBasisRoutes.setEnabled(false);
             mniCheckBauwerke.setEnabled(false);
@@ -867,6 +871,18 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         mappingComponent.addCustomInputListener("REMOVE_MULTIPOLYGON", new DeleteFeatureListener(mappingComponent));
         mappingComponent.addCustomInputListener("CHANGE_MULTIPOLYGON", new PolygonChangeListener(mappingComponent));
+        final String interactionMode = CismapBroker.getInstance().getMappingComponent().getHandleInteractionMode();
+
+        if (interactionMode.equals(MappingComponent.MOVE_HANDLE)) {
+            cmdNodeMove.setSelected(true);
+        } else if (interactionMode.equals(MappingComponent.ADD_HANDLE)) {
+            cmdNodeAdd.setSelected(true);
+        } else if (interactionMode.equals(MappingComponent.REMOVE_HANDLE)) {
+            cmdNodeRemove.setSelected(true);
+        } else {
+            CismapBroker.getInstance().getMappingComponent().setHandleInteractionMode(MappingComponent.ADD_HANDLE);
+            cmdNodeMove.setSelected(true);
+        }
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -2023,8 +2039,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
                         if (AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")
                                     || AppBroker.getInstance().getOwner().equalsIgnoreCase("admin_edit")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("gäste")
-                                    || AppBroker.getInstance().getOwner().startsWith("lung")
+                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("gaeste")
                                     || AppBroker.getInstance().getOwner().equalsIgnoreCase("lung")
                                     || AppBroker.getInstance().getOwner().equalsIgnoreCase("lv_wbv")
                                     || AppBroker.getInstance().getOwner().equalsIgnoreCase("lu")
@@ -5115,13 +5130,48 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 LayerDropUtils.drop(dtde, (ActiveLayerModel)map.getMappingModel(), map);
             } else if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)
                         || dtde.isDataFlavorSupported(DnDUtils.URI_LIST_FLAVOR)) {
+                if (DnDUtils.isFilesOrUriList((DropTargetDropEvent)mde.getDte())) {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY);
+                    try {
+                        final List<File> files = DnDUtils.getFilesFrom(dtde);
+
+                        for (final File file : files) {
+                            if (ImageFileUtils.isImageFileEnding(file.getName())) {
+                                ImageFileMetaData metaData = null;
+
+                                try {
+                                    switch (ImageFileUtils.determineMode(file)) {
+                                        case WORLDFILE: {
+                                            metaData = ImageFileUtils.getWorldFileMetaData(
+                                                    file,
+                                                    ImageFileUtils.getWorldFile(file));
+                                        }
+                                        case TIFF: {
+                                            metaData = ImageFileUtils.getTiffMetaData(file);
+                                        }
+                                    }
+                                } catch (final Exception ex) {
+                                    LOG.warn("Failure during drag & drop opertation", ex); // NOI18N
+                                }
+
+                                if (metaData == null) {
+                                    JOptionPane.showMessageDialog(StaticSwingTools.getParentFrame(this),
+                                        NbBundle.getMessage(
+                                            WatergisApp.class,
+                                            "WatergisApp.dropOnMap.noGeoInfo.msg",
+                                            file.getName()),
+                                        NbBundle.getMessage(WatergisApp.class, "WatergisApp.dropOnMap.noGeoInfo.title"),
+                                        JOptionPane.WARNING_MESSAGE); // NOI18N
+                                }
+                            }
+                        }
+                    } catch (final Exception ex) {
+                        LOG.error("Failure during drag & drop opertation", ex); // NOI18N
+                    }
+                }
+
                 LayerDropUtils.drop((DropTargetDropEvent)mde.getDte(), (ActiveLayerModel)map.getMappingModel(), map);
             } else {
-//                JOptionPane.showMessageDialog(
-//                    StaticSwingTools.getParentFrame(mapC),
-//                    org.openide.util.NbBundle.getMessage(
-//                        CismapPlugin.class,
-//                        "CismapPlugin.dropOnMap(MapDnDEvent).JOptionPane.message")); // NOI18N
                 LOG.error("Unable to process the datatype." + dtde.getTransferable().getTransferDataFlavors()[0]); // NOI18N
             }
         }

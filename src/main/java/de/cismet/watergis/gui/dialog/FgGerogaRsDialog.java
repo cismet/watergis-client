@@ -184,6 +184,8 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
     private FgGerogaRsDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        ckbOstsee.setVisible(false);
+        ckbOstseeSelected.setVisible(false);
 
         final Var1InputVerifier verifier = new Var1InputVerifier();
         final Var2BrInputVerifier verifier2Br = new Var2BrInputVerifier();
@@ -838,7 +840,6 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 30, 5, 10);
         getContentPane().add(ckbKleinsee, gridBagConstraints);
 
-        ckbOstsee.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbOstsee,
             org.openide.util.NbBundle.getMessage(
@@ -1438,7 +1439,6 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
         getContentPane().add(ckbKleinseeSelected, gridBagConstraints);
 
-        ckbOstseeSelected.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbOstseeSelected,
             org.openide.util.NbBundle.getMessage(
@@ -1501,9 +1501,21 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
             return;
         }
         if (!txtFile.getText().equals("") && checkValues()) {
-            cancelled = false;
-            setVisible(false);
-            start();
+            if (H2FeatureService.tableAlreadyExists(txtFile.getText())) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    NbBundle.getMessage(
+                        BufferDialog.class,
+                        "BufferDialog.butOkActionPerformed.tableAlreadyExists",
+                        txtFile.getText()),
+                    NbBundle.getMessage(
+                        FgGerogaRsDialog.class,
+                        "BufferDialog.butOkActionPerformed.tableAlreadyExists.title"),
+                    JOptionPane.ERROR_MESSAGE);
+            } else {
+                cancelled = false;
+                setVisible(false);
+                start();
+            }
         } else {
 //            butFileActionPerformed(null);
         }

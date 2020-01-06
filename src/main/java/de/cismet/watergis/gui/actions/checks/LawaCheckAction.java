@@ -116,8 +116,7 @@ public class LawaCheckAction extends AbstractCheckAction {
         if ((FG_BAK_GBK != null) && (FG_BAK_GWK != null) && (FG_BAK != null)) {
             final User user = SessionManager.getSession().getUser();
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_GBK_CATALOGUE = "select " + FG_BAK_GBK.getID() + ", t." + FG_BAK_GBK.getPrimaryKey()
                             + " from " + FG_BAK_GBK.getTableName() + " t\n"
                             + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
@@ -136,8 +135,7 @@ public class LawaCheckAction extends AbstractCheckAction {
                             + "'";
             }
 
-            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_GWK_CATALOGUE = "select " + FG_BAK_GWK.getID() + ", t." + FG_BAK_GWK.getPrimaryKey()
                             + " from " + FG_BAK_GWK.getTableName() + " t\n"
                             + "join dlm25w.fg_bak_linie linie on (bak_st = linie.id) "
@@ -207,7 +205,7 @@ public class LawaCheckAction extends AbstractCheckAction {
                     String user = AppBroker.getInstance().getOwner();
                     this.wd.setMax(getProgressSteps());
 
-                    if (user.equalsIgnoreCase("Administratoren") || user.startsWith("lung")) {
+                    if (user.equalsIgnoreCase("Administratoren")) {
                         user = null;
                     }
 

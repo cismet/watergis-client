@@ -12,6 +12,7 @@
 package de.cismet.watergis.gui.components.location;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 
 import org.openide.util.NbBundle;
 
@@ -40,7 +41,30 @@ public class IntersectSourceSpatialMethod implements SpatialSelectionMethodInter
                 if (onlyPointsOrLines) {
                     return source.intersects(featureGeometry.buffer(0.001));
                 } else {
-                    return source.intersects(featureGeometry);
+                    // die vollständig oder teilweise im Auswahlpolygon liegen (es reicht aber nicht aus,
+                    // dass ein Endpunkt auf dem Rand des Auswahlpolygons liegt !) siehe Issue 437
+                    if (source.intersects(featureGeometry)) {
+                        if ((source instanceof Polygon) && (featureGeometry instanceof Polygon)) {
+                            final Polygon sp = (Polygon)source;
+                            final Polygon fp = (Polygon)featureGeometry;
+                            return !sp.getExteriorRing()
+                                        .intersection(fp.getExteriorRing())
+                                        .equalsExact(sp.intersection(fp));
+                        } else if (source instanceof Polygon) {
+                            final Geometry innerPolygon = source.buffer(-0.01);
+                            final Geometry sp = source.difference(innerPolygon);
+                            return !sp.intersection(featureGeometry).equalsExact(source.intersection(featureGeometry));
+                        }
+                        if (featureGeometry instanceof Polygon) {
+                            final Geometry innerPolygon = featureGeometry.buffer(-0.01);
+                            final Geometry sp = featureGeometry.difference(innerPolygon);
+                            return !sp.intersection(source).equalsExact(featureGeometry.intersection(source));
+                        } else {
+                            return true;
+                        }
+                    } else {
+                        return false;
+                    }
                 }
             } else {
                 return featureGeometry.isWithinDistance(source, distance);

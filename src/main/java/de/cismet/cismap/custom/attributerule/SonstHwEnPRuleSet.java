@@ -85,12 +85,7 @@ public class SonstHwEnPRuleSet extends WatergisDefaultRuleSet {
             return AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren");
         } else if (columnName.equals("bearb_wann") || columnName.equals("bearb_wer")
                     || columnName.equals("bearb_komm")) {
-            return SessionManager.getSession().getUser().getUserGroup().getName().startsWith("lung")
-                        || SessionManager.getSession()
-                        .getUser()
-                        .getUserGroup()
-                        .getName()
-                        .equalsIgnoreCase("Administratoren");
+            return SessionManager.getSession().getUser().getUserGroup().getName().equalsIgnoreCase("Administratoren");
         } else {
             return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                         && !columnName.equals("nr") && !columnName.equals("wann") && !columnName.equals("geom")
