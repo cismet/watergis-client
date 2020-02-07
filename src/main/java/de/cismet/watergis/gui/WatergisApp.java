@@ -935,13 +935,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     .get(MappingComponent.MOTION);
         motion.setUnderlyingObjectHalo(0.01);
         mappingModel.setInitalLayerConfigurationFromServer(false);
-        configManager.addConfigurable((ActiveLayerModel)mappingModel);
         configManager.addConfigurable(mappingComponent);
+        configManager.addConfigurable((ActiveLayerModel)mappingModel);
 
         // First local configuration then serverconfiguration
-        configManager.configure(mappingModel);
         mappingComponent.preparationSetMappingModel(mappingModel);
         configManager.configure(mappingComponent);
+        configManager.configure(mappingModel);
 
         mappingComponent.setMappingModel(mappingModel);
 
