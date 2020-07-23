@@ -345,12 +345,15 @@ public class KatasterGemeindeReport {
         for (int i = 1; i < routes.size(); ++i) {
             final GmdPartObj tmp = routes.get(i);
 
-            if (lastRoute.getArt().equals(tmp.getArt()) && (lastRoute.getId() == tmp.getId())) {
-                lastRoute.setTill(tmp.getTill());
-            } else {
-                newRoutes.add(lastRoute);
-                lastRoute = tmp;
-            }
+//            if (lastRoute.getArt().equals(tmp.getArt()) && (lastRoute.getId() == tmp.getId())
+//                        && (lastRoute.getTill() == tmp.getFrom())
+//                        && (lastRoute.getNr_li() == tmp.getNr_li())
+//                        && (lastRoute.getNr_re() == tmp.getNr_re())) {
+//                lastRoute.setTill(tmp.getTill());
+//            } else {
+            newRoutes.add(lastRoute);
+            lastRoute = tmp;
+//            }
         }
 
         newRoutes.add(lastRoute);

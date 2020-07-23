@@ -1898,6 +1898,9 @@ public class GewaesserReport {
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
             feature.put("tech", toString(cidsFeature.getProperty("tech")));
             feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
+            feature.put("na_gu", toString(cidsFeature.getProperty("na_gu"), false));
+            feature.put("mahd_gu", toString(cidsFeature.getProperty("mahd_gu"), false));
+            feature.put("gu_gu", toString(cidsFeature.getProperty("gu_gu"), false));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("esw", toX(cidsFeature.getProperty("esw")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
@@ -1932,11 +1935,12 @@ public class GewaesserReport {
             feature.put("von", convertStation((Double)cidsFeature.getProperty("ba_st_von")));
             feature.put("bis", convertStation((Double)cidsFeature.getProperty("ba_st_bis")));
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
+            feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
             feature.put("name", toString(cidsFeature.getProperty("name")));
-            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("doc_nr"), false));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
-            feature.put("objnr_gu", toString(cidsFeature.getProperty("obj_nr_gu"), false));
+            feature.put("objnr_gu", toString(cidsFeature.getProperty("doc_nr_gu"), false));
 
             features.add(feature);
         }
@@ -1967,11 +1971,12 @@ public class GewaesserReport {
             feature.put("von", convertStation((Double)cidsFeature.getProperty("ba_st_von")));
             feature.put("bis", convertStation((Double)cidsFeature.getProperty("ba_st_bis")));
             feature.put("lagestatus", toString(cidsFeature.getProperty("l_st")));
+            feature.put("lage", toString(cidsFeature.getProperty("l_rl")));
             feature.put("name", toString(cidsFeature.getProperty("name")));
-            feature.put("objnr", toString(cidsFeature.getProperty("obj_nr"), false));
+            feature.put("objnr", toString(cidsFeature.getProperty("proj_nr"), false));
             feature.put("bemerkungen", toString(cidsFeature.getProperty("bemerkung")));
             feature.put("laenge", toString(cidsFeature.getProperty("laenge")));
-            feature.put("objnr_gu", toString(cidsFeature.getProperty("obj_nr_gu"), false));
+            feature.put("objnr_gu", toString(cidsFeature.getProperty("proj_nr_gu"), false));
 
             features.add(feature);
         }

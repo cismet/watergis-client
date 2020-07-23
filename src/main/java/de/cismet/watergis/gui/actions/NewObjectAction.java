@@ -70,10 +70,6 @@ public class NewObjectAction extends AbstractAction {
                 "NewObjectAction.cmdNewObject.toolTipText",
                 new Object[] { " ", "" });
         putValue(SHORT_DESCRIPTION, tooltip);
-//        final String text = org.openide.util.NbBundle.getMessage(NewObjectAction.class, "CloseAction.text");
-//        putValue(NAME, text);
-//        final String mnemonic = org.openide.util.NbBundle.getMessage(NewObjectAction.class, "CloseAction.mnemonic");
-//        putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
         final ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource(
                     "/de/cismet/watergis/res/icons16/icon-plus-sign.png"));
         putValue(SMALL_ICON, icon);

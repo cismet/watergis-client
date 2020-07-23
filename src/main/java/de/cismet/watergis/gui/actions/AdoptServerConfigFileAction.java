@@ -13,12 +13,17 @@ package de.cismet.watergis.gui.actions;
 
 import org.apache.log4j.Logger;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+
+import java.util.TreeMap;
 
 import javax.swing.AbstractAction;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
+import de.cismet.cismap.commons.raster.wms.AbstractWMS;
+import de.cismet.cismap.commons.rasterservice.MapService;
 
 import de.cismet.tools.configuration.ConfigurationManager;
 
@@ -79,6 +84,26 @@ public class AdoptServerConfigFileAction extends AbstractAction {
                     .getWatergisApp()
                     .setCurrentLayoutFile(AppBroker.getInstance().getWatergisApp().getDIRECTORYPATH_WATERGIS()
                         + System.getProperty("file.separator") + fileName);
+            EventQueue.invokeLater(new Thread("Initialise layers") {
+
+                    @Override
+                    public void run() {
+                        final TreeMap<Integer, MapService> map = ((ActiveLayerModel)mappingComponent.getMappingModel())
+                                    .getMapServices();
+
+                        if ((map != null) && (map.keySet() != null)) {
+                            for (final Integer key : map.keySet()) {
+                                final MapService service = map.get(key.intValue());
+
+                                if ((service instanceof AbstractWMS) && !((AbstractWMS)service).isVisible()) {
+                                    ((AbstractWMS)service).setSize(
+                                        mappingComponent.getHeight(),
+                                        mappingComponent.getWidth());
+                                }
+                            }
+                        }
+                    }
+                });
         } catch (Throwable ex) {
             LOG.fatal("No ServerProfile", ex); // NOI18N
         }

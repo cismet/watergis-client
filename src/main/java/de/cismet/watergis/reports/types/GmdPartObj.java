@@ -147,7 +147,11 @@ public class GmdPartObj {
      * @return  DOCUMENT ME!
      */
     public double getLength() {
-        return Math.abs(till - from);
+        if (nr_re == nr_li) {
+            return Math.abs(till - from);
+        } else {
+            return Math.abs(till - from) / 2;
+        }
     }
 
     /**
