@@ -66,7 +66,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("bak_cd", new Varchar(50, false, false));
         typeMap.put("bak_st_von", new Numeric(10, 2, false, true));
         typeMap.put("bak_st_bis", new Numeric(10, 2, false, true));
-        typeMap.put("wk_nr", new Catalogue("k_wk_fg", true, true, new Varchar(10, false, false)));
+        typeMap.put("wk_nr", new Catalogue("k_wk_fg", true, true, new Varchar(50, false, false)));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("laenge_wk", new Numeric(10, 2, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -121,8 +121,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+        adjustFisGDateAndFisGUser(feature);
     }
 
     @Override

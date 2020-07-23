@@ -36,6 +36,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -370,6 +371,19 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      */
     protected String getPhotoPath() {
         return PHOTO_PATH;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  feature  DOCUMENT ME!
+     */
+    protected void adjustFisGDateAndFisGUser(final FeatureServiceFeature feature) {
+        if ((feature.getId() < 0)
+                    || ((feature instanceof CidsLayerFeature) && ((CidsLayerFeature)feature).isFeatureChanged())) {
+            feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
+            feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+        }
     }
 
     /**
@@ -2722,7 +2736,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class DateTime extends DataType {
+    public static class DateTime extends DataType {
 
         //~ Constructors -------------------------------------------------------
 
@@ -2754,7 +2768,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class Time extends Varchar {
+    public static class Time extends Varchar {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -2803,7 +2817,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
-    protected static class DateType extends DataType {
+    public static class DateType extends DataType {
 
         //~ Instance fields ----------------------------------------------------
 

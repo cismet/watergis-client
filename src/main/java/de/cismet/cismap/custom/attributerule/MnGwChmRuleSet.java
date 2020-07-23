@@ -50,8 +50,8 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ms_name", new Varchar(50, true, true));
         typeMap.put("re", new Numeric(11, 2, true, true));
         typeMap.put("ho", new Numeric(10, 2, true, true));
-        typeMap.put("pn_von", new Varchar(10, true, true));
-        typeMap.put("pn_bis", new Varchar(10, true, true));
+        typeMap.put("pn_von", new Varchar(10, false, true));
+        typeMap.put("pn_bis", new Varchar(10, false, true));
         typeMap.put("cl", new Numeric(3, 0, true, true));
         typeMap.put("cl_min", new Numeric(12, 6, false, true));
         typeMap.put("cl_mw", new Numeric(12, 6, false, true));
@@ -68,7 +68,8 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("so4_min", new Numeric(12, 6, false, true));
         typeMap.put("so4_mw", new Numeric(12, 6, false, true));
         typeMap.put("so4_max", new Numeric(12, 6, false, true));
-        typeMap.put("ue_sw_psm", new BooleanAsInteger(true, true));
+        typeMap.put("ms_aktiv", new BooleanAsInteger(false, true));
+        typeMap.put("ue_sw_psm", new BooleanAsInteger(false, true));
         typeMap.put("chart_s1", new Varchar(250, false, false));
         typeMap.put("chart_m1", new Varchar(250, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -86,7 +87,7 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("chart_s1") || columnName.equals("chart_m1")) {
-            return new LinkTableCellRenderer();
+            return new LinkTableCellRenderer(false);
         } else {
             return super.getCellRenderer(columnName);
         }
@@ -122,18 +123,6 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
             if (isValueEmpty(f.getProperty("ho"))) {
                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                     "Das Attribut ho darf nicht null sein");
-                return false;
-            }
-
-            if (isValueEmpty(f.getProperty("pn_von"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut pn_von darf nicht null sein");
-                return false;
-            }
-
-            if (isValueEmpty(f.getProperty("pn_bis"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut pn_bis darf nicht null sein");
                 return false;
             }
 
@@ -271,8 +260,7 @@ public class MnGwChmRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+        adjustFisGDateAndFisGUser(feature);
     }
 
     @Override

@@ -23,6 +23,8 @@ import java.awt.Component;
 
 import java.sql.Timestamp;
 
+import java.util.HashMap;
+
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
@@ -36,6 +38,7 @@ import de.cismet.cids.dynamics.CidsBean;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
+import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
@@ -62,9 +65,9 @@ public class EzgDetailRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("gbk_lawa", new Catalogue("k_gbk_lawa", false, true, new Numeric(15, 0, false, false)));
+        typeMap.put("gbk_lawa", new Catalogue("k_gbk_lawa", false, true, true, new Numeric(15, 0, false, false)));
         typeMap.put("gbk_lawa_k", new Catalogue("k_gbk_lawa", false, true, new Numeric(15, 0, false, false)));
-        typeMap.put("gwk_lawa", new Catalogue("k_gwk_lawa", false, true, new Numeric(15, 0, false, false)));
+        typeMap.put("gwk_lawa", new Catalogue("k_gwk_lawa", false, true, true, new Numeric(15, 0, false, false)));
         typeMap.put("gwk_gn", new Catalogue("k_gwk_lawa", false, true, new Varchar(60, false, false)));
         typeMap.put("gbk_von", new Catalogue("k_gbk_lawa", false, true, new Varchar(100, false, false)));
         typeMap.put("gbk_bis", new Catalogue("k_gbk_lawa", false, true, new Varchar(100, false, false)));
@@ -137,6 +140,56 @@ public class EzgDetailRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public FeatureServiceFeature cloneFeature(final FeatureServiceFeature feature) {
+        final DefaultFeatureServiceFeature newFeature = (DefaultFeatureServiceFeature)feature
+                    .getLayerProperties().getFeatureService().getFeatureFactory().createNewFeature();
+
+        final HashMap<String, Object> properties = feature.getProperties();
+        final CidsBean bean = ((CidsLayerFeature)feature).getBean();
+
+        for (final String propertyKey : properties.keySet()) {
+            if (propertyKey.equalsIgnoreCase("gbk_lawa_k") || propertyKey.equalsIgnoreCase("gbk_von")
+                        || propertyKey.equalsIgnoreCase("gbk_bis") || propertyKey.equalsIgnoreCase("gbk_pl")
+                        || propertyKey.equalsIgnoreCase("gbk_ordn")) {
+                final CidsLayerFeature clf = (CidsLayerFeature)feature;
+                Object value = clf.getPropertyObject("gbk_lawa");
+
+                if (value instanceof CidsLayerFeature) {
+                    value = ((CidsLayerFeature)value).getBean();
+                }
+
+                newFeature.setProperty(propertyKey, value);
+            } else if (propertyKey.equalsIgnoreCase("gwk_gn")) {
+                final CidsLayerFeature clf = (CidsLayerFeature)feature;
+                Object value = clf.getPropertyObject("gwk_lawa");
+
+                if (value instanceof CidsLayerFeature) {
+                    value = ((CidsLayerFeature)value).getBean();
+                }
+
+                newFeature.setProperty(propertyKey, value);
+            } else if (!propertyKey.equalsIgnoreCase("id") && !propertyKey.equals(feature.getIdExpression())
+                        && !propertyKey.equalsIgnoreCase("obj_nr")) {
+                if (bean.getProperty(propertyKey) == null) {
+                    newFeature.setProperty(propertyKey, feature.getProperty(propertyKey));
+                } else {
+                    if ((bean.getProperty(propertyKey) instanceof CidsBean)
+                                && bean.getProperty(propertyKey).getClass().getName().equals(
+                                    "de.cismet.cids.dynamics.Geom")) {
+                        newFeature.setProperty(propertyKey, feature.getGeometry());
+                    } else {
+                        newFeature.setProperty(propertyKey, bean.getProperty(propertyKey));
+                    }
+                }
+            }
+        }
+
+        newFeature.setGeometry(feature.getGeometry());
+
+        return newFeature;
+    }
+
+    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("gbk_lawa_k") || columnName.equals("gbk_von") || columnName.equals("gbk_bis")
                     || columnName.equals("gbk_pl") || columnName.equals("gbk_ordn") || columnName.equals("gwk_gn")) {
@@ -153,7 +206,8 @@ public class EzgDetailRuleSet extends WatergisDefaultRuleSet {
 
                         if (table.getModel() instanceof SimpleAttributeTableModel) {
                             final SimpleAttributeTableModel model = (SimpleAttributeTableModel)table.getModel();
-                            val = model.getFeatureServiceFeature(row).getProperty(columnName);
+                            val = model.getFeatureServiceFeature(table.convertRowIndexToModel(row))
+                                        .getProperty(columnName);
                         }
 
                         if (val instanceof CidsBean) {
@@ -242,8 +296,7 @@ public class EzgDetailRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+        adjustFisGDateAndFisGUser(feature);
     }
 
     @Override
