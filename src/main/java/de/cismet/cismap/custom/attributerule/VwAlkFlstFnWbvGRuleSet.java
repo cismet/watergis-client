@@ -181,8 +181,7 @@ public class VwAlkFlstFnWbvGRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+        adjustFisGDateAndFisGUser(feature);
         Double fn_g_fl = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));

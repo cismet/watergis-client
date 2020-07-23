@@ -163,8 +163,7 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+        adjustFisGDateAndFisGUser(feature);
     }
 
     @Override

@@ -54,7 +54,7 @@ public class SgSeeKlRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true, new Numeric(4, 0, false, false)));
         typeMap.put("see_gn", new Varchar(50, false, true));
-        typeMap.put("gbk_lawa", new Numeric(15, 0, true, true));
+        typeMap.put("gbk_lawa", new Numeric(15, 0, false, true));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
@@ -105,8 +105,7 @@ public class SgSeeKlRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+        adjustFisGDateAndFisGUser(feature);
     }
 
     @Override

@@ -72,6 +72,7 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import org.jdom.Element;
 
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 
 import java.awt.BorderLayout;
@@ -140,6 +141,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import de.cismet.cids.custom.watergis.server.search.CheckForCreatedObjectTable;
+import de.cismet.cids.custom.watergis.server.search.CleanupCreatedObjectTable;
 import de.cismet.cids.custom.watergis.server.search.RemoveOldLocks;
 import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
 import de.cismet.cids.custom.watergis.server.search.RouteEnvelopes;
@@ -224,6 +227,8 @@ import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
 import de.cismet.tools.gui.ScrollableComboBox;
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
+import de.cismet.tools.gui.downloadmanager.AbstractCancellableDownload;
+import de.cismet.tools.gui.downloadmanager.Download;
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 import de.cismet.tools.gui.historybutton.JHistoryButton;
 import de.cismet.tools.gui.log4jquickconfig.Log4JQuickConfig;
@@ -263,9 +268,6 @@ import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.WatergisTreeNodeVisualizationService;
 
 import static java.awt.Frame.MAXIMIZED_BOTH;
-
-import static de.cismet.cismap.commons.gui.layerwidget.LayerDropUtils.LOG;
-import static de.cismet.cismap.commons.gui.layerwidget.LayerDropUtils.drop;
 
 /**
  * DOCUMENT ME!
@@ -732,6 +734,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         try {
             // clear all locks from the previous session
             H2FeatureService.clearLocks();
+            H2FeatureService.removeUnusedSequences();
         } catch (IllegalStateException e) {
             System.err.println("Database is already in use");
             System.exit(1);
@@ -883,9 +886,81 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             CismapBroker.getInstance().getMappingComponent().setHandleInteractionMode(MappingComponent.ADD_HANDLE);
             cmdNodeMove.setSelected(true);
         }
+
+//        checkForCreatedObjects();
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void checkForCreatedObjects() {
+        try {
+            final User user = SessionManager.getSession().getUser();
+            final CidsServerSearch cleanup = new CheckForCreatedObjectTable(
+                    user.getDomain()
+                            + "."
+                            + user.getName());
+            final ArrayList<ArrayList> objects = (ArrayList<ArrayList>)SessionManager.getProxy()
+                        .customServerSearch(SessionManager.getSession().getUser(), cleanup);
+
+            if ((objects != null) && (objects.size() > 0)) {
+                final Map<Integer, List<Integer>> objectList = new HashMap<Integer, List<Integer>>();
+
+                for (final ArrayList object : objects) {
+                    List<Integer> oList = objectList.get((Integer)object.get(0));
+
+                    if (oList == null) {
+                        oList = new ArrayList<Integer>();
+
+                        objectList.put((Integer)object.get(0), oList);
+                    }
+
+                    oList.add((Integer)object.get(1));
+                }
+
+                for (final Integer classId : objectList.keySet()) {
+                    final List<Integer> objectIds = objectList.get(classId);
+                    final MetaClass mc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, classId);
+
+                    if (mc != null) {
+                        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                                mc.getName());
+                        AbstractFeatureService layer;
+
+                        if ((services == null) || services.isEmpty()) {
+                            layer = new CidsLayer(mc);
+                            AppBroker.getInstance().getMappingComponent().getMappingModel().addLayer(layer);
+                            AttributeTableFactory.getInstance().switchProcessingMode(layer);
+                        } else {
+                            layer = services.get(0);
+                            if (!SelectionManager.getInstance().getEditableServices().contains(services.get(0))) {
+                                AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
+                            }
+                        }
+
+                        final AttributeTable table = getAttributeTableByFeatureService(layer);
+
+                        if (table != null) {
+                            final List<FeatureServiceFeature> featureList = new ArrayList<FeatureServiceFeature>();
+
+                            for (final Integer objectId : objectIds) {
+                                final FeatureServiceFeature feature = table.getFeatureById(objectId);
+                                featureList.add(feature);
+                                table.markFeatureAsNewFeature((DefaultFeatureServiceFeature)feature);
+                            }
+
+                            table.makeFeaturesEditable((List<FeatureServiceFeature>)featureList);
+                            SelectionManager.getInstance().addSelectedFeatures(featureList);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error while checking for icomplete created objects", e);
+        }
+    }
 
     /**
      * DOCUMENT ME!
@@ -1542,6 +1617,25 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                             }
                         }
 
+//                        if (service instanceof CidsLayer) {
+//                            if ((service.getLayerProperties() != null)
+//                                        && (service.getLayerProperties().getFeatureService() != null)
+//                                        && (((CidsLayer)service.getLayerProperties().getFeatureService())
+//                                            .getMetaClass() != null)) {
+//                                final Thread t = new Thread("cleanupCreatedObjects") {
+//
+//                                        @Override
+//                                        public void run() {
+//                                            final int classId = ((CidsLayer)service.getLayerProperties()
+//                                                            .getFeatureService()).getMetaClass().getID();
+//                                            cleanupCreatedObjectTable(classId);
+//                                        }
+//                                    };
+//
+//                                t.start();
+//                            }
+//                        }
+
                         if (service instanceof CidsLayer) {
                             final CidsLayer cl = (CidsLayer)service;
 
@@ -1584,6 +1678,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                         }
 
                         AppBroker.getInstance().setActiveFeatureCreator(null);
+                    }
+                }
+
+                private void cleanupCreatedObjectTable(final int classid) {
+                    try {
+                        final User user = SessionManager.getSession().getUser();
+                        final CidsServerSearch cleanup = new CleanupCreatedObjectTable(
+                                user.getDomain()
+                                        + "."
+                                        + user.getName(),
+                                classid);
+                        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), cleanup);
+                    } catch (Exception e) {
+                        LOG.error("Error while removing unused stations", e);
                     }
                 }
 
@@ -2022,6 +2130,21 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         rootWindow.setWindow(new SplitWindow(true, 0.22901994f, treeWindow, tabWindow));
 
         vMap.restoreFocus();
+
+        ObjectInputStream in = null;
+        InputStream layoutInput = null;
+
+        try {
+            layoutInput = WatergisApp.class.getResourceAsStream(
+                    "/de/cismet/watergis/configuration/defaultLayout.layout");
+            if (layoutInput != null) {
+                in = new ObjectInputStream(layoutInput);
+                rootWindow.read(in);
+                in.close();
+            }
+        } catch (Exception e) {
+            LOG.error("Error while loading default layout", e);
+        }
     }
 
     /**
@@ -4557,6 +4680,61 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
                 }
             }
+
+            boolean runningOrWaitingDownload = false;
+
+            for (final Download d : DownloadManager.instance().getDownloads()) {
+                if ((d.getStatus() == Download.State.RUNNING) || (d.getStatus() == Download.State.WAITING)) {
+                    runningOrWaitingDownload = true;
+                    break;
+                }
+            }
+
+            if (runningOrWaitingDownload) {
+                final int ans = JOptionPane.showConfirmDialog(
+                        WatergisApp.this,
+                        NbBundle.getMessage(WatergisApp.class, "WatergisApp.dispose().downloadMessage"),
+                        NbBundle.getMessage(WatergisApp.class, "WatergisApp.dispose().downloadTitle"),
+                        JOptionPane.YES_NO_OPTION);
+
+                if (ans == JOptionPane.YES_OPTION) {
+                    for (final Download d : DownloadManager.instance().getDownloads()) {
+                        if (d.getStatus() == Download.State.WAITING) {
+                            DownloadManager.instance().removeDownload(d);
+                        } else if (d.getStatus() == Download.State.RUNNING) {
+                            if (d instanceof AbstractCancellableDownload) {
+                                ((AbstractCancellableDownload)d).cancel();
+                            }
+                        }
+                    }
+                } else {
+                    setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+                    return;
+                }
+            }
+
+            boolean exportAlive = false;
+
+            do {
+                exportAlive = false;
+
+                for (final Thread thread : Thread.getAllStackTraces().keySet()) {
+                    if (thread.getThreadGroup().getName().equals("DownloadThreadPool") && thread.isAlive()) {
+                        final StackTraceElement[] stack = Thread.getAllStackTraces().get(thread);
+
+                        if ((stack.length > 0) && !stack[0].getMethodName().equalsIgnoreCase("park")) {
+                            exportAlive = true;
+                            break;
+                        }
+                    }
+                }
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            } while (exportAlive);
 
             if (vPhoto.isClosable()) {
                 vPhoto.close();

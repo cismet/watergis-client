@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="802" pageHeight="595" orientation="Landscape" columnWidth="762" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.7715610000000017"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="433"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -35,6 +35,9 @@
 	<field name="bis" class="java.lang.String"/>
 	<field name="laenge" class="java.lang.String"/>
 	<field name="objnr_gu" class="java.lang.String"/>
+	<field name="na_gu" class="java.lang.String"/>
+	<field name="mahd_gu" class="java.lang.String"/>
+	<field name="gu_gu" class="java.lang.String"/>
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
 	</variable>
@@ -161,7 +164,7 @@
 					<font fontName="Arial" size="8" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<text><![CDATA[]]></text>
+				<text><![CDATA[gu_gu]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="566" y="14" width="40" height="14" backcolor="#DADADA" uuid="5e19ada7-e616-43c8-a7f4-c04a48c1bdee"/>
@@ -170,7 +173,7 @@
 					<font fontName="Arial" size="8" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<text><![CDATA[]]></text>
+				<text><![CDATA[mahd_gu]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="526" y="14" width="40" height="14" backcolor="#DADADA" uuid="ea335c08-e505-4fa8-8767-3edb2347481e"/>
@@ -179,7 +182,7 @@
 					<font fontName="Arial" size="8" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<text><![CDATA[]]></text>
+				<text><![CDATA[na_gu]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="307" y="14" width="70" height="14" backcolor="#DADADA" uuid="1ca719be-c3ed-4ec1-9424-52819ea5238f"/>
@@ -248,6 +251,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{mahd_gu}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="606" y="0" width="40" height="14" isPrintWhenDetailOverflows="true" uuid="d175e28b-72a7-468c-85e8-fdf737f3861a"/>
@@ -257,6 +261,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{gu_gu}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="646" y="0" width="40" height="14" isPrintWhenDetailOverflows="true" uuid="1a7b46dd-f2e0-419a-90b4-64bd0d34e7b1"/>
@@ -273,6 +278,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{na_gu}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="158" y="0" width="50" height="14" isPrintWhenDetailOverflows="true" uuid="fda77494-97d3-4243-b1c1-97605d9f99ee"/>

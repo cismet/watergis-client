@@ -86,6 +86,11 @@ public class SplitAction extends AbstractAction {
     private static final Map<AbstractFeatureService, List<FgBaAndStations>> undoBakStationMap =
         new HashMap<AbstractFeatureService, List<FgBaAndStations>>();
 
+    //~ Instance fields --------------------------------------------------------
+
+    private SplitGeometryListener splitListener;
+    private FeatureServiceFeature lastFeature;
+
     //~ Constructors -----------------------------------------------------------
 
     /**
@@ -116,9 +121,19 @@ public class SplitAction extends AbstractAction {
                     public void run() {
                         final String oldInteractionMode = mc.getInteractionMode();
 
-                        final SplitGeometryListener listener = new SplitGeometryListener(
-                                mc,
-                                new SplitFinishedListener(mc, oldInteractionMode, validFeature));
+                        SplitGeometryListener listener = null;
+
+                        if ((SplitGeometryListener.LISTENER_KEY != oldInteractionMode) && (lastFeature != null)
+                                    && (splitListener != null) && validFeature.equals(lastFeature)) {
+                            listener = splitListener;
+                        } else {
+                            listener = new SplitGeometryListener(
+                                    mc,
+                                    new SplitFinishedListener(mc, oldInteractionMode, validFeature));
+                        }
+
+                        splitListener = listener;
+                        lastFeature = validFeature;
 
                         mc.addInputListener(SplitGeometryListener.LISTENER_KEY, listener);
                         mc.putCursor(SplitGeometryListener.LISTENER_KEY, new Cursor(Cursor.CROSSHAIR_CURSOR));
