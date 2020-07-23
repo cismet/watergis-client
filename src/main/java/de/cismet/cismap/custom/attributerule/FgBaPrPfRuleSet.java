@@ -74,12 +74,6 @@ public class FgBaPrPfRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public void beforeSave(final FeatureServiceFeature feature) {
-        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
-    }
-
-    @Override
     public void afterSave(final TableModel model) {
     }
 

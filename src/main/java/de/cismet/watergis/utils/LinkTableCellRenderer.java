@@ -34,6 +34,7 @@ public class LinkTableCellRenderer extends DefaultTableCellRenderer {
     //~ Instance fields --------------------------------------------------------
 
     private int alignment = JLabel.LEFT;
+    private final boolean showFullLink;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -41,6 +42,16 @@ public class LinkTableCellRenderer extends DefaultTableCellRenderer {
      * Creates a new LinkTableCellRenderer object.
      */
     public LinkTableCellRenderer() {
+        this(true);
+    }
+
+    /**
+     * Creates a new LinkTableCellRenderer object.
+     *
+     * @param  showFullLink  DOCUMENT ME!
+     */
+    public LinkTableCellRenderer(final boolean showFullLink) {
+        this.showFullLink = showFullLink;
     }
 
     /**
@@ -50,6 +61,7 @@ public class LinkTableCellRenderer extends DefaultTableCellRenderer {
      */
     public LinkTableCellRenderer(final int alignment) {
         this.alignment = alignment;
+        this.showFullLink = true;
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -71,6 +83,10 @@ public class LinkTableCellRenderer extends DefaultTableCellRenderer {
             ((JLabel)c).setFont(underlinedFont.deriveFont(attributes));
 
             ((JLabel)c).setHorizontalAlignment(alignment);
+
+            if (!showFullLink) {
+                ((JLabel)c).setText("Link");
+            }
         }
 
         return c;

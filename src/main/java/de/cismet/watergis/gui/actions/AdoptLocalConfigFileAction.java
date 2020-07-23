@@ -13,14 +13,20 @@ package de.cismet.watergis.gui.actions;
 
 import org.apache.commons.io.FilenameUtils;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 
 import java.io.File;
+
+import java.util.TreeMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
 import de.cismet.cismap.commons.gui.MappingComponent;
+import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
+import de.cismet.cismap.commons.raster.wms.AbstractWMS;
+import de.cismet.cismap.commons.rasterservice.MapService;
 
 import de.cismet.tools.configuration.ConfigurationManager;
 
@@ -87,6 +93,27 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
         if (projectName.contains(".")) {
             projectName = projectName.substring(0, projectName.indexOf("."));
         }
+
+        EventQueue.invokeLater(new Thread("Initialise layers") {
+
+                @Override
+                public void run() {
+                    final TreeMap<Integer, MapService> map = ((ActiveLayerModel)mappingComponent.getMappingModel())
+                                .getMapServices();
+
+                    if ((map != null) && (map.keySet() != null)) {
+                        for (final Integer key : map.keySet()) {
+                            final MapService service = map.get(key.intValue());
+
+                            if ((service instanceof AbstractWMS) && !((AbstractWMS)service).isVisible()) {
+                                ((AbstractWMS)service).setSize(
+                                    mappingComponent.getHeight(),
+                                    mappingComponent.getWidth());
+                            }
+                        }
+                    }
+                }
+            });
 
         AppBroker.getInstance().getWatergisApp().setTitle("FIS Gewässer – Projekt: " + projectName);
     }

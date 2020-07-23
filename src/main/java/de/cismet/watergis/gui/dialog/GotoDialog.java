@@ -44,6 +44,7 @@ public class GotoDialog extends javax.swing.JDialog {
     public GotoDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        getRootPane().setDefaultButton(butOk);
     }
 
     //~ Methods ----------------------------------------------------------------

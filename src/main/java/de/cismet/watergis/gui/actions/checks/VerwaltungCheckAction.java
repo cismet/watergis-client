@@ -160,7 +160,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba_linie linie on (ba_st = linie.id) "
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id) "
                             + "join dlm25w.fg_ba ba on (von.route = ba.id) "
-                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where kreis_nr = nr_li limit 1)) or ((nr_re is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_re limit 1)));";
+                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_li limit 1)) or ((nr_re is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_re limit 1)));";
             } else {
                 QUERY_GB_CATALOGUE = "select distinct " + FG_BA_GB.getID() + ", t." + FG_BA_GB.getPrimaryKey()
                             + " from " + FG_BA_GB.getTableName() + " t \n"
@@ -169,7 +169,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "join dlm25w.fg_ba ba on (von.route = ba.id) "
                             + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id) "
                             + "join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null) and not exists (select 1 from dlm25w.vw_alk_gmd where kreis_nr = nr_li limit 1)) or ((nr_re is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_re limit 1))) and (gr.owner = '"
+                            + "where (%1$s is null or ba.id = any(%1$s)) and (((nr_li is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_li limit 1)) or ((nr_re is not null) and not exists (select 1 from dlm25w.vw_alk_kreis where kreis_nr = nr_re limit 1))) and (gr.owner = '"
                             + user.getUserGroup().getName()
                             + "' or %2$s)";
             }

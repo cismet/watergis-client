@@ -247,7 +247,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                         (Integer)f.get(0),
                         (String)f.get(7),
                         (String)f.get(1),
-                        (String)f.get(5),
+                        (String)f.get(4),
                         (String)f.get(2),
                         (Integer)f.get(3),
                         (String)f.get(8),

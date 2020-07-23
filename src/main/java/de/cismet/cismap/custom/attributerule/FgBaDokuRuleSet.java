@@ -211,8 +211,7 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
-        feature.getProperties().put("fis_g_date", new Timestamp(System.currentTimeMillis()));
-        feature.getProperties().put("fis_g_user", SessionManager.getSession().getUser().getName());
+        adjustFisGDateAndFisGUser(feature);
     }
 
     @Override
@@ -299,9 +298,9 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
                             final URL u = new URL("file://" + value);
 
                             try {
-                                de.cismet.tools.BrowserLauncher.openURLorFile(u.toString());
+                                de.cismet.tools.BrowserLauncher.openURLorFile(value.toString());
                             } catch (Exception ex) {
-                                log.error("Cannot open the url:" + u, ex);
+                                log.error("Cannot open the url:" + value.toString(), ex);
                             }
                         } else {
                             JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
