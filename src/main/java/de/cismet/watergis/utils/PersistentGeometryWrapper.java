@@ -23,6 +23,7 @@ import com.vividsolutions.jts.geom.GeometryComponentFilter;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.GeometryFilter;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureSchema;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.PersistentFeature;
@@ -66,10 +67,11 @@ public class PersistentGeometryWrapper extends Geometry {
         super(factory);
         // todo persistent feature nutzen
 // this.feature = new DefaultFeatureServiceFeature();
-        final DefaultFeatureServiceFeature innerFeature = new DefaultFeatureServiceFeature(1, geo, null);
-        innerFeature.setGeometry(geo);
-        final PersistentFeature f = new PersistentFeature(innerFeature, pm);
-        this.feature = new JumpFeature(f, null);
+// final DefaultFeatureServiceFeature innerFeature = new DefaultFeatureServiceFeature(1, geo, null);
+// innerFeature.setGeometry(geo);
+// final PersistentFeature f = new PersistentFeature(innerFeature, pm);
+// this.feature = new JumpFeature(f, null);
+        this.feature = new SimpleGeometryFeature(geo, pm);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -176,5 +178,143 @@ public class PersistentGeometryWrapper extends Geometry {
     @Override
     protected int compareToSameClass(final Object o, final CoordinateSequenceComparator comp) {
         return getGeom().compareTo(o, comp);
+    }
+
+    //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private static class SimpleGeometryFeature implements com.vividsolutions.jump.feature.Feature {
+
+        //~ Instance fields ----------------------------------------------------
+
+        FilePersistenceManager pm;
+        long geoId;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new SimpleGeometryFeature object.
+         *
+         * @param  geo  DOCUMENT ME!
+         * @param  pm   DOCUMENT ME!
+         */
+        public SimpleGeometryFeature(final Geometry geo,
+                final FilePersistenceManager pm) {
+            this.pm = pm;
+            geoId = pm.save(geo);
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public Object clone() {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public void setAttributes(final Object[] attributes) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public void setSchema(final FeatureSchema schema) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public int getID() {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public void setAttribute(final int attributeIndex, final Object newAttribute) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public void setAttribute(final String attributeName, final Object newAttribute) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public void setGeometry(final Geometry geometry) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public Object getAttribute(final int i) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public Object getAttribute(final String name) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public String getString(final int attributeIndex) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public int getInteger(final int attributeIndex) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public double getDouble(final int attributeIndex) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public String getString(final String attributeName) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public Geometry getGeometry() {
+            return (Geometry)pm.load(geoId);
+        }
+
+        @Override
+        public FeatureSchema getSchema() {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public Feature clone(final boolean deep) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public Object[] getAttributes() {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
+
+        @Override
+        public int compareTo(final Object o) {
+            throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
+                                                                           // choose Tools | Templates.
+        }
     }
 }

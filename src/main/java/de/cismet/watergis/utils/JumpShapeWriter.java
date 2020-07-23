@@ -44,6 +44,7 @@ import java.sql.Timestamp;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -225,9 +226,10 @@ public class JumpShapeWriter implements ShapeWriter {
             final List<String[]> aliasAttributeList,
             final String charset) throws Exception {
         final ShapefileWriter writer = new ShapefileWriter();
-        final List<Feature> basicFeatures = cidsFeatures2BasicFeature(features, aliasAttributeList);
+        List<Feature> basicFeatures = cidsFeatures2BasicFeature(features, aliasAttributeList);
         final FeatureSchema schema = basicFeatures.get(0).getSchema();
         final FeatureDataset set = new FeatureDataset(basicFeatures, schema);
+        basicFeatures = null;
         final DriverProperties properties = new DriverProperties();
 
         // charset property can also be defined
@@ -244,7 +246,15 @@ public class JumpShapeWriter implements ShapeWriter {
                 final AttributeTableRuleSet ruleSet = feature.getLayerProperties().getAttributeTableRuleSet();
 
                 if (ruleSet instanceof WatergisDefaultRuleSet) {
-                    writer.setRuleSet((WatergisDefaultRuleSet)ruleSet);
+                    final Map<String, String> map = new HashMap<String, String>();
+
+                    if (aliasAttributeList != null) {
+                        for (final String[] name : aliasAttributeList) {
+                            map.put(name[0], name[1]);
+                        }
+                    }
+
+                    writer.setRuleSet((WatergisDefaultRuleSet)ruleSet, map);
                 }
             }
         }
@@ -364,7 +374,7 @@ public class JumpShapeWriter implements ShapeWriter {
      */
     private List<Feature> cidsFeatures2BasicFeature(final FeatureServiceFeature[] features,
             final List<String[]> aliasAttributeList) {
-        final List<Feature> featureList = new ArrayList<Feature>();
+        final List<Feature> featureList = new ArrayList<Feature>(features.length);
         final Map<String, FeatureServiceAttribute> attributesMap = features[0].getLayerProperties()
                     .getFeatureService()
                     .getFeatureServiceAttributes();
@@ -404,6 +414,8 @@ public class JumpShapeWriter implements ShapeWriter {
 
                 if (!hasGeometry) {
                     bf.setAttribute(DEFAULT_GEOM_PROPERTY_NAME, defaultGeom);
+                } else if (f.getGeometry() == null) {
+                    bf.setAttribute(getGeometryAttribute(attributesMap, aliasAttributeList), defaultGeom);
                 }
             }
 
@@ -469,6 +481,32 @@ public class JumpShapeWriter implements ShapeWriter {
         }
 
         return hasGeometry;
+    }
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   attributes          DOCUMENT ME!
+     * @param   aliasAttributeList  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String getGeometryAttribute(final Map<String, FeatureServiceAttribute> attributes,
+            final List<String[]> aliasAttributeList) {
+        List<String[]> attributeNames = aliasAttributeList;
+
+        if (aliasAttributeList == null) {
+            attributeNames = generateAliasAttributeList(attributes);
+        }
+
+        for (final String[] name : attributeNames) {
+            final FeatureServiceAttribute attr = attributes.get(name[1]);
+
+            if (attr.isGeometry()) {
+                return name[1];
+            }
+        }
+
+        return null;
     }
 
     /**
