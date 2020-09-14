@@ -74,7 +74,8 @@ public class KatasterGewaesserReport {
             "gmdName",
             "code",
             "anzahlGu",
-            "gu"
+            "gu",
+            "gewName"
         };
 // private final Map<String, CidsLayer> layerMap = new HashMap<String, CidsLayer>();
 
@@ -237,7 +238,7 @@ public class KatasterGewaesserReport {
         parts = getAllRoutes(routeIds);
         int[] routes = routeIds;
 
-        if (routes.length == 0) {
+        if ((routes != null) && (routes.length == 0)) {
             routes = null;
         }
 
@@ -327,66 +328,84 @@ public class KatasterGewaesserReport {
 
         sheetNames.add("Gewässer");
         final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
-        for (final int gew : getGew()) {
+        for (final int gew : getGewSortedByBaCd()) {
             final Map<String, Object> feature = new HashMap<String, Object>();
             feature.put("anzahlGew", getCountGewAll());
             feature.put("code", getBaCd(gew));
             feature.put("gewName", getGewName(gew));
-            feature.put("gewLaenge", getLengthGew(gew));
-            feature.put("offene_a", getCountOffeneAbschn(gew));
-            feature.put("offene_l", getLengthOffeneAbschn(gew));
-            feature.put("see_a", getCountLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew));
-            feature.put("see_l", getLengthLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew));
-            feature.put("geschl_a", getCountGeschlAbschn(gew));
-            feature.put("geschl_l", getLengthGeschlAbschn(gew));
-            feature.put("wschutz_a", getCountLineObjects(GewaesserData.LineFromPolygonTable.wr_sg_wsg, gew));
-            feature.put("wschutz_l", getLengthLineObjects(GewaesserData.LineFromPolygonTable.wr_sg_wsg, gew));
-            feature.put("ueber_a", getCountLineObjects(GewaesserData.LineFromPolygonTable.wr_sg_uesg, gew));
-            feature.put("ueber_l", getLengthLineObjects(GewaesserData.LineFromPolygonTable.wr_sg_uesg, gew));
-            feature.put("ben_a", getCountPointObjects(AllPunktObjects.Table.wr_wbu_ben, gew));
-            feature.put("aus_a", getCountPointObjects(AllPunktObjects.Table.wr_wbu_aus, gew));
-            feature.put("pegel_a", getCountPointObjects(AllPunktObjects.Table.mn_ow_pegel, gew));
-            feature.put("gb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_gb, gew));
-            feature.put("gb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, gew));
-            feature.put("gmd_a", getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, gew));
-            feature.put("gmd_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gmd, gew));
-            feature.put("sb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sb, gew));
-            feature.put("sb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, gew));
-            feature.put("prof_a", getCountLineObjects(AllLineObjects.Table.fg_ba_prof, gew));
-            feature.put("prof_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gew));
-            feature.put("sbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, gew));
-            feature.put("sbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, gew));
-            feature.put("ubef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_ubef, gew));
-            feature.put("ubef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_ubef, gew));
-            feature.put("bbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_bbef, gew));
-            feature.put("bbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_bbef, gew));
-            feature.put("rl_a", getCountLineObjects(AllLineObjects.Table.fg_ba_rl, gew));
-            feature.put("rl_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_rl, gew));
-            feature.put("d_a", getCountLineObjects(AllLineObjects.Table.fg_ba_d, gew));
-            feature.put("d_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_d, gew));
-            feature.put("due_a", getCountLineObjects(AllLineObjects.Table.fg_ba_due, gew));
-            feature.put("due_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_due, gew));
-            feature.put("scha_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_scha, gew));
-            feature.put("wehr_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_wehr, gew));
-            feature.put("schw_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_schw, gew));
-            feature.put("anlp_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_anlp, gew));
-            feature.put("anll_a", getCountLineObjects(AllLineObjects.Table.fg_ba_anll, gew));
-            feature.put("anll_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, gew));
-            feature.put("kr_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, gew));
-            feature.put("ea_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, gew));
-            feature.put("foto_a", getCountPointObjects(AllPunktObjects.Table.foto, gew));
-            feature.put("deich_a", getCountLineObjects(AllLineObjects.Table.fg_ba_deich, gew));
-            feature.put("deich_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, gew));
-            feature.put("ughz_a", getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, gew));
-            feature.put("ughz_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_ughz, gew));
-            feature.put("leis_a", getCountLineObjects(AllLineObjects.Table.fg_ba_leis, gew));
-            feature.put("leis_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_leis, gew));
-            feature.put("tech_a", getCountLineObjects(AllLineObjects.Table.fg_ba_tech, gew));
-            feature.put("tech_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_tech, gew));
-            feature.put("dok_a", getCountLineObjects(AllLineObjects.Table.fg_ba_doku, gew));
-            feature.put("dok_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_doku, gew));
-            feature.put("proj_a", getCountLineObjects(AllLineObjects.Table.fg_ba_proj, gew));
-            feature.put("proj_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_proj, gew));
+            feature.put("gewLaenge", toNullIfZero(getLengthGew(gew)));
+            feature.put(
+                "offene_a",
+                toNullIfZero(
+                    getLengthOffeneAbschn(gew)
+                            * 100.0
+                            / (getLengthOffeneAbschn(gew) + getLengthGeschlAbschn(gew))));
+            feature.put("offene_l", toNullIfZero(getLengthOffeneAbschn(gew)));
+            feature.put("see_a", toNullIfZero(getCountLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew)));
+            feature.put("see_l", toNullIfZero(getLengthLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew)));
+            feature.put(
+                "geschl_a",
+                toNullIfZero(
+                    getLengthGeschlAbschn(gew)
+                            * 100.0
+                            / (getLengthOffeneAbschn(gew) + getLengthGeschlAbschn(gew))));
+            feature.put("geschl_l", toNullIfZero(getLengthGeschlAbschn(gew)));
+            feature.put(
+                "wschutz_a",
+                toNullIfZero(getCountLineObjects(GewaesserData.LineFromPolygonTable.wr_sg_wsg, gew)));
+            feature.put(
+                "wschutz_l",
+                toNullIfZero(getLengthLineObjects(GewaesserData.LineFromPolygonTable.wr_sg_wsg, gew)));
+            feature.put(
+                "ueber_a",
+                toNullIfZero(getCountLineObjects(GewaesserData.LineFromPolygonTable.wr_sg_uesg, gew)));
+            feature.put(
+                "ueber_l",
+                toNullIfZero(getLengthLineObjects(GewaesserData.LineFromPolygonTable.wr_sg_uesg, gew)));
+            feature.put("ben_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.wr_wbu_ben, gew)));
+            feature.put("aus_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.wr_wbu_aus, gew)));
+            feature.put("pegel_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.mn_ow_pegel, gew)));
+            feature.put("gb_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_gb, gew)));
+            feature.put("gb_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, gew)));
+            feature.put("gmd_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, gew)));
+            feature.put("gmd_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_gmd, gew)));
+            feature.put("sb_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_sb, gew)));
+            feature.put("sb_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, gew)));
+            feature.put("prof_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_prof, gew)));
+            feature.put("prof_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gew)));
+            feature.put("sbef_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, gew)));
+            feature.put("sbef_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, gew)));
+            feature.put("ubef_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_ubef, gew)));
+            feature.put("ubef_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_ubef, gew)));
+            feature.put("bbef_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_bbef, gew)));
+            feature.put("bbef_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_bbef, gew)));
+            feature.put("rl_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_rl, gew)));
+            feature.put("rl_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_rl, gew)));
+            feature.put("d_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_d, gew)));
+            feature.put("d_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_d, gew)));
+            feature.put("due_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_due, gew)));
+            feature.put("due_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_due, gew)));
+            feature.put("scha_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_scha, gew)));
+            feature.put("wehr_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_wehr, gew)));
+            feature.put("schw_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_schw, gew)));
+            feature.put("anlp_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_anlp, gew)));
+            feature.put("anll_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_anll, gew)));
+            feature.put("anll_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, gew)));
+            feature.put("kr_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, gew)));
+            feature.put("ea_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, gew)));
+            feature.put("foto_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.foto, gew)));
+            feature.put("deich_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_deich, gew)));
+            feature.put("deich_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, gew)));
+            feature.put("ughz_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, gew)));
+            feature.put("ughz_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_ughz, gew)));
+            feature.put("leis_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_leis, gew)));
+            feature.put("leis_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_leis, gew)));
+            feature.put("tech_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_tech, gew)));
+            feature.put("tech_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_tech, gew)));
+            feature.put("dok_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_doku, gew)));
+            feature.put("dok_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_doku, gew)));
+            feature.put("proj_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_proj, gew)));
+            feature.put("proj_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_proj, gew)));
 
             features.add(feature);
             featureListKum.add(feature);
@@ -396,6 +415,23 @@ public class KatasterGewaesserReport {
         kumObj.put("gewName", null);
         features.add(kumObj);
         return new FeatureDataSource(features);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   o  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Object toNullIfZero(final Object o) {
+        if (o instanceof Number) {
+            if (((Number)o).doubleValue() == 0.0) {
+                return null;
+            }
+        }
+
+        return o;
     }
 
     /**
@@ -1262,26 +1298,60 @@ public class KatasterGewaesserReport {
         for (final String key : firstElement.keySet()) {
             final Object value = firstElement.get(key);
 
-            if ((Arrays.binarySearch(exceptionalNumberFields, key) < 0) && (value instanceof Integer)) {
-                int sum = 0;
+//            if ((Arrays.binarySearch(exceptionalNumberFields, key) < 0) && (value instanceof Integer)) {
+//                int sum = 0;
+//
+//                for (final Map<String, Object> f : featureListKum) {
+//                    sum += (Integer)f.get(key);
+//                }
+//
+//                kumFeature.put(key, sum);
+//            } else
+            if ((Arrays.binarySearch(exceptionalNumberFields, key) < 0)) {
+                if (key.equals("geschl_a") || key.equals("offene_a")) {
+                    // will be calculated later
+                } else {
+                    double sum = 0.0;
+                    boolean isInt = false;
 
-                for (final Map<String, Object> f : featureListKum) {
-                    sum += (Integer)f.get(key);
+                    for (final Map<String, Object> f : featureListKum) {
+                        final Number n = (Number)f.get(key);
+
+                        if (n != null) {
+                            if (f.get(key) instanceof Integer) {
+                                isInt = true;
+                            }
+                            sum += ((Number)f.get(key)).doubleValue();
+                        }
+                    }
+
+                    if (sum == 0.0) {
+                        kumFeature.put(key, null);
+                    } else {
+                        if (isInt) {
+                            kumFeature.put(key, (int)Math.round(sum));
+                        } else {
+                            kumFeature.put(key, sum);
+                        }
+                    }
                 }
-
-                kumFeature.put(key, sum);
-            } else if ((Arrays.binarySearch(exceptionalNumberFields, key) < 0) && (value instanceof Double)) {
-                double sum = 0;
-
-                for (final Map<String, Object> f : featureListKum) {
-                    sum += (Double)f.get(key);
-                }
-
-                kumFeature.put(key, sum);
             } else {
                 kumFeature.put(key, value);
             }
         }
+
+        Double offene = (Double)kumFeature.get("offene_l");
+        Double geschl = (Double)kumFeature.get("geschl_l");
+
+        if (offene == null) {
+            offene = 0.0;
+        }
+        if (geschl == null) {
+            geschl = 0.0;
+        }
+
+        kumFeature.put("offene_a", toNullIfZero(offene * 100.0 / (offene + geschl)));
+        kumFeature.put("geschl_a", toNullIfZero(geschl * 100.0 / (offene + geschl)));
 
         return kumFeature;
     }
@@ -1299,6 +1369,26 @@ public class KatasterGewaesserReport {
         }
 
         return ts.descendingSet();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Collection<Integer> getGewSortedByBaCd() {
+        final TreeSet<KatasterGewObj> ts = new TreeSet<KatasterGewObj>();
+        final List<Integer> list = new ArrayList<Integer>();
+
+        for (final KatasterGewObj tmp : parts) {
+            ts.add(tmp);
+        }
+
+        for (final KatasterGewObj tmp : ts) {
+            list.add(tmp.getId());
+        }
+
+        return list;
     }
 
     /**
@@ -1592,7 +1682,7 @@ public class KatasterGewaesserReport {
 
         for (final KatasterGewObj tmp : parts) {
             if ((gewId < 0) || (tmp.getId() == gewId)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     ++count;
                 }
             }
@@ -1613,7 +1703,7 @@ public class KatasterGewaesserReport {
 
         for (final KatasterGewObj tmp : parts) {
             if ((gewId < 0) || (tmp.getId() == gewId)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     length += tmp.getLength();
                 }
             }

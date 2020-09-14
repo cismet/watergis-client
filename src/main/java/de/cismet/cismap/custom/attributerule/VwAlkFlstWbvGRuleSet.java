@@ -11,16 +11,9 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import com.vividsolutions.jts.geom.Geometry;
 
-import java.sql.Timestamp;
-
-import java.util.List;
-
 import javax.swing.DefaultCellEditor;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -30,8 +23,6 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-
-import de.cismet.watergis.broker.AppBroker;
 
 /**
  * DOCUMENT ME!
@@ -44,19 +35,20 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
     //~ Instance initializers --------------------------------------------------
 
     {
-        typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, false));
-        typeMap.put("flst", new WatergisDefaultRuleSet.Varchar(10, true));
-        typeMap.put("fl_nr", new WatergisDefaultRuleSet.Numeric(3, 0, true));
-        typeMap.put("gmk_nr", new WatergisDefaultRuleSet.Numeric(6, 0, true));
-        typeMap.put("gmk_name", new WatergisDefaultRuleSet.Varchar(50, true));
-        typeMap.put("gmd_nr", new WatergisDefaultRuleSet.Numeric(8, 0, true));
-        typeMap.put("gmd_name", new WatergisDefaultRuleSet.Varchar(50, true));
+        typeMap.put("geom", new Geom(true, false));
+        typeMap.put("fsk", new Varchar(20, true));
+        typeMap.put("flst", new Varchar(10, true));
+        typeMap.put("fl_nr", new Numeric(3, 0, true));
+        typeMap.put("gmk_nr", new Numeric(6, 0, true));
+        typeMap.put("gmk_name", new Varchar(50, true));
+        typeMap.put("gmd_nr", new Numeric(8, 0, true));
+        typeMap.put("gmd_name", new Varchar(50, true));
         typeMap.put("wbv", new Numeric(2, 0, true));
-        typeMap.put("flst_fl", new WatergisDefaultRuleSet.Numeric(16, 4, true));
+        typeMap.put("flst_fl", new Numeric(16, 4, true));
         typeMap.put("flst_g_an", new Numeric(5, 2, false, false));
         typeMap.put("flst_g_fl", new Numeric(16, 4, false, false));
-        typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
-        typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
 
     //~ Methods ----------------------------------------------------------------

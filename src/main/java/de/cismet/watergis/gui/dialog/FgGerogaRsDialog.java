@@ -35,6 +35,7 @@ import java.awt.EventQueue;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
+import java.sql.Statement;
 import java.sql.Timestamp;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 
 import de.cismet.cids.custom.watergis.server.search.Buffer;
+import de.cismet.cids.custom.watergis.server.search.Difference;
 import de.cismet.cids.custom.watergis.server.search.PreparedRandstreifenGeoms;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
@@ -73,6 +75,7 @@ import de.cismet.cismap.commons.features.JDBCFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
+import de.cismet.cismap.commons.featureservice.factory.JDBCFeatureFactory;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.tools.FeatureTools;
@@ -1893,7 +1896,8 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
         final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
                         .getInstance().getWatergisApp(),
                 true,
-                NbBundle.getMessage(FgGerogaRsDialog.class, "FgGerogaRsDialog.start().WaitingDialogThread"),
+                NbBundle.getMessage(FgGerogaRsDialog.class, "FgGerogaRsDialog.start().WaitingDialogThread")
+                        + "                      ",
                 null,
                 100,
                 true) {
@@ -2302,12 +2306,22 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                             return null;
                         }
 
+                        wd.setMax(getStreifen().length * 3);
                         for (final Double rs : getStreifen()) {
+                            wd.setText("Erstelle (Randstreifen) " + (++index) + " / " + streifen.length);
+                            wd.setProgress((index - 1) * 3);
                             if (canceled) {
                                 return null;
                             }
+//                            long start = System.currentTimeMillis();
                             final Geometry currentRs = buffer(totalGeom, rs);
+                            wd.setProgress(((index - 1) * 3) + 1);
+//                            System.out.println("buffer: " + (System.currentTimeMillis() - start) + " ms");
+//                            start = System.currentTimeMillis();
                             Geometry rsWithOutMiddle = currentRs.difference(oldRs);
+                            wd.setProgress(((index - 1) * 3) + 2);
+//                            System.out.println("difference: " + (System.currentTimeMillis() - start) + " ms");
+//                            start = System.currentTimeMillis();
                             oldRs = currentRs;
                             if (canceled) {
                                 return null;
@@ -2316,7 +2330,12 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                                 rsWithOutMiddle = rsWithOutMiddle.intersection(areaPolygon);
                             }
                             rsWithOutMiddle.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
-
+                            // set the envelope. Without the next line, the envelope will be calculated every time a
+                            // new features is added.
+                            if (targetlayer != null) {
+//                                ((JDBCFeatureFactory)targetlayer.getFeatureFactory()).setEnvelope(
+//                                    rsWithOutMiddle.getEnvelope());
+                            }
                             for (int geomNumber = 0; geomNumber < rsWithOutMiddle.getNumGeometries(); ++geomNumber) {
                                 if (canceled) {
                                     return null;
@@ -2369,6 +2388,8 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                                             properties,
                                             txtFile.getText(),
                                             serviceAttributes);
+//                                    ((JDBCFeatureFactory)targetlayer.getFeatureFactory()).setEnvelope(
+//                                        rsWithOutMiddle.getEnvelope());
                                 } else {
                                     final JDBCFeature f = (JDBCFeature)targetlayer.getFeatureFactory()
                                                 .createNewFeature();
@@ -2377,12 +2398,12 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
                                     f.setProperty("fis_g_date", time);
                                     f.setProperty("fis_g_user", user);
                                     f.setGeometry(g);
-                                    f.saveChangesWithoutReload();
+                                    f.saveChangesWithoutUpdateEnvelope();
                                 }
                             }
+//                            System.out.println("insert: " + (System.currentTimeMillis() - start) + " ms");
                         }
                     }
-
                     return targetlayer;
                 }
 
@@ -2541,6 +2562,37 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 //        return g.buffer(dist);
         Geometry bufferedGeometry = null;
         final CidsServerSearch search = new Buffer(g, dist);
+
+        final User user = SessionManager.getSession().getUser();
+        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(user, search);
+
+        if ((attributes != null) && !attributes.isEmpty()) {
+            if (!attributes.get(0).isEmpty() && (attributes.get(0).get(0) instanceof byte[])) {
+                final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                        CismapBroker.getInstance().getDefaultCrsAlias());
+                final WKBReader wkbReader = new WKBReader(geomFactory);
+                bufferedGeometry = wkbReader.read((byte[])attributes.get(0).get(0));
+            }
+        }
+
+        return bufferedGeometry;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   g   DOCUMENT ME!
+     * @param   g2  dist DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    private Geometry difference(final Geometry g, final Geometry g2) throws Exception {
+//        return g.buffer(dist);
+        Geometry bufferedGeometry = null;
+        final CidsServerSearch search = new Difference(g, g2);
 
         final User user = SessionManager.getSession().getUser();
         final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()

@@ -217,7 +217,9 @@ public class BookmarkManager implements Configurable {
             LOG.error("Error while saving bookmarks", ex);
         } finally {
             try {
-                writer.close();
+                if (writer != null) {
+                    writer.close();
+                }
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
