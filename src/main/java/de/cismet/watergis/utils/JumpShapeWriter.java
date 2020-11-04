@@ -22,9 +22,12 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.DriverProperties;
+import com.vividsolutions.jump.io.IllegalParametersException;
 //import com.vividsolutions.jump.io.ShapefileWriter;
 
 import org.apache.log4j.Logger;
+
+import org.openide.util.NbBundle;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -47,6 +50,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JOptionPane;
 
 import de.cismet.cismap.cidslayer.CidsLayer;
 
@@ -117,7 +122,15 @@ public class JumpShapeWriter implements ShapeWriter {
         } catch (InterruptedException e) {
             clear(fileToSaveTo);
             return;
+        } catch (IllegalParametersException e) {
+            JOptionPane.showMessageDialog(AppBroker.getInstance().getRootWindow(),
+                NbBundle.getMessage(JumpShapeWriter.class, "JumpShapeWriter.writeShape.message"),
+                NbBundle.getMessage(JumpShapeWriter.class, "JumpShapeWriter.writeShape.title"),
+                JOptionPane.ERROR_MESSAGE);
+            clear(fileToSaveTo);
+            throw e;
         }
+
         if (Thread.interrupted()) {
             clear(fileToSaveTo);
             return;
@@ -165,6 +178,8 @@ public class JumpShapeWriter implements ShapeWriter {
         fileName = fileNameWithoutExt + ".dbf";
         deleteFileIfExists(fileName);
         fileName = fileNameWithoutExt + ".pdf";
+        deleteFileIfExists(fileName);
+        fileName = fileNameWithoutExt + ".cpg";
         deleteFileIfExists(fileName);
     }
 

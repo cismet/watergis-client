@@ -11,20 +11,23 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import com.vividsolutions.jts.geom.Geometry;
 
-import java.sql.Timestamp;
+import org.deegree.datatypes.Types;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
+import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -45,6 +48,7 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
+        typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true, new Numeric(4, 0, false, false)));
         typeMap.put("see_gn", new Varchar(50, false, true));
         typeMap.put("see_gn_t", new Numeric(1, 0, false, true));
         typeMap.put("see_lawa", new Varchar(20, false, true));
@@ -94,6 +98,31 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
+        if (columnName.equals("ww_gr")) {
+            CidsLayerFeatureFilter filter = null;
+
+            if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
+                final String userName = AppBroker.getInstance().getOwner();
+                filter = new CidsLayerFeatureFilter() {
+
+                        @Override
+                        public boolean accept(final CidsLayerFeature bean) {
+                            if (bean == null) {
+                                return false;
+                            }
+                            return bean.getProperty("owner").equals(userName) || bean.getProperty("ww_gr")
+                                        .equals(4000);
+                        }
+                    };
+            } else {
+                filter = new WwGrAdminFilter();
+            }
+            return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
+                        "ww_gr",
+                        String.valueOf(Types.INTEGER),
+                        true),
+                    filter);
+        }
         return null;
     }
 
@@ -162,5 +191,17 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
                 downloadDocumentFromWebDav(getSgLinkTablePath(), addExtension(value.toString(), "xlsx"));
             }
         }
+    }
+
+    @Override
+    public Map<String, Object> getDefaultValues() {
+        final Map properties = new HashMap();
+        if ((AppBroker.getInstance().getOwnWwGr() != null)) {
+            properties.put("ww_gr", AppBroker.getInstance().getOwnWwGr());
+        } else {
+            properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
+        }
+
+        return properties;
     }
 }

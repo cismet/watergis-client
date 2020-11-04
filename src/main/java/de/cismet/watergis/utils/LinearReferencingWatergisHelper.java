@@ -46,6 +46,9 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final String PROP_FG_LAK_NAME = "la_cd";
     private static final String PROP_FG_LA_NAME = "la_cd";
     private static final String PROP_SG_SU_NAME = "su_cd";
+    private static final String PROP_SG_UMRING_NAME = "see_id";
+    private static final String PROP_FG_BA_DUV_NAME = "ba_cd";
+    private static final String PROP_FG_BA_DUV_GES_NAME = "ba_cd";
     private static final String PROP_STATIONLINIE_FROM = "von";
     private static final String PROP_STATIONLINIE_TO = "bis";
     private static final String PROP_STATIONLINIE_GEOM = "geom";
@@ -54,6 +57,9 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final String MC_NAME_FG_LA = "fg_la";
     private static final String MC_NAME_FG_LAK = "fg_lak";
     private static final String MC_NAME_SG_SU = "sg_su";
+    private static final String MC_NAME_SG_UMRING = "sg_umring";
+    private static final String MC_NAME_FG_BA_DUV = "fg_ba_duv";
+    private static final String MC_NAME_FG_BA_DUV_GES = "fg_ba_duv_ges";
     private static final String CN_GEOM = "GEOM";
     private static final String CN_FG_BAK_STATIONLINE = "dlm25w.FG_BAK_LINIE";
     private static final String CN_FG_BAK_STATION = "dlm25w.FG_BAK_PUNKT";
@@ -64,7 +70,13 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final String CN_FG_LA_STATIONLINE = "dlm25w.FG_LA_LINIE";
     private static final String CN_FG_LA_STATION = "dlm25w.FG_LA_PUNKT";
     private static final String CN_SG_SU_STATION = "dlm25w.SG_SU_PUNKT";
+    private static final String CN_SG_UMRING_STATION = "duv.SG_UMRING_PUNKT";
+    private static final String CN_FG_BA_DUV_STATION = "duv.FG_BA_DUV_PUNKT";
+    private static final String CN_FG_BA_DUV_GES_STATION = "duv.FG_BA_DUV_GES_PUNKT";
     private static final String CN_SG_SU_STATIONLINE = "dlm25w.SG_SU_LINIE";
+    private static final String CN_SG_UMRING_STATIONLINE = "duv.SG_UMRING_LINIE";
+    private static final String CN_FG_BA_DUV_STATIONLINE = "duv.FG_BA_DUV_LINIE";
+    private static final String CN_FG_BA_DUV_GES_STATIONLINE = "duv.FG_BA_DUV_GES_LINIE";
 
     private static final MetaClass MC_GEOM = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, CN_GEOM);
     private static final MetaClass MC_FG_BAK_STATION = ClassCacheMultiple.getMetaClass(
@@ -82,6 +94,15 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final MetaClass MC_SG_SU_STATION = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_SG_SU_STATION);
+    private static final MetaClass MC_SG_UMRING_STATION = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_SG_UMRING_STATION);
+    private static final MetaClass MC_FG_BA_DUV_STATION = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_FG_BA_DUV_STATION);
+    private static final MetaClass MC_FG_BA_DUV_GES_STATION = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_FG_BA_DUV_GES_STATION);
     private static final MetaClass MC_FG_BAK_STATIONLINIE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_FG_BAK_STATIONLINE);
@@ -97,6 +118,15 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
     private static final MetaClass MC_SG_SU_STATIONLINIE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             CN_SG_SU_STATIONLINE);
+    private static final MetaClass MC_SG_UMRING_STATIONLINIE = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_SG_UMRING_STATIONLINE);
+    private static final MetaClass MC_FG_BA_DUV_STATIONLINIE = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_FG_BA_DUV_STATIONLINE);
+    private static final MetaClass MC_FG_BA_DUV_GES_STATIONLINIE = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            CN_FG_BA_DUV_GES_STATIONLINE);
 
     //~ Instance fields --------------------------------------------------------
 
@@ -242,6 +272,12 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
                 result = routeBean.getProperty(PROP_FG_LA_NAME);
             } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_SU)) {
                 result = routeBean.getProperty(PROP_SG_SU_NAME);
+            } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BA_DUV)) {
+                result = routeBean.getProperty(PROP_FG_BA_DUV_NAME);
+            } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BA_DUV_GES)) {
+                result = routeBean.getProperty(PROP_FG_BA_DUV_GES_NAME);
+            } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_UMRING)) {
+                result = routeBean.getProperty(PROP_SG_UMRING_NAME);
             } else {
                 LOG.error("Unknown station bean. Cannot extract route name from station.");
             }
@@ -332,6 +368,12 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
             stationBean = MC_FG_LA_STATION.getEmptyInstance().getBean();
         } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_SU)) {
             stationBean = MC_SG_SU_STATION.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BA_DUV)) {
+            stationBean = MC_FG_BA_DUV_STATION.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BA_DUV_GES)) {
+            stationBean = MC_FG_BA_DUV_GES_STATION.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_UMRING)) {
+            stationBean = MC_SG_UMRING_STATION.getEmptyInstance().getBean();
         } else {
             LOG.error("Unknown route bean. Cannot create the corresponding station bean.");
         }
@@ -378,6 +420,12 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
             linieBean = MC_FG_LA_STATIONLINIE.getEmptyInstance().getBean();
         } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_SU)) {
             linieBean = MC_SG_SU_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BA_DUV)) {
+            linieBean = MC_FG_BA_DUV_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BA_DUV_GES)) {
+            linieBean = MC_FG_BA_DUV_GES_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_UMRING)) {
+            linieBean = MC_SG_UMRING_STATIONLINIE.getEmptyInstance().getBean();
         } else {
             LOG.error("Unknown route bean. Cannot create the corresponding line bean.");
         }
@@ -434,6 +482,12 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
             linieBean = MC_FG_LA_STATIONLINIE.getEmptyInstance().getBean();
         } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_SU)) {
             linieBean = MC_SG_SU_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BA_DUV)) {
+            linieBean = MC_FG_BA_DUV_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_FG_BA_DUV_GES)) {
+            linieBean = MC_FG_BA_DUV_GES_STATIONLINIE.getEmptyInstance().getBean();
+        } else if (routeBean.getMetaObject().getMetaClass().getName().equals(MC_NAME_SG_UMRING)) {
+            linieBean = MC_SG_UMRING_STATIONLINIE.getEmptyInstance().getBean();
         } else {
             LOG.error("Unknown route bean. Cannot create the corresponding line bean.");
         }
@@ -576,6 +630,12 @@ public class LinearReferencingWatergisHelper implements LinearReferencingHelper 
                 routeNameProperty = PROP_FG_LA_NAME;
             } else if (routeClass.endsWith(MC_NAME_SG_SU)) {
                 routeNameProperty = PROP_SG_SU_NAME;
+            } else if (routeClass.endsWith(MC_NAME_FG_BA_DUV)) {
+                routeNameProperty = PROP_FG_BA_DUV_NAME;
+            } else if (routeClass.endsWith(MC_NAME_FG_BA_DUV_GES)) {
+                routeNameProperty = PROP_FG_BA_DUV_GES_NAME;
+            } else if (routeClass.endsWith(MC_NAME_SG_UMRING)) {
+                routeNameProperty = PROP_SG_UMRING_NAME;
             } else {
                 LOG.error("Unknown station bean. Cannot extract route name from station.");
             }

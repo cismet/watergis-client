@@ -11,11 +11,7 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import com.vividsolutions.jts.geom.Geometry;
-
-import java.sql.Timestamp;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTextField;
@@ -40,6 +36,7 @@ public class VwAlkFlstRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
+        typeMap.put("fsk", new Varchar(20, true));
         typeMap.put("flst", new Varchar(10, true));
         typeMap.put("fl_nr", new Numeric(3, 0, true));
         typeMap.put("gmk_nr", new Numeric(6, 0, true));

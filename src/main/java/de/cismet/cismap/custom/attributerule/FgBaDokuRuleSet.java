@@ -26,6 +26,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import java.nio.file.Files;
+
 import java.sql.Timestamp;
 
 import java.util.HashMap;
@@ -50,6 +52,8 @@ import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
+
+import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -109,13 +113,23 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
 
         if (column.equals("doc")) {
-            if (isLink(newValue)) {
+            if ((newValue == null) || newValue.equals("")) {
+                return null;
+            } else if (isLink(newValue)) {
                 final File f = new File((String)newValue);
 
-                if (!f.exists()) {
+                if (!f.exists() && Files.notExists(f.toPath())) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                         "Die angegebene Datei existiert nicht");
-                    return oldValue;
+                    return newValue;
+                } else if (!f.exists() && !Files.notExists(f.toPath())) {
+                    final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
+                            true,
+                            "Die Existenz der angegebenen Datei konnte nicht geprüft werden.",
+                            "Prüfung nicht möglich");
+                    d.setSize(500, 80);
+                    StaticSwingTools.showDialog(d);
+                    return newValue;
                 }
             }
         }
@@ -193,17 +207,17 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
 
-            if (!isValueEmpty(feature.getProperty("doc"))) {
-                if (isLink(feature.getProperty("doc"))) {
-                    final File f = new File((String)feature.getProperty("doc"));
-
-                    if (!f.exists()) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die angegebene Datei existiert nicht");
-                        return false;
-                    }
-                }
-            }
+//            if (!isValueEmpty(feature.getProperty("doc"))) {
+//                if (isLink(feature.getProperty("doc"))) {
+//                    final File f = new File((String)feature.getProperty("doc"));
+//
+//                    if (!f.exists()) {
+//                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                            "Die angegebene Datei existiert nicht");
+//                        return false;
+//                    }
+//                }
+//            }
         }
 
         return super.prepareForSave(features);

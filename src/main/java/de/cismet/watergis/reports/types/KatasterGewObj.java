@@ -18,7 +18,7 @@ package de.cismet.watergis.reports.types;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class KatasterGewObj implements Cloneable {
+public class KatasterGewObj implements Cloneable, Comparable<KatasterGewObj> {
 
     //~ Instance fields --------------------------------------------------------
 
@@ -337,5 +337,14 @@ public class KatasterGewObj implements Cloneable {
      */
     public String getSbName() {
         return sbName;
+    }
+
+    @Override
+    public int compareTo(final KatasterGewObj o) {
+        if (o == null) {
+            return -1;
+        } else {
+            return getBaCd().compareTo(o.getBaCd());
+        }
     }
 }
