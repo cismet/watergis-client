@@ -10,9 +10,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cismet.cids.custom.permissions.dlm25w;
-
-import de.cismet.cids.dynamics.CidsBean;
+package de.cismet.cismap.custom.attributerule;
 
 /**
  * DOCUMENT ME!
@@ -20,17 +18,12 @@ import de.cismet.cids.dynamics.CidsBean;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class Dlm25wSgSeeKlPermissionProvider extends WatergisPermissionProvider {
+public class FgDuvFragBok20RuleSet extends BasicBufferRuleSet {
 
-    //~ Methods ----------------------------------------------------------------
+    //~ Instance initializers --------------------------------------------------
 
-    @Override
-    protected CidsBean getWwGrBean() {
-        return (CidsBean)cidsBean.getProperty("ww_gr");
-    }
-
-    @Override
-    protected String getWwGrPropertyName() {
-        return "ww_gr";
+    {
+        typeMap.put("ba_cd", new Varchar(50, true));
+        typeMap.put("bok_id", new Numeric(15, 0, false, false));
     }
 }

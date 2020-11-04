@@ -184,7 +184,9 @@ public class RecentlyOpenedFilesList implements Configurable {
             Exceptions.printStackTrace(ex);
         } finally {
             try {
-                writer.close();
+                if (writer != null) {
+                    writer.close();
+                }
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
