@@ -85,6 +85,11 @@ public class BkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING, getDefaultValues());
+        final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.LINESTRING,
+                getDefaultValues());
+        creator.setMinLength(MIN_LINE_LENGTH);
+
+        return creator;
     }
 }

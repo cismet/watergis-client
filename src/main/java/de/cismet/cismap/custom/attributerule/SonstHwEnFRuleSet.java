@@ -15,8 +15,6 @@ import Sirius.navigator.connection.SessionManager;
 
 import org.deegree.datatypes.Types;
 
-import java.sql.Timestamp;
-
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
@@ -165,6 +163,11 @@ public class SonstHwEnFRuleSet extends WatergisDefaultRuleSet {
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, properties);
+        final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.POLYGON,
+                properties);
+        creator.setMinArea(MIN_AREA_SIZE);
+
+        return creator;
     }
 }

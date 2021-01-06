@@ -11,15 +11,11 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
-
-import java.sql.Timestamp;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
@@ -385,7 +379,12 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         // todo Länge >= 1
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING, getDefaultValues());
+        final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.LINESTRING,
+                getDefaultValues());
+        creator.setMinLength(MIN_LINE_LENGTH);
+
+        return creator;
     }
 
     @Override

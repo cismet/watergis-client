@@ -13,7 +13,6 @@ package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
 
-import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.newuser.User;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -36,12 +35,7 @@ import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
 
 import de.cismet.cids.dynamics.CidsBean;
 
-import de.cismet.cids.navigator.utils.ClassCacheMultiple;
-
 import de.cismet.cids.server.search.CidsServerSearch;
-
-import de.cismet.cismap.cidslayer.CidsLayer;
-import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
@@ -49,13 +43,8 @@ import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-import de.cismet.cismap.commons.util.SelectionManager;
-
-import de.cismet.cismap.linearreferencing.RouteCombo;
 
 import de.cismet.watergis.broker.AppBroker;
-
-import de.cismet.watergis.gui.actions.SplitAction;
 
 /**
  * DOCUMENT ME!
@@ -201,7 +190,12 @@ public class FgBaDuvRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING, getDefaultValues());
+        final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.LINESTRING,
+                getDefaultValues());
+        creator.setMinLength(MIN_LINE_LENGTH);
+
+        return creator;
     }
 
     @Override

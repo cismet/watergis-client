@@ -11,15 +11,9 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.deegree.datatypes.Types;
-
-import java.sql.Timestamp;
-
-import java.util.List;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -31,7 +25,6 @@ import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -172,7 +165,10 @@ public class FgBaFlRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         // todo: Kat 3
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON);
+        creator.setMinArea(MIN_AREA_SIZE);
+
+        return creator;
     }
 
     @Override

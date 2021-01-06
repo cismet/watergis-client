@@ -107,6 +107,9 @@ public class Dlm25wHnRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, false);
+        final PrimitiveGeometryCreator c = new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, false);
+        c.setMinArea(MIN_AREA_SIZE);
+
+        return c;
     }
 }
