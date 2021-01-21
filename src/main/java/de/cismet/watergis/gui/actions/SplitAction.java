@@ -68,6 +68,8 @@ import de.cismet.watergis.gui.actions.split.FeatureSplitterFactory;
 
 import de.cismet.watergis.utils.SplitGeometryListener;
 
+import de.cismet.watergisserver.trigger.FgObjectTrigger;
+
 /**
  * DOCUMENT ME!
  *
@@ -427,10 +429,10 @@ public class SplitAction extends AbstractAction {
                                         }
                                         // Save the splitted feature
                                         try {
+                                            if (newFeature instanceof CidsLayerFeature) {
+                                                ((CidsLayerFeature)newFeature).setId(FgObjectTrigger.ID_TO_AVOID_CHECK);
+                                            }
                                             ((ModifiableFeature)newFeature).saveChangesWithoutReload();
-//                                            AppBroker.getInstance()
-//                                                    .getWatergisApp()
-//                                                    .addFeatureToAttributeTable((FeatureServiceFeature)newFeature);
                                             if (LOG.isDebugEnabled()) {
                                                 LOG.debug("Splitted features saved");
                                             }

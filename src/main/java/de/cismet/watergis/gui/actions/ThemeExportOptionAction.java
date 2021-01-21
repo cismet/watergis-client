@@ -29,6 +29,7 @@ import javax.swing.KeyStroke;
 import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.gui.dialog.ExportDialog;
+import de.cismet.watergis.gui.dialog.ThemeExportDialog;
 
 import static javax.swing.Action.NAME;
 
@@ -38,32 +39,32 @@ import static javax.swing.Action.NAME;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class ExportOptionAction extends AbstractAction {
+public class ThemeExportOptionAction extends AbstractAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(ExportOptionAction.class);
+    private static final Logger LOG = Logger.getLogger(ThemeExportOptionAction.class);
 
     //~ Constructors -----------------------------------------------------------
 
     /**
      * Creates a new ExportOptionAction object.
      */
-    public ExportOptionAction() {
+    public ThemeExportOptionAction() {
         super();
 
         final URL icon = getClass().getResource("/de/cismet/watergis/res/icons16/icon-settingsthree-gears.png");
-        String text = "Optionen";
-        String tooltiptext = "Optionen";
-        String mnemonic = "O";
+        String text = "Exportoptionen";
+        String tooltiptext = "Exportoptionen";
+        String mnemonic = "E";
 
         try {
-            text = NbBundle.getMessage(ExportOptionAction.class,
-                    "ExportOptionAction.text");
-            tooltiptext = NbBundle.getMessage(ExportOptionAction.class,
-                    "ExportOptionAction.toolTipText");
-            mnemonic = NbBundle.getMessage(ExportOptionAction.class,
-                    "ExportOptionAction.mnemonic");
+            text = NbBundle.getMessage(ThemeExportOptionAction.class,
+                    "ThemeExportOptionAction.text");
+            tooltiptext = NbBundle.getMessage(ThemeExportOptionAction.class,
+                    "ThemeExportOptionAction.toolTipText");
+            mnemonic = NbBundle.getMessage(ThemeExportOptionAction.class,
+                    "ThemeExportOptionAction.mnemonic");
         } catch (MissingResourceException e) {
             LOG.error("Couldn't find resources. Using fallback settings.", e);
         }
@@ -81,6 +82,6 @@ public class ExportOptionAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        StaticSwingTools.showDialog(ExportDialog.getInstance());
+        StaticSwingTools.showDialog(ThemeExportDialog.getInstance());
     }
 }

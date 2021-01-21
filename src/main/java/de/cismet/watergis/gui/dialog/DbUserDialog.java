@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 
 import org.openide.util.NbBundle;
 
+import java.awt.EventQueue;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -57,6 +59,8 @@ import de.cismet.connectioncontext.ConnectionContext;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
+
+import static java.awt.image.ImageObserver.WIDTH;
 
 /**
  * DOCUMENT ME!
@@ -189,6 +193,13 @@ public class DbUserDialog extends javax.swing.JDialog {
 
         txtDbUser.setMinimumSize(new java.awt.Dimension(200, 27));
         txtDbUser.setPreferredSize(new java.awt.Dimension(200, 27));
+        txtDbUser.addKeyListener(new java.awt.event.KeyAdapter() {
+
+                @Override
+                public void keyTyped(final java.awt.event.KeyEvent evt) {
+                    txtDbUserKeyTyped(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -200,6 +211,13 @@ public class DbUserDialog extends javax.swing.JDialog {
 
         txtDbPassword.setMinimumSize(new java.awt.Dimension(200, 27));
         txtDbPassword.setPreferredSize(new java.awt.Dimension(200, 27));
+        txtDbPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+
+                @Override
+                public void keyTyped(final java.awt.event.KeyEvent evt) {
+                    txtDbPasswordKeyTyped(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -301,6 +319,13 @@ public class DbUserDialog extends javax.swing.JDialog {
 
         txtDBSchema.setMinimumSize(new java.awt.Dimension(200, 27));
         txtDBSchema.setPreferredSize(new java.awt.Dimension(200, 27));
+        txtDBSchema.addKeyListener(new java.awt.event.KeyAdapter() {
+
+                @Override
+                public void keyTyped(final java.awt.event.KeyEvent evt) {
+                    txtDBSchemaKeyTyped(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 7;
@@ -346,16 +371,30 @@ public class DbUserDialog extends javax.swing.JDialog {
         final String dbPassword = txtDbPassword.getText();
         final String schema = txtDBSchema.getText();
 
+        if (!AppBroker.getInstance().isAdminUser()) {
+            return;
+        }
+
         if (((dbUser == null) || dbUser.equals("")) || ((dbPassword == null) || dbPassword.equals(""))
                     || ((schema == null) || schema.equals(""))) {
             return;
         }
 
         if (ActionHelper.isInvalidSchemaName(schema)) {
+            JOptionPane.showMessageDialog(
+                DbUserDialog.this,
+                NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butOkActionPerformed().invalidSchemaName.text"),
+                NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butOkActionPerformed().invalidSchemaName.title"),
+                JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (ActionHelper.isInvalidUserName(dbUser)) {
+            JOptionPane.showMessageDialog(
+                DbUserDialog.this,
+                NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butOkActionPerformed().invalidUserName.text"),
+                NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butOkActionPerformed().invalidUserName.title"),
+                JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -416,17 +455,26 @@ public class DbUserDialog extends javax.swing.JDialog {
                                         "Sirius.navigator.connection.proxy.DefaultConnectionProxyHandler",
                                         session,
                                         CONNECTION_CONTEXT);
+                        String errorMessage = null;
 
                         if (schemaExists) {
-                            removeSchema(schema);
+                            errorMessage = removeSchema(schema);
+
+                            if (errorMessage != null) {
+                                return errorMessage;
+                            }
                         }
 
                         if (userExists) {
-                            removeUser(dbUser);
+                            errorMessage = removeUser(dbUser);
+
+                            if (errorMessage != null) {
+                                return errorMessage;
+                            }
                         }
 
                         // create user
-                        String errorMessage = createUser(dbUser, dbPassword);
+                        errorMessage = createUser(dbUser, dbPassword);
 
                         if (errorMessage != null) {
                             return errorMessage;
@@ -440,10 +488,13 @@ public class DbUserDialog extends javax.swing.JDialog {
                         }
 
                         final MetaClass[] mc = proxy.getClasses(AppBroker.DOMAIN_NAME, ConnectionContext.createDummy());
+                        int count = 0;
+                        wd.setMax(mc.length);
 
                         for (final MetaClass clazz : mc) {
                             final Collection attributes = clazz.getAttributeByName("cidsLayer");
                             final Collection hidden = clazz.getAttributeByName("hidden");
+                            wd.setProgress(count++);
                             if ((attributes == null) || attributes.isEmpty()
                                         || ((hidden != null) && !hidden.isEmpty()
                                             && hidden.toArray()[0].toString().equals(
@@ -451,14 +502,13 @@ public class DbUserDialog extends javax.swing.JDialog {
                                 continue;
                             }
 
-                            final CidsLayerInfo info = CidsLayerUtil.getCidsLayerInfo(
-                                    clazz,
-                                    SessionManager.getSession().getUser());
-
                             createView(clazz, schema, dbUser, session.getUser());
                         }
                     } else {
-                        return "Schema oder Nutzer existieren bereits.";
+                        return NbBundle.getMessage(
+                                DbUserDialog.class,
+                                "DbUserDialog.userOrSchemaAlreadyExists",
+                                new Object[] { schema });
                     }
 
                     return null;
@@ -495,17 +545,20 @@ public class DbUserDialog extends javax.swing.JDialog {
                     if (viewCreated) {
                         return null;
                     } else {
-                        return "";
+                        return NbBundle.getMessage(
+                                DbUserDialog.class,
+                                "DbUserDialog.createView().failure",
+                                new Object[] { clazz.getTableName() });
                     }
                 }
 
                 private String createUser(final String user, final String password) throws ConnectionException {
                     final ServerActionParameter paramDbUser = new ServerActionParameter(
                             CreateUserAction.ParameterType.DB_USER.toString(),
-                            dbUser);
+                            user);
                     final ServerActionParameter paramDbPassword = new ServerActionParameter(
                             CreateUserAction.ParameterType.DB_PASSWORD.toString(),
-                            dbPassword);
+                            password);
                     final Boolean userCreated = (Boolean)SessionManager.getProxy()
                                 .executeTask(
                                         CreateUserAction.TASK_NAME,
@@ -518,7 +571,10 @@ public class DbUserDialog extends javax.swing.JDialog {
                     if (userCreated) {
                         return null;
                     } else {
-                        return "";
+                        return NbBundle.getMessage(
+                                DbUserDialog.class,
+                                "DbUserDialog.createUser().failure",
+                                new Object[] { user });
                     }
                 }
 
@@ -541,14 +597,17 @@ public class DbUserDialog extends javax.swing.JDialog {
                     if (createSchema) {
                         return null;
                     } else {
-                        return "";
+                        return NbBundle.getMessage(
+                                DbUserDialog.class,
+                                "DbUserDialog.createSchema().failure",
+                                new Object[] { schema });
                     }
                 }
 
                 private String removeUser(final String user) throws ConnectionException {
                     final ServerActionParameter paramDbUser = new ServerActionParameter(
                             RemoveUserAction.ParameterType.DB_USER.toString(),
-                            dbUser);
+                            user);
                     final Boolean userRemoved = (Boolean)SessionManager.getProxy()
                                 .executeTask(
                                         RemoveUserAction.TASK_NAME,
@@ -560,7 +619,10 @@ public class DbUserDialog extends javax.swing.JDialog {
                     if (userRemoved) {
                         return null;
                     } else {
-                        return "";
+                        return NbBundle.getMessage(
+                                DbUserDialog.class,
+                                "DbUserDialog.removeUser().failure",
+                                new Object[] { user });
                     }
                 }
 
@@ -579,7 +641,10 @@ public class DbUserDialog extends javax.swing.JDialog {
                     if (schemaRemoved) {
                         return null;
                     } else {
-                        return "";
+                        return NbBundle.getMessage(
+                                DbUserDialog.class,
+                                "DbUserDialog.removeSchema().failure",
+                                new Object[] { schema });
                     }
                 }
 
@@ -609,18 +674,8 @@ public class DbUserDialog extends javax.swing.JDialog {
                 }
             };
 
-        if (H2FeatureService.tableAlreadyExists(schema) && !cbOverride.isSelected()) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                NbBundle.getMessage(DbUserDialog.class,
-                    "BufferDialog.butOkActionPerformed.tableAlreadyExists",
-                    schema),
-                NbBundle.getMessage(DbUserDialog.class,
-                    "BufferDialog.butOkActionPerformed.tableAlreadyExists.title"),
-                JOptionPane.ERROR_MESSAGE);
-        } else {
-            this.setVisible(false);
-            wdt.start();
-        }
+        this.setVisible(false);
+        wdt.start();
     } //GEN-LAST:event_butOkActionPerformed
 
     /**
@@ -629,8 +684,53 @@ public class DbUserDialog extends javax.swing.JDialog {
      * @param  evt  DOCUMENT ME!
      */
     private void cbUserGroupActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbUserGroupActionPerformed
+        EventQueue.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    enabledOrNot();
+                }
+            });
+    } //GEN-LAST:event_cbUserGroupActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtDbUserKeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtDbUserKeyTyped
+        EventQueue.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    enabledOrNot();
+                }
+            });
+    } //GEN-LAST:event_txtDbUserKeyTyped
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtDbPasswordKeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtDbPasswordKeyTyped
+        EventQueue.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    enabledOrNot();
+                }
+            });
+    } //GEN-LAST:event_txtDbPasswordKeyTyped
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtDBSchemaKeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtDBSchemaKeyTyped
         enabledOrNot();
-    }                                                                               //GEN-LAST:event_cbUserGroupActionPerformed
+    }                                                                     //GEN-LAST:event_txtDBSchemaKeyTyped
 
     /**
      * DOCUMENT ME!
@@ -674,7 +774,10 @@ public class DbUserDialog extends javax.swing.JDialog {
      */
     private void enabledOrNot() {
         final boolean isUserSelected = (cbUserGroup.getSelectedItem() instanceof String);
+        final boolean userGiven = (txtDbUser.getText() != null) && !txtDbUser.getText().equals("");
+        final boolean passwordGiven = (txtDbPassword.getText() != null) && !txtDbPassword.getText().equals("");
+        final boolean schemaGiven = (txtDBSchema.getText() != null) && !txtDBSchema.getText().equals("");
 
-        butOk.setEnabled(isUserSelected);
+        butOk.setEnabled(isUserSelected && userGiven && passwordGiven && schemaGiven);
     }
 }

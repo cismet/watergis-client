@@ -12,32 +12,24 @@
  */
 package de.cismet.watergis.gui.actions;
 
-import Sirius.navigator.connection.SessionManager;
-import Sirius.navigator.exception.ConnectionException;
-
-import Sirius.server.middleware.types.MetaClass;
-
 import org.apache.log4j.Logger;
 
 import java.awt.event.ActionEvent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
+import javax.swing.KeyStroke;
 
-import de.cismet.cids.server.cidslayer.CidsLayerInfo;
+import de.cismet.tools.gui.StaticSwingTools;
 
-import de.cismet.cids.tools.CidsLayerUtil;
+import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.cismap.cidslayer.CidsLayer;
-import de.cismet.cismap.cidslayer.CidsLayerConfig;
-import de.cismet.cismap.cidslayer.CidsLayerTreeModel;
+import de.cismet.watergis.gui.dialog.DbUserDialog;
 
-import de.cismet.cismap.commons.gui.capabilitywidget.TreeFolder;
-
-import de.cismet.connectioncontext.ConnectionContext;
+import static javax.swing.Action.MNEMONIC_KEY;
+import static javax.swing.Action.NAME;
+import static javax.swing.Action.SHORT_DESCRIPTION;
+import static javax.swing.Action.SMALL_ICON;
 
 /**
  * DOCUMENT ME!
@@ -51,28 +43,35 @@ public class CreateViewsForUser extends AbstractAction {
 
     private static final Logger LOG = Logger.getLogger(CreateViewsForUser.class);
 
+    //~ Instance fields --------------------------------------------------------
+
+    private DbUserDialog dialog;
+
+    //~ Constructors -----------------------------------------------------------
+
+    /**
+     * Creates a new CreateViewsForUser object.
+     */
+    public CreateViewsForUser() {
+        final String tooltip = org.openide.util.NbBundle.getMessage(
+                CloseAction.class,
+                "CreateViewsForUser.toolTipText");
+        putValue(SHORT_DESCRIPTION, tooltip);
+        final String text = org.openide.util.NbBundle.getMessage(CloseAction.class, "CreateViewsForUser.text");
+        putValue(NAME, text);
+        final String mnemonic = org.openide.util.NbBundle.getMessage(CloseAction.class, "CreateViewsForUser.mnemonic");
+        putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        try {
-            final MetaClass[] mc = SessionManager.getProxy().getClasses("dlm25w", ConnectionContext.createDummy());
-
-            for (final MetaClass clazz : mc) {
-                final Collection attributes = clazz.getAttributeByName("cidsLayer");
-                final Collection hidden = clazz.getAttributeByName("hidden");
-                if ((attributes == null) || attributes.isEmpty()
-                            || ((hidden != null) && !hidden.isEmpty() && hidden.toArray()[0].toString().equals(
-                                    "true"))) {
-                    continue;
-                }
-
-//                CidsLayer layer = new CidsLayer(clazz);
-                final CidsLayerInfo info = CidsLayerUtil.getCidsLayerInfo(clazz, SessionManager.getSession().getUser());
-                info.getSelectString();
-            }
-        } catch (ConnectionException ex) {
-            LOG.error("Error while creating cids layer tree", ex);
+        if (dialog == null) {
+            dialog = new DbUserDialog(AppBroker.getInstance().getWatergisApp(), false);
+            dialog.pack();
         }
+
+        StaticSwingTools.centerWindowOnScreen(dialog);
     }
 }
