@@ -15,39 +15,34 @@ package de.cismet.watergis.gui.panels;
 import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
-import Sirius.server.newuser.User;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.io.WKBReader;
 
 import org.apache.log4j.Logger;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.SwingWorker;
 
-import de.cismet.cids.custom.watergis.server.search.ObjectEnvelopes;
-import de.cismet.cids.custom.watergis.server.search.RouteEnvelopes;
-
-import de.cismet.cids.server.search.CidsServerSearch;
+import de.cismet.cismap.cidslayer.CidsLayer;
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.util.SelectionManager;
 
 import de.cismet.commons.concurrency.CismetConcurrency;
 
 import de.cismet.tools.gui.ScrollableComboBox;
-
-import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
 
@@ -68,7 +63,7 @@ public class ZoomPanel extends javax.swing.JPanel {
     protected boolean routeModelInitialised = false;
     protected final MetaClass objectMc;
     protected String featureClass;
-    protected ObjectEnvelopes.ObjectType type;
+    protected final String nameAttr;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JComboBox cbObjects;
@@ -81,14 +76,14 @@ public class ZoomPanel extends javax.swing.JPanel {
      *
      * @param  objectMc      DOCUMENT ME!
      * @param  featureClass  DOCUMENT ME!
-     * @param  type          DOCUMENT ME!
+     * @param  nameAttr      type DOCUMENT ME!
      */
-    public ZoomPanel(final MetaClass objectMc, final String featureClass, final ObjectEnvelopes.ObjectType type) {
+    public ZoomPanel(final MetaClass objectMc, final String featureClass, final String nameAttr) {
         initComponents();
         this.objectMc = objectMc;
+        this.nameAttr = nameAttr;
         AutoCompleteDecorator.decorate(cbObjects);
         this.featureClass = featureClass;
-        this.type = type;
         init();
     }
 
@@ -97,36 +92,43 @@ public class ZoomPanel extends javax.swing.JPanel {
     /**
      * DOCUMENT ME!
      */
-    protected void init() {
+    public void init() {
         cbObjects.setModel(new DefaultComboBoxModel(new Object[] { "Lade ..." }));
         final SwingWorker sw = new SwingWorker<GeometryElement[], Void>() {
 
                 @Override
                 protected GeometryElement[] doInBackground() throws Exception {
                     if (objectMc != null) {
-                        final CidsServerSearch search = new ObjectEnvelopes(type);
+                        final CidsLayer layer = new CidsLayer(objectMc);
+                        layer.initAndWait();
+                        final Map<String, FeatureServiceAttribute> attributes = layer.getFeatureServiceAttributes();
+                        String userGroup = SessionManager.getSession().getUser().getUserGroup().getName();
 
+                        if (userGroup.endsWith("_edit")) {
+                            userGroup = userGroup.substring(0, userGroup.indexOf("_edit"));
+                        }
+                        final FeatureServiceAttribute attr = attributes.get("gmd_" + userGroup);
+                        // theme vw_alk_gmd should only contain the object of the current user (if it is a wbv user)
+                        final String query = ((attr == null) ? layer.getQuery() : (attr.getName() + "=" + 1));
+                        final List features = layer.getFeatureFactory().createFeatures(query, null, null);
                         final List<GeometryElement> beans = new ArrayList<GeometryElement>();
-                        final User user = SessionManager.getSession().getUser();
-                        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
-                                    .getProxy().customServerSearch(user, search);
 
-                        if ((attributes != null) && !attributes.isEmpty()) {
-                            final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(
-                                        PrecisionModel.FLOATING),
-                                    CismapBroker.getInstance().getDefaultCrsAlias());
-                            final WKBReader wkbReader = new WKBReader(geomFactory);
+                        if ((features != null) && !features.isEmpty()) {
+                            for (final Object f : features) {
+                                if (f instanceof CidsLayerFeature) {
+                                    final CidsLayerFeature feature = (CidsLayerFeature)f;
 
-                            for (final ArrayList f : attributes) {
-                                if (f.get(0) instanceof byte[]) {
-                                    final Geometry g = wkbReader.read((byte[])f.get(0));
-                                    g.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
-
-                                    beans.add(new GeometryElement((Integer)f.get(2), (String)f.get(1), g));
+                                    beans.add(new GeometryElement(
+                                            feature.getId(),
+                                            String.valueOf(feature.getProperty(nameAttr)),
+                                            feature.getGeometry().getEnvelope(),
+                                            feature.getProperty(nameAttr)
+                                                    instanceof Integer));
                                 }
                             }
                         }
 
+                        Collections.sort(beans);
                         return beans.toArray(new GeometryElement[beans.size()]);
                     } else {
                         // The user has no read permissions for the route meta class
@@ -190,6 +192,13 @@ public class ZoomPanel extends javax.swing.JPanel {
 
             CismapBroker.getInstance().getMappingComponent().gotoBoundingBoxWithHistory(bbox);
 
+            if (bbox.getX1() == bbox.getX2()) {
+                CismapBroker.getInstance()
+                        .getMappingComponent()
+                        .gotoBoundingBoxWithHistory(CismapBroker.getInstance().getMappingComponent()
+                            .getBoundingBoxFromScale(500));
+            }
+
             final Thread t = new Thread("selectAfterZoomOnRiver") {
 
                     @Override
@@ -229,26 +238,29 @@ public class ZoomPanel extends javax.swing.JPanel {
      *
      * @version  $Revision$, $Date$
      */
-    protected static class GeometryElement {
+    protected static class GeometryElement implements Comparable<GeometryElement> {
 
         //~ Instance fields ----------------------------------------------------
 
         private XBoundingBox env;
         private final String name;
         private final int id;
+        private boolean isInteger;
 
         //~ Constructors -------------------------------------------------------
 
         /**
          * Creates a new RouteElement object.
          *
-         * @param  id    DOCUMENT ME!
-         * @param  name  bean DOCUMENT ME!
-         * @param  g     DOCUMENT ME!
+         * @param  id         DOCUMENT ME!
+         * @param  name       bean DOCUMENT ME!
+         * @param  g          DOCUMENT ME!
+         * @param  isInteger  DOCUMENT ME!
          */
-        public GeometryElement(final int id, final String name, final Geometry g) {
+        public GeometryElement(final int id, final String name, final Geometry g, final boolean isInteger) {
             this.name = name;
             this.id = id;
+            this.isInteger = isInteger;
 
             if (g != null) {
                 env = new XBoundingBox(g);
@@ -278,6 +290,22 @@ public class ZoomPanel extends javax.swing.JPanel {
          */
         public int getId() {
             return id;
+        }
+
+        @Override
+        public int compareTo(final GeometryElement o) {
+            if (isInteger) {
+                try {
+                    final Integer i1 = Integer.parseInt(toString());
+                    final Integer i2 = Integer.parseInt(o.toString());
+
+                    return i1.compareTo(i2);
+                } catch (NumberFormatException e) {
+                    return toString().compareTo(o.toString());
+                }
+            } else {
+                return toString().compareTo(o.toString());
+            }
         }
     }
 }

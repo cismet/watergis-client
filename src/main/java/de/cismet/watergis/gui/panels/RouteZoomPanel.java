@@ -66,7 +66,7 @@ public class RouteZoomPanel extends ZoomPanel {
     //~ Methods ----------------------------------------------------------------
 
     @Override
-    protected void init() {
+    public void init() {
         cbObjects.setModel(new DefaultComboBoxModel(new Object[] { "Lade ..." }));
 
         final SwingWorker sw = new SwingWorker<ZoomPanel.GeometryElement[], Void>() {
@@ -122,7 +122,11 @@ public class RouteZoomPanel extends ZoomPanel {
                                     final Geometry g = wkbReader.read((byte[])f.get(0));
                                     g.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
 
-                                    beans.add(new ZoomPanel.GeometryElement((Integer)f.get(2), (String)f.get(1), g));
+                                    beans.add(new ZoomPanel.GeometryElement(
+                                            (Integer)f.get(2),
+                                            (String)f.get(1),
+                                            g,
+                                            false));
                                 }
                             }
                         }

@@ -134,7 +134,7 @@ public class StationDialog extends javax.swing.JDialog {
                             cellHasFocus);
                 }
             });
-        txtTable.setText("Puffer");
+        txtTable.setText("Stationierung");
         CismapBroker.getInstance()
                 .getMappingComponent()
                 .getFeatureCollection()
@@ -243,10 +243,8 @@ public class StationDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labTheme,
-            org.openide.util.NbBundle.getMessage(
-                StationDialog.class,
-                "StationDialog.labTheme.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(StationDialog.class, "StationDialog.labTheme.text", new Object[] {
+                })); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -322,10 +320,8 @@ public class StationDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             butCancel,
-            org.openide.util.NbBundle.getMessage(
-                StationDialog.class,
-                "StationDialog.butCancel.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(StationDialog.class, "StationDialog.butCancel.text", new Object[] {
+                })); // NOI18N
         butCancel.setPreferredSize(new java.awt.Dimension(100, 29));
         butCancel.addActionListener(new java.awt.event.ActionListener() {
 
@@ -445,7 +441,6 @@ public class StationDialog extends javax.swing.JDialog {
                     newLayerProperties.setFeatureService((AbstractFeatureService)
                         serviceLayerProperties.getFeatureService().clone());
 
-                    // todo: set service attributes
                     final List<String> orderedAttributeNames = new ArrayList();
                     final Map<String, FeatureServiceAttribute> attributes =
                         new HashMap<String, FeatureServiceAttribute>();
@@ -485,7 +480,6 @@ public class StationDialog extends javax.swing.JDialog {
                             if (service != null) {
                                 final JDBCFeature newFeature = (JDBCFeature)service.getFeatureFactory()
                                             .createNewFeature();
-//                                newFeature.setLayerProperties(newLayerProperties);
                                 newFeature.setProperty("stat", geomIndex);
                                 newFeature.setGeometry(factory.createPoint(coordinate));
                                 newFeature.saveChangesWithoutUpdateEnvelope();
