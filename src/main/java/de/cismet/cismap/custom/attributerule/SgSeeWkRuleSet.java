@@ -53,6 +53,8 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
     {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("wk_nr", new Catalogue("k_wk_sg", true, true, new Varchar(10, false, false)));
+        typeMap.put("wk_gn", new Varchar(50, false, true));
+        typeMap.put("lake_cat", new Varchar(6, false, true));
         typeMap.put("see_gn", new Varchar(50, true, true));
         typeMap.put("see_lawa", new Varchar(20, true, true));
         typeMap.put("see_sp", new Varchar(8, true, true));
