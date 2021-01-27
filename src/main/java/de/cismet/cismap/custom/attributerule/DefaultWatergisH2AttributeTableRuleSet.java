@@ -259,13 +259,33 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
             } else if (geometryType.equalsIgnoreCase("MultiPoint")) {
                 return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POINT, true);
             } else if (geometryType.equalsIgnoreCase("LineString")) {
-                return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING, false);
+                final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                        CreateGeometryListenerInterface.LINESTRING,
+                        false);
+                creator.setMinLength(0.01);
+
+                return creator;
             } else if (geometryType.equalsIgnoreCase("MultiLineString")) {
-                return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING, true);
+                final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                        CreateGeometryListenerInterface.LINESTRING,
+                        true);
+                creator.setMinLength(0.01);
+
+                return creator;
             } else if (geometryType.equalsIgnoreCase("Polygon")) {
-                return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, false);
+                final PrimitiveGeometryCreator c = new PrimitiveGeometryCreator(
+                        CreateGeometryListenerInterface.POLYGON,
+                        false);
+                c.setMinArea(0.0001);
+
+                return c;
             } else if (geometryType.equalsIgnoreCase("MultiPolygon")) {
-                return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
+                final PrimitiveGeometryCreator c = new PrimitiveGeometryCreator(
+                        CreateGeometryListenerInterface.POLYGON,
+                        true);
+                c.setMinArea(0.0001);
+
+                return c;
             } else if (geometryType.equalsIgnoreCase("none")) {
                 return new WithoutGeometryCreator();
             }

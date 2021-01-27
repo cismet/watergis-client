@@ -17,6 +17,9 @@ import Sirius.server.middleware.types.MetaObject;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 
@@ -100,6 +103,18 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
             final Geometry geom = dfsf.getGeometry();
 
             final Geometry[] splittedGeom = GeometryUtils.splitGeom(geom, splitLine);
+
+            if (splittedGeom.length > 0) {
+                for (int i = 0; i < splittedGeom.length; ++i) {
+                    if (((splittedGeom[i] instanceof LineString) || (splittedGeom[i] instanceof MultiLineString))
+                                && (splittedGeom[i].getLength() < 0.01)) {
+                        return null;
+                    } else if (((splittedGeom[i] instanceof Polygon) || (splittedGeom[i] instanceof MultiPolygon))
+                                && (splittedGeom[i].getArea() < 0.0001)) {
+                        return null;
+                    }
+                }
+            }
 
             if (isMulti) {
                 for (int i = 0; i < splittedGeom.length; ++i) {
@@ -325,7 +340,7 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
                             for (final Feature splittedFeature : splittedFeatures) {
                                 if ((splittedFeature.getGeometry() != null)
                                             && (splittedFeature.getGeometry() instanceof LineString)
-                                            && (((LineString)splittedFeature.getGeometry()).getLength() > 0.0)) {
+                                            && (((LineString)splittedFeature.getGeometry()).getLength() > 0.01)) {
                                     featuresToRemove.add((FeatureServiceFeature)splittedFeature);
 
                                     additionalFeaturesToSave.add((FeatureServiceFeature)splittedFeature);

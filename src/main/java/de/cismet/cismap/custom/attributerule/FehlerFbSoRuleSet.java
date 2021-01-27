@@ -17,9 +17,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
-import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
-import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 
 /**
  * DOCUMENT ME!
@@ -95,10 +92,5 @@ public class FehlerFbSoRuleSet extends WatergisDefaultRuleSet {
     @Override
     public Class getAdditionalFieldClass(final int index) {
         return Double.class;
-    }
-
-    @Override
-    public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
     }
 }

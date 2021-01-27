@@ -30,6 +30,149 @@
         <news>www.cismet.de</news>
         <info>http://fry.fis-wasser-mv.de/watergis/meta-dokumente/hilfe_info.pdf</info>
     </urls>
+    <TemplateActions>
+      <Template>
+        <Position>22</Position>
+        <Name>LwSegGeom</Name>
+        <Tooltip>Auswertung LwSegGeom</Tooltip>
+        <Icon>/de/cismet/watergis/res/icons16/icon-analytics-piechart.png</Icon>
+        <Mnemonic>L</Mnemonic>
+        <TableName>dlm25w.lwseggeom</TableName>
+        <Crs>4258</Crs>
+        <Folder>WRRL</Folder>
+        <Attributes>
+          <FeatureServiceAttribute name="geom" alias="" />
+          <FeatureServiceAttribute name="template" alias="" />
+          <FeatureServiceAttribute name="s_name" alias="" />
+          <FeatureServiceAttribute name="eu_cd_ls" alias="" />
+          <FeatureServiceAttribute name="eu_cd_lw" alias="" />
+          <FeatureServiceAttribute name="lake_cat" alias="" />
+          <FeatureServiceAttribute name="rbd_cd" alias="" />
+          <FeatureServiceAttribute name="wa_cd" alias="" />
+          <FeatureServiceAttribute name="planu_cd" alias="" />
+          <FeatureServiceAttribute name="land_cd" alias="" />
+          <FeatureServiceAttribute name="ins_when" alias="" fill="$date" />
+          <FeatureServiceAttribute name="ins_by" alias="" fill="$username"/>
+          <FeatureServiceAttribute name="scale" alias="" />
+          <FeatureServiceAttribute name="f_measure" alias="" />
+          <FeatureServiceAttribute name="t_measure" alias="" />
+          <FeatureServiceAttribute name="inv_land" alias="" />
+          <FeatureServiceAttribute name="metadata" alias="" />
+        </Attributes>
+      </Template>
+      <Template>
+        <Position>12</Position>
+        <Name>StandingWater</Name>
+        <Tooltip>Auswertung StandingWater</Tooltip>
+        <Icon>/de/cismet/watergis/res/icons16/icon-analytics-piechart.png</Icon>
+        <Mnemonic>S</Mnemonic>
+        <TableName>dlm25w.standingwater</TableName>
+        <Crs>4258</Crs>
+        <Folder>Inspire</Folder>
+        <Attributes>
+          <FeatureServiceAttribute name="geom" alias="" />
+          <FeatureServiceAttribute name="template" alias="" />
+          <FeatureServiceAttribute name="eu_cd_ls" alias="" />
+          <FeatureServiceAttribute name="lake_cat" alias="" />
+          <FeatureServiceAttribute name="rbd_cd" alias="" />
+          <FeatureServiceAttribute name="wa_cd" alias="" />
+          <FeatureServiceAttribute name="land_cd" alias="" />
+          <FeatureServiceAttribute name="ins_when" alias="" fill="$date" />
+          <FeatureServiceAttribute name="ins_by" alias="" fill="$username" />
+          <FeatureServiceAttribute name="scale" alias="" />
+          <FeatureServiceAttribute name="inv_land" alias="" />
+          <FeatureServiceAttribute name="metadata" alias="" />
+          <FeatureServiceAttribute name="wbusername" alias="" />
+        </Attributes>
+      </Template>
+      <Template>
+        <Position>23</Position>
+        <Name>CwBodyGeom</Name>
+        <Tooltip>Starte Auswertung CwBodyGeom</Tooltip>
+        <Icon>/de/cismet/watergis/res/icons16/icon-analytics-piechart.png</Icon>
+        <Mnemonic>C</Mnemonic>
+        <TableName>dlm25w.cwbodygeom</TableName>
+        <Crs>4258</Crs>
+        <Folder>WRRL</Folder>
+        <Attributes>
+          <FeatureServiceAttribute name="geom" alias="" />
+          <FeatureServiceAttribute name="template" alias="" />
+          <FeatureServiceAttribute name="eu_cd_cw" alias="" />
+          <FeatureServiceAttribute name="apsfr_cd" alias="" />
+          <FeatureServiceAttribute name="rbd_cd" alias="" />
+          <FeatureServiceAttribute name="wa_cd" alias="" />
+          <FeatureServiceAttribute name="planu_cd" alias="" />
+          <FeatureServiceAttribute name="land_cd" alias="" />
+          <FeatureServiceAttribute name="ins_when" alias="" fill="$date" />
+          <FeatureServiceAttribute name="ins_by" alias="" fill="$username" />
+          <FeatureServiceAttribute name="scale" alias="" />
+          <FeatureServiceAttribute name="inv_land" alias="" />
+          <FeatureServiceAttribute name="metadata" alias="" />
+        </Attributes>
+      </Template>
+      <Template>
+        <Position>24</Position>
+        <Name>TewBodyGeom</Name>
+        <Tooltip>Starte Auswertung TewBodyGeom</Tooltip>
+        <Icon>/de/cismet/watergis/res/icons16/icon-analytics-piechart.png</Icon>
+        <Mnemonic>T</Mnemonic>
+        <TableName>dlm25w.tewbodygeom</TableName>
+        <Crs>4258</Crs>
+        <Folder>WRRL</Folder>
+        <Attributes>
+          <FeatureServiceAttribute name="geom" alias="" />
+          <FeatureServiceAttribute name="template" alias="" />
+          <FeatureServiceAttribute name="eu_cd_tew" alias="" />
+          <FeatureServiceAttribute name="rbd_cd" alias="" />
+          <FeatureServiceAttribute name="wa_cd" alias="" />
+          <FeatureServiceAttribute name="planu_cd" alias="" />
+          <FeatureServiceAttribute name="land_cd" alias="" />
+          <FeatureServiceAttribute name="ins_when" alias="" fill="$date" />
+          <FeatureServiceAttribute name="ins_by" alias="" fill="$username" />
+          <FeatureServiceAttribute name="scale" alias="" />
+          <FeatureServiceAttribute name="inv_land" alias="" />
+          <FeatureServiceAttribute name="metadata" alias="" />
+        </Attributes>
+      </Template>
+      <Template>
+        <Position>11</Position>
+        <Name>DrainBasin</Name>
+        <Tooltip>Starte Auswertung DrainBasin</Tooltip>
+        <Icon>/de/cismet/watergis/res/icons16/icon-analytics-piechart.png</Icon>
+        <Mnemonic>D</Mnemonic>
+        <TableName>dlm25w.drainbasin</TableName>
+        <Crs>4258</Crs>
+        <Folder>Inspire</Folder>
+        <Attributes>
+          <FeatureServiceAttribute name="geom" alias="" />
+          <FeatureServiceAttribute name="template" alias="" />
+          <FeatureServiceAttribute name="drain_cd" alias="" />
+          <FeatureServiceAttribute name="b_name" alias="" />
+          <FeatureServiceAttribute name="geb_kz" alias="" />
+          <FeatureServiceAttribute name="drain_na" alias="" />
+          <FeatureServiceAttribute name="gew_kz" alias="" />
+          <FeatureServiceAttribute name="descr_from" alias="" />
+          <FeatureServiceAttribute name="descr_to" alias="" />
+          <FeatureServiceAttribute name="comments" alias="" />
+          <FeatureServiceAttribute name="area_nom" alias="" />
+          <FeatureServiceAttribute name="pegel_cd" alias="" />
+          <FeatureServiceAttribute name="service" alias="" />
+          <FeatureServiceAttribute name="eu_cd_wb" alias="" />
+          <FeatureServiceAttribute name="planu_cd" alias="" />
+          <FeatureServiceAttribute name="uom_cd" alias="" />
+          <FeatureServiceAttribute name="wa_cd" alias="" />
+          <FeatureServiceAttribute name="rbd_cd" alias="" />
+          <FeatureServiceAttribute name="ch_date" alias="" />
+          <FeatureServiceAttribute name="scale" alias="" />
+          <FeatureServiceAttribute name="conf_cd" alias="" />
+          <FeatureServiceAttribute name="snap_dlm" alias="" />
+          <FeatureServiceAttribute name="land_cd" alias="" />
+          <FeatureServiceAttribute name="metadata" alias="" />
+          <FeatureServiceAttribute name="url" alias="" />
+          <FeatureServiceAttribute name="wbusername" alias="" />
+        </Attributes>
+      </Template>
+    </TemplateActions>
     <ports>
         <httpInterfacePort>9097</httpInterfacePort>
     </ports>

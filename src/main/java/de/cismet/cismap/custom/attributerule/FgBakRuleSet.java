@@ -24,8 +24,6 @@ import org.deegree.datatypes.Types;
 
 import org.openide.util.NbBundle;
 
-import java.sql.Timestamp;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -426,7 +424,12 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING, getDefaultValues());
+        final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.LINESTRING,
+                getDefaultValues());
+        creator.setMinLength(MIN_LINE_LENGTH);
+
+        return creator;
     }
 
     @Override

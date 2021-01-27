@@ -15,8 +15,6 @@ import Sirius.navigator.connection.SessionManager;
 
 import org.deegree.datatypes.Types;
 
-import java.sql.Timestamp;
-
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
@@ -35,7 +33,6 @@ import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.gui.attributetable.DefaultAttributeTableRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
@@ -168,6 +165,11 @@ public class SonstHwLRuleSet extends WatergisDefaultRuleSet {
         } else {
             properties.put("ww_gr", AppBroker.getInstance().getNiemandWwGr());
         }
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING, properties);
+        final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.LINESTRING,
+                properties);
+        creator.setMinLength(MIN_LINE_LENGTH);
+
+        return creator;
     }
 }

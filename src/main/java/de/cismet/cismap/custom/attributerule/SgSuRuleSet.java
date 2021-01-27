@@ -19,8 +19,6 @@ import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
 
-import java.sql.Timestamp;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -201,6 +199,10 @@ public class SgSuRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING);
+        final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.LINESTRING);
+        creator.setMinLength(MIN_LINE_LENGTH);
+
+        return creator;
     }
 }

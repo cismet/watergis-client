@@ -55,11 +55,14 @@ import javax.swing.JOptionPane;
 
 import de.cismet.cismap.cidslayer.CidsLayer;
 
+import de.cismet.cismap.commons.Crs;
+import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.features.PersistentFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
+import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.tools.FeatureTools;
 import de.cismet.cismap.commons.tools.ShapeWriter;
 
@@ -136,7 +139,12 @@ public class JumpShapeWriter implements ShapeWriter {
             return;
         }
         if (WRITE_PRJ) {
-            writePrjFile(fileToSaveTo);
+            String crs = null;
+            if ((features != null) && (features.length > 0)) {
+                final Geometry g = features[0].getGeometry();
+                crs = CrsTransformer.createCrsFromSrid(g.getSRID());
+            }
+            writePrjFile(fileToSaveTo, crs);
         }
 
         if (WRITE_CPG) {
@@ -285,21 +293,49 @@ public class JumpShapeWriter implements ShapeWriter {
      * DOCUMENT ME!
      *
      * @param  file  DOCUMENT ME!
+     * @param  crs   DOCUMENT ME!
      */
-    private void writePrjFile(final File file) {
+    private void writePrjFile(final File file, final String crs) {
         try {
             String fileWithoutExtension = file.getAbsolutePath();
 
             if (fileWithoutExtension.contains(".")) {
                 fileWithoutExtension = fileWithoutExtension.substring(0, fileWithoutExtension.lastIndexOf("."));
             }
+            String crsDefinition = AppBroker.PRJ_CONTENT;
 
+            if (crs != null) {
+                final Crs crsObject = getCrsFromName(crs);
+
+                if (crsObject != null) {
+                    crsDefinition = crsObject.getEsriDefinition();
+                }
+            }
             final BufferedWriter bw = new BufferedWriter(new FileWriter(fileWithoutExtension + ".prj"));
-            bw.write(AppBroker.PRJ_CONTENT);
+            bw.write(crsDefinition);
             bw.close();
         } catch (Exception e) {
             LOG.error("Error while writing prj file");
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   crsName  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Crs getCrsFromName(final String crsName) {
+        final List<Crs> crsList = CismapBroker.getInstance().getMappingComponent().getCrsList();
+
+        for (final Crs crs : crsList) {
+            if (crs.getCode().equals(crsName)) {
+                return crs;
+            }
+        }
+
+        return null;
     }
 
     /**
