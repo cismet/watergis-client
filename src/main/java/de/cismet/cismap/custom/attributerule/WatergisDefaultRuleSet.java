@@ -122,6 +122,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     protected static final String WR_SG_WSG_LK_TABLE_PATH =
         "https://files.cismet.de/remote.php/webdav/watergis/watergis/wr_sg_wsg_lk/";
     private static final String PHOTO_PATH = "http://fry.fis-wasser-mv.de/watergis/";
+    protected static final double MIN_LINE_LENGTH = 0.01;
+    protected static final double MIN_AREA_SIZE = 0.0001;
 //    private static final String PROTECTEC_WBBL_PATH = "http://fry.fis-wasser-mv.de/watergis_secure/wr_wbu_wbbl_g/";
 //    private static final String UNPROTECTEC_WBBL_PATH = "http://fry.fis-wasser-mv.de/watergis/wr_wbu_wbbl_o/";
 //    private static final String SG_LINK_TABLE_PATH = "http://fry.fis-wasser-mv.de/watergis/sg_link_tabelle/";

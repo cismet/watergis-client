@@ -73,6 +73,9 @@ public class WrSgFiSchRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
+        final PrimitiveGeometryCreator c = new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
+        c.setMinArea(MIN_AREA_SIZE);
+
+        return c;
     }
 }

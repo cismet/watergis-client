@@ -11,17 +11,10 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.deegree.datatypes.Types;
 
-import java.sql.Timestamp;
-
-import java.util.List;
-
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -34,8 +27,6 @@ import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-
-import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 
@@ -146,6 +137,10 @@ public class SgSeeWkEffLbRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        return new PrimitiveGeometryCreator(CreateGeometryListenerInterface.LINESTRING);
+        final PrimitiveGeometryCreator creator = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.LINESTRING);
+        creator.setMinLength(MIN_LINE_LENGTH);
+
+        return creator;
     }
 }

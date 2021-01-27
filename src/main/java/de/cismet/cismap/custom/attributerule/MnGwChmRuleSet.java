@@ -11,12 +11,8 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import java.sql.Timestamp;
 
 import java.util.List;
 
