@@ -20,8 +20,6 @@ import org.apache.log4j.Logger;
 
 import org.jdom.Element;
 
-import org.openide.util.NbBundle;
-
 import java.awt.event.ActionEvent;
 
 import java.io.File;
@@ -29,9 +27,8 @@ import java.io.File;
 import java.net.URL;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.MissingResourceException;
 
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
@@ -59,12 +56,12 @@ import static javax.swing.Action.NAME;
 import static javax.swing.Action.SMALL_ICON;
 
 /**
- * Exports a template
+ * Exports a template.
  *
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class TemplateExportAction extends AbstractAction {
+public class TemplateExportAction extends AbstractAction implements Comparable<TemplateExportAction> {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -78,6 +75,8 @@ public class TemplateExportAction extends AbstractAction {
     List<TemplateAttribute> attributes;
     private MetaClass metaClass;
     private int templateCrs = 5650;
+    private int position = -1;
+    private String folder;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -95,6 +94,15 @@ public class TemplateExportAction extends AbstractAction {
     /**
      * DOCUMENT ME!
      *
+     * @return  the folder
+     */
+    public String getFolder() {
+        return folder;
+    }
+
+    /**
+     * Initialise with the configuration element.
+     *
      * @param  config  DOCUMENT ME!
      */
     private void init(final Element config) {
@@ -105,9 +113,23 @@ public class TemplateExportAction extends AbstractAction {
         final Element crsElement = config.getChild("Crs");
         final Element tableElement = config.getChild("TableName");
         final Element attributesElement = config.getChild("Attributes");
+        final Element positionElement = config.getChild("Position");
+        final Element folderElement = config.getChild("Folder");
+
+        if ((positionElement != null) && (positionElement.getText() != null)) {
+            try {
+                position = Integer.parseInt(positionElement.getText());
+            } catch (NumberFormatException e) {
+                LOG.error("Invalid position found: " + positionElement.getText(), e);
+            }
+        }
 
         if ((nameElement != null) && (nameElement.getText() != null)) {
             putValue(NAME, nameElement.getText());
+        }
+
+        if ((folderElement != null) && (folderElement.getText() != null)) {
+            folder = folderElement.getText();
         }
 
         if ((tooltipElement != null) && (tooltipElement.getText() != null)) {
@@ -195,6 +217,7 @@ public class TemplateExportAction extends AbstractAction {
                 }
             }
 
+            // choose file name and create shape file
             final File outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
                     "",
                     true,
@@ -230,6 +253,11 @@ public class TemplateExportAction extends AbstractAction {
         }
 
         return null;
+    }
+
+    @Override
+    public int compareTo(final TemplateExportAction o) {
+        return ((Integer)position).compareTo(o.position);
     }
 
     //~ Inner Classes ----------------------------------------------------------
@@ -290,13 +318,31 @@ public class TemplateExportAction extends AbstractAction {
                 if (fill.equals("$username")) {
                     return SessionManager.getSession().getUser().getName();
                 } else if (fill.equals("$date")) {
-                    return new Date();
+                    final GregorianCalendar date = new GregorianCalendar();
+
+                    return date.get(GregorianCalendar.YEAR) + to2Digits((date.get(GregorianCalendar.MONTH) + 1))
+                                + to2Digits(date.get(GregorianCalendar.DATE));
                 } else {
                     return fill;
                 }
             }
 
             return fill;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   value  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private String to2Digits(final int value) {
+            if (value > 9) {
+                return "" + value;
+            } else {
+                return "0" + value;
+            }
         }
 
         /**

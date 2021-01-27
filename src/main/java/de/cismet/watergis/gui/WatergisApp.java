@@ -34,16 +34,12 @@ import Sirius.server.newuser.UserException;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.io.WKBReader;
 
 import net.infonode.docking.DockingWindow;
 import net.infonode.docking.DockingWindowAdapter;
 import net.infonode.docking.DockingWindowListener;
-import net.infonode.docking.FloatingWindow;
 import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
@@ -81,16 +77,11 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.GraphicsConfiguration;
-import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.PointerInfo;
-import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -112,6 +103,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,8 +118,12 @@ import java.util.concurrent.Executor;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -143,9 +139,9 @@ import javax.swing.tree.TreePath;
 
 import de.cismet.cids.custom.watergis.server.search.CheckForCreatedObjectTable;
 import de.cismet.cids.custom.watergis.server.search.CleanupCreatedObjectTable;
+import de.cismet.cids.custom.watergis.server.search.ObjectEnvelopes;
 import de.cismet.cids.custom.watergis.server.search.RemoveOldLocks;
 import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
-import de.cismet.cids.custom.watergis.server.search.RouteEnvelopes;
 import de.cismet.cids.custom.watergis.server.search.ValidLawaCodes;
 
 import de.cismet.cids.dynamics.CidsBean;
@@ -214,6 +210,9 @@ import de.cismet.cismap.linearreferencing.CreateLinearReferencedPointListener;
 import de.cismet.commons.concurrency.CismetConcurrency;
 import de.cismet.commons.concurrency.CismetExecutors;
 
+import de.cismet.connectioncontext.AbstractConnectionContext;
+import de.cismet.connectioncontext.ConnectionContext;
+
 import de.cismet.lookupoptions.gui.OptionsClient;
 
 import de.cismet.netutil.Proxy;
@@ -224,7 +223,6 @@ import de.cismet.tools.configuration.Configurable;
 import de.cismet.tools.configuration.ConfigurationManager;
 
 import de.cismet.tools.gui.HighlightingRadioButtonMenuItem;
-import de.cismet.tools.gui.ScrollableComboBox;
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
 import de.cismet.tools.gui.downloadmanager.AbstractCancellableDownload;
@@ -243,21 +241,27 @@ import de.cismet.watergis.broker.listener.DrawingCountChangedEvent;
 import de.cismet.watergis.broker.listener.DrawingsListener;
 import de.cismet.watergis.broker.listener.PolygonChangeListener;
 
+import de.cismet.watergis.gui.actions.AddThemeAction;
 import de.cismet.watergis.gui.actions.AnnexAction;
 import de.cismet.watergis.gui.actions.InfoWindowAction;
 import de.cismet.watergis.gui.actions.ShowWindowAction;
 import de.cismet.watergis.gui.actions.map.RemoveDrawingModeAction;
+import de.cismet.watergis.gui.actions.reports.template.TemplateExportAction;
 import de.cismet.watergis.gui.components.GeometryOpButton;
 import de.cismet.watergis.gui.components.MeasureButton;
 import de.cismet.watergis.gui.components.NewDrawingButton;
 import de.cismet.watergis.gui.components.ScaleJComboBox;
 import de.cismet.watergis.gui.components.SelectionButton;
 import de.cismet.watergis.gui.components.SnappingButton;
+import de.cismet.watergis.gui.dialog.ExportDialog;
+import de.cismet.watergis.gui.dialog.ThemeExportDialog;
 import de.cismet.watergis.gui.panels.GafProf;
 import de.cismet.watergis.gui.panels.InfoPanel;
 import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.Photo;
+import de.cismet.watergis.gui.panels.RouteZoomPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
+import de.cismet.watergis.gui.panels.ZoomPanel;
 import de.cismet.watergis.gui.recently_opened_files.FileMenu;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
@@ -304,7 +308,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private static final String FILEPATH_DEFAULT_APP_DATA = DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.data";
     private static final String FILEPATH_SCREEN = DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.screen";
     private static final String CONNECTION_PROPERTIES_FILE = "/serverConnection.properties";
-    private static boolean routeModelInitialised = false;
+    private static final ConnectionContext connectionContext = ConnectionContext.create(
+            AbstractConnectionContext.Category.STARTUP,
+            "WatergisApp");
 
     static {
         configManager.setDefaultFileName(FILENAME_WATERGIS_CONFIGURATION);
@@ -353,6 +359,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private ActiveLayerModel mappingModel = new ActiveLayerModel();
     private MetaClass routeMc;
     private MetaClass wwGrMc;
+    private List<TemplateExportAction> allTemplates = new ArrayList<TemplateExportAction>();
 
     private String helpURL;
     private String infoURL;
@@ -361,6 +368,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private String lastExportPath = null;
     private String currentLayoutFile = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private de.cismet.watergis.gui.actions.AddThemeAction addThemeAction1;
     private de.cismet.watergis.gui.actions.AnnexAction annexAction;
     private de.cismet.watergis.gui.actions.checks.AusbauCheckAction ausbauCheckAction;
     private de.cismet.watergis.gui.actions.checks.BasicRoutesCheckAction basicRoutesCheckAction1;
@@ -368,8 +376,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.ButtonGroup btnGroupMapMode;
     private de.cismet.watergis.gui.actions.geoprocessing.BufferGeoprocessingAction bufferGeoprocessingAction;
     private javax.swing.JButton butIntermediateSave;
-    private javax.swing.JComboBox cbRoute;
     private javax.swing.JComboBox cboScale;
+    private javax.swing.JComboBox cboTheme;
     private de.cismet.watergis.gui.actions.CentralConfigAction centralConfigAction;
     private de.cismet.watergis.gui.actions.map.ChangePolygonModeAction changePolygonModeAction1;
     private de.cismet.watergis.gui.actions.gaf.CheckAction checkAction1;
@@ -380,6 +388,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JButton cmdCopy;
     private javax.swing.JButton cmdDelete;
     private javax.swing.JButton cmdDownloadManager;
+    private javax.swing.JButton cmdDownloadManager1;
     private javax.swing.JButton cmdDrawingMode;
     private javax.swing.JButton cmdDrawingOptions;
     private javax.swing.JButton cmdExportMap1;
@@ -431,6 +440,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JButton cmdZoomToSelectedDrawings;
     private de.cismet.watergis.gui.actions.map.CopyObjectAction copyObjectAction1;
     private de.cismet.watergis.gui.actions.map.CreateGeoLinkAction createGeoLinkAction;
+    private de.cismet.watergis.gui.actions.CreateViewsForUser createViewsForUser1;
     private de.cismet.watergis.gui.actions.DefaultConfig2Action defaultConfig2Action1;
     private de.cismet.watergis.gui.actions.DefaultConfigAction defaultConfigAction1;
     private de.cismet.watergis.gui.actions.foto.DeleteAction deleteAction1;
@@ -499,6 +509,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenu menPhoto;
     private javax.swing.JMenu menProfiles;
     private javax.swing.JMenu menReport;
+    private javax.swing.JMenu menSchablonen;
     private javax.swing.JMenu menSelection;
     private javax.swing.JMenu menStatistik;
     private javax.swing.JMenu menSteckbrief;
@@ -522,6 +533,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniClip;
     private javax.swing.JMenuItem mniClose;
     private javax.swing.JMenuItem mniCreateBookmark;
+    private javax.swing.JMenuItem mniCreateDbUser;
     private javax.swing.JMenuItem mniCreateGeoLink;
     private javax.swing.JMenuItem mniDefaultConfig;
     private javax.swing.JMenuItem mniDeleteGaf;
@@ -596,6 +608,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniShowProblems;
     private javax.swing.JMenuItem mniShowProfiles;
     private javax.swing.JMenuItem mniShowTree;
+    private javax.swing.JMenuItem mniStation;
+    private javax.swing.JMenuItem mniThemeExportOption;
     private javax.swing.JMenuItem mniUnion;
     private javax.swing.JMenuItem mniUnselectAllDrawing;
     private javax.swing.JMenuItem mniUpload;
@@ -618,6 +632,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.OptionsAction optionsAction;
     private de.cismet.watergis.gui.actions.map.PanModeAction panAction;
     private javax.swing.JPanel panMain;
+    private javax.swing.JPanel panSearch;
     private de.cismet.watergis.gui.actions.map.PasteObjectAction pasteObjectAction1;
     private de.cismet.watergis.gui.actions.geoprocessing.PointInLineGeoprocessingAction pointInLineGeoprocessingAction;
     private de.cismet.watergis.gui.actions.geoprocessing.PointInPolygonGeoprocessingAction
@@ -633,6 +648,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.foto.ReportAction reportAction1;
     private de.cismet.watergis.gui.actions.gaf.ReportAction reportActionGaf;
     private de.cismet.watergis.gui.actions.reports.GerinneGGemeindeReportAction rlDDueReportAction;
+    private de.cismet.watergis.gui.panels.RouteZoomPanel routeZoomPanel;
     private de.cismet.watergis.gui.actions.map.SaveDrawingsAction saveDrawingsAction;
     private de.cismet.watergis.gui.actions.SaveProjectAction saveProjectAction;
     private de.cismet.watergis.gui.actions.SaveToSameFileProjectAction saveToSameFileProjectAction1;
@@ -667,6 +683,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.cids.navigator.utils.SimpleMemoryMonitoringToolbarWidget simpleMemoryMonitoringToolbarWidget1;
     private de.cismet.watergis.gui.actions.checks.SonstigeCheckAction sonstigeCheckAction;
     private de.cismet.watergis.gui.actions.SplitAction splitAction;
+    private de.cismet.watergis.gui.actions.geoprocessing.StationAction stationAction1;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
     private javax.swing.JToggleButton tbtNewObject;
     private javax.swing.JToggleButton tbtnAddMode;
@@ -678,6 +695,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JToggleButton tbtnProfileInfoMode;
     private javax.swing.JToggleButton tbtnRemoveMode;
     private javax.swing.JToggleButton tbtnZoomMode;
+    private de.cismet.watergis.gui.actions.ThemeExportOptionAction themeExportOptionAction1;
     private javax.swing.JToolBar tobDLM25W;
     private de.cismet.watergis.gui.actions.geoprocessing.UnionGeoprocessingAction unionGeoprocessingAction;
     private de.cismet.watergis.gui.actions.selection.UnselectAllDrawingsAction unselectAllDrawingsAction;
@@ -759,7 +777,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
         wwGrMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_ww_gr");
         initComponents();
-        AutoCompleteDecorator.decorate(cbRoute);
         selectionModeAction.setButton(cmdSelectionMode);
         configureButtons();
         cmdSelectAll.setVisible(false);
@@ -782,6 +799,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         if (!SessionManager.getSession().getUser().getUserGroup().getName().equalsIgnoreCase("administratoren")) {
             mniCheckLawa.setEnabled(false);
             mniCheckLawaConnection.setEnabled(false);
+            mniCreateDbUser.setEnabled(false);
         }
 
         if (!AppBroker.getInstance().isAdminUser() && !AppBroker.getInstance().isGu()) {
@@ -809,7 +827,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         initDefaultPanels();
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
-        initRouteCombo();
         initInfoNode();
         initAttributeTable();
         configureFileMenu();
@@ -887,10 +904,72 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             cmdNodeMove.setSelected(true);
         }
 
-//        checkForCreatedObjects();
+        addThemeAction1.init(pCapabilities, rootWindow, vCapability);
+
+        initThemeCombo();
+        AutoCompleteDecorator.decorate(cboTheme);
+
+        final Map<String, JMenu> menues = new HashMap<String, JMenu>();
+
+        for (final TemplateExportAction action : allTemplates) {
+            final String folder = action.getFolder();
+
+            if (folder != null) {
+                JMenu menu = menues.get(folder);
+
+                if (menu == null) {
+                    menu = new JMenu(folder);
+                    menues.put(folder, menu);
+                    menSchablonen.add(menu);
+                }
+
+                menu.add(action);
+            } else {
+                menSchablonen.add(action);
+            }
+        }
+
+        checkForCreatedObjects();
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initThemeCombo() {
+        cboTheme.setModel(new DefaultComboBoxModel(new Object[] { "Lade ..." }));
+
+        final SwingWorker sw = new SwingWorker<MetaObject[], Void>() {
+
+                @Override
+                protected MetaObject[] doInBackground() throws Exception {
+                    final MetaClass MC = ClassCacheMultiple.getMetaClass(
+                            AppBroker.DOMAIN_NAME,
+                            "dlm25w.k_kate_such_1",
+                            connectionContext);
+                    String query = "select " + MC.getID() + ", " + MC.getPrimaryKey() + " from " + MC.getTableName();
+                    query += " order by index";
+
+                    final MetaObject[] metaObjects = SessionManager.getProxy()
+                                .getMetaObjectByQuery(query, 0, connectionContext);
+
+                    return metaObjects;
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        final MetaObject[] mos = get();
+                        cboTheme.setModel(new DefaultComboBoxModel(mos));
+                    } catch (InterruptedException | ExecutionException e) {
+                        LOG.error("Error while initializing the model of the theme combobox", e); // NOI18N
+                    }
+                }
+            };
+
+        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(sw);
+    }
 
     /**
      * DOCUMENT ME!
@@ -947,8 +1026,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
                             for (final Integer objectId : objectIds) {
                                 final FeatureServiceFeature feature = table.getFeatureById(objectId);
-                                featureList.add(feature);
-                                table.markFeatureAsNewFeature((DefaultFeatureServiceFeature)feature);
+                                if (feature != null) {
+                                    featureList.add(feature);
+                                    table.markFeatureAsNewFeature((DefaultFeatureServiceFeature)feature);
+                                }
                             }
 
                             table.makeFeaturesEditable((List<FeatureServiceFeature>)featureList);
@@ -958,8 +1039,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error while checking for icomplete created objects", e);
+            LOG.error("Error while checking for incomplete created objects", e);
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    public void initRouteCombo() {
+        routeZoomPanel.init();
     }
 
     /**
@@ -1197,7 +1285,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         pInfo = new InfoPanel();
         pSelection = new SelectionPanel();
         pTopicTree.setMappingModel(mappingModel);
-        pTopicTree.addAddThemeMenuItemListener(new AddThemeMenuItemListener());
+        pTopicTree.addAddThemeMenuItemListener(new AddThemeAction(pCapabilities, rootWindow, vCapability));
         pTopicTree.addTreeSelectionListener(new TreeSelectionListener() {
 
                 @Override
@@ -1617,24 +1705,24 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                             }
                         }
 
-//                        if (service instanceof CidsLayer) {
-//                            if ((service.getLayerProperties() != null)
-//                                        && (service.getLayerProperties().getFeatureService() != null)
-//                                        && (((CidsLayer)service.getLayerProperties().getFeatureService())
-//                                            .getMetaClass() != null)) {
-//                                final Thread t = new Thread("cleanupCreatedObjects") {
-//
-//                                        @Override
-//                                        public void run() {
-//                                            final int classId = ((CidsLayer)service.getLayerProperties()
-//                                                            .getFeatureService()).getMetaClass().getID();
-//                                            cleanupCreatedObjectTable(classId);
-//                                        }
-//                                    };
-//
-//                                t.start();
-//                            }
-//                        }
+                        if (service instanceof CidsLayer) {
+                            if ((service.getLayerProperties() != null)
+                                        && (service.getLayerProperties().getFeatureService() != null)
+                                        && (((CidsLayer)service.getLayerProperties().getFeatureService())
+                                            .getMetaClass() != null)) {
+                                final Thread t = new Thread("cleanupCreatedObjects") {
+
+                                        @Override
+                                        public void run() {
+                                            final int classId = ((CidsLayer)service.getLayerProperties()
+                                                            .getFeatureService()).getMetaClass().getID();
+                                            cleanupCreatedObjectTable(classId);
+                                        }
+                                    };
+
+                                t.start();
+                            }
+                        }
 
                         if (service instanceof CidsLayer) {
                             final CidsLayer cl = (CidsLayer)service;
@@ -2148,104 +2236,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     }
 
     /**
-     * DOCUMENT ME!
-     */
-    public void initRouteCombo() {
-        routeModelInitialised = false;
-        cbRoute.setModel(new DefaultComboBoxModel(new Object[] { "Lade ..." }));
-        final SwingWorker sw = new SwingWorker<RouteElement[], Void>() {
-
-                @Override
-                protected RouteElement[] doInBackground() throws Exception {
-                    if (routeMc != null) {
-                        CidsServerSearch search;
-
-                        if (AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("admin_edit")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("gaeste")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("lung")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("lv_wbv")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("lu")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_hro")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_lro")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_lup")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_mse")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_nwm")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_sn")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_vg")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("uwb_vr")
-                                    || AppBroker.getInstance().getOwner().equalsIgnoreCase("anonymous")) {
-                            search = new RouteEnvelopes(null);
-                        } else {
-                            final String praefixGroup = ((AppBroker.getInstance().getOwnWwGr() != null)
-                                    ? (String)AppBroker.getInstance().getOwnWwGr().getProperty("praefixgroup") : null);
-
-                            if (praefixGroup != null) {
-                                search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
-                                                + AppBroker.getInstance().getOwner()
-                                                + "' or dlm25wPk_ww_gr1.praefixgroup = '" + praefixGroup + "'");
-                            } else {
-                                search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
-                                                + AppBroker.getInstance().getOwner() + "'");
-                            }
-                        }
-
-                        final List<RouteElement> beans = new ArrayList<RouteElement>();
-                        final User user = SessionManager.getSession().getUser();
-                        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
-                                    .getProxy().customServerSearch(user, search);
-
-                        if ((attributes != null) && !attributes.isEmpty()) {
-                            final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(
-                                        PrecisionModel.FLOATING),
-                                    CismapBroker.getInstance().getDefaultCrsAlias());
-                            final WKBReader wkbReader = new WKBReader(geomFactory);
-
-                            for (final ArrayList f : attributes) {
-                                if (f.get(0) instanceof byte[]) {
-                                    final Geometry g = wkbReader.read((byte[])f.get(0));
-                                    g.setSRID(CismapBroker.getInstance().getDefaultCrsAlias());
-
-//                                    if ((AppBroker.getInstance().getOwnWwGr() != null)
-//                                                && !AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals(
-//                                                    4000)) {
-//                                        String name = (String)f.get(1);
-//                                        if (name.indexOf(":") != -1) {
-//                                            name = name.substring(name.indexOf(":") + 1);
-//                                        }
-//                                        beans.add(new RouteElement((Integer)f.get(2), name, g));
-//                                    } else {
-                                    beans.add(new RouteElement((Integer)f.get(2), (String)f.get(1), g));
-//                                    }
-                                }
-                            }
-                        }
-
-                        return beans.toArray(new RouteElement[beans.size()]);
-                    } else {
-                        // The user has no read permissions for the route meta class
-                        return new RouteElement[0];
-                    }
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        final RouteElement[] tmp = get();
-                        cbRoute.setModel(new DefaultComboBoxModel(tmp));
-                        routeModelInitialised = true;
-                    } catch (InterruptedException interruptedException) {
-                    } catch (ExecutionException executionException) {
-                        LOG.error("Error while initializing the model of the route combobox", executionException); // NOI18N
-                    }
-                }
-            };
-//        sw.execute();
-
-        CismetConcurrency.getInstance("watergis").getDefaultExecutor().execute(sw);
-    }
-
-    /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The
      * content of this method is always regenerated by the Form Editor.
      */
@@ -2401,6 +2391,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     "WatergisApp.initInfoNode().Legend"));
         removeModeAction1 = new de.cismet.watergis.gui.actions.map.RemoveModeAction();
         changePolygonModeAction1 = new de.cismet.watergis.gui.actions.map.ChangePolygonModeAction();
+        stationAction1 = new de.cismet.watergis.gui.actions.geoprocessing.StationAction();
+        themeExportOptionAction1 = new de.cismet.watergis.gui.actions.ThemeExportOptionAction();
+        addThemeAction1 = new de.cismet.watergis.gui.actions.AddThemeAction();
+        createViewsForUser1 = new de.cismet.watergis.gui.actions.CreateViewsForUser();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveSameFileProject = new javax.swing.JButton();
@@ -2410,10 +2404,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdExportMap2 = new javax.swing.JButton();
         cmdGeoLink = new javax.swing.JButton();
         cmdDownloadManager = new javax.swing.JButton();
+        cmdDownloadManager1 = new javax.swing.JButton();
         jSeparator14 = new javax.swing.JToolBar.Separator();
         cboScale = new ScaleJComboBox();
         lblPlaceholder = new javax.swing.JLabel();
-        cbRoute = new ScrollableComboBox();
+        panSearch = new javax.swing.JPanel();
+        routeZoomPanel = new de.cismet.watergis.gui.panels.RouteZoomPanel();
+        cboTheme = new javax.swing.JComboBox();
         jSeparator15 = new javax.swing.JToolBar.Separator();
         cmdRefresh = new javax.swing.JButton();
         tbtnZoomMode = new javax.swing.JToggleButton();
@@ -2509,6 +2506,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniZoomSelectedObjects = new javax.swing.JMenuItem();
         mniZoomSelectedThemes = new javax.swing.JMenuItem();
         mniRemoveSelection = new javax.swing.JMenuItem();
+        mniThemeExportOption = new javax.swing.JMenuItem();
         menTools = new javax.swing.JMenu();
         menGeoProcessing = new javax.swing.JMenu();
         mniBuffer = new javax.swing.JMenuItem();
@@ -2518,6 +2516,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniDissolve = new javax.swing.JMenuItem();
         mniPointInLine = new javax.swing.JMenuItem();
         mniPointInPolygon = new javax.swing.JMenuItem();
+        mniStation = new javax.swing.JMenuItem();
         menChecks = new javax.swing.JMenu();
         menBasicChecks = new javax.swing.JMenu();
         mniCheckBasisRoutes = new javax.swing.JMenuItem();
@@ -2533,6 +2532,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniExport = new javax.swing.JMenuItem();
         mniIgmExport = new javax.swing.JMenuItem();
         mniExportOption = new javax.swing.JMenuItem();
+        mniCreateDbUser = new javax.swing.JMenuItem();
         menReport = new javax.swing.JMenu();
         menSteckbrief = new javax.swing.JMenu();
         menSteckbriefGewaesser = new javax.swing.JMenu();
@@ -2561,6 +2561,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniFl1 = new javax.swing.JMenuItem();
         menGewaesser3 = new javax.swing.JMenu();
         mniGewaesserRep3 = new javax.swing.JMenuItem();
+        menSchablonen = new javax.swing.JMenu();
         menPhoto = new javax.swing.JMenu();
         mniUpload = new javax.swing.JMenuItem();
         mniPhotoInfo = new javax.swing.JMenuItem();
@@ -2695,6 +2696,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdDownloadManager.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdDownloadManager);
 
+        cmdDownloadManager1.setAction(addThemeAction1);
+        cmdDownloadManager1.setFocusable(false);
+        cmdDownloadManager1.setHideActionText(true);
+        cmdDownloadManager1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdDownloadManager1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdDownloadManager1);
+
         jSeparator14.setOpaque(true);
         jSeparator14.setSeparatorSize(new java.awt.Dimension(20, 20));
         tobDLM25W.add(jSeparator14);
@@ -2713,21 +2721,33 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         lblPlaceholder.setPreferredSize(new java.awt.Dimension(4, 1));
         tobDLM25W.add(lblPlaceholder);
 
-        cbRoute.setEditable(true);
-        cbRoute.setToolTipText(org.openide.util.NbBundle.getMessage(
+        panSearch.setMaximumSize(new java.awt.Dimension(240, 24));
+        panSearch.setMinimumSize(new java.awt.Dimension(240, 24));
+        panSearch.setPreferredSize(new java.awt.Dimension(240, 24));
+        panSearch.setLayout(new java.awt.GridBagLayout());
+
+        routeZoomPanel.setMaximumSize(new java.awt.Dimension(240, 24));
+        routeZoomPanel.setMinimumSize(new java.awt.Dimension(245, 24));
+        routeZoomPanel.setPreferredSize(new java.awt.Dimension(245, 24));
+        panSearch.add(routeZoomPanel, new java.awt.GridBagConstraints());
+
+        tobDLM25W.add(panSearch);
+
+        cboTheme.setEditable(true);
+        cboTheme.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
-                "WatergisApp.cbRoute.toolTipText")); // NOI18N
-        cbRoute.setMaximumSize(new java.awt.Dimension(240, 24));
-        cbRoute.setMinimumSize(new java.awt.Dimension(240, 24));
-        cbRoute.setPreferredSize(new java.awt.Dimension(240, 24));
-        cbRoute.addActionListener(new java.awt.event.ActionListener() {
+                "WatergisApp.cboTheme.toolTipText_1")); // NOI18N
+        cboTheme.setMaximumSize(new java.awt.Dimension(163, 24));
+        cboTheme.setMinimumSize(new java.awt.Dimension(163, 24));
+        cboTheme.setPreferredSize(new java.awt.Dimension(163, 24));
+        cboTheme.addItemListener(new java.awt.event.ItemListener() {
 
                 @Override
-                public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    cbRouteActionPerformed(evt);
+                public void itemStateChanged(final java.awt.event.ItemEvent evt) {
+                    cboThemeItemStateChanged(evt);
                 }
             });
-        tobDLM25W.add(cbRoute);
+        tobDLM25W.add(cboTheme);
 
         jSeparator15.setOpaque(true);
         jSeparator15.setSeparatorSize(new java.awt.Dimension(20, 20));
@@ -3586,6 +3606,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniRemoveSelection.setEnabled(false);
         menSelection.add(mniRemoveSelection);
 
+        mniThemeExportOption.setAction(themeExportOptionAction1);
+        mniThemeExportOption.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniThemeExportOption.toolTipText",
+                new Object[] {})); // NOI18N
+        menSelection.add(mniThemeExportOption);
+
         jMenuBar1.add(menSelection);
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -3644,6 +3671,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 "WatergisApp.mniPointInPolygon.toolTipText",
                 new Object[] {})); // NOI18N
         menGeoProcessing.add(mniPointInPolygon);
+
+        mniStation.setAction(stationAction1);
+        mniStation.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniStation.toolTipText",
+                new Object[] {})); // NOI18N
+        menGeoProcessing.add(mniStation);
 
         menTools.add(menGeoProcessing);
 
@@ -3747,6 +3781,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         menChecks1.add(mniExportOption);
 
         menTools.add(menChecks1);
+
+        mniCreateDbUser.setAction(createViewsForUser1);
+        menTools.add(mniCreateDbUser);
 
         jMenuBar1.add(menTools);
 
@@ -3895,6 +3932,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         menGewaesser3.add(mniGewaesserRep3);
 
         menReport.add(menGewaesser3);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            menSchablonen,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menSchablonen.text")); // NOI18N
+        menReport.add(menSchablonen);
 
         jMenuBar1.add(menReport);
 
@@ -4329,52 +4371,48 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
-        final Object selectedObject = cbRoute.getSelectedItem();
-
-        if (routeModelInitialised && (selectedObject instanceof RouteElement)) {
-            final RouteElement selectedRoute = (RouteElement)cbRoute.getSelectedItem();
-            final XBoundingBox bbox = (XBoundingBox)selectedRoute.getEnvelope().clone();
-            bbox.increase(10);
-            final int id = selectedRoute.getId();
-
-            mappingComponent.gotoBoundingBoxWithHistory(bbox);
-
-            final Thread t = new Thread("selectAfterZoomOnRiver") {
-
-                    @Override
-                    public void run() {
-                        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
-                                "fg_ba");
-
-                        for (final AbstractFeatureService service : services) {
-                            try {
-                                service.initAndWait();
-                                final List<FeatureServiceFeature> features = service.getFeatureFactory()
-                                            .createFeatures("dlm25w.fg_ba.id = " + id, null, null, 0, 1, null);
-
-                                if ((features != null) && !features.isEmpty()) {
-                                    SelectionManager.getInstance().setSelectedFeaturesForService(service, features);
-                                }
-                            } catch (Exception e) {
-                                LOG.error("Error while selecting fg_ba object", e);
-                            }
-                        }
-                    }
-                };
-
-            watergisSingleThreadExecutor.execute(t);
-        }
-    } //GEN-LAST:event_cbRouteActionPerformed
+    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdGoToActionPerformed
+        // TODO add your handling code here:
+    } //GEN-LAST:event_cmdGoToActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cmdGoToActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cmdGoToActionPerformed
-        // TODO add your handling code here:
-    } //GEN-LAST:event_cmdGoToActionPerformed
+    private void cboThemeItemStateChanged(final java.awt.event.ItemEvent evt) { //GEN-FIRST:event_cboThemeItemStateChanged
+        final Object o = cboTheme.getSelectedItem();
+
+        if (o instanceof MetaObject) {
+            final MetaObject selectedObject = (MetaObject)o;
+
+            if (((MetaObject)o).getBean().getProperty("name").equals("FG: Code")) {
+                routeZoomPanel.setVisible(true);
+
+                for (int i = 0; i < panSearch.getComponentCount(); ++i) {
+                    if (panSearch.getComponent(i).getClass() != RouteZoomPanel.class) {
+                        panSearch.remove(panSearch.getComponent(i));
+                    }
+                }
+            } else {
+                routeZoomPanel.setVisible(false);
+                for (int i = 0; i < panSearch.getComponentCount(); ++i) {
+                    if (panSearch.getComponent(i).getClass() != RouteZoomPanel.class) {
+                        panSearch.remove(panSearch.getComponent(i));
+                    }
+                }
+                final MetaClass MC = ClassCacheMultiple.getMetaClass(
+                        AppBroker.DOMAIN_NAME,
+                        "dlm25w."
+                                + selectedObject.getBean().getProperty("thema"),
+                        connectionContext);
+                panSearch.add(new ZoomPanel(
+                        MC,
+                        (String)selectedObject.getBean().getProperty("thema"),
+                        (String)selectedObject.getBean().getProperty("attr")));
+            }
+        }
+    } //GEN-LAST:event_cboThemeItemStateChanged
 
     /**
      * DOCUMENT ME!
@@ -4607,41 +4645,23 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.warn("httpInterface was not configured. Set default value: " + httpInterfacePort, t); // NOI18N
         }
 
-        // try {
-// // ToDo if it fails all fail better place in the single try catch
-// final Element urls = parent.getChild("urls");
-// final Element albConfiguration = parent.getChild("albConfiguration");
-// try {
-// if (LOG.isDebugEnabled()) {
-// LOG.debug("OnlineHilfeUrl: " + urls.getChildText("onlineHelp"));
-// }
-// onlineHelpURL = urls.getChildText("onlineHelp");
-// } catch (Exception ex) {
-// LOG.warn("Fehler beim lesen der OnlineHilfe URL", ex);
-// }
-// try {
-// albURL = albConfiguration.getChildText("albURL");
-// if (albURL != null) {
-// albURL = albURL.trim();
-// }
-// if (LOG.isDebugEnabled()) {
-// LOG.debug("ALBURL: " + albURL.trim());
-// }
-// } catch (Exception ex) {
-// LOG.warn("Fehler beim lesen der ALB Konfiguration", ex);
-// }
-// try {
-// if (LOG.isDebugEnabled()) {
-// LOG.debug("News Url: " + urls.getChildText("onlineHelp"));
-// }
-// newsURL = urls.getChildText("news");
-// } catch (Exception ex) {
-// LOG.warn("Fehler beim lesen der News Url", ex);
-// }
-//
-// } catch (Exception ex) {
-// LOG.error("Fehler beim konfigurieren der Watergis Applikation: ", ex);
-// }
+        final Element templates = parent.getChild("TemplateActions");
+
+        if (templates != null) {
+            try {
+                final List<Element> templateList = templates.getChildren("Template"); // NOI18N
+
+                for (final Element templateElement : templateList) {
+                    final TemplateExportAction action = new TemplateExportAction(templateElement);
+
+                    allTemplates.add(action);
+                }
+
+                Collections.sort(allTemplates);
+            } catch (Throwable t) {
+                LOG.error("Error while loading the templates", t); // NOI18N
+            }
+        }
     }
 
     @Override
@@ -5371,77 +5391,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      *
      * @version  $Revision$, $Date$
      */
-    private class AddThemeMenuItemListener implements ActionListener {
-
-        //~ Instance fields ----------------------------------------------------
-
-        boolean capabilitiesDialogWasFloating;
-
-        //~ Methods ------------------------------------------------------------
-
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            showView();
-        }
-
-        /**
-         * DOCUMENT ME!
-         */
-        private void showView() {
-            final Dimension prefSize = pCapabilities.getPreferredSize();
-            final Dimension size = pCapabilities.getSize();
-            Dimension sizeToUse;
-            if ((prefSize.height * prefSize.width) >= (size.height * size.width)) {
-                sizeToUse = prefSize;
-            } else {
-                sizeToUse = size;
-            }
-
-            final FloatingWindow fw = rootWindow.createFloatingWindow(
-                    getPointOfCenterOfScreen(sizeToUse),
-                    sizeToUse,
-                    vCapability);
-            fw.getTopLevelAncestor().setVisible(true);
-        }
-
-        /**
-         * Centers a Dimension instance on the screen on which the mouse pointer is located.
-         *
-         * @param   d  w window instance to be centered
-         *
-         * @return  DOCUMENT ME!
-         *
-         * @see     StaticSwingTools..centerWindowOnScreen()
-         */
-        public Point getPointOfCenterOfScreen(final Dimension d) {
-            final PointerInfo pInfo = MouseInfo.getPointerInfo();
-            final Point pointerLocation = pInfo.getLocation();
-
-            // determine screen boundaries w.r.t. the current mouse position
-            final GraphicsConfiguration[] cfgArr = pInfo.getDevice().getConfigurations();
-
-            Rectangle bounds = null;
-            for (int i = 0; i < cfgArr.length; i++) {
-                bounds = cfgArr[i].getBounds();
-
-                if (pointerLocation.x <= bounds.x) {
-                    break;
-                }
-            }
-
-            // determine coordinates in the center of the current mouse location
-            final int x = (int)(bounds.x + ((bounds.width - d.getWidth()) / 2));
-            final int y = (int)(bounds.y + ((bounds.height - d.getHeight()) / 2));
-
-            return new Point(x, y);
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @version  $Revision$, $Date$
-     */
     private class ExportMenuItem extends ThemeLayerMenuItem {
 
         //~ Instance fields ----------------------------------------------------
@@ -5570,23 +5519,94 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     } else {
                         attributeNames = getAliasAttributeList(afs, false);
                     }
+                    String query = null;
+
+                    if (hasArrayValue(attributeNames, "ww_gr")) {
+                        if (!ExportDialog.getInstance().has1501() || !ExportDialog.getInstance().has1502()
+                                    || !ExportDialog.getInstance().has1503() || !ExportDialog.getInstance().has1504()
+                                    || !ExportDialog.getInstance().has1505()) {
+                            final List<String> wdms = new ArrayList<String>();
+
+                            if (ThemeExportDialog.getInstance().has1501()) {
+                                wdms.add("1501");
+                            }
+                            if (ThemeExportDialog.getInstance().has1502()) {
+                                wdms.add("1502");
+                            }
+                            if (ThemeExportDialog.getInstance().has1503()) {
+                                wdms.add("1503");
+                            }
+                            if (ThemeExportDialog.getInstance().has1504()) {
+                                wdms.add("1504");
+                            }
+                            if (ThemeExportDialog.getInstance().has1505()) {
+                                wdms.add("1505");
+                            }
+                            query = "dlm25w.k_ww_gr.wdm in " + listToString(wdms);
+                        }
+                    }
 
                     if (outputFile.getName().toLowerCase().endsWith("dbf")) {
                         ed = new ExportDbfDownload();
-                        ed.init(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
+                        ed.init(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames, query);
                     } else if (outputFile.getName().toLowerCase().endsWith("csv")) {
-                        ed = new ExportCsvDownload(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
+                        ed = new ExportCsvDownload();
+                        ed.init(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames, query);
                     } else if (outputFile.getName().toLowerCase().endsWith("txt")) {
-                        ed = new ExportTxtDownload(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
+                        ed = new ExportTxtDownload();
+                        ed.init(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames, query);
                     } else {
                         ed = new ExportShapeDownload();
-                        ed.init(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames);
+                        ed.init(outputFile.getAbsolutePath(), "", featureArray, afs, attributeNames, query);
                     }
 
                     lastExportPath = outputFile.getParent();
                     DownloadManager.instance().add(ed);
                 }
             }
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   list  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private String listToString(final List<String> list) {
+            final StringBuilder string = new StringBuilder("(");
+            boolean first = true;
+
+            for (final String tmp : list) {
+                if (first) {
+                    string.append(tmp);
+                    first = false;
+                } else {
+                    string.append(",").append(tmp);
+                }
+            }
+
+            string.append(")");
+
+            return string.toString();
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   array  DOCUMENT ME!
+         * @param   value  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private boolean hasArrayValue(final List<String[]> array, final String value) {
+            for (final String[] tmp : array) {
+                if (tmp[0].equals(value)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /**
