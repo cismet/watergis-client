@@ -360,6 +360,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private MetaClass routeMc;
     private MetaClass wwGrMc;
     private List<TemplateExportAction> allTemplates = new ArrayList<TemplateExportAction>();
+    private AddThemeAction addThemeTreeAction;
 
     private String helpURL;
     private String infoURL;
@@ -905,7 +906,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         }
 
         addThemeAction1.init(pCapabilities, rootWindow, vCapability);
-
+        addThemeTreeAction.init(pCapabilities, rootWindow, vCapability);
         initThemeCombo();
         AutoCompleteDecorator.decorate(cboTheme);
 
@@ -1285,7 +1286,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         pInfo = new InfoPanel();
         pSelection = new SelectionPanel();
         pTopicTree.setMappingModel(mappingModel);
-        pTopicTree.addAddThemeMenuItemListener(new AddThemeAction(pCapabilities, rootWindow, vCapability));
+        addThemeTreeAction = new AddThemeAction(pCapabilities, rootWindow, vCapability);
+        pTopicTree.addAddThemeMenuItemListener(addThemeTreeAction);
         pTopicTree.addTreeSelectionListener(new TreeSelectionListener() {
 
                 @Override
@@ -5522,9 +5524,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     String query = null;
 
                     if (hasArrayValue(attributeNames, "ww_gr")) {
-                        if (!ExportDialog.getInstance().has1501() || !ExportDialog.getInstance().has1502()
-                                    || !ExportDialog.getInstance().has1503() || !ExportDialog.getInstance().has1504()
-                                    || !ExportDialog.getInstance().has1505()) {
+                        if (AppBroker.getInstance().isGu()) {
+                            query = "dlm25wPk_ww_gr1.wdm = '" + AppBroker.getInstance().getOwner() + "'";
+                        }
+
+                        if (!ThemeExportDialog.getInstance().has1501() || !ThemeExportDialog.getInstance().has1502()
+                                    || !ThemeExportDialog.getInstance().has1503()
+                                    || !ThemeExportDialog.getInstance().has1504()
+                                    || !ThemeExportDialog.getInstance().has1505()) {
                             final List<String> wdms = new ArrayList<String>();
 
                             if (ThemeExportDialog.getInstance().has1501()) {
@@ -5542,7 +5549,12 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                             if (ThemeExportDialog.getInstance().has1505()) {
                                 wdms.add("1505");
                             }
-                            query = "dlm25w.k_ww_gr.wdm in " + listToString(wdms);
+
+                            if (query == null) {
+                                query = "dlm25wPk_ww_gr1.wdm in " + listToString(wdms);
+                            } else {
+                                query += " and dlm25wPk_ww_gr1.wdm in " + listToString(wdms);
+                            }
                         }
                     }
 

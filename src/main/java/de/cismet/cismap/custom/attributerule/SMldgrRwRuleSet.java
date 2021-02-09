@@ -22,7 +22,7 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class SMldgrMvRuleSet extends WatergisDefaultRuleSet {
+public class SMldgrRwRuleSet extends WatergisDefaultRuleSet {
 
     //~ Instance initializers --------------------------------------------------
 

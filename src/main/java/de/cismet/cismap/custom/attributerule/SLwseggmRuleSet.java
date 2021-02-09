@@ -24,7 +24,7 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class LwseggeomRuleSet extends WatergisDefaultRuleSet {
+public class SLwseggmRuleSet extends WatergisDefaultRuleSet {
 
     //~ Instance initializers --------------------------------------------------
 
