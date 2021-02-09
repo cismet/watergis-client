@@ -22,13 +22,15 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class SMldgrMvRuleSet extends WatergisDefaultRuleSet {
+public class SHwRiskaRuleSet extends WatergisDefaultRuleSet {
 
     //~ Instance initializers --------------------------------------------------
 
     {
         typeMap.put("geom", new WatergisDefaultRuleSet.Geom(true, true));
-        typeMap.put("land_cd", new WatergisDefaultRuleSet.Varchar(4, true));
+        typeMap.put("river_cd", new WatergisDefaultRuleSet.Varchar(20, true));
+        typeMap.put("apsfr_cd", new WatergisDefaultRuleSet.Varchar(40, true));
+        typeMap.put("apsfr_cdri", new WatergisDefaultRuleSet.Varchar(40, true));
         typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
         typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));
     }
@@ -37,7 +39,7 @@ public class SMldgrMvRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return columnName.equals("land_cd");
+        return columnName.equals("river_cd") || columnName.equals("apsfr_cd") || columnName.equals("apsfr_cdri");
     }
 
     @Override

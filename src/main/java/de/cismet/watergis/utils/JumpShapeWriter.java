@@ -109,6 +109,13 @@ public class JumpShapeWriter implements ShapeWriter {
             final List<String[]> aliasAttributeList,
             final File fileToSaveTo) throws Exception {
         String charset = Charset.defaultCharset().name();
+        final String[] charsetString = findCustomCharset(aliasAttributeList);
+
+        if (charsetString != null) {
+            charset = charsetString[0];
+        }
+
+        final List<String[]> newAliasAttributeList = removeSpecialValues(aliasAttributeList);
 
         try {
             Charset.forName(charset);
@@ -116,12 +123,17 @@ public class JumpShapeWriter implements ShapeWriter {
             LOG.error("Charset " + charset + " not found. Use " + Charset.defaultCharset().name() + " instead.");
             charset = Charset.defaultCharset().name();
         }
+        String charsetAlias = charset;
+
+        if ((charsetString != null) && (charsetString[1] != null)) {
+            charsetAlias = charsetString[1];
+        }
 
         if (Thread.interrupted()) {
             return;
         }
         try {
-            writeShpFile(features, fileToSaveTo, aliasAttributeList, charset);
+            writeShpFile(features, fileToSaveTo, newAliasAttributeList, charset);
         } catch (InterruptedException e) {
             clear(fileToSaveTo);
             return;
@@ -148,7 +160,7 @@ public class JumpShapeWriter implements ShapeWriter {
         }
 
         if (WRITE_CPG) {
-            writeCpgFile(fileToSaveTo, charset);
+            writeCpgFile(fileToSaveTo, charsetAlias);
         }
 
         if (WRITE_META_PDF && (features.length > 0)) {
@@ -161,6 +173,52 @@ public class JumpShapeWriter implements ShapeWriter {
             clear(fileToSaveTo);
             return;
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   aliasAttributeList  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String[] findCustomCharset(final List<String[]> aliasAttributeList) {
+        String[] charset = null;
+
+        for (final String[] alias : aliasAttributeList) {
+            if (alias[0].equals("$charset$")) {
+                if (charset == null) {
+                    charset = new String[2];
+                }
+                charset[0] = alias[1];
+            } else if (alias[0].equals("$charset_alias$")) {
+                if (charset == null) {
+                    charset = new String[2];
+                }
+                charset[1] = alias[1];
+            }
+        }
+
+        return charset;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   aliasAttributeList  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private List<String[]> removeSpecialValues(final List<String[]> aliasAttributeList) {
+        final List<String[]> newAliasList = new ArrayList<String[]>();
+
+        for (final String[] alias : aliasAttributeList) {
+            if (!(alias[0].startsWith("$") && alias[0].endsWith("$") && (alias[0].length() > 2))) {
+                newAliasList.add(alias);
+            }
+        }
+
+        return newAliasList;
     }
 
     /**

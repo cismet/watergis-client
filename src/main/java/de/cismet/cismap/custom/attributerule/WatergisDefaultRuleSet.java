@@ -1886,6 +1886,22 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         System.out.println("scale " + tmpScale + " precision " + tmpPrecision + " left " + digitsOnTheLeft);
     }
 
+    /**
+     * Converts the given number to a string and If the given number has only one digit, the resulting number will start
+     * with a zero.
+     *
+     * @param   value  the number to convert
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected String to2Digits(final int value) {
+        if (value > 9) {
+            return "" + value;
+        } else {
+            return "0" + value;
+        }
+    }
+
     //~ Inner Interfaces -------------------------------------------------------
 
     /**

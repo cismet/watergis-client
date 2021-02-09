@@ -98,8 +98,8 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
                         + "join geom gb on (lak_bis.geom = gb.id) \n"
                         + "where \n"
                         + "(von.wert > 0 and abs(bis.wert - st_length(geom.geo_field)) >= 1) or (lak_bis.id <> lak.id) or "
-                        + "(st_distance(ST_LineInterpolatePoint(geom.geo_field, von.wert / st_length(geom.geo_field)), gpv.geo_field) > 0.1 or "
-                        + "st_distance(ST_LineInterpolatePoint(gb.geo_field, bis.wert / st_length(gb.geo_field)), gpb.geo_field) > 0.1)  ;";
+                        + "(st_distance(ST_LineInterpolatePoint(geom.geo_field, case when von.wert / st_length(geom.geo_field) > 1.0 then 1.0 else von.wert / st_length(geom.geo_field) end ), gpv.geo_field) > 0.1 or "
+                        + "st_distance(ST_LineInterpolatePoint(gb.geo_field, case when bis.wert / st_length(gb.geo_field) > 1.0 then 1.0 else bis.wert / st_length(gb.geo_field) end ), gpb.geo_field) > 0.1)  ;";
         }
     }
 
