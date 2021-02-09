@@ -11,6 +11,13 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
+import Sirius.navigator.connection.SessionManager;
+
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
+
 /**
  * DOCUMENT ME!
  *
@@ -41,5 +48,21 @@ public class TewbodygeomRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return false;
+    }
+
+    @Override
+    public FeatureServiceFeature[] prepareFeaturesForExport(final FeatureServiceFeature[] features) {
+        final String username = SessionManager.getSession().getUser().getName();
+        final GregorianCalendar date = new GregorianCalendar();
+
+        final String dateString = date.get(GregorianCalendar.YEAR) + to2Digits((date.get(GregorianCalendar.MONTH) + 1))
+                    + to2Digits(date.get(GregorianCalendar.DATE));
+
+        for (final FeatureServiceFeature f : features) {
+            f.setProperty("ins_when", dateString);
+            f.setProperty("ins_by", username);
+        }
+
+        return features;
     }
 }

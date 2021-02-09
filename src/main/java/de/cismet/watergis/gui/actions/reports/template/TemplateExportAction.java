@@ -20,6 +20,8 @@ import org.apache.log4j.Logger;
 
 import org.jdom.Element;
 
+import org.openide.util.NbBundle;
+
 import java.awt.event.ActionEvent;
 
 import java.io.File;
@@ -31,6 +33,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
@@ -40,6 +43,8 @@ import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.tools.ExportShapeDownload;
+
+import de.cismet.cismap.custom.attributerule.MessageDialog;
 
 import de.cismet.connectioncontext.AbstractConnectionContext;
 import de.cismet.connectioncontext.ConnectionContext;
@@ -178,6 +183,7 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
     @Override
     public void actionPerformed(final ActionEvent e) {
         try {
+            final List<String[]> aliasAttributeList = new ArrayList<String[]>();
             final CidsLayer service = new CidsLayer(metaClass);
             service.initAndWait();
 
@@ -190,6 +196,8 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
                     final TemplateAttribute attr = getAttributeFromList(attributes, attrName);
 
                     if (attr != null) {
+                        aliasAttributeList.add(new String[] { attr.getName(), attr.getAlias() });
+
                         if (attr.hasFillValue()) {
                             for (final FeatureServiceFeature f : features) {
                                 f.setProperty(attrName, attr.getFillValue());
@@ -217,6 +225,17 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
                 }
             }
 
+            // show warning
+            final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    true,
+                    NbBundle.getMessage(
+                        TemplateExportAction.class,
+                        "TemplateExportAction.actionPerformed.crs.message",
+                        new Object[] { templateCrs }),
+                    NbBundle.getMessage(TemplateExportAction.class, "TemplateExportAction.actionPerformed.crs.title"));
+            d.setSize(500, 80);
+            StaticSwingTools.showDialog(d);
+
             // choose file name and create shape file
             final File outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
                     "",
@@ -226,10 +245,17 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
                     AppBroker.getInstance().getRootWindow());
 
             if (outputFile != null) {
-                final ExportShapeDownload shapeDownload = new ExportShapeDownload(outputFile.getAbsolutePath(),
-                        "",
-                        features.toArray(new FeatureServiceFeature[features.size()]));
+                final ExportShapeDownload shapeDownload = new ExportShapeDownload();
 
+                aliasAttributeList.add(new String[] { "$charset$", "windows-1252" });
+                aliasAttributeList.add(new String[] { "$charset_alias$", "ANSI 1252" });
+
+                shapeDownload.init(outputFile.getAbsolutePath(),
+                    "",
+                    features.toArray(new FeatureServiceFeature[features.size()]),
+                    service,
+                    aliasAttributeList,
+                    null);
                 DownloadManager.instance().add(shapeDownload);
             }
         } catch (Exception ex) {
@@ -272,7 +298,7 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
         //~ Instance fields ----------------------------------------------------
 
         private final String name;
-        private final String alias;
+        private String alias;
         private final String fill;
 
         //~ Constructors -------------------------------------------------------
@@ -285,6 +311,11 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
         public TemplateAttribute(final Element config) {
             name = config.getAttributeValue("name");
             alias = config.getAttributeValue("alias");
+
+            if ((alias == null) || alias.equals("")) {
+                alias = name;
+            }
+
             fill = config.getAttributeValue("fill");
         }
 
