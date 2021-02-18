@@ -30,7 +30,7 @@ public class SEzgKRlRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("eu_cd_rw", new WatergisDefaultRuleSet.Varchar(42, false));
         typeMap.put("eu_cd_lw", new WatergisDefaultRuleSet.Varchar(42, false));
         typeMap.put("wk_nr", new WatergisDefaultRuleSet.Varchar(10, false));
-        typeMap.put("typ", new WatergisDefaultRuleSet.Varchar(1, false));
+        typeMap.put("typ", new WatergisDefaultRuleSet.Varchar(2, false));
         typeMap.put("flaeche", new WatergisDefaultRuleSet.Numeric(12, 0, false));
         typeMap.put("fis_g_date", new WatergisDefaultRuleSet.DateTime(false, false));
         typeMap.put("fis_g_user", new WatergisDefaultRuleSet.Varchar(50, false, false));

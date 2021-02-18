@@ -78,7 +78,7 @@ public class StationAction extends AbstractGeoprocessingAction {
     @Override
     public final ImageIcon getSmallIcon() {
         return new javax.swing.ImageIcon(StationAction.class.getResource(
-                    "/de/cismet/watergis/res/icons16/icon-restore.png"));
+                    "/de/cismet/watergis/res/icons16/icon-flickralt.png"));
     }
 
     @Override
