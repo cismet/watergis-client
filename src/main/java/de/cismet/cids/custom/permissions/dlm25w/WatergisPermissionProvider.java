@@ -22,6 +22,8 @@ import de.cismet.cids.dynamics.CidsBean;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerPermissionProvider;
 
+import de.cismet.connectioncontext.ConnectionContext;
+
 import de.cismet.watergis.broker.AppBroker;
 
 /**
@@ -39,6 +41,16 @@ public abstract class WatergisPermissionProvider extends AbstractCustomBeanPermi
             WatergisPermissionProvider.class);
 
     //~ Methods ----------------------------------------------------------------
+
+    @Override
+    public boolean getCustomReadPermissionDecisionforUser(final User u, final ConnectionContext connectionContext) {
+        return getCustomReadPermissionDecisionforUser(u);
+    }
+
+    @Override
+    public boolean getCustomWritePermissionDecisionforUser(final User u, final ConnectionContext connectionContext) {
+        return getCustomWritePermissionDecisionforUser(u);
+    }
 
     @Override
     public boolean getCustomReadPermissionDecisionforUser(final User u) {
