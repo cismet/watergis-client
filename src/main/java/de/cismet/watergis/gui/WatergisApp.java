@@ -482,6 +482,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.selection.InvertSelectionAction invertSelectionAction;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JToolBar.Separator jSeparator11;
     private javax.swing.JToolBar.Separator jSeparator14;
@@ -610,7 +611,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniShowProfiles;
     private javax.swing.JMenuItem mniShowTree;
     private javax.swing.JMenuItem mniStation;
-    private javax.swing.JMenuItem mniThemeExportOption;
     private javax.swing.JMenuItem mniUnion;
     private javax.swing.JMenuItem mniUnselectAllDrawing;
     private javax.swing.JMenuItem mniUpload;
@@ -696,7 +696,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JToggleButton tbtnProfileInfoMode;
     private javax.swing.JToggleButton tbtnRemoveMode;
     private javax.swing.JToggleButton tbtnZoomMode;
-    private de.cismet.watergis.gui.actions.ThemeExportOptionAction themeExportOptionAction1;
     private javax.swing.JToolBar tobDLM25W;
     private de.cismet.watergis.gui.actions.geoprocessing.UnionGeoprocessingAction unionGeoprocessingAction;
     private de.cismet.watergis.gui.actions.selection.UnselectAllDrawingsAction unselectAllDrawingsAction;
@@ -1300,6 +1299,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         pTopicTree.insertMenuItemIntoContextMenu(18, new DeleteMenuItem());
         pTopicTree.insertMenuItemIntoContextMenu(18, new PasteMenuItem());
         pTopicTree.insertMenuItemIntoContextMenu(18, new CopyMenuItem());
+        pTopicTree.insertMenuItemIntoContextMenu(18, new ExportOptionsMenuItem());
         pOverview = new OverviewComponent();
         pOverview.setMasterMap(mappingComponent);
         configManager.addConfigurable(pOverview);
@@ -2394,7 +2394,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         removeModeAction1 = new de.cismet.watergis.gui.actions.map.RemoveModeAction();
         changePolygonModeAction1 = new de.cismet.watergis.gui.actions.map.ChangePolygonModeAction();
         stationAction1 = new de.cismet.watergis.gui.actions.geoprocessing.StationAction();
-        themeExportOptionAction1 = new de.cismet.watergis.gui.actions.ThemeExportOptionAction();
         addThemeAction1 = new de.cismet.watergis.gui.actions.AddThemeAction();
         createViewsForUser1 = new de.cismet.watergis.gui.actions.CreateViewsForUser();
         tobDLM25W = new javax.swing.JToolBar();
@@ -2508,7 +2507,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniZoomSelectedObjects = new javax.swing.JMenuItem();
         mniZoomSelectedThemes = new javax.swing.JMenuItem();
         mniRemoveSelection = new javax.swing.JMenuItem();
-        mniThemeExportOption = new javax.swing.JMenuItem();
         menTools = new javax.swing.JMenu();
         menGeoProcessing = new javax.swing.JMenu();
         mniBuffer = new javax.swing.JMenuItem();
@@ -2534,6 +2532,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniExport = new javax.swing.JMenuItem();
         mniIgmExport = new javax.swing.JMenuItem();
         mniExportOption = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
         mniCreateDbUser = new javax.swing.JMenuItem();
         menReport = new javax.swing.JMenu();
         menSteckbrief = new javax.swing.JMenu();
@@ -3608,13 +3607,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniRemoveSelection.setEnabled(false);
         menSelection.add(mniRemoveSelection);
 
-        mniThemeExportOption.setAction(themeExportOptionAction1);
-        mniThemeExportOption.setToolTipText(org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.mniThemeExportOption.toolTipText",
-                new Object[] {})); // NOI18N
-        menSelection.add(mniThemeExportOption);
-
         jMenuBar1.add(menSelection);
 
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -3784,8 +3776,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         menTools.add(menChecks1);
 
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jMenu1,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.jMenu1.text", new Object[] {})); // NOI18N
+
         mniCreateDbUser.setAction(createViewsForUser1);
-        menTools.add(mniCreateDbUser);
+        jMenu1.add(mniCreateDbUser);
+
+        menTools.add(jMenu1);
 
         jMenuBar1.add(menTools);
 
@@ -3804,10 +3802,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGewaesser.setAction(gewaesserReportAction);
         org.openide.awt.Mnemonics.setLocalizedText(
             mniGewaesser,
-            org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.mniGewaesser.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniGewaesser.text", new Object[] {
+                }));               // NOI18N
         mniGewaesser.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniGewaesser.toolTipText",
@@ -5749,6 +5745,44 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             }
 
             return false;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class ExportOptionsMenuItem extends ThemeLayerMenuItem {
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new EditModeMenuItem object.
+         */
+        public ExportOptionsMenuItem() {
+            super(NbBundle.getMessage(
+                    MetaDocumentMenuItem.class,
+                    "WatergisApp.ExportOptionsMenuItem.ExportOptionsMenuItem().title"),
+                ROOT);
+            newSection = true;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            StaticSwingTools.showDialog(ThemeExportDialog.getInstance());
+        }
+
+        @Override
+        public boolean isVisible(final int mask) {
+            return ((visibility & mask) == mask);
+        }
+
+        @Override
+        public boolean isSelectable(final int mask) {
+            return super.isSelectable(mask);
         }
     }
 

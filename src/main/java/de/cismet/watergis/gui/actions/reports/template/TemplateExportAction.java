@@ -50,11 +50,14 @@ import de.cismet.connectioncontext.AbstractConnectionContext;
 import de.cismet.connectioncontext.ConnectionContext;
 
 import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.WaitingDialogThread;
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.reports.GerinneGFlReportAction;
+
+import de.cismet.watergis.reports.GewaesserReport;
 
 import static javax.swing.Action.MNEMONIC_KEY;
 import static javax.swing.Action.NAME;
@@ -142,7 +145,7 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
         }
 
         if ((iconElement != null) && (iconElement.getText() != null)) {
-            final URL icon = getClass().getResource(tooltipElement.getText());
+            final URL icon = getClass().getResource(iconElement.getText());
 
             if (icon != null) {
                 putValue(SMALL_ICON, new javax.swing.ImageIcon(icon));
@@ -182,85 +185,112 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        try {
-            final List<String[]> aliasAttributeList = new ArrayList<String[]>();
-            final CidsLayer service = new CidsLayer(metaClass);
-            service.initAndWait();
+        final WaitingDialogThread<TemplateDataContainer> wdt = new WaitingDialogThread<TemplateDataContainer>(
+                StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
+                true,
+                "Empfange Daten der Schablone",
+                null,
+                100,
+                true) {
 
-            final List<FeatureServiceFeature> features = service.getFeatureFactory()
-                        .createFeatures(service.getQuery(), null, null);
-            final List<String> ignoredAttributes = new ArrayList<String>();
+                @Override
+                protected TemplateDataContainer doInBackground() throws Exception {
+                    final List<String[]> aliasAttributeList = new ArrayList<String[]>();
+                    final CidsLayer service = new CidsLayer(metaClass);
+                    service.initAndWait();
 
-            if (attributes != null) {
-                for (final String attrName : service.getFeatureServiceAttributes().keySet()) {
-                    final TemplateAttribute attr = getAttributeFromList(attributes, attrName);
+                    final List<FeatureServiceFeature> features = service.getFeatureFactory()
+                                .createFeatures(service.getQuery(), null, null);
+                    final List<String> ignoredAttributes = new ArrayList<String>();
 
-                    if (attr != null) {
-                        aliasAttributeList.add(new String[] { attr.getName(), attr.getAlias() });
+                    if (attributes != null) {
+                        for (final String attrName : service.getFeatureServiceAttributes().keySet()) {
+                            final TemplateAttribute attr = getAttributeFromList(attributes, attrName);
 
-                        if (attr.hasFillValue()) {
-                            for (final FeatureServiceFeature f : features) {
-                                f.setProperty(attrName, attr.getFillValue());
+                            if (attr != null) {
+                                aliasAttributeList.add(new String[] { attr.getName(), attr.getAlias() });
+
+                                if (attr.hasFillValue()) {
+                                    for (final FeatureServiceFeature f : features) {
+                                        f.setProperty(attrName, attr.getFillValue());
+                                    }
+                                }
+                            } else {
+                                ignoredAttributes.add(attrName);
                             }
                         }
-                    } else {
-                        ignoredAttributes.add(attrName);
+                    }
+
+                    // remove attributes
+                    for (final String ignoredAttribute : ignoredAttributes) {
+                        service.getFeatureServiceAttributes().remove(ignoredAttribute);
+                        service.getOrderedFeatureServiceAttributes().remove(ignoredAttribute);
+                    }
+
+                    final String crsString = CrsTransformer.createCrsFromSrid(templateCrs);
+
+                    for (final FeatureServiceFeature f : features) {
+                        f.setGeometry(CrsTransformer.transformToGivenCrs(f.getGeometry(), crsString));
+
+                        for (final String ignoredAttribute : ignoredAttributes) {
+                            f.getProperties().remove(ignoredAttribute);
+                        }
+                    }
+
+                    return new TemplateDataContainer(aliasAttributeList, service, features);
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        final TemplateDataContainer data = get();
+
+                        final List<String[]> aliasAttributeList = data.getAliasAttributeList();
+                        final CidsLayer service = data.getService();
+                        final List<FeatureServiceFeature> features = data.getFeatures();
+
+                        // show warning
+                        final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
+                                true,
+                                NbBundle.getMessage(
+                                    TemplateExportAction.class,
+                                    "TemplateExportAction.actionPerformed.crs.message",
+                                    new Object[] { templateCrs }),
+                                NbBundle.getMessage(
+                                    TemplateExportAction.class,
+                                    "TemplateExportAction.actionPerformed.crs.title"));
+                        d.setSize(500, 80);
+                        StaticSwingTools.showDialog(d);
+
+                        // choose file name and create shape file
+                        final File outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
+                                "",
+                                true,
+                                new String[] { "shp" },
+                                new String[] { "shp" },
+                                AppBroker.getInstance().getRootWindow());
+
+                        if (outputFile != null) {
+                            final ExportShapeDownload shapeDownload = new ExportShapeDownload();
+
+                            aliasAttributeList.add(new String[] { "$charset$", "windows-1252" });
+                            aliasAttributeList.add(new String[] { "$charset_alias$", "ANSI 1252" });
+
+                            shapeDownload.init(outputFile.getAbsolutePath(),
+                                "",
+                                features.toArray(new FeatureServiceFeature[features.size()]),
+                                service,
+                                aliasAttributeList,
+                                null);
+                            DownloadManager.instance().add(shapeDownload);
+                        }
+                    } catch (Exception e) {
+                        LOG.error("Error while receiving template features", e);
                     }
                 }
-            }
+            };
 
-            // remove attributes
-            for (final String ignoredAttribute : ignoredAttributes) {
-                service.getFeatureServiceAttributes().remove(ignoredAttribute);
-                service.getOrderedFeatureServiceAttributes().remove(ignoredAttribute);
-            }
-
-            final String crsString = CrsTransformer.createCrsFromSrid(templateCrs);
-
-            for (final FeatureServiceFeature f : features) {
-                f.setGeometry(CrsTransformer.transformToGivenCrs(f.getGeometry(), crsString));
-
-                for (final String ignoredAttribute : ignoredAttributes) {
-                    f.getProperties().remove(ignoredAttribute);
-                }
-            }
-
-            // show warning
-            final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    true,
-                    NbBundle.getMessage(
-                        TemplateExportAction.class,
-                        "TemplateExportAction.actionPerformed.crs.message",
-                        new Object[] { templateCrs }),
-                    NbBundle.getMessage(TemplateExportAction.class, "TemplateExportAction.actionPerformed.crs.title"));
-            d.setSize(500, 80);
-            StaticSwingTools.showDialog(d);
-
-            // choose file name and create shape file
-            final File outputFile = StaticSwingTools.chooseFileWithMultipleFilters(
-                    "",
-                    true,
-                    new String[] { "shp" },
-                    new String[] { "shp" },
-                    AppBroker.getInstance().getRootWindow());
-
-            if (outputFile != null) {
-                final ExportShapeDownload shapeDownload = new ExportShapeDownload();
-
-                aliasAttributeList.add(new String[] { "$charset$", "windows-1252" });
-                aliasAttributeList.add(new String[] { "$charset_alias$", "ANSI 1252" });
-
-                shapeDownload.init(outputFile.getAbsolutePath(),
-                    "",
-                    features.toArray(new FeatureServiceFeature[features.size()]),
-                    service,
-                    aliasAttributeList,
-                    null);
-                DownloadManager.instance().add(shapeDownload);
-            }
-        } catch (Exception ex) {
-            LOG.error("Error while receiving template features", ex);
-        }
+        wdt.start();
     }
 
     /**
@@ -383,6 +413,93 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
          */
         public boolean hasFillValue() {
             return fill != null;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private class TemplateDataContainer {
+
+        //~ Instance fields ----------------------------------------------------
+
+        private List<String[]> aliasAttributeList;
+        private CidsLayer service;
+        private List<FeatureServiceFeature> features;
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new TemplateDataContainer object.
+         *
+         * @param  aliasAttributeList  DOCUMENT ME!
+         * @param  service             DOCUMENT ME!
+         * @param  features            DOCUMENT ME!
+         */
+        public TemplateDataContainer(final List<String[]> aliasAttributeList,
+                final CidsLayer service,
+                final List<FeatureServiceFeature> features) {
+            this.aliasAttributeList = aliasAttributeList;
+            this.service = service;
+            this.features = features;
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the aliasAttributeList
+         */
+        public List<String[]> getAliasAttributeList() {
+            return aliasAttributeList;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  aliasAttributeList  the aliasAttributeList to set
+         */
+        public void setAliasAttributeList(final List<String[]> aliasAttributeList) {
+            this.aliasAttributeList = aliasAttributeList;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the service
+         */
+        public CidsLayer getService() {
+            return service;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  service  the service to set
+         */
+        public void setService(final CidsLayer service) {
+            this.service = service;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the features
+         */
+        public List<FeatureServiceFeature> getFeatures() {
+            return features;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  features  the features to set
+         */
+        public void setFeatures(final List<FeatureServiceFeature> features) {
+            this.features = features;
         }
     }
 }

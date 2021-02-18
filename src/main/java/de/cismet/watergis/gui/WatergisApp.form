@@ -290,8 +290,6 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.geoprocessing.StationAction" name="stationAction1">
     </Component>
-    <Component class="de.cismet.watergis.gui.actions.ThemeExportOptionAction" name="themeExportOptionAction1">
-    </Component>
     <Component class="de.cismet.watergis.gui.actions.AddThemeAction" name="addThemeAction1">
     </Component>
     <Component class="de.cismet.watergis.gui.actions.CreateViewsForUser" name="createViewsForUser1">
@@ -547,16 +545,6 @@
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="mniThemeExportOption">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="themeExportOptionAction1"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.mniThemeExportOption.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
-                </Property>
-              </Properties>
-            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="menTools">
@@ -796,13 +784,22 @@
                 </MenuItem>
               </SubComponents>
             </Menu>
-            <MenuItem class="javax.swing.JMenuItem" name="mniCreateDbUser">
+            <Menu class="javax.swing.JMenu" name="jMenu1">
               <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                  <ComponentRef name="createViewsForUser1"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="de/cismet/watergis/gui/Bundle.properties" key="WatergisApp.jMenu1.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
                 </Property>
               </Properties>
-            </MenuItem>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="mniCreateDbUser">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="createViewsForUser1"/>
+                    </Property>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="menReport">

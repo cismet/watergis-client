@@ -24,6 +24,7 @@ import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.gui.actions.geoprocessing.StationAction;
 import de.cismet.watergis.gui.dialog.DbUserDialog;
 
 import static javax.swing.Action.MNEMONIC_KEY;
@@ -61,6 +62,9 @@ public class CreateViewsForUser extends AbstractAction {
         putValue(NAME, text);
         final String mnemonic = org.openide.util.NbBundle.getMessage(CloseAction.class, "CreateViewsForUser.mnemonic");
         putValue(MNEMONIC_KEY, KeyStroke.getKeyStroke(mnemonic).getKeyCode());
+        final ImageIcon icon = new javax.swing.ImageIcon(StationAction.class.getResource(
+                    "/de/cismet/watergis/res/icons16/icon-user.png"));
+        putValue(SMALL_ICON, icon);
     }
 
     //~ Methods ----------------------------------------------------------------
