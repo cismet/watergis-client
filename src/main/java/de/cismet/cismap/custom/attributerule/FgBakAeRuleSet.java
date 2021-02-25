@@ -11,30 +11,27 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.exception.ConnectionException;
 
 import Sirius.server.middleware.types.MetaClass;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import java.sql.Timestamp;
+import org.apache.log4j.Logger;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cids.custom.watergis.server.actions.RefreshTemplateAction;
+
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
-import de.cismet.cids.server.cidslayer.CidsLayerInfo;
-
-import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.featureservice.LayerProperties;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
@@ -50,6 +47,10 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @version  $Revision$, $Date$
  */
 public class FgBakAeRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Instance fields --------------------------------------------------------
+
+    private final Logger LOG = Logger.getLogger(SgDetailRuleSet.class);
 
     //~ Instance initializers --------------------------------------------------
 
@@ -102,6 +103,12 @@ public class FgBakAeRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
+        try {
+            refreshTemplate(RefreshTemplateAction.EZG_K_RL);
+        } catch (ConnectionException ex) {
+            LOG.error("Cannot refresh templates", ex);
+        }
+        super.afterSave(model);
     }
 
     @Override

@@ -11,6 +11,10 @@
  */
 package de.cismet.watergis.utils;
 
+import Sirius.navigator.connection.SessionManager;
+
+import Sirius.server.newuser.User;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -22,6 +26,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
@@ -43,9 +48,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import de.cismet.cids.custom.watergis.server.search.Buffer;
+import de.cismet.cids.custom.watergis.server.search.MakeValid;
+
+import de.cismet.cids.server.search.CidsServerSearch;
+
 import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.commons.concurrency.CismetExecutors;
 
@@ -62,6 +73,35 @@ public class GeometryUtils {
     private static final Logger LOG = Logger.getLogger(GeometryUtils.class);
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * Let the db executes a makeValid on the given geometry.
+     *
+     * @param   g  the geometry to make valid
+     *
+     * @return  the (hopefully) valid geometry
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static Geometry makeValid(final Geometry g) throws Exception {
+        Geometry validGeometry = null;
+        final CidsServerSearch search = new MakeValid(g);
+
+        final User user = SessionManager.getSession().getUser();
+        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(user, search);
+
+        if ((attributes != null) && !attributes.isEmpty()) {
+            if (!attributes.get(0).isEmpty() && (attributes.get(0).get(0) instanceof byte[])) {
+                final GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                        CismapBroker.getInstance().getDefaultCrsAlias());
+                final WKBReader wkbReader = new WKBReader(geomFactory);
+                validGeometry = wkbReader.read((byte[])attributes.get(0).get(0));
+            }
+        }
+
+        return validGeometry;
+    }
 
     /**
      * Splits the given geometry at the given line.
