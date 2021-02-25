@@ -12,12 +12,15 @@
 package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.exception.ConnectionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
+
+import org.openide.util.Exceptions;
 
 import java.awt.Component;
 
@@ -32,6 +35,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+
+import de.cismet.cids.custom.watergis.server.actions.RefreshTemplateAction;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -301,6 +306,14 @@ public class EzgDetailRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
+        try {
+            refreshTemplate(RefreshTemplateAction.DRAIN_BASIN);
+            refreshTemplate(RefreshTemplateAction.EZG_K_RL);
+        } catch (ConnectionException ex) {
+            LOG.error("Cannot refresh template", ex);
+        }
+
+        super.afterSave(model);
     }
 
     @Override

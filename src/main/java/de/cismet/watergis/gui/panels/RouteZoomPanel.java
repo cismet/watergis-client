@@ -67,6 +67,7 @@ public class RouteZoomPanel extends ZoomPanel {
 
     @Override
     public void init() {
+        routeModelInitialised = false;
         cbObjects.setModel(new DefaultComboBoxModel(new Object[] { "Lade ..." }));
 
         final SwingWorker sw = new SwingWorker<ZoomPanel.GeometryElement[], Void>() {

@@ -13,6 +13,7 @@
 package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.exception.ConnectionException;
 
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
@@ -61,6 +62,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import de.cismet.cids.custom.watergis.server.actions.RefreshTemplateAction;
+import de.cismet.cids.custom.watergis.server.actions.RemoveUserAction;
 import de.cismet.cids.custom.watergis.server.search.CalculateFgLa;
 import de.cismet.cids.custom.watergis.server.search.UniquenessCheck;
 
@@ -68,6 +71,7 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
+import de.cismet.cids.server.actions.ServerActionParameter;
 import de.cismet.cids.server.search.CidsServerSearch;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
@@ -85,6 +89,8 @@ import de.cismet.cismap.linearreferencing.LinearReferencingHelper;
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
 
+import de.cismet.connectioncontext.ConnectionContext;
+
 import de.cismet.netutil.Proxy;
 
 import de.cismet.tools.PasswordEncrypter;
@@ -97,6 +103,8 @@ import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.check.CrossedLinesCheck;
+
+import de.cismet.watergis.gui.dialog.DbUserDialog;
 
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
@@ -261,6 +269,26 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                             filename,
                             extension));
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   template  DOCUMENT ME!
+     *
+     * @throws  ConnectionException  DOCUMENT ME!
+     */
+    protected void refreshTemplate(final String template) throws ConnectionException {
+        final ServerActionParameter paramDbUser = new ServerActionParameter(
+                RefreshTemplateAction.ParameterType.TEMPLATE.toString(),
+                template);
+        SessionManager.getProxy()
+                .executeTask(
+                    RefreshTemplateAction.TASK_NAME,
+                    AppBroker.getInstance().getDomain(),
+                    (Object)null,
+                    ConnectionContext.createDummy(),
+                    paramDbUser);
     }
 
     /**

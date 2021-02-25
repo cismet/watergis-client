@@ -12,6 +12,7 @@
 package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.exception.ConnectionException;
 
 import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.newuser.User;
@@ -38,6 +39,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import de.cismet.cids.custom.watergis.server.actions.RefreshTemplateAction;
 import de.cismet.cids.custom.watergis.server.search.FgBaCdCheck;
 import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
 
@@ -343,6 +345,14 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
                 }
             }
         }
+
+        try {
+            refreshTemplate(RefreshTemplateAction.RW_SEG_GEOM);
+            refreshTemplate(RefreshTemplateAction.EZG_K_RL);
+        } catch (ConnectionException ex) {
+            LOG.error("Cannot refresh templates", ex);
+        }
+        super.afterSave(model);
 
 //        final Timer t = new Timer("reload");
 //
