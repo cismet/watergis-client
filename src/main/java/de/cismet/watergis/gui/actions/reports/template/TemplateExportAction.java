@@ -16,6 +16,8 @@ import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.apache.log4j.Logger;
 
 import org.jdom.Element;
@@ -33,10 +35,13 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import de.cismet.cids.custom.watergis.server.actions.RefreshTemplateAction;
+
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
+
+import de.cismet.cids.server.actions.ServerActionParameter;
 
 import de.cismet.cismap.cidslayer.CidsLayer;
 
@@ -57,7 +62,7 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.actions.reports.GerinneGFlReportAction;
 
-import de.cismet.watergis.reports.GewaesserReport;
+import de.cismet.watergis.utils.GeometryUtils;
 
 import static javax.swing.Action.MNEMONIC_KEY;
 import static javax.swing.Action.NAME;
@@ -85,6 +90,7 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
     private int templateCrs = 5650;
     private int position = -1;
     private String folder;
+    private String refresh = null;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -123,6 +129,7 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
         final Element attributesElement = config.getChild("Attributes");
         final Element positionElement = config.getChild("Position");
         final Element folderElement = config.getChild("Folder");
+        final Element refreshElement = config.getChild("refresh");
 
         if ((positionElement != null) && (positionElement.getText() != null)) {
             try {
@@ -138,6 +145,10 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
 
         if ((folderElement != null) && (folderElement.getText() != null)) {
             folder = folderElement.getText();
+        }
+
+        if ((refreshElement != null) && (refreshElement.getText() != null)) {
+            refresh = refreshElement.getText();
         }
 
         if ((tooltipElement != null) && (tooltipElement.getText() != null)) {
@@ -196,6 +207,26 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
                 @Override
                 protected TemplateDataContainer doInBackground() throws Exception {
                     final List<String[]> aliasAttributeList = new ArrayList<String[]>();
+
+                    if (refresh != null) {
+                        wd.setText("Aktualisiere Template");
+                        final ServerActionParameter paramTemplate = new ServerActionParameter(
+                                RefreshTemplateAction.ParameterType.TEMPLATE.toString(),
+                                refresh);
+                        final ServerActionParameter paramWait = new ServerActionParameter(
+                                RefreshTemplateAction.ParameterType.WAIT.toString(),
+                                "true");
+                        SessionManager.getProxy()
+                                .executeTask(
+                                    RefreshTemplateAction.TASK_NAME,
+                                    AppBroker.getInstance().getDomain(),
+                                    (Object)null,
+                                    ConnectionContext.createDummy(),
+                                    paramTemplate,
+                                    paramWait);
+                        wd.setText("Erstelle Shape-Datei");
+                    }
+
                     final CidsLayer service = new CidsLayer(metaClass);
                     service.initAndWait();
 
@@ -231,6 +262,11 @@ public class TemplateExportAction extends AbstractAction implements Comparable<T
 
                     for (final FeatureServiceFeature f : features) {
                         f.setGeometry(CrsTransformer.transformToGivenCrs(f.getGeometry(), crsString));
+
+                        if (!f.getGeometry().isValid()) {
+                            final Geometry validGeometry = GeometryUtils.makeValid(f.getGeometry());
+                            f.setGeometry(validGeometry);
+                        }
 
                         for (final String ignoredAttribute : ignoredAttributes) {
                             f.getProperties().remove(ignoredAttribute);

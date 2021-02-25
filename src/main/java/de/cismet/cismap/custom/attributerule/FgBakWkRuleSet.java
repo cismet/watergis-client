@@ -12,6 +12,7 @@
 package de.cismet.cismap.custom.attributerule;
 
 import Sirius.navigator.connection.SessionManager;
+import Sirius.navigator.exception.ConnectionException;
 
 import Sirius.server.middleware.types.MetaClass;
 
@@ -26,6 +27,8 @@ import java.sql.Timestamp;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+
+import de.cismet.cids.custom.watergis.server.actions.RefreshTemplateAction;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -126,6 +129,13 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void afterSave(final TableModel model) {
+        try {
+            refreshTemplate(RefreshTemplateAction.RW_SEG_GEOM);
+            refreshTemplate(RefreshTemplateAction.EZG_K_RL);
+        } catch (ConnectionException ex) {
+            LOG.error("Cannot refresh templates", ex);
+        }
+        super.afterSave(model);
     }
 
     @Override
