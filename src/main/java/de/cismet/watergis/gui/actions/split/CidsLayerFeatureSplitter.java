@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -35,8 +36,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.JOptionPane;
-
-import de.cismet.cids.custom.wrrl_db_mv.util.CidsBeanSupport;
 
 import de.cismet.cids.dynamics.CidsBean;
 
@@ -66,6 +65,7 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.gui.actions.merge.CidsLayerFeatureMerger;
 
 import de.cismet.watergis.utils.GeometryUtils;
+import de.cismet.watergis.utils.LinearReferencingConstants;
 
 /**
  * DOCUMENT ME!
@@ -215,7 +215,7 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
                                     ((CidsLayerFeature)newFeature).initStations();
                                 }
                             } else {
-                                CidsBean statLine = CidsBeanSupport.cloneStationline((CidsBean)origLineBean);
+                                CidsBean statLine = cloneStationline((CidsBean)origLineBean);
                                 statLine = adjustLineStation(statLine, splittedGeom[i], true);
                                 newFeature.setProperty(linePropertyName, statLine);
 
@@ -473,13 +473,13 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
         CidsBean tillStation = linearReferencingHelper.getStationBeanFromLineBean(master, false);
 
         if (cloneStations && (fromStation != null)) {
-            fromStation = CidsBeanSupport.cloneStation(fromStation);
+            fromStation = cloneStation(fromStation);
             final int newId = --stationId;
             fromStation.getMetaObject().setID(newId);
             fromStation.setProperty("id", newId);
         }
         if (cloneStations && (tillStation != null)) {
-            tillStation = CidsBeanSupport.cloneStation(tillStation);
+            tillStation = cloneStation(tillStation);
             final int newId = --stationId;
             tillStation.getMetaObject().setID(newId);
             tillStation.setProperty("id", newId);
@@ -529,5 +529,145 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
         }
 
         lockedFeatures.clear();
+    }
+
+    /**
+     * This method will not create deep copy of the given station, but only a almost deep copy, because the route object
+     * of the station will not be cloned to avoid multiple instances of the same route in the database.
+     *
+     * @param   bean  the station bean that should be cloned.
+     *
+     * @return  a "deep" copy of the given station
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static CidsBean cloneStation(final CidsBean bean) throws Exception {
+        if (bean == null) {
+            return null;
+        }
+        final CidsBean clone = bean.getMetaObject().getMetaClass().getEmptyInstance().getBean();
+
+        clone.setProperty(
+            LinearReferencingConstants.PROP_STATION_VALUE,
+            bean.getProperty(LinearReferencingConstants.PROP_STATION_VALUE));
+
+        final Object geom = bean.getProperty(LinearReferencingConstants.PROP_STATION_GEOM);
+        if (geom instanceof CidsBean) {
+            clone.setProperty(LinearReferencingConstants.PROP_STATION_GEOM, cloneCidsBean((CidsBean)geom));
+        }
+        clone.setProperty(
+            LinearReferencingConstants.PROP_STATION_ROUTE,
+            bean.getProperty(LinearReferencingConstants.PROP_STATION_ROUTE));
+
+        return clone;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   bean  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static CidsBean cloneStationline(final CidsBean bean) throws Exception {
+        if (bean == null) {
+            return null;
+        }
+        final CidsBean clone = bean.getMetaObject().getMetaClass().getEmptyInstance().getBean();
+
+        final Object fromBean = bean.getProperty(LinearReferencingConstants.PROP_STATIONLINIE_FROM);
+        if (fromBean instanceof CidsBean) {
+            clone.setProperty(LinearReferencingConstants.PROP_STATIONLINIE_FROM, cloneStation((CidsBean)fromBean));
+        }
+        final Object toBean = bean.getProperty(LinearReferencingConstants.PROP_STATIONLINIE_TO);
+        if (toBean instanceof CidsBean) {
+            clone.setProperty(LinearReferencingConstants.PROP_STATIONLINIE_TO, cloneStation((CidsBean)toBean));
+        }
+        final Object geomBean = bean.getProperty(LinearReferencingConstants.PROP_STATIONLINIE_GEOM);
+        if (geomBean instanceof CidsBean) {
+            clone.setProperty(LinearReferencingConstants.PROP_STATIONLINIE_GEOM, cloneCidsBean((CidsBean)geomBean));
+        }
+
+        return clone;
+    }
+
+    /**
+     * cloneCidsBean(CidsBean bean) was tested and works with the type geom. Objects which have properties of a type
+     * that is not considered by the method, will not be returned as deep copy. The results of this method can be used
+     * as a deep copy, if we assume, that the properties, which are not of the type CidsBean, will not be changed in the
+     * future, but only replaced by other objects.
+     *
+     * @param   bean  DOCUMENT ME!
+     *
+     * @return  a deep copy of the given object
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static CidsBean cloneCidsBean(final CidsBean bean) throws Exception {
+        return cloneCidsBean(bean, true);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   bean        DOCUMENT ME!
+     * @param   cloneBeans  true, iff a deep copy of the sub beans should be created
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static CidsBean cloneCidsBean(final CidsBean bean, final boolean cloneBeans) throws Exception {
+        if (bean == null) {
+            return null;
+        }
+        final CidsBean clone = bean.getMetaObject().getMetaClass().getEmptyInstance().getBean();
+
+        for (final String propName : bean.getPropertyNames()) {
+            if (!propName.toLowerCase().equals("id")) {
+                final Object o = bean.getProperty(propName);
+
+                if (o instanceof CidsBean) {
+                    if (cloneBeans) {
+                        clone.setProperty(propName, cloneCidsBean((CidsBean)o));
+                    } else {
+                        clone.setProperty(propName, (CidsBean)o);
+                    }
+                } else if (o instanceof Collection) {
+                    final List<CidsBean> list = (List<CidsBean>)o;
+                    final List<CidsBean> newList = new ArrayList<CidsBean>();
+
+                    for (final CidsBean tmpBean : list) {
+                        if (cloneBeans) {
+                            newList.add(cloneCidsBean(tmpBean));
+                        } else {
+                            newList.add(tmpBean);
+                        }
+                    }
+                    clone.setProperty(propName, newList);
+                } else if (o instanceof Geometry) {
+                    clone.setProperty(propName, ((Geometry)o).clone());
+                } else if (o instanceof Long) {
+                    clone.setProperty(propName, new Long(o.toString()));
+                } else if (o instanceof Double) {
+                    clone.setProperty(propName, new Double(o.toString()));
+                } else if (o instanceof Integer) {
+                    clone.setProperty(propName, new Integer(o.toString()));
+                } else if (o instanceof Boolean) {
+                    clone.setProperty(propName, new Boolean(o.toString()));
+                } else if (o instanceof String) {
+                    clone.setProperty(propName, o);
+                } else {
+                    if (o != null) {
+                        LOG.error("unknown property type: " + o.getClass().getName());
+                    }
+                    clone.setProperty(propName, o);
+                }
+            }
+        }
+
+        return clone;
     }
 }

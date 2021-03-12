@@ -11,10 +11,7 @@
  */
 package de.cismet.watergis.gui.actions.reports;
 
-import Sirius.navigator.connection.SessionManager;
-
 import Sirius.server.middleware.types.MetaClass;
-import Sirius.server.middleware.types.MetaObject;
 
 import org.apache.log4j.Logger;
 
@@ -38,8 +35,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import de.cismet.cids.custom.reports.WkFgReport;
-
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cismap.cidslayer.CidsLayer;
@@ -51,14 +46,10 @@ import de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet;
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
 
-import de.cismet.netutil.Proxy;
-
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
-import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
 import de.cismet.tools.gui.downloadmanager.MultipleDownload;
-import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -68,8 +59,6 @@ import de.cismet.watergis.gui.actions.*;
 import de.cismet.watergis.gui.dialog.WkFgReportDialog;
 
 import static javax.swing.Action.NAME;
-
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.addExtension;
 
 /**
  * DOCUMENT ME!
