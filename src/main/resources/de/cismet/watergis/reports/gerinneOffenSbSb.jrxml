@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="3770" pageHeight="595" orientation="Landscape" columnWidth="3730" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="305"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -127,7 +127,7 @@
 	<field name="summe" class="java.lang.Boolean"/>
 	<field name="group" class="java.lang.String"/>
 	<field name="wdm" class="java.lang.Integer"/>
-	<field name="sb" class="java.lang.Integer"/>
+	<field name="sb" class="java.lang.String"/>
 	<field name="sbName" class="java.lang.String"/>
 	<field name="zwischenSumme" class="java.lang.Boolean"/>
 	<field name="anzSb" class="java.lang.Integer"/>
@@ -1330,7 +1330,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 					</textElement>
-					<text><![CDATA[Numnmer]]></text>
+					<text><![CDATA[Nummer]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="column_header_style" mode="Opaque" x="2014" y="56" width="38" height="14" backcolor="#D8D8D8" uuid="1b8af03e-0974-4aeb-9e1e-a89e72bb553d"/>
@@ -2002,7 +2002,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{wdm}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="352" y="0" width="64" height="14" isPrintWhenDetailOverflows="true" uuid="6578621c-789e-4171-91d8-7e28de88b073"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Top">

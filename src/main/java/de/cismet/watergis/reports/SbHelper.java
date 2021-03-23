@@ -96,7 +96,7 @@ public class SbHelper {
                         (String)f.get(2),
                         (Double)f.get(3),
                         (Double)f.get(4),
-                        (Integer)f.get(5),
+                        (String)f.get(5),
                         (String)f.get(6),
                         (Double)f.get(11),
                         (String)f.get(12)));
@@ -147,7 +147,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public String getSbName(final Integer sb) {
+    public String getSbName(final String sb) {
         for (final SbObj tmp : objList) {
             if ((tmp.getSb() != null) && tmp.getSb().equals(sb)) {
                 return tmp.getSbName();
@@ -181,7 +181,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public Collection<Integer> getGew(final String gu, final Integer wdm, final Integer sb) {
+    public Collection<Integer> getGew(final String gu, final Integer wdm, final String sb) {
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : objList) {
@@ -236,8 +236,8 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public Collection<Integer> getSb(final String gu, final Integer wdm) {
-        final TreeSet<Integer> ts = new TreeSet<Integer>();
+    public Collection<String> getSb(final String gu, final Integer wdm) {
+        final TreeSet<String> ts = new TreeSet<String>();
 
         for (final SbObj tmp : objList) {
             if ((tmp.getGuName() != null) && tmp.getGuName().equals(gu) && (tmp.getWidmung() == wdm)) {
@@ -256,7 +256,7 @@ public class SbHelper {
      * @return  DOCUMENT ME!
      */
     public Integer getSbCount(final String gu) {
-        final TreeSet<Integer> ts = new TreeSet<Integer>();
+        final TreeSet<String> ts = new TreeSet<String>();
 
         for (final SbObj tmp : objList) {
             if ((tmp.getGuName() != null) && tmp.getGuName().equals(gu)) {
@@ -276,7 +276,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public Collection<SbObj> getSbPart(final String gu, final Integer wdm, final Integer sb) {
+    public Collection<SbObj> getSbPart(final String gu, final Integer wdm, final String sb) {
         final List<SbObj> ts = new ArrayList<SbObj>();
 
         for (final SbObj tmp : objList) {
@@ -299,7 +299,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public Collection<SbObj> getSbPart(final String gu, final Integer wdm, final Integer sb, final Integer gewId) {
+    public Collection<SbObj> getSbPart(final String gu, final Integer wdm, final String sb, final Integer gewId) {
         final List<SbObj> ts = new ArrayList<SbObj>();
 
         for (final SbObj tmp : objList) {
@@ -473,7 +473,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public double getLengthOffeneAbschn(final String gu, final int wdm, final int sb) {
+    public double getLengthOffeneAbschn(final String gu, final int wdm, final String sb) {
         double length = 0;
 
         for (final SbObj tmp : objList) {
@@ -498,7 +498,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public double getLengthOffeneAbschn(final String gu, final int wdm, final int sb, final Integer gew) {
+    public double getLengthOffeneAbschn(final String gu, final int wdm, final String sb, final Integer gew) {
         double length = 0;
 
         for (final SbObj tmp : objList) {
@@ -626,7 +626,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public int getCountGewAll(final String gu, final Integer wdm, final Integer sb) {
+    public int getCountGewAll(final String gu, final Integer wdm, final String sb) {
         int count = 0;
 
         for (final SbObj tmp : objList) {
@@ -649,7 +649,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public int getCountGewAll(final String gu, final Integer wdm, final Integer sb, final Integer gewId) {
+    public int getCountGewAll(final String gu, final Integer wdm, final String sb, final Integer gewId) {
         int count = 0;
 
         for (final SbObj tmp : objList) {
@@ -710,7 +710,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public double getLengthGewAll(final String gu, final Integer wdm, final Integer sb) {
+    public double getLengthGewAll(final String gu, final Integer wdm, final String sb) {
         double length = 0;
 
         for (final SbObj tmp : objList) {
@@ -733,7 +733,7 @@ public class SbHelper {
      *
      * @return  DOCUMENT ME!
      */
-    public double getLengthGewAll(final String gu, final Integer wdm, final Integer sb, final Integer gewId) {
+    public double getLengthGewAll(final String gu, final Integer wdm, final String sb, final Integer gewId) {
         double length = 0;
 
         for (final SbObj tmp : objList) {

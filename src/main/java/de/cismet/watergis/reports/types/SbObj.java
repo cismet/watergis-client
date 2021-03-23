@@ -31,7 +31,7 @@ public class SbObj {
     private String baCd;
     private double from;
     private double till;
-    private Integer sb;
+    private String sb;
     private String sbName;
     private String guName;
     private Double baLen;
@@ -64,7 +64,7 @@ public class SbObj {
             final String baCd,
             final double from,
             final double till,
-            final Integer sb,
+            final String sb,
             final String sbName,
             final Double baLen,
             final String guName) {
@@ -314,7 +314,7 @@ public class SbObj {
      *
      * @return  the sb
      */
-    public Integer getSb() {
+    public String getSb() {
         return sb;
     }
 
@@ -323,7 +323,7 @@ public class SbObj {
      *
      * @param  sb  the sb to set
      */
-    public void setSb(final Integer sb) {
+    public void setSb(final String sb) {
         this.sb = sb;
     }
 

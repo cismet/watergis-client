@@ -48,9 +48,8 @@ import de.cismet.watergis.gui.dialog.GerinneGeschlGemeindeReportDialog;
 import de.cismet.watergis.gui.dialog.GerinneGeschlSbReportDialog;
 
 import de.cismet.watergis.reports.types.FeatureDataSource;
-import de.cismet.watergis.reports.types.GemeindenData;
 import de.cismet.watergis.reports.types.GemeindenDataLightweight;
-import de.cismet.watergis.reports.types.GmdPartObjGeschl;
+import de.cismet.watergis.reports.types.SbPartObjGeschl;
 
 /**
  * DOCUMENT ME!
@@ -62,8 +61,8 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
 
     //~ Instance fields --------------------------------------------------------
 
-    private Map<Integer, List<GmdPartObjGeschl>> gemPartMap = new HashMap<Integer, List<GmdPartObjGeschl>>();
-    private Map<Integer, GemeindenDataLightweight> gemDataMap = new HashMap<Integer, GemeindenDataLightweight>();
+    private Map<String, List<SbPartObjGeschl>> gemPartMap = new HashMap<String, List<SbPartObjGeschl>>();
+    private Map<String, GemeindenDataLightweight> gemDataMap = new HashMap<String, GemeindenDataLightweight>();
 
     //~ Methods ----------------------------------------------------------------
 
@@ -197,20 +196,20 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      * @throws  Exception  DOCUMENT ME!
      */
     private void init(final int[] routeIds) throws Exception {
-        final List<GmdPartObjGeschl> objectList = getAllRoutes(routeIds);
+        final List<SbPartObjGeschl> objectList = getAllRoutes(routeIds);
 
-        for (final GmdPartObjGeschl obj : objectList) {
-            List<GmdPartObjGeschl> sbList = gemPartMap.get(obj.getNr_li());
+        for (final SbPartObjGeschl obj : objectList) {
+            List<SbPartObjGeschl> sbList = gemPartMap.get(obj.getNr_li());
 
             if (sbList == null) {
-                sbList = new ArrayList<GmdPartObjGeschl>();
+                sbList = new ArrayList<SbPartObjGeschl>();
                 gemPartMap.put(obj.getNr_li(), sbList);
             }
 
             sbList.add(obj);
         }
 
-        for (final Integer sb : gemPartMap.keySet()) {
+        for (final String sb : gemPartMap.keySet()) {
             final Integer[] idList = getGew(sb).toArray(new Integer[0]);
             int[] routes = new int[idList.length];
 
@@ -221,7 +220,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
             if (routes.length == 0) {
                 routes = null;
             }
-            gemDataMap.put(sb, new GemeindenDataLightweight(sb, routes));
+            gemDataMap.put(sb, new GemeindenDataLightweight(1, routes));
         }
     }
 
@@ -234,16 +233,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private List<GmdPartObjGeschl> getAllRoutes(final int[] routeIds) throws Exception {
+    private List<SbPartObjGeschl> getAllRoutes(final int[] routeIds) throws Exception {
         final CidsServerSearch search = new AllGewGeschlBySb(routeIds, getAllowedWdms());
         final User user = SessionManager.getSession().getUser();
         final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(user, search);
-        final List<GmdPartObjGeschl> objList = new ArrayList<GmdPartObjGeschl>();
+        final List<SbPartObjGeschl> objList = new ArrayList<SbPartObjGeschl>();
 
         if ((attributes != null) && !attributes.isEmpty()) {
             for (final ArrayList f : attributes) {
-                objList.add(new GmdPartObjGeschl(
+                objList.add(new SbPartObjGeschl(
                         (Integer)f.get(0),
                         (String)f.get(7),
                         (String)f.get(1),
@@ -253,8 +252,8 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                         (String)f.get(8),
                         (Double)f.get(9),
                         (Double)f.get(10),
-                        (Integer)f.get(11),
-                        (Integer)f.get(12),
+                        (String)f.get(11),
+                        (String)f.get(12),
                         (Double)f.get(5),
                         (Double)f.get(6),
                         (String)f.get(13),
@@ -335,14 +334,14 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
         boolean first = true;
         final String art = createArtString();
 
-        for (final Integer gem : gemDataMap.keySet()) {
+        for (final String sb : gemDataMap.keySet()) {
             final Map<String, Object> feature = new HashMap<String, Object>();
             double count = 0;
             double length = 0;
             feature.put("anzahlGmd", gemDataMap.size());
             feature.put("group", "gemeinde");
-            feature.put("gmdNr", gem);
-            feature.put("gmdName", gemDataMap.get(gem).getGmdName());
+            feature.put("gmdNr", sb);
+            feature.put("gmdName", gemDataMap.get(sb).getGmdName());
             feature.put("art", art);
 
             if (GerinneGeschlGemeindeReportDialog.getInstance().getClasses() != null) {
@@ -355,8 +354,8 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                     final String anz = "anz" + i;
                     final String laenge = "laenge" + i;
                     final String lab = "lab" + (i + 1);
-                    final double colCount = getCountAllTf(gem, from, till);
-                    final double colLength = getLengthAllTf(gem, from, till);
+                    final double colCount = getCountAllTf(sb, from, till);
+                    final double colLength = getLengthAllTf(sb, from, till);
                     count += colCount;
                     length += colLength;
 
@@ -381,8 +380,8 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                     final String anz = "anz" + (i + 1);
                     final String laenge = "laenge" + (i + 1);
                     final String lab = "lab" + (i + 1);
-                    final double colCount = getCountAllDim(gem, from, till);
-                    final double colLength = getLengthAllDim(gem, from, till);
+                    final double colCount = getCountAllDim(sb, from, till);
+                    final double colLength = getLengthAllDim(sb, from, till);
                     count += colCount;
                     length += colLength;
 
@@ -406,8 +405,8 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                     final String anz = "anz" + (i + 1);
                     final String laenge = "laenge" + (i + 1);
                     final String lab = "lab" + (i + 1);
-                    final double colCount = getCount(gem, l.get(i));
-                    final double colLength = getLength(gem, l.get(i));
+                    final double colCount = getCount(sb, l.get(i));
+                    final double colLength = getLength(sb, l.get(i));
 
                     count += colCount;
                     length += colLength;
@@ -470,7 +469,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
         for (int di = 0; di < d.size(); ++di) {
             final List<Map<String, Object>> featuresKumDim = new ArrayList<Map<String, Object>>();
 
-            for (final Integer gem : gemDataMap.keySet()) {
+            for (final String sb : gemDataMap.keySet()) {
                 final Map<String, Object> feature = new HashMap<String, Object>();
                 final Integer dimFrom = ((di > 0) ? d.get(di - 1) : new Integer(0)); // new Integer(0) instead of 0
                                                                                      // to prevent a NPE
@@ -481,8 +480,8 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                 feature.put("dimension", ((d.get(di) == null) ? "ohne" : ("bis " + d.get(di))));
                 feature.put("anzahlGmd", gemDataMap.size());
                 feature.put("group", null);
-                feature.put("gmdNr", gem);
-                feature.put("gmdName", gemDataMap.get(gem).getGmdName());
+                feature.put("gmdNr", sb);
+                feature.put("gmdName", gemDataMap.get(sb).getGmdName());
                 feature.put("art", art);
 
                 if (!isTiefeArt && (GerinneGeschlGemeindeReportDialog.getInstance().getClasses() != null)) {
@@ -502,11 +501,11 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                                     && (GerinneGeschlGemeindeReportDialog.getInstance().getArt().size() == 1)) {
                             final GerinneGeschlGemeindeReportDialog.Art arten = GerinneGeschlGemeindeReportDialog
                                         .getInstance().getArt().get(0);
-                            colCount = getCountAllTfDim(gem, arten, from, till, dimFrom, dimTill);
-                            colLength = getLengthAllTfDim(gem, arten, from, till, dimFrom, dimTill);
+                            colCount = getCountAllTfDim(sb, arten, from, till, dimFrom, dimTill);
+                            colLength = getLengthAllTfDim(sb, arten, from, till, dimFrom, dimTill);
                         } else {
-                            colCount = getCountAllTfDim(gem, from, till, dimFrom, dimTill);
-                            colLength = getLengthAllTfDim(gem, from, till, dimFrom, dimTill);
+                            colCount = getCountAllTfDim(sb, from, till, dimFrom, dimTill);
+                            colLength = getLengthAllTfDim(sb, from, till, dimFrom, dimTill);
                         }
                         count += colCount;
                         length += colLength;
@@ -535,11 +534,11 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                         double colLength;
 
                         if (isTiefeArt) {
-                            colCount = getCountTf(gem, l.get(i), dimFrom, dimTill);
-                            colLength = getLengthTf(gem, l.get(i), dimFrom, dimTill);
+                            colCount = getCountTf(sb, l.get(i), dimFrom, dimTill);
+                            colLength = getLengthTf(sb, l.get(i), dimFrom, dimTill);
                         } else {
-                            colCount = getCountDim(gem, l.get(i), dimFrom, dimTill);
-                            colLength = getLengthDim(gem, l.get(i), dimFrom, dimTill);
+                            colCount = getCountDim(sb, l.get(i), dimFrom, dimTill);
+                            colLength = getLengthDim(sb, l.get(i), dimFrom, dimTill);
                         }
 
                         count += colCount;
@@ -594,7 +593,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
             final List<Map<String, Object>> featuresKumDim = new ArrayList<Map<String, Object>>();
             final List<Integer> d = GerinneGeschlGemeindeReportDialog.getInstance().getDimensions();
 
-            for (final Integer gem : gemDataMap.keySet()) {
+            for (final String sb : gemDataMap.keySet()) {
                 final Map<String, Object> feature = new HashMap<String, Object>();
                 final Integer dimFrom = ((di > 0) ? d.get(di - 1) : new Integer(0)); // new Integer(0) to prevent a NPE
                 final Integer dimTill = d.get(di);
@@ -603,8 +602,8 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
 
                 feature.put("anzahlGmd", gemDataMap.size());
                 feature.put("group", null);
-                feature.put("gmdNr", gem);
-                feature.put("gmdName", gemDataMap.get(gem).getGmdName());
+                feature.put("gmdNr", sb);
+                feature.put("gmdName", gemDataMap.get(sb).getGmdName());
                 feature.put("art", art);
                 feature.put("dimension", ((d.get(di) == null) ? "ohne" : ("bis " + d.get(di))));
 
@@ -622,8 +621,8 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                             final String anz = "anz" + getArtPrefix(a) + (i + 1);
                             final String laenge = "laenge" + getArtPrefix(a) + (i + 1);
                             final String lab = "lab" + (i + 1);
-                            final double colCount = getCountAllTfDim(gem, a, from, till, dimFrom, dimTill);
-                            final double colLength = getLengthAllTfDim(gem, a, from, till, dimFrom, dimTill);
+                            final double colCount = getCountAllTfDim(sb, a, from, till, dimFrom, dimTill);
+                            final double colLength = getLengthAllTfDim(sb, a, from, till, dimFrom, dimTill);
                             count += colCount;
                             length += colLength;
                             countA += colCount;
@@ -660,8 +659,8 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
                             final Integer from = ((i > 0) ? l.get(i - 1) : new Integer(0)); // new Integer(0) to
                                                                                             // prevent a NPE
                             final Integer till = l.get(i);
-                            final double colCount = getCountAllTfDim(gem, a, from, till, dimFrom, dimTill);
-                            final double colLength = getLengthAllTfDim(gem, a, from, till, dimFrom, dimTill);
+                            final double colCount = getCountAllTfDim(sb, a, from, till, dimFrom, dimTill);
+                            final double colLength = getLengthAllTfDim(sb, a, from, till, dimFrom, dimTill);
                             countT += colCount;
                             lengthT += colLength;
                         }
@@ -696,21 +695,21 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
         final boolean first = true;
         final String art = createArtString();
 
-        for (final Integer gem : gemDataMap.keySet()) {
-            sheetNames.add("Objekte " + gemDataMap.get(gem).getGmdName());
-            for (final Integer gew : getGew(gem)) {
-                for (final GmdPartObjGeschl obj : getObjects(gem, gew)) {
+        for (final String sb : gemDataMap.keySet()) {
+            sheetNames.add("Objekte " + gemDataMap.get(sb).getGmdName());
+            for (final Integer gew : getGew(sb)) {
+                for (final SbPartObjGeschl obj : getObjects(sb, gew)) {
                     final Map<String, Object> feature = new HashMap<String, Object>();
-                    feature.put("group", String.valueOf(gem));
-                    feature.put("gmdNr", gem);
-                    feature.put("gmdName", gemDataMap.get(gem).getGmdName());
-                    feature.put("gewName", getGewName(gem, gew));
-                    feature.put("code", getBaCd(gem, gew));
+                    feature.put("group", String.valueOf(sb));
+                    feature.put("gmdNr", sb);
+                    feature.put("gmdName", gemDataMap.get(sb).getGmdName());
+                    feature.put("gewName", getGewName(sb, gew));
+                    feature.put("code", getBaCd(sb, gew));
                     feature.put("arten", art);
-                    feature.put("laenge", getLengthGew(gem, gew));
+                    feature.put("laenge", getLengthGew(sb, gew));
                     feature.put("von", convertStation(obj.getFrom()));
                     feature.put("bis", convertStation(obj.getTill()));
-                    feature.put("anzahlObj", getObjects(gem, gew).size());
+                    feature.put("anzahlObj", getObjects(sb, gew).size());
                     feature.put("tf", getTf(obj.getTf()));
                     feature.put("dim", getDim(obj.getDim()));
                     feature.put("ls", obj.getLs());
@@ -752,11 +751,11 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private Collection<Integer> getGew(final int sbNr) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(sbNr);
+    private Collection<Integer> getGew(final String sbNr) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbNr);
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             ts.add(tmp.getId());
         }
 
@@ -766,16 +765,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private Collection<GmdPartObjGeschl> getObjects(final int gemNr, final int gew) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
-        final TreeSet<GmdPartObjGeschl> ts = new TreeSet<GmdPartObjGeschl>();
+    private Collection<SbPartObjGeschl> getObjects(final String sbKu, final int gew) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
+        final TreeSet<SbPartObjGeschl> ts = new TreeSet<SbPartObjGeschl>();
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getId() == gew) {
                 ts.add(tmp);
             }
@@ -787,15 +786,15 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private Collection<String> getGu(final int gemNr) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private Collection<String> getGu(final String sbKu) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         final TreeSet<String> ts = new TreeSet<String>();
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             ts.add(tmp.getOwner());
         }
 
@@ -805,16 +804,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private Collection<Integer> getWdm(final int gemNr, final String gu) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private Collection<Integer> getWdm(final String sbKu, final String gu) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu)) {
                 ts.add(tmp.getWidmung());
             }
@@ -848,17 +847,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllDim(final int gemNr, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getCountAllDim(final String sbKu, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (!tmp.getArt().equals("p") && valueBetween(tmp.getDim(), from, till)) {
                 ++count;
             }
@@ -870,17 +869,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllDim(final int gemNr, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthAllDim(final String sbKu, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (!tmp.getArt().equals("p") && valueBetween(tmp.getDim(), from, till)) {
                 length += tmp.getLength();
             }
@@ -892,21 +891,21 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountDim(final int gemNr,
+    private double getCountDim(final String sbKu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getArt().equals(art.name()) && valueBetween(tmp.getDim(), from, till)) {
                 ++count;
             }
@@ -918,21 +917,21 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthDim(final int gemNr,
+    private double getLengthDim(final String sbKu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getArt().equals(art.name()) && valueBetween(tmp.getDim(), from, till)) {
                 length += tmp.getLength();
             }
@@ -944,21 +943,21 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountTf(final int gemNr,
+    private double getCountTf(final String sbKu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), from, till)) {
                 ++count;
             }
@@ -970,21 +969,21 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthTf(final int gemNr,
+    private double getLengthTf(final String sbKu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), from, till)) {
                 length += tmp.getLength();
             }
@@ -996,16 +995,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCount(final int gemNr, final GerinneGeschlGemeindeReportDialog.Art art) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getCount(final String sbKu, final GerinneGeschlGemeindeReportDialog.Art art) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getArt().equals(art.name())) {
                 ++count;
             }
@@ -1017,16 +1016,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLength(final int gemNr, final GerinneGeschlGemeindeReportDialog.Art art) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLength(final String sbKu, final GerinneGeschlGemeindeReportDialog.Art art) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getArt().equals(art.name())) {
                 length += tmp.getLength();
             }
@@ -1038,17 +1037,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTf(final int gemNr, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getCountAllTf(final String sbKu, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (!tmp.getArt().equals("p") && valueBetween(tmp.getTf(), from, till)) {
                 ++count;
             }
@@ -1060,17 +1059,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTf(final int gemNr, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthAllTf(final String sbKu, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (!tmp.getArt().equals("p") && valueBetween(tmp.getTf(), from, till)) {
                 length += tmp.getLength();
             }
@@ -1082,7 +1081,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
      * @param   tfTill   DOCUMENT ME!
      * @param   dimFrom  DOCUMENT ME!
@@ -1090,15 +1089,15 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTfDim(final int gemNr,
+    private double getCountAllTfDim(final String sbKu,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (!tmp.getArt().equals("p") && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 ++count;
@@ -1111,7 +1110,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
      * @param   tfTill   DOCUMENT ME!
      * @param   dimFrom  DOCUMENT ME!
@@ -1119,15 +1118,15 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTfDim(final int gemNr,
+    private double getLengthAllTfDim(final String sbKu,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (!tmp.getArt().equals("p") && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 length += tmp.getLength();
@@ -1140,7 +1139,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   art      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
      * @param   tfTill   DOCUMENT ME!
@@ -1149,16 +1148,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTfDim(final int gemNr,
+    private double getCountAllTfDim(final String sbKu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 ++count;
@@ -1171,7 +1170,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   art      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
      * @param   tfTill   DOCUMENT ME!
@@ -1180,16 +1179,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTfDim(final int gemNr,
+    private double getLengthAllTfDim(final String sbKu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 length += tmp.getLength();
@@ -1202,18 +1201,18 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllDim(final int gemNr, final int gew, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getCountAllDim(final String sbKu, final int gew, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && !tmp.getArt().equals("p") && valueBetween(tmp.getDim(), from, till)) {
                 ++count;
             }
@@ -1225,18 +1224,18 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllDim(final int gemNr, final int gew, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthAllDim(final String sbKu, final int gew, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && !tmp.getArt().equals("p") && valueBetween(tmp.getDim(), from, till)) {
                 length += tmp.getLength();
             }
@@ -1248,18 +1247,18 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllDim(final int gemNr, final String gu, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getCountAllDim(final String sbKu, final String gu, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && !tmp.getArt().equals("p") && valueBetween(tmp.getDim(), from, till)) {
                 ++count;
             }
@@ -1271,18 +1270,18 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllDim(final int gemNr, final String gu, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthAllDim(final String sbKu, final String gu, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && !tmp.getArt().equals("p") && valueBetween(tmp.getDim(), from, till)) {
                 length += tmp.getLength();
             }
@@ -1294,23 +1293,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllDim(final int gemNr,
+    private double getCountAllDim(final String sbKu,
             final String gu,
             final Integer wdm,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && !tmp.getArt().equals("p")
                         && valueBetween(tmp.getDim(), from, till)) {
                 ++count;
@@ -1323,23 +1322,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllDim(final int gemNr,
+    private double getLengthAllDim(final String sbKu,
             final String gu,
             final Integer wdm,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && !tmp.getArt().equals("p")
                         && valueBetween(tmp.getDim(), from, till)) {
                 length += tmp.getLength();
@@ -1352,23 +1351,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountDim(final int gemNr,
+    private double getCountDim(final String sbKu,
             final int gew,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && tmp.getArt().equals(art.name()) && valueBetween(tmp.getDim(), from, till)) {
                 ++count;
             }
@@ -1380,23 +1379,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthDim(final int gemNr,
+    private double getLengthDim(final String sbKu,
             final int gew,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && tmp.getArt().equals(art.name()) && valueBetween(tmp.getDim(), from, till)) {
                 length += tmp.getLength();
             }
@@ -1408,23 +1407,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountTf(final int gemNr,
+    private double getCountTf(final String sbKu,
             final int gew,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), from, till)) {
                 ++count;
             }
@@ -1436,23 +1435,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthTf(final int gemNr,
+    private double getLengthTf(final String sbKu,
             final int gew,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), from, till)) {
                 length += tmp.getLength();
             }
@@ -1464,23 +1463,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountDim(final int gemNr,
+    private double getCountDim(final String sbKu,
             final String gu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getDim(), from, till)) {
                 ++count;
@@ -1493,23 +1492,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthDim(final int gemNr,
+    private double getLengthDim(final String sbKu,
             final String gu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getDim(), from, till)) {
                 length += tmp.getLength();
@@ -1522,23 +1521,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountTf(final int gemNr,
+    private double getCountTf(final String sbKu,
             final String gu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), from, till)) {
                 ++count;
             }
@@ -1550,23 +1549,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthTf(final int gemNr,
+    private double getLengthTf(final String sbKu,
             final String gu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), from, till)) {
                 length += tmp.getLength();
             }
@@ -1578,25 +1577,25 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountDim(final int gemNr,
+    private double getCountDim(final String sbKu,
             final String gu,
             final Integer wdm,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getDim(), from, till)) {
                 ++count;
@@ -1609,25 +1608,25 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthDim(final int gemNr,
+    private double getLengthDim(final String sbKu,
             final String gu,
             final Integer wdm,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getDim(), from, till)) {
                 length += tmp.getLength();
@@ -1640,25 +1639,25 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountTf(final int gemNr,
+    private double getCountTf(final String sbKu,
             final String gu,
             final Integer wdm,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getTf(), from, till)) {
                 ++count;
@@ -1671,25 +1670,25 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthTf(final int gemNr,
+    private double getLengthTf(final String sbKu,
             final String gu,
             final Integer wdm,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getTf(), from, till)) {
                 length += tmp.getLength();
@@ -1702,17 +1701,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCount(final int gemNr, final int gew, final GerinneGeschlGemeindeReportDialog.Art art) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getCount(final String sbKu, final int gew, final GerinneGeschlGemeindeReportDialog.Art art) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && tmp.getArt().equals(art.name())) {
                 ++count;
             }
@@ -1724,17 +1723,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLength(final int gemNr, final int gew, final GerinneGeschlGemeindeReportDialog.Art art) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLength(final String sbKu, final int gew, final GerinneGeschlGemeindeReportDialog.Art art) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && tmp.getArt().equals(art.name())) {
                 length += tmp.getLength();
             }
@@ -1746,17 +1745,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCount(final int gemNr, final String gu, final GerinneGeschlGemeindeReportDialog.Art art) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getCount(final String sbKu, final String gu, final GerinneGeschlGemeindeReportDialog.Art art) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name())) {
                 ++count;
             }
@@ -1768,17 +1767,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLength(final int gemNr, final String gu, final GerinneGeschlGemeindeReportDialog.Art art) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLength(final String sbKu, final String gu, final GerinneGeschlGemeindeReportDialog.Art art) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name())) {
                 length += tmp.getLength();
             }
@@ -1790,21 +1789,21 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCount(final int gemNr,
+    private double getCount(final String sbKu,
             final String gu,
             final Integer wdm,
             final GerinneGeschlGemeindeReportDialog.Art art) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getWidmung().equals(wdm) && tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name())) {
                 ++count;
             }
@@ -1816,21 +1815,21 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   art    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   art   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLength(final int gemNr,
+    private double getLength(final String sbKu,
             final String gu,
             final Integer wdm,
             final GerinneGeschlGemeindeReportDialog.Art art) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getWidmung().equals(wdm) && tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name())) {
                 length += tmp.getLength();
             }
@@ -1842,18 +1841,18 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTf(final int gemNr, final int gew, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getCountAllTf(final String sbKu, final int gew, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && !tmp.getArt().equals("p") && valueBetween(tmp.getTf(), from, till)) {
                 ++count;
             }
@@ -1865,18 +1864,18 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTf(final int gemNr, final int gew, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthAllTf(final String sbKu, final int gew, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && !tmp.getArt().equals("p") && valueBetween(tmp.getTf(), from, till)) {
                 length += tmp.getLength();
             }
@@ -1888,18 +1887,18 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTf(final int gemNr, final String gu, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getCountAllTf(final String sbKu, final String gu, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && !tmp.getArt().equals("p") && valueBetween(tmp.getTf(), from, till)) {
                 ++count;
             }
@@ -1911,18 +1910,18 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTf(final int gemNr, final String gu, final Integer from, final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthAllTf(final String sbKu, final String gu, final Integer from, final Integer till) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && !tmp.getArt().equals("p") && valueBetween(tmp.getTf(), from, till)) {
                 length += tmp.getLength();
             }
@@ -1934,23 +1933,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTf(final int gemNr,
+    private double getCountAllTf(final String sbKu,
             final String gu,
             final Integer wdm,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && !tmp.getArt().equals("p")
                         && valueBetween(tmp.getTf(), from, till)) {
                 ++count;
@@ -1963,23 +1962,23 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     gew DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
-     * @param   from   DOCUMENT ME!
-     * @param   till   DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    gew DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
+     * @param   from  DOCUMENT ME!
+     * @param   till  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTf(final int gemNr,
+    private double getLengthAllTf(final String sbKu,
             final String gu,
             final Integer wdm,
             final Integer from,
             final Integer till) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && !tmp.getArt().equals("p")
                         && valueBetween(tmp.getTf(), from, till)) {
                 length += tmp.getLength();
@@ -1992,7 +1991,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gew      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
      * @param   tfTill   DOCUMENT ME!
@@ -2001,16 +2000,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTfDim(final int gemNr,
+    private double getCountAllTfDim(final String sbKu,
             final int gew,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && !tmp.getArt().equals("p") && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 ++count;
@@ -2023,7 +2022,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gew      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
      * @param   tfTill   DOCUMENT ME!
@@ -2032,16 +2031,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTfDim(final int gemNr,
+    private double getLengthAllTfDim(final String sbKu,
             final int gew,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && !tmp.getArt().equals("p") && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 length += tmp.getLength();
@@ -2054,7 +2053,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gu       gew DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
      * @param   tfTill   DOCUMENT ME!
@@ -2063,16 +2062,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTfDim(final int gemNr,
+    private double getCountAllTfDim(final String sbKu,
             final String gu,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && !tmp.getArt().equals("p") && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 ++count;
@@ -2085,7 +2084,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gu       gew DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
      * @param   tfTill   DOCUMENT ME!
@@ -2094,16 +2093,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTfDim(final int gemNr,
+    private double getLengthAllTfDim(final String sbKu,
             final String gu,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && !tmp.getArt().equals("p") && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 length += tmp.getLength();
@@ -2116,7 +2115,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gu       gew DOCUMENT ME!
      * @param   wdm      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
@@ -2126,17 +2125,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTfDim(final int gemNr,
+    private double getCountAllTfDim(final String sbKu,
             final String gu,
             final Integer wdm,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && !tmp.getArt().equals("p")
                         && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
@@ -2150,7 +2149,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gu       gew DOCUMENT ME!
      * @param   wdm      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
@@ -2160,17 +2159,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTfDim(final int gemNr,
+    private double getLengthAllTfDim(final String sbKu,
             final String gu,
             final Integer wdm,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && !tmp.getArt().equals("p")
                         && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
@@ -2184,7 +2183,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gew      DOCUMENT ME!
      * @param   art      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
@@ -2194,17 +2193,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTfDim(final int gemNr,
+    private double getCountAllTfDim(final String sbKu,
             final int gew,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 ++count;
@@ -2217,7 +2216,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gew      DOCUMENT ME!
      * @param   art      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
@@ -2227,17 +2226,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTfDim(final int gemNr,
+    private double getLengthAllTfDim(final String sbKu,
             final int gew,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if ((tmp.getId() == gew) && tmp.getArt().equals(art.name()) && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
                 length += tmp.getLength();
@@ -2250,7 +2249,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gu       gew DOCUMENT ME!
      * @param   art      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
@@ -2260,17 +2259,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTfDim(final int gemNr,
+    private double getCountAllTfDim(final String sbKu,
             final String gu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
@@ -2284,7 +2283,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gu       gew DOCUMENT ME!
      * @param   art      DOCUMENT ME!
      * @param   tfFrom   DOCUMENT ME!
@@ -2294,17 +2293,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTfDim(final int gemNr,
+    private double getLengthAllTfDim(final String sbKu,
             final String gu,
             final GerinneGeschlGemeindeReportDialog.Art art,
             final Integer tfFrom,
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
@@ -2318,7 +2317,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gu       gew DOCUMENT ME!
      * @param   wdm      DOCUMENT ME!
      * @param   art      DOCUMENT ME!
@@ -2329,7 +2328,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getCountAllTfDim(final int gemNr,
+    private double getCountAllTfDim(final String sbKu,
             final String gu,
             final Integer wdm,
             final GerinneGeschlGemeindeReportDialog.Art art,
@@ -2337,10 +2336,10 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
@@ -2354,7 +2353,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr    DOCUMENT ME!
+     * @param   sbKu     DOCUMENT ME!
      * @param   gu       gew DOCUMENT ME!
      * @param   wdm      DOCUMENT ME!
      * @param   art      DOCUMENT ME!
@@ -2365,7 +2364,7 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthAllTfDim(final int gemNr,
+    private double getLengthAllTfDim(final String sbKu,
             final String gu,
             final Integer wdm,
             final GerinneGeschlGemeindeReportDialog.Art art,
@@ -2373,10 +2372,10 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
             final Integer tfTill,
             final Integer dimFrom,
             final Integer dimTill) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && tmp.getWidmung().equals(wdm) && tmp.getArt().equals(art.name())
                         && valueBetween(tmp.getTf(), tfFrom, tfTill)
                         && valueBetween(tmp.getDim(), dimFrom, dimTill)) {
@@ -2395,10 +2394,10 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     private int getCountGu() {
         final TreeSet<String> ts = new TreeSet<String>();
 
-        for (final Integer gemNr : gemPartMap.keySet()) {
-            final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        for (final String sbKu : gemPartMap.keySet()) {
+            final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
 
-            for (final GmdPartObjGeschl tmp : gemList) {
+            for (final SbPartObjGeschl tmp : gemList) {
                 ts.add(tmp.getOwner());
             }
         }
@@ -2409,15 +2408,15 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private String getBaCd(final int gemNr, final int gew) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private String getBaCd(final String sbKu, final int gew) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getId() == gew) {
                 return tmp.getBaCd();
             }
@@ -2428,15 +2427,15 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gew    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gew   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private String getGewName(final int gemNr, final int gew) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private String getGewName(final String sbKu, final int gew) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getId() == gew) {
                 return tmp.getGewName();
             }
@@ -2448,15 +2447,15 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGewAll(final int gemNr) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private int getCountGewAll(final String sbKu) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         final TreeSet<String> ts = new TreeSet<String>();
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             ts.add(tmp.getBaCd());
         }
 
@@ -2466,15 +2465,15 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGewAll(final int gemNr) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthGewAll(final String sbKu) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             length += tmp.getLength();
         }
 
@@ -2484,16 +2483,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
+     * @param   sbKu   DOCUMENT ME!
      * @param   gewId  DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final int gemNr, final int gewId) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthGew(final String sbKu, final int gewId) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getId() == gewId) {
                 length += tmp.getLength();
             }
@@ -2505,16 +2504,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final int gemNr, final String gu) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthGew(final String sbKu, final String gu) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu)) {
                 length += tmp.getLength();
             }
@@ -2527,16 +2526,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      * DOCUMENT ME!
      *
      * @param   gu   DOCUMENT ME!
-     * @param   wdm  gemNr DOCUMENT ME!
+     * @param   wdm  sbKu DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
     private double getLengthGew(final String gu, final Integer wdm) {
         double length = 0;
 
-        for (final Integer gemNr : gemPartMap.keySet()) {
-            final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
-            for (final GmdPartObjGeschl tmp : gemList) {
+        for (final String sbKu : gemPartMap.keySet()) {
+            final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
+            for (final SbPartObjGeschl tmp : gemList) {
                 if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
                     length += tmp.getLength();
                 }
@@ -2549,16 +2548,16 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGew(final int gemNr, final String gu) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private int getCountGew(final String sbKu, final String gu) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         int count = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu)) {
                 ++count;
             }
@@ -2571,17 +2570,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
      * DOCUMENT ME!
      *
      * @param   gu   DOCUMENT ME!
-     * @param   wdm  gemNr DOCUMENT ME!
+     * @param   wdm  sbKu DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
     private int getCountGew(final String gu, final Integer wdm) {
         int count = 0;
 
-        for (final Integer gemNr : gemPartMap.keySet()) {
-            final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+        for (final String sbKu : gemPartMap.keySet()) {
+            final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
 
-            for (final GmdPartObjGeschl tmp : gemList) {
+            for (final SbPartObjGeschl tmp : gemList) {
                 if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
                     ++count;
                 }
@@ -2594,17 +2593,17 @@ public class GerinneGSbReport extends GerinneGGemeindeReport {
     /**
      * DOCUMENT ME!
      *
-     * @param   gemNr  DOCUMENT ME!
-     * @param   gu     DOCUMENT ME!
-     * @param   wdm    DOCUMENT ME!
+     * @param   sbKu  DOCUMENT ME!
+     * @param   gu    DOCUMENT ME!
+     * @param   wdm   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final int gemNr, final String gu, final int wdm) {
-        final List<GmdPartObjGeschl> gemList = gemPartMap.get(gemNr);
+    private double getLengthGew(final String sbKu, final String gu, final int wdm) {
+        final List<SbPartObjGeschl> gemList = gemPartMap.get(sbKu);
         double length = 0;
 
-        for (final GmdPartObjGeschl tmp : gemList) {
+        for (final SbPartObjGeschl tmp : gemList) {
             if (tmp.getOwner().equals(gu) && (tmp.getWidmung() == wdm)) {
                 length += tmp.getLength();
             }

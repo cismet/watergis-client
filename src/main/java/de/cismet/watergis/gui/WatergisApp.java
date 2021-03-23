@@ -484,6 +484,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator11;
     private javax.swing.JToolBar.Separator jSeparator14;
     private javax.swing.JToolBar.Separator jSeparator15;
@@ -2516,6 +2517,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniDissolve = new javax.swing.JMenuItem();
         mniPointInLine = new javax.swing.JMenuItem();
         mniPointInPolygon = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
         mniStation = new javax.swing.JMenuItem();
         menChecks = new javax.swing.JMenu();
         menBasicChecks = new javax.swing.JMenu();
@@ -3665,6 +3667,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 "WatergisApp.mniPointInPolygon.toolTipText",
                 new Object[] {})); // NOI18N
         menGeoProcessing.add(mniPointInPolygon);
+        menGeoProcessing.add(jSeparator1);
 
         mniStation.setAction(stationAction1);
         mniStation.setToolTipText(org.openide.util.NbBundle.getMessage(

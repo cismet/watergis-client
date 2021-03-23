@@ -91,7 +91,7 @@
 	<field name="dimLab" class="java.lang.String"/>
 	<field name="art" class="java.lang.String"/>
 	<field name="wdm" class="java.lang.Integer"/>
-	<field name="sbNr" class="java.lang.Integer"/>
+	<field name="sbNr" class="java.lang.String"/>
 	<field name="sbName" class="java.lang.String"/>
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>

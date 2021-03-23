@@ -2112,7 +2112,11 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
                         final Geometry g = GeometryUtils.unionFeatureGeometries(new ArrayList<FeatureServiceFeature>(
                                     set));
-                        totalGeom = totalGeom.union(g);
+                        if (totalGeom == null) {
+                            totalGeom = g;
+                        } else {
+                            totalGeom = totalGeom.union(g);
+                        }
                     }
                     if (ckbGeschlFgSelected.isSelected()) {
                         final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
@@ -2146,7 +2150,11 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
                         final Geometry g = GeometryUtils.unionFeatureGeometries(new ArrayList<FeatureServiceFeature>(
                                     set));
-                        totalGeom = totalGeom.union(g);
+                        if (totalGeom == null) {
+                            totalGeom = g;
+                        } else {
+                            totalGeom = totalGeom.union(g);
+                        }
                     }
                     if (ckbKleinseeSelected.isSelected()) {
                         final TreeSet<FeatureServiceFeature> set = new TreeSet<FeatureServiceFeature>();
@@ -2157,7 +2165,11 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
                         final Geometry g = GeometryUtils.unionFeatureGeometries(new ArrayList<FeatureServiceFeature>(
                                     set));
-                        totalGeom = totalGeom.union(g);
+                        if (totalGeom == null) {
+                            totalGeom = g;
+                        } else {
+                            totalGeom = totalGeom.union(g);
+                        }
                     }
 
                     if (ckbOstseeSelected.isSelected()) {
@@ -2169,7 +2181,11 @@ public class FgGerogaRsDialog extends javax.swing.JDialog {
 
                         final Geometry g = GeometryUtils.unionFeatureGeometries(new ArrayList<FeatureServiceFeature>(
                                     set));
-                        totalGeom = totalGeom.union(g);
+                        if (totalGeom == null) {
+                            totalGeom = g;
+                        } else {
+                            totalGeom = totalGeom.union(g);
+                        }
                     }
 
                     if (canceled) {

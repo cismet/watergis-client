@@ -138,7 +138,7 @@
 	<field name="group" class="java.lang.String"/>
 	<field name="gu" class="java.lang.String"/>
 	<field name="wdm" class="java.lang.Integer"/>
-	<field name="sb" class="java.lang.Integer"/>
+	<field name="sb" class="java.lang.String"/>
 	<field name="anzGew" class="java.lang.Integer"/>
 	<field name="sbName" class="java.lang.String"/>
 	<field name="mwMax" class="java.lang.Double"/>
