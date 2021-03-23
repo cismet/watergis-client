@@ -118,7 +118,7 @@
 	<field name="summe" class="java.lang.Boolean"/>
 	<field name="zwischenSumme" class="java.lang.Boolean"/>
 	<field name="sbName" class="java.lang.String"/>
-	<field name="sb" class="java.lang.Integer"/>
+	<field name="sb" class="java.lang.String"/>
 	<field name="anzahlGew" class="java.lang.Integer"/>
 	<field name="guName" class="java.lang.String"/>
 	<field name="gu" class="java.lang.String"/>

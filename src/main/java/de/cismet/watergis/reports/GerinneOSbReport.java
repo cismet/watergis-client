@@ -50,8 +50,8 @@ import de.cismet.cids.server.search.CidsServerSearch;
 import de.cismet.watergis.gui.dialog.GerinneOSbReportDialog;
 
 import de.cismet.watergis.reports.types.FeatureDataSource;
-import de.cismet.watergis.reports.types.GmdPartObjOffen;
 import de.cismet.watergis.reports.types.SbObj;
+import de.cismet.watergis.reports.types.SbPartObjOffen;
 
 /**
  * DOCUMENT ME!
@@ -80,7 +80,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
 
     //~ Instance fields --------------------------------------------------------
 
-    private List<GmdPartObjOffen> objList;
+    private List<SbPartObjOffen> objList;
     private final List<String> sheetNames = new ArrayList<String>();
     private SbHelper helper;
 
@@ -186,16 +186,16 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private List<GmdPartObjOffen> getAllRoutes(final int[] routeIds) throws Exception {
+    private List<SbPartObjOffen> getAllRoutes(final int[] routeIds) throws Exception {
         final CidsServerSearch search = new AllGewOffenBySb(routeIds, getAllowedWdms());
         final User user = SessionManager.getSession().getUser();
         final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(user, search);
-        final List<GmdPartObjOffen> objList = new ArrayList<GmdPartObjOffen>();
+        final List<SbPartObjOffen> objList = new ArrayList<SbPartObjOffen>();
 
         if ((attributes != null) && !attributes.isEmpty()) {
             for (final ArrayList f : attributes) {
-                objList.add(new GmdPartObjOffen(
+                objList.add(new SbPartObjOffen(
                         (Integer)f.get(0),
                         (String)f.get(1),
                         (String)f.get(2),
@@ -204,8 +204,8 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
                         (String)f.get(5),
                         (Double)f.get(6),
                         (Double)f.get(7),
-                        (Integer)f.get(8),
-                        (Integer)f.get(9),
+                        (String)f.get(8),
+                        (String)f.get(9),
                         (String)f.get(10),
                         (Double)f.get(11),
                         (Double)f.get(12),
@@ -307,7 +307,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
             for (final Integer wdm : helper.getWidmung(gu)) {
                 final List<Map<String, Object>> featuresWdm = new ArrayList<Map<String, Object>>();
 
-                for (final Integer sb : helper.getSb(gu, wdm)) {
+                for (final String sb : helper.getSb(gu, wdm)) {
                     final Map<String, Object> feature = new HashMap<String, Object>();
                     final Collection<SbObj> sbParts = helper.getSbPart(gu, wdm, sb);
                     final double offenLength = helper.getLengthOffeneAbschn(gu, wdm, sb);
@@ -424,7 +424,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
 
         for (final String gu : helper.getGu()) {
             for (final Integer wdm : helper.getWidmung(gu)) {
-                for (final Integer sb : helper.getSb(gu, wdm)) {
+                for (final String sb : helper.getSb(gu, wdm)) {
                     final List<Map<String, Object>> featuresSb = new ArrayList<Map<String, Object>>();
                     sheetNames.add(helper.getGuId(gu) + "-" + wdm + "-" + sb);
 
@@ -676,6 +676,8 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
                 if (length != 0.0) {
                     kumFeature.put(key, mit / length);
                 }
+            } else if (key.equals("sb") && (value instanceof String)) {
+                kumFeature.put(key, value);
             } else if ((Arrays.binarySearch(exceptionalNumberFields, key) < 0) && (value instanceof Integer)) {
                 int sum = 0;
 
@@ -762,7 +764,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private int getCountGewAll() {
         final TreeSet<String> ts = new TreeSet<String>();
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             ts.add(tmp.getBaCd());
         }
 
@@ -788,7 +790,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthGew(final int gewId) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if ((gewId == -1) || (tmp.getId() == gewId)) {
                 length += tmp.getLength();
             }
@@ -807,7 +809,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthGew(final Collection<SbObj> sbParts) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             for (final SbObj sb : sbParts) {
                 if (tmp.getId() == sb.getId()) {
                     length += tmp.getLengthInGewPart(sb.getId(), sb.getFrom(), sb.getTill());
@@ -830,7 +832,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthGew(final int gewId, final double from, final double till) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if ((gewId == -1) || (tmp.getId() == gewId)) {
                 length += tmp.getLengthInGewPart(gewId, from, till);
             }
@@ -849,7 +851,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthMw(final int gewId) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((gewId == -1) || (tmp.getId() == gewId)) && (tmp.getMw() != null) && (tmp.getMw() != 0)) {
                 length += tmp.getLength();
             }
@@ -868,7 +870,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthMw(final Collection<SbObj> sbParts) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             for (final SbObj sb : sbParts) {
                 if ((tmp.getId() == sb.getId()) && (tmp.getMw() != null) && (tmp.getMw() != 0)) {
                     length += tmp.getLengthInGewPart(sb.getId(), sb.getFrom(), sb.getTill());
@@ -889,7 +891,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthMw(final String gu) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu)) && (tmp.getMw() != null)
                         && (tmp.getMw() != 0)) {
                 length += tmp.getLength();
@@ -910,7 +912,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthMw(final String gu, final int wdm) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))
                         && ((tmp.getWdm() != null) && tmp.getWdm().equals(wdm))
                         && (tmp.getMw() != null)
@@ -934,7 +936,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthMw(final int gewId, final double from, final double till) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((gewId == -1) || (tmp.getId() == gewId)) && (tmp.getMw() != null) && (tmp.getMw() != 0)) {
                 length += tmp.getLengthInGewPart(gewId, from, till);
             }
@@ -954,7 +956,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthProf(final String prof, final int gewId) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((gewId == -1) || (tmp.getId() == gewId)) && (tmp.getProfil() != null)
                         && tmp.getProfil().equals(prof)) {
                 length += tmp.getLength();
@@ -975,7 +977,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthProf(final String prof, final Collection<SbObj> sbParts) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             for (final SbObj sb : sbParts) {
                 if ((tmp.getId() == sb.getId()) && (tmp.getProfil() != null) && tmp.getProfil().equals(prof)) {
                     length += tmp.getLengthInGewPart(sb.getId(), sb.getFrom(), sb.getTill());
@@ -997,7 +999,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthProf(final String prof, final String gu) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu)) && (tmp.getProfil() != null)
                         && tmp.getProfil().equals(prof)) {
                 length += tmp.getLength();
@@ -1019,7 +1021,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthProf(final String prof, final String gu, final int wdm) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))
                         && ((tmp.getWdm() != null) && tmp.getWdm().equals(wdm))
                         && (tmp.getProfil() != null) && tmp.getProfil().equals(prof)) {
@@ -1043,7 +1045,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthProf(final String prof, final int gewId, final double from, final double till) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((gewId == -1) || (tmp.getId() == gewId)) && (tmp.getProfil() != null)
                         && tmp.getProfil().equals(prof)) {
                 length += tmp.getLengthInGewPart(gewId, from, till);
@@ -1066,7 +1068,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         double currentVal = 0;
         boolean firstValue = true;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             for (final SbObj sb : sbParts) {
                 if (tmp.isInGewPart(sb.getId(), sb.getFrom(), sb.getTill())) {
                     final double value = tmp.get(field);
@@ -1099,7 +1101,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         double currentVal = 0;
         boolean firstValue = true;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))) {
                 final double value = tmp.get(field);
 
@@ -1131,7 +1133,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         double currentVal = 0;
         boolean firstValue = true;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))
                         && ((tmp.getWdm() != null) && tmp.getWdm().equals(wdm))) {
                 final double value = tmp.get(field);
@@ -1169,7 +1171,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         double currentVal = 0;
         boolean firstValue = true;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if ((tmp.getId() == gewId) && tmp.isInGewPart(gewId, from, till)) {
                 final double value = tmp.get(field);
 
@@ -1199,7 +1201,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         double currentVal = 0;
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((gewId == -1) || (tmp.getId() == gewId))) {
                 final double value = tmp.get(field);
 
@@ -1231,7 +1233,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         double currentVal = 0;
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             for (final SbObj sb : sbParts) {
                 if (tmp.isInGewPart(sb.getId(), sb.getFrom(), sb.getTill())) {
                     final double value = tmp.get(field);
@@ -1265,7 +1267,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         double currentVal = 0;
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))) {
                 final double value = tmp.get(field);
 
@@ -1298,7 +1300,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         double currentVal = 0;
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))
                         && ((tmp.getWdm() != null) && tmp.getWdm().equals(wdm))) {
                 final double value = tmp.get(field);
@@ -1333,7 +1335,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
         double currentVal = 0;
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if ((tmp.getId() == gewId) && tmp.isInGewPart(gewId, from, till)) {
                 final double value = tmp.get(field);
 
@@ -1364,7 +1366,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getSum(final String field, final int gewId) {
         double currentVal = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((gewId == -1) || (tmp.getId() == gewId))) {
                 final double value = tmp.get(field);
                 currentVal += value;
@@ -1385,7 +1387,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getSum(final String field, final Collection<SbObj> sbParts) {
         double currentVal = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             for (final SbObj sb : sbParts) {
                 if (tmp.isInGewPart(sb.getId(), sb.getFrom(), sb.getTill())) {
                     // Die Laenge wird anteilsmaessig beruecksichtigt
@@ -1412,7 +1414,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getSum(final String field, final int gewId, final double from, final double till) {
         double currentVal = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if ((tmp.getId() == gewId) && tmp.isInGewPart(gewId, from, till)) {
                 final double value = tmp.get(field);
                 currentVal += (value / tmp.getLength()) * tmp.getLengthInGewPart(gewId, from, till);
@@ -1433,7 +1435,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getSum(final String field, final String gu) {
         double currentVal = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if ((tmp.getOwner() != null) && tmp.getOwner().equals(gu)) {
                 final double value = tmp.get(field);
                 currentVal += value;
@@ -1455,7 +1457,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getSum(final String field, final String gu, final int wdm) {
         double currentVal = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if ((tmp.getOwner() != null) && tmp.getOwner().equals(gu) && (tmp.getWdm() != null)
                         && tmp.getWdm().equals(wdm)) {
                 final double value = tmp.get(field);
@@ -1478,7 +1480,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     public int getCountProf(final String prof, final int gewId) {
         int count = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((gewId == -1) || (tmp.getId() == gewId)) && (tmp.getProfil() != null)
                         && tmp.getProfil().equals(prof)) {
                 ++count;
@@ -1499,7 +1501,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     public int getCountProf(final String prof, final Collection<SbObj> sbParts) {
         int count = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             for (final SbObj sb : sbParts) {
                 if ((tmp.isInGewPart(sb.getId(), sb.getFrom(), sb.getTill())) && (tmp.getProfil() != null)
                             && tmp.getProfil().equals(prof)) {
@@ -1522,7 +1524,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     public int getCountProf(final String prof, final String gu) {
         int count = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu)) && (tmp.getProfil() != null)
                         && tmp.getProfil().equals(prof)) {
                 ++count;
@@ -1544,7 +1546,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     public int getCountProf(final String prof, final String gu, final int wdm) {
         int count = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (((tmp.getOwner() != null) && tmp.getOwner().equals(gu))
                         && ((tmp.getWdm() != null) && tmp.getWdm().equals(wdm))
                         && (tmp.getProfil() != null) && tmp.getProfil().equals(prof)) {
@@ -1568,7 +1570,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     public int getCountProf(final String prof, final int gewId, final double from, final double till) {
         int count = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if ((tmp.getId() == gewId) && (tmp.getProfil() != null) && tmp.getProfil().equals(prof)) {
                 if (tmp.isInGewPart(gewId, from, till)) {
                     ++count;
@@ -1589,7 +1591,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthGew(final String gu) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (tmp.getOwner().equals(gu)) {
                 length += tmp.getLength();
             }
@@ -1609,7 +1611,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private double getLengthGew(final String gu, final int wdm) {
         double length = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (tmp.getOwner().equals(gu) && (tmp.getWdm() == wdm)) {
                 length += tmp.getLength();
             }
@@ -1628,7 +1630,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private int getCountGew(final String gu) {
         int count = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (tmp.getOwner().equals(gu)) {
                 ++count;
             }
@@ -1648,7 +1650,7 @@ public class GerinneOSbReport extends GerinneOGemeindeReport {
     private int getCountGew(final String gu, final int wdm) {
         int count = 0;
 
-        for (final GmdPartObjOffen tmp : objList) {
+        for (final SbPartObjOffen tmp : objList) {
             if (tmp.getOwner().equals(gu) && (tmp.getWdm() == wdm)) {
                 ++count;
             }

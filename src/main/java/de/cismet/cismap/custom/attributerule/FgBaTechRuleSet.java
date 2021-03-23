@@ -72,7 +72,7 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("obj_nr_gu", new Varchar(50, false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("na_gu", new Catalogue("k_na_gu", false, true, new Numeric(4, 0, false, false)));
-        typeMap.put("mahd_gu", new Catalogue("k_mahd_gu", false, true, new Numeric(4, 0, false, false)));
+        typeMap.put("mahd_gu", new Catalogue("k_mahd_gu", false, true, new Varchar(10, false, false)));
         typeMap.put("gu_gu", new Catalogue("k_tech", false, true, new Varchar(10, false, false)));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));

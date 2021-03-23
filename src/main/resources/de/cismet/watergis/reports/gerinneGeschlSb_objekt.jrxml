@@ -84,7 +84,7 @@
 	<field name="hAb" class="java.lang.Double"/>
 	<field name="hAuf" class="java.lang.Double"/>
 	<field name="aufstieg" class="java.lang.Double"/>
-	<field name="sb" class="java.lang.Integer"/>
+	<field name="sb" class="java.lang.String"/>
 	<variable name="df" class="java.text.DecimalFormat">
 		<initialValueExpression><![CDATA[new java.text.DecimalFormat("0.000000")]]></initialValueExpression>
 	</variable>

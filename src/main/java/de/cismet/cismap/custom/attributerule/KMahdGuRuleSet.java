@@ -22,7 +22,7 @@ public class KMahdGuRuleSet extends WatergisDefaultRuleSet {
     //~ Instance initializers --------------------------------------------------
 
     {
-        typeMap.put("mahd_gu", new Numeric(4, 0, false));
+        typeMap.put("mahd_gu", new Varchar(10, false));
         typeMap.put("name", new Varchar(50, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
