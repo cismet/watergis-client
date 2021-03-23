@@ -140,7 +140,7 @@ public class StationDialog extends javax.swing.JDialog {
                             cellHasFocus);
                 }
             });
-        txtTable.setText("Stationierung");
+        txtTable.setText("FG|Stationen|10");
         CismapBroker.getInstance()
                 .getMappingComponent()
                 .getFeatureCollection()
@@ -339,6 +339,13 @@ public class StationDialog extends javax.swing.JDialog {
 
         txtTable.setMinimumSize(new java.awt.Dimension(200, 27));
         txtTable.setPreferredSize(new java.awt.Dimension(200, 27));
+        txtTable.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    txtTableActionPerformed(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -698,6 +705,15 @@ public class StationDialog extends javax.swing.JDialog {
     private void cbDistanceActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbDistanceActionPerformed
         // TODO add your handling code here:
     } //GEN-LAST:event_cbDistanceActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtTableActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_txtTableActionPerformed
+        txtTable.setText("FG|Stationen|" + String.valueOf(cbDistance.getSelectedItem()));
+    }                                                                            //GEN-LAST:event_txtTableActionPerformed
 
     /**
      * refreshes the labSelectedFeatures label.

@@ -933,6 +933,7 @@ public class LocationDialog extends javax.swing.JDialog {
         private List<FeatureServiceFeature> getAllFeatures(final AbstractFeatureService service, final Geometry geom) {
             try {
                 Geometry g = geom;
+                service.initAndWait();
 
                 if (geom == null) {
                     g = ZoomToLayerWorker.getServiceBounds(service);
