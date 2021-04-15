@@ -966,13 +966,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + "where (%1$s is null or s.route = any(%1$s)) and not\n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert))\n";
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert))))\n";
             } else {
                 QUERY_SCHA_OFFEN = "select distinct " + FG_BA_SCHA.getID() + ", scha." + FG_BA_SCHA.getPrimaryKey()
                             + " from dlm25w.fg_ba_scha scha\n"
@@ -983,13 +983,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s) and not\n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert))\n";
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert))))\n";
             }
 
 //            if ((user == null) || user.getUserGroup().getName().startsWith("lung")
@@ -1040,13 +1040,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_anlp ka on (ka.id = a.anlp)\n"
                             + "where (%1$s is null or s.route = any(%1$s)) and ka.anlp in ('Schi', 'Slu') and \n"
                             + "not (exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             } else {
                 QUERY_ANLP_OFFEN = "select distinct " + FG_BA_ANLP.getID() + ", a." + FG_BA_ANLP.getPrimaryKey()
@@ -1059,13 +1059,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s) and ka.anlp in ('Schi', 'Slu') and \n"
                             + "not (exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             }
 
@@ -1079,13 +1079,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_anlp ka on (ka.id = a.anlp)\n"
                             + "where (%1$s is null or s.route = any(%1$s)) and ka.anlp in ('Fu', 'P', 'P-Grr', 'P-Steg', 'P-Grr-Steg', 'P-Lat', 'Steg', 'Stt', 'Vt') and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             } else {
                 QUERY_ANLP_GESCHL = "select distinct " + FG_BA_ANLP.getID() + ", a." + FG_BA_ANLP.getPrimaryKey()
@@ -1099,13 +1099,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + user.getUserGroup().getName()
                             + "' or %2$s) and ka.anlp in ('Fu', 'P', 'P-Grr', 'P-Steg', 'P-Grr-Steg', 'P-Lat', 'Steg', 'Stt', 'Vt') and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert)\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert)\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             }
 
@@ -1119,13 +1119,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_anlp ka on (ka.id = a.anlp)\n"
                             + "where (%1$s is null or s.route = any(%1$s)) and esw = 1 and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             } else {
                 QUERY_ANLP_ESW = "select distinct " + FG_BA_ANLP.getID() + ", a." + FG_BA_ANLP.getPrimaryKey()
@@ -1138,13 +1138,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s) and esw = 1 and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             }
 
@@ -1157,13 +1157,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + "where (%1$s is null or s.route = any(%1$s)) and esw = 1 and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             } else {
                 QUERY_KR_ESW = "select distinct " + FG_BA_KR.getID() + ", a." + FG_BA_KR.getPrimaryKey()
@@ -1175,13 +1175,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s) and esw = 1 and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             }
 
@@ -1233,13 +1233,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + "where (%1$s is null or s.route = any(%1$s)) and esw = 1 and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             } else {
                 QUERY_EA_ESW = "select distinct " + FG_BA_EA.getID() + ", a." + FG_BA_EA.getPrimaryKey()
@@ -1251,13 +1251,13 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s) and esw = 1 and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and least(v.wert, b.wert) <= s.wert and greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + ")";
             }
 

@@ -60,7 +60,7 @@ public class FgBaSbRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, true));
         typeMap.put("ba_st_bis", new Numeric(10, 2, false, true));
-        typeMap.put("sb", new Catalogue("k_sb", true, true, true, new Numeric(5, 0, false, false)));
+        typeMap.put("sb", new Catalogue("k_sb", true, true, true, new Varchar(10, false, false)));
         typeMap.put("bemerkung", new Varchar(250, false));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));

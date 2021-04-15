@@ -260,7 +260,7 @@ public class KatasterSbReport {
                         (String)f.get(2),
                         (Double)f.get(3),
                         (Double)f.get(4),
-                        (Integer)f.get(5),
+                        (String)f.get(5),
                         (String)f.get(6),
                         (Double)f.get(11),
                         (String)f.get(12)));
@@ -322,7 +322,7 @@ public class KatasterSbReport {
             final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
             for (final Integer wdm : getWidmung(guName)) {
                 final List<Map<String, Object>> featureListKumWdm = new ArrayList<Map<String, Object>>();
-                for (final int sb : getSb(guName, wdm)) {
+                for (final String sb : getSb(guName, wdm)) {
                     final Map<String, Object> feature = new HashMap<String, Object>();
                     feature.put("anzahlSb", getSb(guName, wdm).size());
                     feature.put("gu", getGuId(guName));
@@ -430,17 +430,17 @@ public class KatasterSbReport {
     private FeatureDataSource getGewaesserAbschnitt() throws Exception {
         final List<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
 
-        for (final int sb : getSb()) {
+        for (final String sb : getSb()) {
             final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
-            final String sheetName = String.valueOf(getGuId(sb)) + "-" + String.valueOf(getWidmung(sb)) + "-"
+            final String sheetName = String.valueOf(getGuIdBySb(sb)) + "-" + String.valueOf(getWidmungBySb(sb)) + "-"
                         + String.valueOf(sb);
             sheetNames.add(sheetName);
             for (final Integer gew : getGew(sb)) {
                 final Map<String, Object> feature = new HashMap<String, Object>();
-                feature.put("anzahlGew", getCountGew(sb));
+                feature.put("anzahlGew", getCountGewBySb(sb));
                 feature.put("code", getBaCd(gew));
                 feature.put("widmung", getWdm(gew));
-                feature.put("gu", getGuId(sb));
+                feature.put("gu", getGuIdBySb(sb));
                 feature.put("group", sheetName);
                 feature.put("guName", getOwner(gew));
                 feature.put("sb", sb);
@@ -452,274 +452,274 @@ public class KatasterSbReport {
 
                 feature.put("teil", ((Math.abs(gewAll - (endGew(sb, gew) - startGew(sb, gew))) < 0.01) ? null : "x"));
                 feature.put("gewLaenge", getLengthGew(gew, sb));
-                feature.put("offene_a", getCountOffeneAbschn(sb, gew));
-                feature.put("offene_l", getLengthOffeneAbschn(sb, gew));
+                feature.put("offene_a", getCountOffeneAbschnBySb(sb, gew));
+                feature.put("offene_l", getLengthOffeneAbschnBySb(sb, gew));
                 feature.put(
                     "see_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         GewaesserData.LineFromPolygonTable.sg_see,
                         sb,
                         gew));
                 feature.put(
                     "see_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         GewaesserData.LineFromPolygonTable.sg_see,
                         sb,
                         gew));
-                feature.put("geschl_a", getCountGeschlAbschn(sb, gew));
-                feature.put("geschl_l", getLengthGeschlAbschn(sb, gew));
+                feature.put("geschl_a", getCountGeschlAbschnBySb(sb, gew));
+                feature.put("geschl_l", getLengthGeschlAbschnBySb(sb, gew));
                 feature.put(
                     "wschutz_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         GewaesserData.LineFromPolygonTable.wr_sg_wsg,
                         sb,
                         gew));
                 feature.put(
                     "wschutz_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         GewaesserData.LineFromPolygonTable.wr_sg_wsg,
                         sb,
                         gew));
                 feature.put(
                     "ueber_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         GewaesserData.LineFromPolygonTable.wr_sg_uesg,
                         sb,
                         gew));
                 feature.put(
                     "ueber_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         GewaesserData.LineFromPolygonTable.wr_sg_uesg,
                         sb,
                         gew));
                 feature.put(
                     "ben_a",
-                    getCountPointObjects(
+                    getCountPointObjectsBySb(
                         AllPunktObjects.Table.wr_wbu_ben,
                         sb,
                         gew));
                 feature.put(
                     "aus_a",
-                    getCountPointObjects(
+                    getCountPointObjectsBySb(
                         AllPunktObjects.Table.wr_wbu_aus,
                         sb,
                         gew));
                 feature.put(
                     "pegel_a",
-                    getCountPointObjects(
+                    getCountPointObjectsBySb(
                         AllPunktObjects.Table.mn_ow_pegel,
                         sb,
                         gew));
                 feature.put(
                     "gb_a",
-                    getCountLineObjects(AllLineObjects.Table.fg_ba_gb, sb, gew));
+                    getCountLineObjectsBySb(AllLineObjects.Table.fg_ba_gb, sb, gew));
                 feature.put(
                     "gb_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_gb,
                         sb,
                         gew));
                 feature.put(
                     "gmd_a",
-                    getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, sb, gew));
+                    getCountLineObjectsBySb(AllLineObjects.Table.fg_ba_gmd, sb, gew));
                 feature.put(
                     "gmd_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_gmd,
                         sb,
                         gew));
                 feature.put(
                     "prof_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_prof,
                         sb,
                         gew));
                 feature.put(
                     "prof_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_prof,
                         sb,
                         gew));
                 feature.put(
                     "sbef_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_sbef,
                         sb,
                         gew));
                 feature.put(
                     "sbef_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_sbef,
                         sb,
                         gew));
                 feature.put(
                     "ubef_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_ubef,
                         sb,
                         gew));
                 feature.put(
                     "ubef_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_ubef,
                         sb,
                         gew));
                 feature.put(
                     "bbef_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_bbef,
                         sb,
                         gew));
                 feature.put(
                     "bbef_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_bbef,
                         sb,
                         gew));
                 feature.put(
                     "rl_a",
-                    getCountLineObjects(AllLineObjects.Table.fg_ba_rl, sb, gew));
+                    getCountLineObjectsBySb(AllLineObjects.Table.fg_ba_rl, sb, gew));
                 feature.put(
                     "rl_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_rl,
                         sb,
                         gew));
                 feature.put(
                     "d_a",
-                    getCountLineObjects(AllLineObjects.Table.fg_ba_d, sb, gew));
+                    getCountLineObjectsBySb(AllLineObjects.Table.fg_ba_d, sb, gew));
                 feature.put(
                     "d_l",
-                    getLengthLineObjects(AllLineObjects.Table.fg_ba_d, sb, gew));
+                    getLengthLineObjectsBySb(AllLineObjects.Table.fg_ba_d, sb, gew));
                 feature.put(
                     "due_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_due,
                         sb,
                         gew));
                 feature.put(
                     "due_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_due,
                         sb,
                         gew));
                 feature.put(
                     "scha_a",
-                    getCountPointObjects(
+                    getCountPointObjectsBySb(
                         AllPunktObjects.Table.fg_ba_scha,
                         sb,
                         gew));
                 feature.put(
                     "wehr_a",
-                    getCountPointObjects(
+                    getCountPointObjectsBySb(
                         AllPunktObjects.Table.fg_ba_wehr,
                         sb,
                         gew));
                 feature.put(
                     "schw_a",
-                    getCountPointObjects(
+                    getCountPointObjectsBySb(
                         AllPunktObjects.Table.fg_ba_schw,
                         sb,
                         gew));
                 feature.put(
                     "anlp_a",
-                    getCountPointObjects(
+                    getCountPointObjectsBySb(
                         AllPunktObjects.Table.fg_ba_anlp,
                         sb,
                         gew));
                 feature.put(
                     "anll_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_anll,
                         sb,
                         gew));
                 feature.put(
                     "anll_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_anll,
                         sb,
                         gew));
                 feature.put(
                     "kr_a",
-                    getCountPointObjects(
+                    getCountPointObjectsBySb(
                         AllPunktObjects.Table.fg_ba_kr,
                         sb,
                         gew));
                 feature.put(
                     "ea_a",
-                    getCountPointObjects(
+                    getCountPointObjectsBySb(
                         AllPunktObjects.Table.fg_ba_ea,
                         sb,
                         gew));
                 feature.put(
                     "deich_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_deich,
                         sb,
                         gew));
                 feature.put(
                     "deich_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_deich,
                         sb,
                         gew));
                 feature.put(
                     "ughz_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_ughz,
                         sb,
                         gew));
                 feature.put(
                     "ughz_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_ughz,
                         sb,
                         gew));
                 feature.put(
                     "leis_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_leis,
                         sb,
                         gew));
                 feature.put(
                     "leis_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_leis,
                         sb,
                         gew));
                 feature.put(
                     "tech_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_tech,
                         sb,
                         gew));
                 feature.put(
                     "tech_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_tech,
                         sb,
                         gew));
                 feature.put(
                     "dok_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_doku,
                         sb,
                         gew));
                 feature.put(
                     "dok_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_doku,
                         sb,
                         gew));
                 feature.put(
                     "proj_a",
-                    getCountLineObjects(
+                    getCountLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_proj,
                         sb,
                         gew));
                 feature.put(
                     "proj_l",
-                    getLengthLineObjects(
+                    getLengthLineObjectsBySb(
                         AllLineObjects.Table.fg_ba_proj,
                         sb,
                         gew));
@@ -1188,7 +1188,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private Collection<Integer> getGew(final Integer sb) {
+    private Collection<Integer> getGew(final String sb) {
         final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
@@ -1239,7 +1239,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private String getGuId(final Integer sb) {
+    private String getGuIdBySb(final String sb) {
         for (final SbObj tmp : parts) {
             if (tmp.getSb().equals(sb)) {
                 return tmp.getGu();
@@ -1273,9 +1273,9 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private String getSbName(final int sb) {
+    private String getSbName(final String sb) {
         for (final SbObj tmp : parts) {
-            if (tmp.getSb() == sb) {
+            if (tmp.getSb().equals(sb)) {
                 return tmp.getSbName();
             }
         }
@@ -1326,7 +1326,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private Integer getWidmung(final Integer sb) {
+    private Integer getWidmungBySb(final String sb) {
         for (final SbObj gmdPart : parts) {
             if (gmdPart.getSb().equals(sb)) {
                 return gmdPart.getWidmung();
@@ -1344,8 +1344,8 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private Collection<Integer> getSb(final String guName, final int wdm) {
-        final TreeSet<Integer> ts = new TreeSet<Integer>();
+    private Collection<String> getSb(final String guName, final int wdm) {
+        final TreeSet<String> ts = new TreeSet<String>();
 
         for (final SbObj gmdPart : parts) {
             if (gmdPart.getGuName().equals(guName) && (gmdPart.getWidmung() == wdm)) {
@@ -1361,8 +1361,8 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private Collection<Integer> getSb() {
-        final TreeSet<Integer> ts = new TreeSet<Integer>();
+    private Collection<String> getSb() {
+        final TreeSet<String> ts = new TreeSet<String>();
 
         for (final SbObj gmdPart : parts) {
             ts.add(gmdPart.getSb());
@@ -1379,7 +1379,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double startGew(final Integer sb, final Integer gew) {
+    private double startGew(final String sb, final Integer gew) {
         double min = Double.MAX_VALUE;
 
         for (final SbObj gmdPart : parts) {
@@ -1399,7 +1399,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double endGew(final Integer sb, final Integer gew) {
+    private double endGew(final String sb, final Integer gew) {
         double max = Double.MIN_VALUE;
 
         for (final SbObj gmdPart : parts) {
@@ -1516,11 +1516,11 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final int gewId, final int sb) {
+    private double getLengthGew(final int gewId, final String sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
-            if ((tmp.getId() == gewId) && (tmp.getSb() == sb)) {
+            if ((tmp.getId() == gewId) && (tmp.getSb().equals(sb))) {
                 length += tmp.getLength();
             }
         }
@@ -1576,7 +1576,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGew(final String gu, final int wdm, final Integer sb) {
+    private double getLengthGew(final String gu, final int wdm, final String sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
@@ -1614,7 +1614,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGew(final Integer sb) {
+    private int getCountGewBySb(final String sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -1655,7 +1655,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGew(final String gu, final int wdm, final Integer sb) {
+    private int getCountGew(final String gu, final int wdm, final String sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2060,7 +2060,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountOffeneAbschn(final String owner, final int wdm, final Integer sb) {
+    private int getCountOffeneAbschn(final String owner, final int wdm, final String sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2083,7 +2083,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthOffeneAbschn(final String owner, final int wdm, final Integer sb) {
+    private double getLengthOffeneAbschn(final String owner, final int wdm, final String sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
@@ -2106,7 +2106,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGeschlAbschn(final String owner, final int wdm, final Integer sb) {
+    private int getCountGeschlAbschn(final String owner, final int wdm, final String sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2129,7 +2129,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGeschlAbschn(final String owner, final int wdm, final Integer sb) {
+    private double getLengthGeschlAbschn(final String owner, final int wdm, final String sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
@@ -2151,7 +2151,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountOffeneAbschn(final Integer sb, final int gew) {
+    private int getCountOffeneAbschnBySb(final String sb, final int gew) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2173,7 +2173,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthOffeneAbschn(final Integer sb, final int gew) {
+    private double getLengthOffeneAbschnBySb(final String sb, final int gew) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
@@ -2195,7 +2195,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountGeschlAbschn(final Integer sb, final int gew) {
+    private int getCountGeschlAbschnBySb(final String sb, final int gew) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2217,7 +2217,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthGeschlAbschn(final Integer sb, final int gew) {
+    private double getLengthGeschlAbschnBySb(final String sb, final int gew) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
@@ -2705,7 +2705,7 @@ public class KatasterSbReport {
     private int getCountLineObjects(final AllLineObjects.Table table,
             final String owner,
             final int wdm,
-            final Integer sb) {
+            final String sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2730,7 +2730,7 @@ public class KatasterSbReport {
     private double getLengthLineObjects(final AllLineObjects.Table table,
             final String owner,
             final int wdm,
-            final Integer sb) {
+            final String sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
@@ -2755,7 +2755,7 @@ public class KatasterSbReport {
     private int getCountLineObjects(final GewaesserData.LineFromPolygonTable table,
             final String owner,
             final int wdm,
-            final Integer sb) {
+            final String sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2780,7 +2780,7 @@ public class KatasterSbReport {
     private double getLengthLineObjects(final GewaesserData.LineFromPolygonTable table,
             final String owner,
             final int wdm,
-            final Integer sb) {
+            final String sb) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
@@ -2805,7 +2805,7 @@ public class KatasterSbReport {
     private int getCountPointObjects(final AllPunktObjects.Table table,
             final String owner,
             final int wdm,
-            final Integer sb) {
+            final String sb) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2826,7 +2826,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountLineObjects(final AllLineObjects.Table table, final Integer sb, final int gew) {
+    private int getCountLineObjectsBySb(final AllLineObjects.Table table, final String sb, final int gew) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2847,7 +2847,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthLineObjects(final AllLineObjects.Table table, final Integer sb, final int gew) {
+    private double getLengthLineObjectsBySb(final AllLineObjects.Table table, final String sb, final int gew) {
         double length = 0;
 
         for (final SbObj tmp : parts) {
@@ -2868,7 +2868,9 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountLineObjects(final GewaesserData.LineFromPolygonTable table, final Integer sb, final int gew) {
+    private int getCountLineObjectsBySb(final GewaesserData.LineFromPolygonTable table,
+            final String sb,
+            final int gew) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
@@ -2889,8 +2891,8 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private double getLengthLineObjects(final GewaesserData.LineFromPolygonTable table,
-            final Integer sb,
+    private double getLengthLineObjectsBySb(final GewaesserData.LineFromPolygonTable table,
+            final String sb,
             final int gew) {
         double length = 0;
 
@@ -2912,7 +2914,7 @@ public class KatasterSbReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountPointObjects(final AllPunktObjects.Table table, final Integer sb, final int gew) {
+    private int getCountPointObjectsBySb(final AllPunktObjects.Table table, final String sb, final int gew) {
         int count = 0;
 
         for (final SbObj tmp : parts) {
