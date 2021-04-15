@@ -295,8 +295,10 @@ public class StationDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labTheme,
-            org.openide.util.NbBundle.getMessage(StationDialog.class, "StationDialog.labTheme.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                StationDialog.class,
+                "StationDialog.labTheme.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -379,8 +381,10 @@ public class StationDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             butCancel,
-            org.openide.util.NbBundle.getMessage(StationDialog.class, "StationDialog.butCancel.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                StationDialog.class,
+                "StationDialog.butCancel.text",
+                new Object[] {})); // NOI18N
         butCancel.setPreferredSize(new java.awt.Dimension(100, 29));
         butCancel.addActionListener(new java.awt.event.ActionListener() {
 
