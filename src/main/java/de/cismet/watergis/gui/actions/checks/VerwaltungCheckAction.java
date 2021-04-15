@@ -625,7 +625,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
 //                    result.setInvalidAttributeGb(analyseByQuery(
 //                            String.format(QUERY_GB_STATUS, SQLFormatter.createSqlArrayString(selectedIds)),
 //                            "Prüfungen->Verwaltung->GB->Referenz Status"));
-        increaseProgress(wd, 1);
+//        increaseProgress(wd, 1);
 
         query = (useExpCond
                 ? String.format(QUERY_GMD_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
@@ -639,7 +639,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
 //                    result.setInvalidAttributeGmd(analyseByQuery(
 //                            String.format(QUERY_GMD_STATUS, SQLFormatter.createSqlArrayString(selectedIds)),
 //                            "Prüfungen->Verwaltung->GMD->Referenz Status"));
-        increaseProgress(wd, 1);
+//        increaseProgress(wd, 1);
 
         query = (useExpCond
                 ? String.format(QUERY_SB_CATALOGUE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
