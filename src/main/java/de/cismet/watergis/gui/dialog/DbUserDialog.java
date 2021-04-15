@@ -502,6 +502,14 @@ public class DbUserDialog extends javax.swing.JDialog {
                                 continue;
                             }
 
+                            // do not create a view, if  the class attribute create_ro_view is not set to true
+                            final Collection createAsView = clazz.getAttributeByName("create_ro_view");
+
+                            if ((createAsView == null) || createAsView.isEmpty()
+                                        || !createAsView.toArray()[0].toString().equalsIgnoreCase("true")) {
+                                continue;
+                            }
+
                             createView(clazz, schema, dbUser, session.getUser());
                         }
                     } else {
