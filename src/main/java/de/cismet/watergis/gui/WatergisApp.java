@@ -772,7 +772,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         UIManager.put("Table.selectionBackground", new Color(195, 212, 232));
         UIManager.put("Tree.selectionBackground", new Color(195, 212, 232));
         initCismap();
-        removeOldLocks();
         configManager.addConfigurable(OptionsClient.getInstance());
         configManager.configure(OptionsClient.getInstance());
         routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
@@ -978,12 +977,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private void checkForCreatedObjects() {
         try {
             final User user = SessionManager.getSession().getUser();
+            final InetAddress addr = InetAddress.getLocalHost();
             final CidsServerSearch cleanup = new CheckForCreatedObjectTable(
                     user.getDomain()
                             + "."
-                            + user.getName());
+                            + user.getName(),
+                    addr.getHostName());
             final ArrayList<ArrayList> objects = (ArrayList<ArrayList>)SessionManager.getProxy()
                         .customServerSearch(SessionManager.getSession().getUser(), cleanup);
+            removeOldLocks();
 
             if ((objects != null) && (objects.size() > 0)) {
                 final Map<Integer, List<Integer>> objectList = new HashMap<Integer, List<Integer>>();
