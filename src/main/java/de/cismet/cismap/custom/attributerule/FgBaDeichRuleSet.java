@@ -192,9 +192,9 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                     return oldValue;
                 }
 
-                if (!isValueIn(feature.getProperty("l_rl"), new Object[] { "re", "li" }, false)) {
+                if (!isValueIn(feature.getProperty("l_rl"), new Object[] { "re", "li", "nb" }, false)) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn l_fk = fd, dann muss l_rl = re oder li");
+                        "Wenn l_fk = fd, dann muss l_rl = re, li oder nb");
                     return oldValue;
                 }
             } else if (isValueIn(newValue, new Object[] { "bd", "kd" }, false)) {
@@ -698,9 +698,9 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                     return false;
                 }
 
-                if (!isValueIn(feature.getProperty("l_rl"), new Object[] { "re", "li" }, false)) {
+                if (!isValueIn(feature.getProperty("l_rl"), new Object[] { "re", "li", "nb" }, false)) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn l_fk = fd, dann muss l_rl = re oder li");
+                        "Wenn l_fk = fd, dann muss l_rl = re, li oder nb");
                     return false;
                 }
             } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
