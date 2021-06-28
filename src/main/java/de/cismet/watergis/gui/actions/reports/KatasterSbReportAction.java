@@ -135,7 +135,8 @@ public class KatasterSbReportAction extends AbstractAction {
                         @Override
                         protected void done() {
                             try {
-                                DownloadManager.instance().add(new FakeFileDownload(get()));
+                                DownloadManager.instance()
+                                        .add(new FakeFileDownload(get(), "Statistik: Kataster->Schaubezirke"));
                             } catch (Exception e) {
                                 LOG.error("Error while performing the schaubezirke report.", e);
                             }

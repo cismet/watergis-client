@@ -410,7 +410,7 @@ public class KatasterGewaesserReport {
             features.add(feature);
             featureListKum.add(feature);
         }
-        final Map<String, Object> kumObj = createKumFeature(featureListKum, false);
+        final Map<String, Object> kumObj = createKumFeature(featureListKum, false, true);
         kumObj.put("code", null);
         kumObj.put("gewName", null);
         features.add(kumObj);
@@ -790,7 +790,7 @@ public class KatasterGewaesserReport {
             final String newCode = getBaCd(gew.getId());
 
             if ((code != null) && !code.equals(newCode)) {
-                final Map<String, Object> kumObj = createKumFeature(featureListGewKum, true);
+                final Map<String, Object> kumObj = createKumFeature(featureListGewKum, true, false);
                 kumObj.remove("von");
                 kumObj.remove("bis");
                 kumObj.remove("gewLaenge");
@@ -804,7 +804,7 @@ public class KatasterGewaesserReport {
             featureListGewKum.add(feature);
         }
         // generate the last sub total (start)
-        Map<String, Object> kumObj = createKumFeature(featureListGewKum, true);
+        Map<String, Object> kumObj = createKumFeature(featureListGewKum, true, false);
         kumObj.remove("von");
         kumObj.remove("bis");
         kumObj.remove("gewLaenge");
@@ -812,7 +812,7 @@ public class KatasterGewaesserReport {
         featureListGewKum.clear();
         // generate the last sub total (end)
 
-        kumObj = createKumFeature(featureListKum, false);
+        kumObj = createKumFeature(featureListKum, false, false);
         kumObj.remove("code");
         kumObj.remove("gewName");
         kumObj.remove("von");
@@ -914,7 +914,7 @@ public class KatasterGewaesserReport {
             features.add(feature);
             featureListKum.add(feature);
         }
-        final Map<String, Object> kumObj = createKumFeature(featureListKum, false);
+        final Map<String, Object> kumObj = createKumFeature(featureListKum, false, false);
         kumObj.remove("gu");
         kumObj.remove("guName");
         features.add(kumObj);
@@ -1254,11 +1254,11 @@ public class KatasterGewaesserReport {
                 featureListKum.add(feature);
                 featureListGuKum.add(feature);
             }
-            final Map<String, Object> kumObj = createKumFeature(featureListGuKum, true);
+            final Map<String, Object> kumObj = createKumFeature(featureListGuKum, true, false);
             kumObj.remove("widmung");
             features.add(kumObj);
         }
-        final Map<String, Object> kumObj = createKumFeature(featureListKum, false);
+        final Map<String, Object> kumObj = createKumFeature(featureListKum, false, false);
         kumObj.remove("gu");
         kumObj.remove("guName");
         kumObj.remove("widmung");
@@ -1279,11 +1279,13 @@ public class KatasterGewaesserReport {
      *
      * @param   featureListKum  DOCUMENT ME!
      * @param   subtotal        DOCUMENT ME!
+     * @param   isGeschDouble   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
     private Map<String, Object> createKumFeature(final List<Map<String, Object>> featureListKum,
-            final boolean subtotal) {
+            final boolean subtotal,
+            final boolean isGeschDouble) {
         final Map<String, Object> kumFeature = new HashMap<String, Object>();
 
         kumFeature.put("summe", Boolean.TRUE);
@@ -1308,20 +1310,22 @@ public class KatasterGewaesserReport {
 //                kumFeature.put(key, sum);
 //            } else
             if ((Arrays.binarySearch(exceptionalNumberFields, key) < 0)) {
-                if (key.equals("geschl_a") || key.equals("offene_a")) {
+                if (isGeschDouble && (key.equals("geschl_a") || key.equals("offene_a"))) {
                     // will be calculated later
                 } else {
                     double sum = 0.0;
                     boolean isInt = false;
 
                     for (final Map<String, Object> f : featureListKum) {
-                        final Number n = (Number)f.get(key);
+                        if (f.get(key) instanceof Number) {
+                            final Number n = (Number)f.get(key);
 
-                        if (n != null) {
-                            if (f.get(key) instanceof Integer) {
-                                isInt = true;
+                            if (n != null) {
+                                if (f.get(key) instanceof Integer) {
+                                    isInt = true;
+                                }
+                                sum += ((Number)f.get(key)).doubleValue();
                             }
-                            sum += ((Number)f.get(key)).doubleValue();
                         }
                     }
 
@@ -1340,18 +1344,24 @@ public class KatasterGewaesserReport {
             }
         }
 
-        Double offene = (Double)kumFeature.get("offene_l");
-        Double geschl = (Double)kumFeature.get("geschl_l");
+        if (isGeschDouble) {
+            Double offene = (Double)kumFeature.get("offene_l");
+            Double geschl = (Double)kumFeature.get("geschl_l");
 
-        if (offene == null) {
-            offene = 0.0;
-        }
-        if (geschl == null) {
-            geschl = 0.0;
+            if (offene == null) {
+                offene = 0.0;
+            }
+            if (geschl == null) {
+                geschl = 0.0;
+            }
+
+            kumFeature.put("offene_a", toNullIfZero(offene * 100.0 / (offene + geschl)));
+            kumFeature.put("geschl_a", toNullIfZero(geschl * 100.0 / (offene + geschl)));
         }
 
-        kumFeature.put("offene_a", toNullIfZero(offene * 100.0 / (offene + geschl)));
-        kumFeature.put("geschl_a", toNullIfZero(geschl * 100.0 / (offene + geschl)));
+        kumFeature.put("gmd_a", null);
+        kumFeature.put("gb_a", null);
+        kumFeature.put("sb_a", null);
 
         return kumFeature;
     }
@@ -2026,16 +2036,36 @@ public class KatasterGewaesserReport {
      *
      * @return  DOCUMENT ME!
      */
-    private int getCountLineObjects(final AllLineObjects.Table table, final int gewId) {
-        int count = 0;
+    private int getCountLineObjectsOld(final AllLineObjects.Table table, final int gewId) {
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final KatasterGewObj tmp : parts) {
             if ((gewId < 0) || (gewId == tmp.getId())) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   table  DOCUMENT ME!
+     * @param   gewId  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private int getCountLineObjects(final AllLineObjects.Table table, final int gewId) {
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
+
+        for (final KatasterGewObj tmp : parts) {
+            if ((gewId < 0) || (gewId == tmp.getId())) {
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
+            }
+        }
+
+        return ts.size();
     }
 
     /**
@@ -2108,15 +2138,15 @@ public class KatasterGewaesserReport {
      * @return  DOCUMENT ME!
      */
     private int getCountPointObjects(final AllPunktObjects.Table table, final int gewId) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final KatasterGewObj tmp : parts) {
             if ((gewId < 0) || (gewId == tmp.getId())) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2133,7 +2163,7 @@ public class KatasterGewaesserReport {
             final int gewId,
             final double from,
             final double till) {
-        return gd.getCount(table, gewId, from, till);
+        return gd.getIds(table, gewId, from, till).size();
     }
 
     /**
@@ -2201,7 +2231,7 @@ public class KatasterGewaesserReport {
             final int gewId,
             final double from,
             final double till) {
-        return gd.getCount(table, gewId, from, till);
+        return gd.getIds(table, gewId, from, till).size();
     }
 
     /**
@@ -2213,15 +2243,15 @@ public class KatasterGewaesserReport {
      * @return  DOCUMENT ME!
      */
     private int getCountLineObjects(final AllLineObjects.Table table, final String owner) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final KatasterGewObj tmp : parts) {
             if (tmp.getOwner().equals(owner)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2292,27 +2322,6 @@ public class KatasterGewaesserReport {
      * DOCUMENT ME!
      *
      * @param   table  DOCUMENT ME!
-     * @param   gemNr  DOCUMENT ME!
-     * @param   owner  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     */
-    private int getCountPointObjects(final AllPunktObjects.Table table, final int gemNr, final String owner) {
-        int count = 0;
-
-        for (final KatasterGewObj tmp : parts) {
-            if (tmp.getOwner().equals(owner)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   table  DOCUMENT ME!
      * @param   owner  DOCUMENT ME!
      * @param   wdm    DOCUMENT ME!
      *
@@ -2321,15 +2330,15 @@ public class KatasterGewaesserReport {
     private int getCountLineObjects(final AllLineObjects.Table table,
             final String owner,
             final int wdm) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final KatasterGewObj tmp : parts) {
             if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2413,15 +2422,15 @@ public class KatasterGewaesserReport {
     private int getCountPointObjects(final AllPunktObjects.Table table,
             final String owner,
             final int wdm) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final KatasterGewObj tmp : parts) {
             if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2454,15 +2463,15 @@ public class KatasterGewaesserReport {
      * @return  DOCUMENT ME!
      */
     private int getCountPointObjects(final AllPunktObjects.Table table, final String owner) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final KatasterGewObj tmp : parts) {
             if (tmp.getOwner().equals(owner)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**

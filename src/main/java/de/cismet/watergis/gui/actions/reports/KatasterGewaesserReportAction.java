@@ -170,7 +170,8 @@ public class KatasterGewaesserReportAction extends AbstractAction {
                         @Override
                         protected void done() {
                             try {
-                                DownloadManager.instance().add(new FakeFileDownload(get()));
+                                DownloadManager.instance()
+                                        .add(new FakeFileDownload(get(), "Statistik: Kataster->Gewässer"));
                             } catch (Exception e) {
                                 LOG.error("Error while performing the Kataster Gewaesser report.", e);
                             }

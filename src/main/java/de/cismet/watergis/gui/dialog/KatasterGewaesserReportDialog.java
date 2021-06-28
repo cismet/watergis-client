@@ -43,6 +43,7 @@ import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.gui.RestrictedFileSystemView;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -66,6 +67,7 @@ public class KatasterGewaesserReportDialog extends javax.swing.JDialog {
 
     private boolean cancelled = false;
     private int selectedThemeFeatureCount = -1;
+    private String lastPath = null;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;
@@ -1293,7 +1295,8 @@ public class KatasterGewaesserReportDialog extends javax.swing.JDialog {
         JFileChooser fc;
 
         try {
-            fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS());
+            fc = new JFileChooser((lastPath == null) ? DownloadManager.instance().getDestinationDirectory().toString()
+                                                     : lastPath);
         } catch (Exception bug) {
             // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
             fc = new JFileChooser(WatergisApp.getDIRECTORYPATH_WATERGIS(), new RestrictedFileSystemView());
@@ -1320,6 +1323,7 @@ public class KatasterGewaesserReportDialog extends javax.swing.JDialog {
 
         if (ans == JFileChooser.APPROVE_OPTION) {
             txtFile.setText(fc.getSelectedFile().getAbsolutePath());
+            lastPath = fc.getSelectedFile().getAbsolutePath();
         }
     } //GEN-LAST:event_butFileActionPerformed
 

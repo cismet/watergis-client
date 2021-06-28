@@ -194,7 +194,10 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        final PrimitiveGeometryCreator c = new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POLYGON, true);
+        final PrimitiveGeometryCreator c = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.POLYGON,
+                getDefaultValues(),
+                true);
         c.setMinArea(MIN_AREA_SIZE);
 
         return c;
