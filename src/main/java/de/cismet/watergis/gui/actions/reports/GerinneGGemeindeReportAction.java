@@ -172,7 +172,10 @@ public class GerinneGGemeindeReportAction extends AbstractAction {
                         @Override
                         protected void done() {
                             try {
-                                DownloadManager.instance().add(new FakeFileDownload(get()));
+                                DownloadManager.instance()
+                                        .add(new FakeFileDownload(
+                                                get(),
+                                                "Statistik: Gerinne (geschlossen)->Gemeinden"));
                             } catch (Exception e) {
                                 LOG.error("Error while performing the geschlossene Gerinne report.", e);
                             }

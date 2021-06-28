@@ -529,13 +529,14 @@ public class ShapefileWriter implements JUMPWriter {
 
         // -1 because one of the columns is geometry
         final DbfFieldDef[] fields = new DbfFieldDef[fs.getAttributeCount() - 1];
-
+        final Map<String, Integer> nameToIndex = new HashMap<String, Integer>();
         // dbf column type and size
         f = 0;
 
         for (t = 0; t < fs.getAttributeCount(); t++) {
             final AttributeType columnType = fs.getAttributeType(t);
             final String columnName = fs.getAttributeName(t);
+            nameToIndex.put(columnName, f);
 
             if (columnType == AttributeType.INTEGER) {
                 if (getTypeFromRuleSet(columnName) instanceof WatergisDefaultRuleSet.Numeric) {
@@ -693,6 +694,7 @@ public class ShapefileWriter implements JUMPWriter {
             // make data for each column in this feature (row)
             for (u = 0; u < fs.getAttributeCount(); u++) {
                 final AttributeType columnType = fs.getAttributeType(u);
+                final String name = fs.getAttributeName(u);
 
                 if (columnType == AttributeType.INTEGER) {
                     final Object a = feature.getAttribute(u);
@@ -712,7 +714,15 @@ public class ShapefileWriter implements JUMPWriter {
                     if (a == null) {
                         DBFrow.add(null);
                     } else {
-                        DBFrow.add((Double)a);
+                        final int index = nameToIndex.get(name);
+                        if (fields[index].fieldnumdec > 0) {
+                            final Double d = Math.round((Double)a
+                                            * Math.pow(10, fields[index].fieldnumdec))
+                                        / Math.pow(10, fields[index].fieldnumdec);
+                            DBFrow.add(d);
+                        } else {
+                            DBFrow.add((Double)a);
+                        }
                     }
                 } else if (columnType == AttributeType.DATE) {
                     final Object a = feature.getAttribute(u);

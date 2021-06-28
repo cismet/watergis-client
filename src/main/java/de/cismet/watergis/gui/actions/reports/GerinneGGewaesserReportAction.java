@@ -136,7 +136,8 @@ public class GerinneGGewaesserReportAction extends AbstractAction {
                         @Override
                         protected void done() {
                             try {
-                                DownloadManager.instance().add(new FakeFileDownload(get()));
+                                DownloadManager.instance()
+                                        .add(new FakeFileDownload(get(), "Statistik: Gerinne (geschlossen)->Gewässer"));
                             } catch (Exception e) {
                                 LOG.error("Error while performing the geschlossene Gerinne Gewaesser report.", e);
                             }

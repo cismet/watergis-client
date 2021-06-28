@@ -29,6 +29,7 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.tools.gui.RestrictedFileSystemView;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -47,7 +48,7 @@ public class GafProfReportDialog extends javax.swing.JDialog {
     //~ Instance fields --------------------------------------------------------
 
     private boolean cancelled = false;
-    private String lastPath = WatergisApp.getDIRECTORYPATH_WATERGIS();
+    private String lastPath = DownloadManager.instance().getDestinationDirectory().toString();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;

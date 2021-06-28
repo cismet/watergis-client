@@ -136,7 +136,8 @@ public class GerinneOSbReportAction extends AbstractAction {
                         @Override
                         protected void done() {
                             try {
-                                DownloadManager.instance().add(new FakeFileDownload(get()));
+                                DownloadManager.instance()
+                                        .add(new FakeFileDownload(get(), "Statistik: Gerinne (offen)->Schaubezirke"));
                             } catch (Exception e) {
                                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                                     "Bei der Erstellung der Auswertung ist ein Fehler aufgetreten.\nEine Fehlerbeschreibung kann dem Logging entnommen werden",

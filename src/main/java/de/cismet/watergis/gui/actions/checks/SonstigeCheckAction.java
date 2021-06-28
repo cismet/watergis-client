@@ -35,6 +35,7 @@ import de.cismet.cids.custom.watergis.server.search.MergeBaLeis;
 import de.cismet.cids.custom.watergis.server.search.MergeBaUghz;
 import de.cismet.cids.custom.watergis.server.search.OverlappedTech;
 import de.cismet.cids.custom.watergis.server.search.TechDWrongPlace;
+import de.cismet.cids.custom.watergis.server.search.TechDueWrongPlace;
 import de.cismet.cids.custom.watergis.server.search.TechGeschWrongPlace;
 import de.cismet.cids.custom.watergis.server.search.TechOffWrongPlace;
 import de.cismet.cids.custom.watergis.server.search.TechVWrongPlace;
@@ -115,9 +116,11 @@ public class SonstigeCheckAction extends AbstractCheckAction {
     private static final String CHECK_SONSTIGES_TECH_TECH_FALSCH_AUF_OFF =
         "Prüfungen->Sonstiges->Tech->Tech: falsch auf offenem Gerinne";
     private static final String CHECK_SONSTIGES_TECH_TECH_D_NICHT_AUF_DD =
-        "Prüfungen->Sonstiges->Tech->Tech: d nicht auf d/due";
+        "Prüfungen->Sonstiges->Tech->Tech: d nicht auf d";
     private static final String CHECK_SONSTIGES_TECH_TECH_V_NICHT_AUF_RL =
-        "Prüfungen->Sonstiges->Tech->Tech: v nicht auf rl/due";
+        "Prüfungen->Sonstiges->Tech->Tech: v nicht auf rl";
+    private static final String CHECK_SONSTIGES_TECH_TECH_DUE_NICHT_AUF_DUE =
+        "Prüfungen->Sonstiges->Tech->Tech: due nicht auf due";
     private static final String CHECK_SONSTIGES_TECH_TECH__ATTRIBUTE = "Prüfungen->Sonstiges->Tech->Tech: Attribute";
     private static final String CHECK_SONSTIGES_LEIS_LEIS__ESW_FUER_GESCHL =
         "Prüfungen->Sonstiges->Leis->Leis: Esw für geschlossenes Gerinne";
@@ -150,6 +153,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             CHECK_SONSTIGES_TECH_TECH_FALSCH_AUF_GES,
             CHECK_SONSTIGES_TECH_TECH_FALSCH_AUF_OFF,
             CHECK_SONSTIGES_TECH_TECH_D_NICHT_AUF_DD,
+            CHECK_SONSTIGES_TECH_TECH_DUE_NICHT_AUF_DUE,
             CHECK_SONSTIGES_TECH_TECH_V_NICHT_AUF_RL,
             CHECK_SONSTIGES_TECH_TECH__ATTRIBUTE,
             CHECK_SONSTIGES_LEIS_LEIS__ESW_FUER_GESCHL,
@@ -470,7 +474,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 19;
+        return 20;
     }
 
     @Override
@@ -490,6 +494,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                     addService(result, cr.getOverlappedTech());
                     addService(result, cr.getdTech());
                     addService(result, cr.getvTech());
+                    addService(result, cr.getdueTech());
                 }
             } catch (Exception e) {
                 LOG.error("Error while performing check", e);
@@ -552,7 +557,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                                                     + result.getOffGerinneTechErrors()
                                                     + result.getGeschGerinneTechErrors()
                                                     + result.getdTechErrors()
-                                                    + result.getvTechErrors(),
+                                                    + result.getvTechErrors()
+                                                    + result.getDueTechErrors(),
                                             0
                                         }),
                                     NbBundle.getMessage(
@@ -586,7 +592,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                                                     + result.getOffGerinneTechErrors()
                                                     + result.getGeschGerinneTechErrors()
                                                     + result.getdTechErrors()
-                                                    + result.getvTechErrors(),
+                                                    + result.getvTechErrors()
+                                                    + result.getDueTechErrors(),
                                             result.getProblemTreeObjectCount().getCount(),
                                             result.getProblemTreeObjectCount().getClasses()
                                         }),
@@ -600,6 +607,9 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             }
                             if (result.getdTech() != null) {
                                 showService(result.getdTech());
+                            }
+                            if (result.getdueTech() != null) {
+                                showService(result.getdueTech());
                             }
                             if (result.getGeschGerinneTech() != null) {
                                 showService(result.getGeschGerinneTech());
@@ -828,6 +838,12 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                 serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
+        result.setdueTech(analyseByCustomSearch(
+                new TechDueWrongPlace(user, selectedIds, export),
+                CHECK_SONSTIGES_TECH_TECH_DUE_NICHT_AUF_DUE,
+                serviceAttributeDefinition));
+        increaseProgress(wd, 1);
+
         result.setOffGerinneTech(analyseByCustomSearch(
                 new TechOffWrongPlace(user, selectedIds, export),
                 CHECK_SONSTIGES_TECH_TECH_FALSCH_AUF_OFF,
@@ -954,6 +970,11 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             successful = false;
         }
 
+        if (result.getdueTech() != null) {
+            result.setDueTechErrors(result.getdueTech().getFeatureCount(null));
+            successful = false;
+        }
+
         return result;
     }
 
@@ -993,6 +1014,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         private int offGerinneTechErrors;
         private int dTechErrors;
         private int vTechErrors;
+        private int dueTechErrors;
         private ProblemCountAndClasses problemTreeObjectCount;
 
         private H2FeatureService attributesDeich;
@@ -1012,6 +1034,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         private H2FeatureService geschGerinneTech;
         private H2FeatureService offGerinneTech;
         private H2FeatureService dTech;
+        private H2FeatureService dueTech;
         private H2FeatureService vTech;
 
         //~ Methods ------------------------------------------------------------
@@ -1343,6 +1366,24 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         /**
          * DOCUMENT ME!
          *
+         * @return  the vTechErrors
+         */
+        public int getDueTechErrors() {
+            return dueTechErrors;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  dueTechErrors  the vTechErrors to set
+         */
+        public void setDueTechErrors(final int dueTechErrors) {
+            this.dueTechErrors = dueTechErrors;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
          * @return  the attributesDeich
          */
         public H2FeatureService getAttributesDeich() {
@@ -1626,6 +1667,24 @@ public class SonstigeCheckAction extends AbstractCheckAction {
          */
         public void setdTech(final H2FeatureService dTech) {
             this.dTech = dTech;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the dTech
+         */
+        public H2FeatureService getdueTech() {
+            return dueTech;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  dueTech  the dTech to set
+         */
+        public void setdueTech(final H2FeatureService dueTech) {
+            this.dueTech = dueTech;
         }
 
         /**

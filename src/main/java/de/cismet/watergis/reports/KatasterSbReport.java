@@ -2295,15 +2295,15 @@ public class KatasterSbReport {
      * @return  DOCUMENT ME!
      */
     private int getCountLineObjects(final AllLineObjects.Table table, final int gewId) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if ((gewId < 0) || (gewId == tmp.getId())) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2376,15 +2376,15 @@ public class KatasterSbReport {
      * @return  DOCUMENT ME!
      */
     private int getCountPointObjects(final AllPunktObjects.Table table, final int gewId) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if ((gewId < 0) || (gewId == tmp.getId())) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2401,7 +2401,7 @@ public class KatasterSbReport {
             final int gewId,
             final double from,
             final double till) {
-        return gd.getCount(table, gewId, from, till);
+        return gd.getIds(table, gewId, from, till).size();
     }
 
     /**
@@ -2469,7 +2469,7 @@ public class KatasterSbReport {
             final int gewId,
             final double from,
             final double till) {
-        return gd.getCount(table, gewId, from, till);
+        return gd.getIds(table, gewId, from, till).size();
     }
 
     /**
@@ -2481,15 +2481,15 @@ public class KatasterSbReport {
      * @return  DOCUMENT ME!
      */
     private int getCountLineObjects(final AllLineObjects.Table table, final String owner) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if (tmp.getGuName().equals(owner)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2566,15 +2566,15 @@ public class KatasterSbReport {
      * @return  DOCUMENT ME!
      */
     private int getCountPointObjects(final AllPunktObjects.Table table, final int gemNr, final String owner) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if (tmp.getGuName().equals(owner)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2589,15 +2589,15 @@ public class KatasterSbReport {
     private int getCountLineObjects(final AllLineObjects.Table table,
             final String owner,
             final int wdm) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2681,15 +2681,15 @@ public class KatasterSbReport {
     private int getCountPointObjects(final AllPunktObjects.Table table,
             final String owner,
             final int wdm) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2806,15 +2806,15 @@ public class KatasterSbReport {
             final String owner,
             final int wdm,
             final String sb) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if (tmp.getGuName().equals(owner) && (tmp.getWidmung() == wdm) && tmp.getSb().equals(sb)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2827,15 +2827,15 @@ public class KatasterSbReport {
      * @return  DOCUMENT ME!
      */
     private int getCountLineObjectsBySb(final AllLineObjects.Table table, final String sb, final int gew) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if ((tmp.getId() == gew) && tmp.getSb().equals(sb)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2915,15 +2915,15 @@ public class KatasterSbReport {
      * @return  DOCUMENT ME!
      */
     private int getCountPointObjectsBySb(final AllPunktObjects.Table table, final String sb, final int gew) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if ((tmp.getId() == gew) && tmp.getSb().equals(sb)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**
@@ -2956,15 +2956,15 @@ public class KatasterSbReport {
      * @return  DOCUMENT ME!
      */
     private int getCountPointObjects(final AllPunktObjects.Table table, final String owner) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final SbObj tmp : parts) {
             if (tmp.getGuName().equals(owner)) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**

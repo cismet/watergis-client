@@ -3187,15 +3187,16 @@ public class KatasterGemeindeReport {
     private int getCountLineObjects(final AllLineObjects.Table table, final int gemNr, final int gewId) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
         final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-        int count = 0;
+        final TreeSet<Integer> set = new TreeSet<Integer>();
+        final int count = 0;
 
         for (final GmdPartObj tmp : gemList) {
             if ((gewId < 0) || (gewId == tmp.getId())) {
-                count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return set.size();
     }
 
     /**
@@ -3244,15 +3245,16 @@ public class KatasterGemeindeReport {
         } else {
             final GemeindenData gemData = gemDataMap.get(gemNr);
             final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-            int count = 0;
+            final TreeSet<Integer> set = new TreeSet<Integer>();
+            final int count = 0;
 
             for (final GmdPartObj tmp : gemList) {
                 if ((gewId < 0) || (gewId == tmp.getId())) {
-                    count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                    set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
                 }
             }
 
-            return count;
+            return set.size();
         }
     }
 
@@ -3322,7 +3324,7 @@ public class KatasterGemeindeReport {
             final double till) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
 
-        return gemData.getCount(table, gewId, from, till);
+        return gemData.getIds(table, gewId, from, till).size();
     }
 
     /**
@@ -3364,7 +3366,7 @@ public class KatasterGemeindeReport {
             final double till) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
 
-        return gemData.getCount(table, gewId, from, till);
+        return gemData.getIds(table, gewId, from, till).size();
     }
 
     /**
@@ -3421,15 +3423,15 @@ public class KatasterGemeindeReport {
     private int getCountLineObjects(final AllLineObjects.Table table, final int gemNr, final String owner) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
         final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-        int count = 0;
+        final TreeSet<Integer> set = new TreeSet<Integer>();
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner)) {
-                count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return set.size();
     }
 
     /**
@@ -3469,15 +3471,15 @@ public class KatasterGemeindeReport {
             final String owner) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
         final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-        int count = 0;
+        final TreeSet<Integer> set = new TreeSet<Integer>();
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner)) {
-                count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return set.size();
     }
 
     /**
@@ -3544,15 +3546,15 @@ public class KatasterGemeindeReport {
             final int wdm) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
         final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-        int count = 0;
+        final TreeSet<Integer> set = new TreeSet<Integer>();
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return set.size();
     }
 
     /**
@@ -3598,15 +3600,15 @@ public class KatasterGemeindeReport {
             final int wdm) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
         final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-        int count = 0;
+        final TreeSet<Integer> set = new TreeSet<Integer>();
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return set.size();
     }
 
     /**
@@ -3673,19 +3675,19 @@ public class KatasterGemeindeReport {
      * @return  DOCUMENT ME!
      */
     private int getCountLineObjects(final AllLineObjects.Table table, final String owner, final int wdm) {
-        int count = 0;
+        final TreeSet<Integer> set = new TreeSet<Integer>();
 
         for (final Integer gemNr : gemDataMap.keySet()) {
             final GemeindenData gemData = gemDataMap.get(gemNr);
             final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                    count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                    set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
                 }
             }
         }
 
-        return count;
+        return set.size();
     }
 
     /**
@@ -3725,19 +3727,19 @@ public class KatasterGemeindeReport {
     private int getCountLineObjects(final GemeindenData.LineFromPolygonTable table,
             final String owner,
             final int wdm) {
-        int count = 0;
+        final TreeSet<Integer> set = new TreeSet<Integer>();
 
         for (final Integer gemNr : gemDataMap.keySet()) {
             final GemeindenData gemData = gemDataMap.get(gemNr);
             final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                    count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                    set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
                 }
             }
         }
 
-        return count;
+        return set.size();
     }
 
     /**
@@ -3801,7 +3803,7 @@ public class KatasterGemeindeReport {
      * @return  DOCUMENT ME!
      */
     private int getCountLineObjects(final AllLineObjects.Table table, final String owner) {
-        int count = 0;
+        final TreeSet<Integer> set = new TreeSet<Integer>();
 
         for (final int gemNr : gemDataMap.keySet()) {
             final GemeindenData gemData = gemDataMap.get(gemNr);
@@ -3809,11 +3811,11 @@ public class KatasterGemeindeReport {
 
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner)) {
-                    count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                    set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
                 }
             }
         }
-        return count;
+        return set.size();
     }
 
     /**
@@ -3851,7 +3853,7 @@ public class KatasterGemeindeReport {
      */
     private int getCountLineObjects(final GemeindenData.LineFromPolygonTable table,
             final String owner) {
-        int count = 0;
+        final TreeSet<Integer> set = new TreeSet<Integer>();
 
         for (final int gemNr : gemDataMap.keySet()) {
             final GemeindenData gemData = gemDataMap.get(gemNr);
@@ -3859,12 +3861,12 @@ public class KatasterGemeindeReport {
 
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner)) {
-                    count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                    set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
                 }
             }
         }
 
-        return count;
+        return set.size();
     }
 
     /**

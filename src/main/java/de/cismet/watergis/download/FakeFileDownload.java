@@ -14,6 +14,7 @@ package de.cismet.watergis.download;
 import java.io.File;
 
 import de.cismet.tools.gui.downloadmanager.AbstractCancellableDownload;
+import de.cismet.tools.gui.downloadmanager.AbstractDownload;
 import de.cismet.tools.gui.downloadmanager.Download;
 
 /**
@@ -43,6 +44,18 @@ public class FakeFileDownload extends AbstractCancellableDownload {
         fileToSaveTo = file;
     }
 
+    /**
+     * Creates a new ExportShapeDownload object.
+     *
+     * @param  file   DOCUMENT ME!
+     * @param  title  DOCUMENT ME!
+     */
+    public FakeFileDownload(final File file, final String title) {
+        status = Download.State.WAITING;
+        fileToSaveTo = file;
+        this.title = title;
+    }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -62,5 +75,22 @@ public class FakeFileDownload extends AbstractCancellableDownload {
     @Override
     public String toString() {
         return "FakeFileDownload";
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof FakeFileDownload)) {
+            return false;
+        }
+
+        final FakeFileDownload other = (FakeFileDownload)obj;
+
+        boolean result = true;
+
+        if (this != obj) {
+            result &= false;
+        }
+
+        return result;
     }
 }
