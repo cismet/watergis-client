@@ -169,7 +169,8 @@ public class GerinneOFlReportAction extends AbstractAction {
                         @Override
                         protected void done() {
                             try {
-                                DownloadManager.instance().add(new FakeFileDownload(get()));
+                                DownloadManager.instance()
+                                        .add(new FakeFileDownload(get(), "Statistik: Gerinne (offen)->Fläche"));
                             } catch (Exception e) {
                                 LOG.error("Error while performing the offene Gerinne flaeche report.", e);
                             }

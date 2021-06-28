@@ -227,7 +227,7 @@ public class CheckAction extends AbstractAction {
                     "CheckAction.actionPerformed().hints.title"),
                 JOptionPane.INFORMATION_MESSAGE);
         }
-        DownloadManager.instance().add(new FakeFileDownload(errorFile));
+        DownloadManager.instance().add(new FakeFileDownload(errorFile, "Prüfergebnis"));
     }
 
     @Override

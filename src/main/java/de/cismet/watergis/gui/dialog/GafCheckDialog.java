@@ -15,6 +15,7 @@ package de.cismet.watergis.gui.dialog;
 import java.io.File;
 
 import de.cismet.tools.gui.StaticSwingTools;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
 import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.broker.ComponentName;
@@ -32,7 +33,7 @@ public class GafCheckDialog extends javax.swing.JDialog {
     //~ Instance fields --------------------------------------------------------
 
     private boolean cancelled = false;
-    private String lastPath = WatergisApp.getDIRECTORYPATH_WATERGIS();
+    private String lastPath = DownloadManager.instance().getDestinationDirectory().toString();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butBkFile;

@@ -135,7 +135,8 @@ public class GerinneOGewReportAction extends AbstractAction {
                         @Override
                         protected void done() {
                             try {
-                                DownloadManager.instance().add(new FakeFileDownload(get()));
+                                DownloadManager.instance()
+                                        .add(new FakeFileDownload(get(), "Statistik: Gerinne (offen)->Gewässer"));
                             } catch (Exception e) {
                                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                                     "Bei der Erstellung der Auswertung ist ein Fehler aufgetreten.\nEine Fehlerbeschreibung kann dem Logging entnommen werden",

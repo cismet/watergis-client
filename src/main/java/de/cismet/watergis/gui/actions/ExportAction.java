@@ -459,7 +459,7 @@ public class ExportAction extends AbstractAction implements Configurable {
                         final File zipFile = new File(file.getAbsolutePath());
                         zipDirectory(new File(tempPath), zipFile);
 
-                        DownloadManager.instance().add(new FakeFileDownload(zipFile));
+                        DownloadManager.instance().add(new FakeFileDownload(zipFile, "Export"));
                     } finally {
                         final File f = new File(tempPath);
 

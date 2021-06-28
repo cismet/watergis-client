@@ -17,9 +17,11 @@ import Sirius.navigator.connection.SessionManager;
 import Sirius.server.newuser.User;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import de.cismet.cids.custom.watergis.server.search.AllLineObjects;
 import de.cismet.cids.custom.watergis.server.search.AllPunktObjects;
@@ -126,6 +128,34 @@ public class GewaesserData {
      *
      * @return  DOCUMENT ME!
      */
+    public Collection<Integer> getIds(final AllPunktObjects.Table table,
+            final int gew,
+            final double from,
+            final double till) {
+        final TreeSet<Integer> ids = new TreeSet<Integer>();
+        final List<PointObjectData> points = pointMap.get(table);
+
+        if (points != null) {
+            for (final PointObjectData pointObj : points) {
+                if (pointObj.isInGewPart(gew, from, till)) {
+                    ids.add(pointObj.getId());
+                }
+            }
+        }
+
+        return ids;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   table  DOCUMENT ME!
+     * @param   gew    DOCUMENT ME!
+     * @param   from   DOCUMENT ME!
+     * @param   till   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     public int getCount(final AllPunktObjects.Table table, final int gew, final double from, final double till) {
         final List<PointObjectData> points = pointMap.get(table);
         int count = 0;
@@ -164,6 +194,34 @@ public class GewaesserData {
         }
 
         return count;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   table  DOCUMENT ME!
+     * @param   gew    DOCUMENT ME!
+     * @param   from   DOCUMENT ME!
+     * @param   till   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Collection<Integer> getIds(final AllLineObjects.Table table,
+            final int gew,
+            final double from,
+            final double till) {
+        final TreeSet<Integer> ids = new TreeSet<Integer>();
+        final List<LineObjectData> lines = lineMap.get(table);
+
+        if (lines != null) {
+            for (final LineObjectData lineObj : lines) {
+                if (lineObj.isInGewPart(gew, from, till)) {
+                    ids.add(lineObj.getId());
+                }
+            }
+        }
+
+        return ids;
     }
 
     /**
@@ -264,7 +322,8 @@ public class GewaesserData {
                                 lod.getBaCd(),
                                 lod.getFrom(),
                                 nlod.getFrom(),
-                                Math.abs(nlod.getFrom() - lod.getFrom()));
+                                Math.abs(nlod.getFrom() - lod.getFrom()),
+                                lod.getId());
                         newLines.add(data);
 
                         if (lod.getTo() > nlod.getTo()) {
@@ -272,7 +331,8 @@ public class GewaesserData {
                                     lod.getBaCd(),
                                     nlod.getTo(),
                                     lod.getTo(),
-                                    Math.abs(lod.getTo() - nlod.getTo()));
+                                    Math.abs(lod.getTo() - nlod.getTo()),
+                                    lod.getId());
                             newLines.add(data2);
                         }
                     } else if (lod.getFrom() == nlod.getFrom()) {
@@ -281,7 +341,8 @@ public class GewaesserData {
                                     lod.getBaCd(),
                                     nlod.getTo(),
                                     lod.getTo(),
-                                    Math.abs(lod.getTo() - nlod.getTo()));
+                                    Math.abs(lod.getTo() - nlod.getTo()),
+                                    lod.getId());
                             newLines.add(data2);
                         }
                     } else if (lod.getFrom() > nlod.getFrom()) {
@@ -290,7 +351,8 @@ public class GewaesserData {
                                     lod.getBaCd(),
                                     nlod.getTo(),
                                     lod.getTo(),
-                                    Math.abs(lod.getTo() - nlod.getTo()));
+                                    Math.abs(lod.getTo() - nlod.getTo()),
+                                    lod.getId());
                             newLines.add(data2);
                         }
                     }
@@ -329,7 +391,8 @@ public class GewaesserData {
                         (Double)f.get(0),
                         (Double)f.get(1),
                         (Double)f.get(1)
-                                - (Double)f.get(0)));
+                                - (Double)f.get(0),
+                        (Integer)f.get(4)));
             }
         }
 
@@ -359,7 +422,8 @@ public class GewaesserData {
                         (Double)f.get(0),
                         (Double)f.get(1),
                         (Double)f.get(1)
-                                - (Double)f.get(0)));
+                                - (Double)f.get(0),
+                        (Integer)f.get(4)));
             }
         }
 
@@ -420,7 +484,8 @@ public class GewaesserData {
                         (String)f.get(2),
                         (Double)f.get(3),
                         (Double)f.get(4),
-                        (Double)f.get(1)));
+                        (Double)f.get(1),
+                        (Integer)f.get(6)));
             }
         }
 
@@ -447,7 +512,11 @@ public class GewaesserData {
 
         if ((attributes != null) && !attributes.isEmpty()) {
             for (final ArrayList f : attributes) {
-                objList.add(new PointObjectData((Integer)f.get(0), (String)f.get(1), (Double)f.get(2)));
+                objList.add(new PointObjectData(
+                        (Integer)f.get(0),
+                        (String)f.get(1),
+                        (Double)f.get(2),
+                        (Integer)f.get(3)));
             }
         }
 
@@ -466,6 +535,7 @@ public class GewaesserData {
         //~ Instance fields ----------------------------------------------------
 
         private int gewId;
+        private int id;
         private String baCd;
         private double from;
 
@@ -483,11 +553,13 @@ public class GewaesserData {
          * @param  gewId  DOCUMENT ME!
          * @param  baCd   DOCUMENT ME!
          * @param  from   DOCUMENT ME!
+         * @param  id     DOCUMENT ME!
          */
-        public PointObjectData(final int gewId, final String baCd, final double from) {
+        public PointObjectData(final int gewId, final String baCd, final double from, final int id) {
             this.gewId = gewId;
             this.baCd = baCd;
             this.from = from;
+            this.id = id;
         }
 
         //~ Methods ------------------------------------------------------------
@@ -502,7 +574,39 @@ public class GewaesserData {
          * @return  DOCUMENT ME!
          */
         public boolean isInGewPart(final int gew, final double from, final double till) {
-            return (gew == gewId) && (Math.min(from, till) <= this.from) && (Math.max(from, till) >= this.from);
+            return (gew == gewId) && (Math.min(roundCor(from), roundCor(till)) <= round(this.from))
+                        && (Math.max(roundCor(from), roundCor(till)) >= round(this.from));
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   val  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private double round(final double val) {
+            return ((int)(val * 100)) / 100.0;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   val  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private double roundCor(final double val) {
+            return (Math.round(val * 100)) / 100.0;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the baCd
+         */
+        public Integer getId() {
+            return id;
         }
 
         /**
@@ -547,7 +651,7 @@ public class GewaesserData {
      *
      * @version  $Revision$, $Date$
      */
-    private class LineObjectData {
+    public class LineObjectData {
 
         //~ Instance fields ----------------------------------------------------
 
@@ -556,6 +660,7 @@ public class GewaesserData {
         private double from;
         private double to;
         private double length;
+        private int id;
 
         //~ Constructors -------------------------------------------------------
 
@@ -573,20 +678,32 @@ public class GewaesserData {
          * @param  from    DOCUMENT ME!
          * @param  to      DOCUMENT ME!
          * @param  length  DOCUMENT ME!
+         * @param  id      DOCUMENT ME!
          */
         public LineObjectData(final int gewId,
                 final String baCd,
                 final double from,
                 final double to,
-                final double length) {
+                final double length,
+                final int id) {
             this.gewId = gewId;
             this.baCd = baCd;
             this.from = from;
             this.to = to;
             this.length = length;
+            this.id = id;
         }
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the gewId
+         */
+        public int getId() {
+            return id;
+        }
 
         /**
          * DOCUMENT ME!

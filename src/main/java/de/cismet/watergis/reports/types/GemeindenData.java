@@ -17,9 +17,11 @@ import Sirius.navigator.connection.SessionManager;
 import Sirius.server.newuser.User;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import de.cismet.cids.custom.watergis.server.search.AllLineObjects;
 import de.cismet.cids.custom.watergis.server.search.AllPunktObjects;
@@ -201,6 +203,34 @@ public class GemeindenData {
      *
      * @return  DOCUMENT ME!
      */
+    public Collection<Integer> getIds(final AllLineObjects.Table table,
+            final int gew,
+            final double from,
+            final double till) {
+        final List<LineObjectData> lines = lineMap.get(table);
+        final TreeSet<Integer> ids = new TreeSet<Integer>();
+
+        if (lines != null) {
+            for (final LineObjectData lineObj : lines) {
+                if (lineObj.isInGewPart(gew, from, till)) {
+                    ids.add(lineObj.getId());
+                }
+            }
+        }
+
+        return ids;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   table  DOCUMENT ME!
+     * @param   gew    DOCUMENT ME!
+     * @param   from   DOCUMENT ME!
+     * @param   till   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     public double getLength(final AllLineObjects.Table table, final int gew, final double from, final double till) {
         final List<LineObjectData> lines = lineMap.get(table);
         double length = 0;
@@ -249,9 +279,12 @@ public class GemeindenData {
      *
      * @return  DOCUMENT ME!
      */
-    public List<Integer> getIds(final LineFromPolygonTable table, final int gew, final double from, final double till) {
+    public Collection<Integer> getIds(final LineFromPolygonTable table,
+            final int gew,
+            final double from,
+            final double till) {
         final List<LineObjectData> lines = lineFromPolygonMap.get(table);
-        final List<Integer> ids = new ArrayList<Integer>();
+        final TreeSet<Integer> ids = new TreeSet<Integer>();
 
         if (lines != null) {
             for (int i = 0; i < lines.size(); ++i) {
@@ -320,7 +353,8 @@ public class GemeindenData {
                             lineObj.getBaCd(),
                             lineFrom,
                             lineTill,
-                            Math.abs(lineTill - lineFrom));
+                            Math.abs(lineTill - lineFrom),
+                            lineObj.getId());
                     res.add(tmp);
                 }
             }
@@ -353,7 +387,8 @@ public class GemeindenData {
                                 lod.getBaCd(),
                                 lod.getFrom(),
                                 nlod.getFrom(),
-                                Math.abs(nlod.getFrom() - lod.getFrom()));
+                                Math.abs(nlod.getFrom() - lod.getFrom()),
+                                lod.getId());
                         newLines.add(data);
 
                         if (lod.getTo() > nlod.getTo()) {
@@ -361,7 +396,8 @@ public class GemeindenData {
                                     lod.getBaCd(),
                                     nlod.getTo(),
                                     lod.getTo(),
-                                    Math.abs(lod.getTo() - nlod.getTo()));
+                                    Math.abs(lod.getTo() - nlod.getTo()),
+                                    lod.getId());
                             newLines.add(data2);
                         }
                     } else if (lod.getFrom() == nlod.getFrom()) {
@@ -370,7 +406,8 @@ public class GemeindenData {
                                     lod.getBaCd(),
                                     nlod.getTo(),
                                     lod.getTo(),
-                                    Math.abs(lod.getTo() - nlod.getTo()));
+                                    Math.abs(lod.getTo() - nlod.getTo()),
+                                    lod.getId());
                             newLines.add(data2);
                         }
                     } else if (lod.getFrom() > nlod.getFrom()) {
@@ -379,7 +416,8 @@ public class GemeindenData {
                                     lod.getBaCd(),
                                     nlod.getTo(),
                                     lod.getTo(),
-                                    Math.abs(lod.getTo() - nlod.getTo()));
+                                    Math.abs(lod.getTo() - nlod.getTo()),
+                                    lod.getId());
                             newLines.add(data2);
                         }
                     }
@@ -450,7 +488,7 @@ public class GemeindenData {
                         (Double)f.get(1),
                         (Double)f.get(1)
                                 - (Double)f.get(0),
-                        (Integer)f.get(4)));
+                        (Integer)f.get(5)));
             }
         }
 
@@ -481,7 +519,8 @@ public class GemeindenData {
                             (Double)f.get(0),
                             (Double)f.get(1),
                             (Double)f.get(1)
-                                    - (Double)f.get(0)));
+                                    - (Double)f.get(0),
+                            (Integer)f.get(4)));
                 }
             }
         }
@@ -513,7 +552,8 @@ public class GemeindenData {
                         (String)f.get(2),
                         (Double)f.get(3),
                         (Double)f.get(4),
-                        (Double)f.get(1)));
+                        (Double)f.get(1),
+                        (Integer)f.get(6)));
             }
         }
 
@@ -619,7 +659,30 @@ public class GemeindenData {
          * @return  DOCUMENT ME!
          */
         public boolean isInGewPart(final int gew, final double from, final double till) {
-            return (gew == gewId) && (Math.min(from, till) <= this.from) && (Math.max(from, till) >= this.from);
+            return (gew == gewId) && (Math.min(roundCor(from), roundCor(till)) <= round(this.from))
+                        && (Math.max(roundCor(from), roundCor(till)) >= round(this.from));
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   val  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private double round(final double val) {
+            return ((int)(val * 100)) / 100.0;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   val  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private double roundCor(final double val) {
+            return (Math.round(val * 100)) / 100.0;
         }
 
         /**
@@ -691,27 +754,6 @@ public class GemeindenData {
          * @param  from    DOCUMENT ME!
          * @param  to      DOCUMENT ME!
          * @param  length  DOCUMENT ME!
-         */
-        public LineObjectData(final int gewId,
-                final String baCd,
-                final double from,
-                final double to,
-                final double length) {
-            this.gewId = gewId;
-            this.baCd = baCd;
-            this.from = from;
-            this.to = to;
-            this.length = length;
-        }
-
-        /**
-         * Creates a new LineObjectData object.
-         *
-         * @param  gewId   DOCUMENT ME!
-         * @param  baCd    DOCUMENT ME!
-         * @param  from    DOCUMENT ME!
-         * @param  to      DOCUMENT ME!
-         * @param  length  DOCUMENT ME!
          * @param  id      DOCUMENT ME!
          */
         public LineObjectData(final int gewId,
@@ -719,13 +761,18 @@ public class GemeindenData {
                 final double from,
                 final double to,
                 final double length,
-                final int id) {
+                final Integer id) {
             this.gewId = gewId;
             this.baCd = baCd;
             this.from = from;
             this.to = to;
             this.length = length;
-            this.id = id;
+
+            if (id == null) {
+                this.id = 0;
+            } else {
+                this.id = id;
+            }
         }
 
         //~ Methods ------------------------------------------------------------

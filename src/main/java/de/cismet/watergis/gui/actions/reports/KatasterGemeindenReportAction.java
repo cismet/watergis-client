@@ -198,7 +198,8 @@ public class KatasterGemeindenReportAction extends AbstractAction {
                                 final File file = get();
 
                                 if (file != null) {
-                                    DownloadManager.instance().add(new FakeFileDownload(file));
+                                    DownloadManager.instance()
+                                            .add(new FakeFileDownload(file, "Statistik: Kataster->Gemeinden"));
                                 }
                             } catch (Exception e) {
                                 LOG.error("Error while performing the gemeinden report.", e);
