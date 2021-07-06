@@ -97,6 +97,7 @@ public class FlipAction extends AbstractAction implements CleanUpAction {
 
                     if (pf != null) {
                         pf.refresh();
+                        pf.visualize();
                     }
                     CismapBroker.getInstance()
                             .getMappingComponent()
