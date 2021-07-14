@@ -34,6 +34,7 @@ import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.XBoundingBox;
+import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
@@ -220,6 +221,26 @@ public class ZoomPanel extends javax.swing.JPanel {
                                 if ((features != null) && !features.isEmpty()) {
                                     SelectionManager.getInstance().setSelectedFeaturesForService(service, features);
                                 }
+                            } catch (Exception e) {
+                                LOG.error("Error while selecting " + featureClass + " object", e);
+                            }
+                        }
+                    }
+                };
+
+            t.start();
+        } else {
+            final Thread t = new Thread("selectAfterZoomOnRiver") {
+
+                    @Override
+                    public void run() {
+                        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                                featureClass);
+
+                        for (final AbstractFeatureService service : services) {
+                            try {
+                                SelectionManager.getInstance()
+                                        .setSelectedFeaturesForService(service, new ArrayList<Feature>());
                             } catch (Exception e) {
                                 LOG.error("Error while selecting " + featureClass + " object", e);
                             }
