@@ -19,6 +19,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.apache.log4j.Logger;
 
+import org.deegree.datatypes.Types;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,8 +39,13 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
+import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
+
 import de.cismet.cismap.commons.features.Feature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
@@ -92,6 +99,30 @@ public class FgBaDuvRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
+        if (columnName.equals("ww_gr")) {
+            CidsLayerFeatureFilter filter = null;
+
+            if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("Administratoren")) {
+                final String userName = AppBroker.getInstance().getOwner();
+                filter = new CidsLayerFeatureFilter() {
+
+                        @Override
+                        public boolean accept(final CidsLayerFeature bean) {
+                            if (bean == null) {
+                                return false;
+                            }
+                            return bean.getProperty("owner").equals(userName);
+                        }
+                    };
+            } else {
+                filter = new WwGrAdminFilter();
+            }
+            return new CidsLayerReferencedComboEditor(new FeatureServiceAttribute(
+                        "ww_gr",
+                        String.valueOf(Types.INTEGER),
+                        true),
+                    filter);
+        }
         return null;
     }
 
