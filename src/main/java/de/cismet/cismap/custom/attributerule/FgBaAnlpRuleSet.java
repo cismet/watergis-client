@@ -69,8 +69,8 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
         typeMap.put("l_rl", new Catalogue("k_l_rl", false, true, new Varchar(2, false, false)));
         typeMap.put("anlp", new Catalogue("k_anlp", true, true, new Varchar(10, false, false)));
-        typeMap.put("anlp_a", new Catalogue("k_sbef", true, true, new Varchar(10, false, false)));
-        typeMap.put("material_a", new Catalogue("k_material", true, true, new Varchar(10, false, false)));
+        typeMap.put("anlp_a", new Catalogue("k_sbef", false, true, new Varchar(10, false, false)));
+        typeMap.put("material_a", new Catalogue("k_material", false, true, new Varchar(10, false, false)));
         typeMap.put("obj_nr", new Numeric(20, 0, false, true));
         typeMap.put("obj_nr_gu", new Varchar(50, false, false));
         typeMap.put("traeger", new Catalogue("k_traeger", false, true, new Varchar(10, false, false)));
