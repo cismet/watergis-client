@@ -28,7 +28,7 @@
         <!-- 
             TODO: Consider managing apache.poi dependencies in cismet-ext-bom
         -->
-        <apache.poi.version>3.12</apache.poi.version>
+        <apache.poi.version>3.17</apache.poi.version>
     </properties>
 
     <scm>
@@ -55,7 +55,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-commons</artifactId>
-                <version>7.0</version>
+                <version>7.2</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -63,7 +63,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-gui-commons</artifactId>
-                <version>7.0</version>
+                <version>7.2</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>7.0.3</version>
+                <version>7.0.6</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -79,7 +79,7 @@
             <dependency>
                 <groupId>de.cismet.cids</groupId>
                 <artifactId>cids-server</artifactId>
-                <version>7.3.1</version>
+                <version>7.6.1</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -87,7 +87,7 @@
             <dependency>
                 <groupId>de.cismet.cids.navigator</groupId>
                 <artifactId>cids-navigator</artifactId>
-                <version>7.2.4</version>
+                <version>7.6.1</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -95,7 +95,7 @@
             <dependency>
                 <groupId>de.cismet.cismap</groupId>
                 <artifactId>cismap-plugin</artifactId>
-                <version>7.0.4</version>
+                <version>7.1.1</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
