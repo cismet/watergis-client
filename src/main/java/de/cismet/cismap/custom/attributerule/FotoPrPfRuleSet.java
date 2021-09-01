@@ -28,6 +28,7 @@ import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
 
 import de.cismet.netutil.Proxy;
+import de.cismet.netutil.ProxyHandler;
 
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
@@ -125,7 +126,7 @@ public class FotoPrPfRuleSet extends WatergisDefaultRuleSet {
                         filename = file;
                     }
 
-                    final WebDavClient webDavClient = new WebDavClient(Proxy.fromPreferences(),
+                    final WebDavClient webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(),
                             Photo.WEB_DAV_USER,
                             Photo.WEB_DAV_PASSWORD,
                             true);

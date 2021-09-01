@@ -92,6 +92,7 @@ import de.cismet.commons.security.WebDavHelper;
 import de.cismet.connectioncontext.ConnectionContext;
 
 import de.cismet.netutil.Proxy;
+import de.cismet.netutil.ProxyHandler;
 
 import de.cismet.tools.PasswordEncrypter;
 
@@ -253,7 +254,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 filename = filename.substring(filename.lastIndexOf("/") + 1);
             }
 
-            final WebDavClient webDavClient = new WebDavClient(Proxy.fromPreferences(),
+            final WebDavClient webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(),
                     WEB_DAV_USER,
                     WEB_DAV_PASSWORD,
                     true);
@@ -297,7 +298,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      * @return  DOCUMENT ME!
      */
     public static WebDavClient createWebDavClient() {
-        return new WebDavClient(Proxy.fromPreferences(), WEB_DAV_USER, WEB_DAV_PASSWORD, true);
+        return new WebDavClient(ProxyHandler.getInstance().getProxy(), WEB_DAV_USER, WEB_DAV_PASSWORD, true);
     }
 
     /**
@@ -318,7 +319,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             path = path + "/";
         }
 
-        final WebDavClient webDavClient = new WebDavClient(Proxy.fromPreferences(),
+        final WebDavClient webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(),
                 WEB_DAV_USER,
                 WEB_DAV_PASSWORD,
                 true);
@@ -331,7 +332,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
             if (!((statusCode == 200) || (statusCode == 204))) {
                 // workaround and test
-                final WebDavClient webDavClientDownload = new WebDavClient(Proxy.fromPreferences(),
+                final WebDavClient webDavClientDownload = new WebDavClient(ProxyHandler.getInstance().getProxy(),
                         WEB_DAV_USER,
                         WEB_DAV_PASSWORD,
                         true);

@@ -1529,30 +1529,25 @@
       </FeatureServices>
     </ExportAction>
     <serverProfiles>
-        <profile id="tk"
+        <profile id="std"
+                 sorter="005"
+                 name="MV-DTK"
+                 path="/de/cismet/watergis/serverprofiles/mv-dtk.xml"
+                 icon="/de/cismet/watergis/serverprofiles/default.png"/>
+        <profile id="gdv"
                  sorter="010"
-                 name="Karte: TK / DOP / GU"
-                 path="/de/cismet/watergis/serverprofiles/TK DOP - GU.xml"
+                 name="GU-Pflege|GDV"
+                 path="/de/cismet/watergis/serverprofiles/gu-pflege-gdv.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"/>
-        <profile id="pfl1"
+        <profile id="igm"
                  sorter="020"
-                 name="Pflege: Gewässer"
-                 path="/de/cismet/watergis/serverprofiles/Pflege 1 - Gewässer.xml"
+                 name="GU-Pflege|IGM"
+                 path="/de/cismet/watergis/serverprofiles/gu-pflege-igm.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"/>
-        <profile id="pfl2"
+        <profile id="pflege"
                  sorter="030"
-                 name="Pflege: GU-Themen"
-                 path="/de/cismet/watergis/serverprofiles/Pflege 2 - Themen GU.xml"
-                 icon="/de/cismet/watergis/serverprofiles/default.png"/>
-        <profile id="aus1"
-                 sorter="040"
-                 name="Auswertung: DGM / FS"
-                 path="/de/cismet/watergis/serverprofiles/Auswertung 1 - DGM FS.xml"
-                 icon="/de/cismet/watergis/serverprofiles/default.png"/>
-        <profile id="aus2"
-                 sorter="050"
-                 name="Auswertung: MN / SG / WR."
-                 path="/de/cismet/watergis/serverprofiles/Auswertung 2 - MN SG WR.xml"
+                 name="MV-Pflege|1"
+                 path="/de/cismet/watergis/serverprofiles/mv-pflege1.xml"
                  icon="/de/cismet/watergis/serverprofiles/default.png"/>
     </serverProfiles>
 </watergis>

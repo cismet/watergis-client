@@ -216,6 +216,7 @@ import de.cismet.connectioncontext.ConnectionContext;
 import de.cismet.lookupoptions.gui.OptionsClient;
 
 import de.cismet.netutil.Proxy;
+import de.cismet.netutil.ProxyHandler;
 
 import de.cismet.tools.StaticDebuggingTools;
 
@@ -728,7 +729,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         StaticSwingTools.tweakUI();
 
         try {
-            initConnection(Proxy.fromPreferences());
+            initConnection(ProxyHandler.getInstance().getProxy());
         } catch (Exception e) {
             LOG.error("Connection exception", e);
             final List<String> messages = new ArrayList<String>();
@@ -736,8 +737,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             messages.add("call server: " + AppBroker.getInstance().getCallserverUrl());
             messages.add("Connection class: " + AppBroker.getInstance().getConnectionClass());
             messages.add("Domain: " + AppBroker.getInstance().getDomain());
-            if (Proxy.fromPreferences() != null) {
-                messages.add("proxy: " + Proxy.fromPreferences().isEnabled());
+            if (ProxyHandler.getInstance().getProxy() != null) {
+                messages.add("proxy: " + ProxyHandler.getInstance().getProxy().isEnabled());
             }
             messages.add(e.getMessage());
 
