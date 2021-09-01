@@ -43,6 +43,7 @@ import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
 
 import de.cismet.netutil.Proxy;
+import de.cismet.netutil.ProxyHandler;
 
 import de.cismet.tools.CismetThreadPool;
 import de.cismet.tools.PasswordEncrypter;
@@ -80,7 +81,7 @@ public class PhotoInfoPanel extends javax.swing.JPanel {
         WEB_DAV_DIRECTORY = bundle.getString("url");
 
         webDavClient = new WebDavClient(
-                Proxy.fromPreferences(),
+                ProxyHandler.getInstance().getProxy(),
                 WEB_DAV_USER,
                 WEB_DAV_PASSWORD,
                 true);
