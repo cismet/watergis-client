@@ -28,7 +28,7 @@
         <!-- 
             TODO: Consider managing apache.poi dependencies in cismet-ext-bom
         -->
-        <apache.poi.version>3.12</apache.poi.version>
+        <apache.poi.version>3.17</apache.poi.version>
     </properties>
 
     <scm>
