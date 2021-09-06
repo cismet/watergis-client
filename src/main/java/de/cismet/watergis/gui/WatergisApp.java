@@ -729,7 +729,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         StaticSwingTools.tweakUI();
 
         try {
-            initConnection(ProxyHandler.getInstance().getProxy());
+            initConnection();
         } catch (Exception e) {
             LOG.error("Connection exception", e);
             final List<String> messages = new ArrayList<String>();
@@ -4430,18 +4430,14 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     /**
      * DOCUMENT ME!
      *
-     * @param   proxyConfig  DOCUMENT ME!
-     *
      * @throws  ConnectionException   DOCUMENT ME!
      * @throws  InterruptedException  DOCUMENT ME!
      */
-    private void initConnection(final Proxy proxyConfig) throws ConnectionException, InterruptedException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initialising connection using proxy: " + proxyConfig);
-        }
-
+    private void initConnection() throws ConnectionException, InterruptedException {
         final PropertyManager propertyManager = PropertyManager.getManager();
         propertyManager.load(this.getClass().getResourceAsStream("/cfg/navigator.cfg"));
+        final Proxy proxyConfig = ProxyHandler.getInstance().init(propertyManager.getProxyProperties());
+
         final Connection connection = ConnectionFactory.getFactory()
                     .createConnection(AppBroker.getInstance().getConnectionClass(),
                         AppBroker.getInstance().getCallserverUrl(),
