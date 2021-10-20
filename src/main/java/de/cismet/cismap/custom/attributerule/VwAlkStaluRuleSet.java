@@ -105,7 +105,7 @@ public class VwAlkStaluRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public String getAdditionalFieldFormula(final String propertyName) {
-        if (propertyName.equals("flaeche")) {
+        if (propertyName.equals("stalu_fl")) {
             return "round(st_area(geom))";
         } else {
             return null;
