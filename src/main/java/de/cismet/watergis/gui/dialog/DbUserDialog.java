@@ -30,6 +30,7 @@ import org.openide.util.NbBundle;
 
 import java.awt.EventQueue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -51,7 +52,10 @@ import de.cismet.cids.server.cidslayer.CidsLayerInfo;
 
 import de.cismet.cids.tools.CidsLayerUtil;
 
-import de.cismet.cismap.commons.featureservice.H2FeatureService;
+import de.cismet.cismap.cidslayer.CidsLayer;
+
+import de.cismet.cismap.commons.featureservice.DefaultLayerProperties;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 
 import de.cismet.connectioncontext.AbstractConnectionContext;
 import de.cismet.connectioncontext.ConnectionContext;
@@ -59,8 +63,6 @@ import de.cismet.connectioncontext.ConnectionContext;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
-
-import static java.awt.image.ImageObserver.WIDTH;
 
 /**
  * DOCUMENT ME!
@@ -526,6 +528,8 @@ public class DbUserDialog extends javax.swing.JDialog {
                         final String schema,
                         final String dbUser,
                         final User user) throws ConnectionException {
+                    final List<ServerActionParameter> parameter = new ArrayList<ServerActionParameter>();
+
                     final ServerActionParameter paramClass = new ServerActionParameter(
                             CreateViewAction.ParameterType.CLASS.toString(),
                             clazz.getId());
@@ -538,6 +542,36 @@ public class DbUserDialog extends javax.swing.JDialog {
                     final ServerActionParameter paramUser = new ServerActionParameter(
                             CreateViewAction.ParameterType.USER.toString(),
                             user);
+                    parameter.add(paramClass);
+                    parameter.add(paramDbUser);
+                    parameter.add(paramSchema);
+                    parameter.add(paramUser);
+                    final CidsLayer layer = new CidsLayer(clazz);
+                    final AttributeTableRuleSet ruleSet = layer.getLayerProperties().getAttributeTableRuleSet();
+
+                    if ((ruleSet != null) && (ruleSet.getAdditionalFieldNames() != null)) {
+                        final List<CreateViewAction.AdditionalField> additionalFields =
+                            new ArrayList<CreateViewAction.AdditionalField>();
+
+                        for (final String fieldName : ruleSet.getAdditionalFieldNames()) {
+                            final String formula = layer.decorateQuery(ruleSet.getAdditionalFieldFormula(fieldName));
+
+                            if (formula != null) {
+                                final CreateViewAction.AdditionalField field = new CreateViewAction.AdditionalField(
+                                        fieldName,
+                                        ruleSet.getIndexOfAdditionalFieldName(fieldName),
+                                        formula);
+                                additionalFields.add(field);
+                            }
+                        }
+
+                        if (additionalFields.size() > 0) {
+                            parameter.add(new ServerActionParameter(
+                                    CreateViewAction.ParameterType.ADDITIONAL_FIELDS.toString(),
+                                    additionalFields.toArray(
+                                        new CreateViewAction.AdditionalField[additionalFields.size()])));
+                        }
+                    }
 
                     final Boolean viewCreated = (Boolean)SessionManager.getProxy()
                                 .executeTask(
@@ -545,10 +579,7 @@ public class DbUserDialog extends javax.swing.JDialog {
                                         AppBroker.getInstance().getDomain(),
                                         (Object)null,
                                         ConnectionContext.createDummy(),
-                                        paramClass,
-                                        paramDbUser,
-                                        paramSchema,
-                                        paramUser);
+                                        parameter.toArray(new ServerActionParameter[parameter.size()]));
 
                     if (viewCreated) {
                         return null;
