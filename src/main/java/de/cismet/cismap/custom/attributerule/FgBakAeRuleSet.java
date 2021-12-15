@@ -92,11 +92,6 @@ public class FgBakAeRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
-        return true;
-    }
-
-    @Override
     public void beforeSave(final FeatureServiceFeature feature) {
         adjustFisGDateAndFisGUser(feature);
     }

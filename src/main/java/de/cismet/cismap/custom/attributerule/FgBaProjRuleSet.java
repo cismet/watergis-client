@@ -93,13 +93,11 @@ public class FgBaProjRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("proj_nr_gu") && isValueEmpty(feature.getProperty("name"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Die Attribute name und proj_nr_gu dürfen nicht beide leer sein");
+                showMessage("Die Attribute name und proj_nr_gu dürfen nicht beide leer sein", column);
                 return oldValue;
             }
             if (column.equals("name") && isValueEmpty(feature.getProperty("proj_nr_gu"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Die Attribute name und proj_nr_gu dürfen nicht beide leer sein");
+                showMessage("Die Attribute name und proj_nr_gu dürfen nicht beide leer sein", column);
                 return oldValue;
             }
         }
@@ -165,16 +163,21 @@ public class FgBaProjRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("name")) && isValueEmpty(feature.getProperty("proj_nr_gu"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Die Attribute name und proj_nr_gu dürfen nicht beide leer sein");
-                return false;
+                showMessage("Die Attribute name und proj_nr_gu dürfen nicht beide leer sein", "name und proj_nr_gu");
+
+                return new ErrorDetails(feature, "name");
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

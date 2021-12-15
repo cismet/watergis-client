@@ -126,6 +126,11 @@ public class FgBaExpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (feature instanceof CidsLayerFeature) {
@@ -136,14 +141,13 @@ public class FgBaExpRuleSet extends WatergisDefaultRuleSet {
 
                 if (wwGr != null) {
                     if (AppBroker.getInstance().isOwnerWwGr((Integer)wwGr.getProperty("ww_gr"))) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Ein Objekt liegt auf einer Route, die Ihnen bereits gehört.");
-                        return false;
+                        showMessage("Ein Objekt liegt auf einer Route, die Ihnen bereits gehört.", "ww_gr");
+                        return new ErrorDetails(feature, null);
                     }
                 }
             }
         }
-        return true;
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

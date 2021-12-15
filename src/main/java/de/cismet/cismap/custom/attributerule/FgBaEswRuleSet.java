@@ -69,10 +69,9 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("eswa") || column.equals("lage")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -163,39 +162,42 @@ public class FgBaEswRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("eswa"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut eswa darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut eswa darf nicht leer sein", "eswa");
+                return new ErrorDetails(feature, "eswa");
             }
             if (isValueEmpty(feature.getProperty("lage"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut lage darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut lage darf nicht leer sein", "lage");
+                return new ErrorDetails(feature, "lage");
             }
             if (!checkRange("ausbaujahr", feature.getProperty("ausbaujahr"), 1950, 2100, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
 
             if (((feature.getProperty("eswa") != null) && (feature.getProperty("eswa").toString().equals("VT")))
                         || feature.getProperty("eswa").toString().equals("Wes")) {
                 if (!checkRange("br", feature.getProperty("br"), 0, 30, true, false, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "br");
                 }
             } else if ((feature.getProperty("eswa") != null) && feature.getProperty("eswa").toString().equals("Z")) {
                 if (!checkRange("br", feature.getProperty("br"), 0, 500, true, false, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "br");
                 }
             } else {
                 if (!checkRange("br", feature.getProperty("br"), 0, 10, true, false, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "br");
                 }
             }
         }
 
-        return true;
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

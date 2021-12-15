@@ -92,10 +92,9 @@ public class FgBaGmdRuleSet extends WatergisDefaultRuleSet {
             final Object newValue) {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
+            showMessage("Das Attribut "
                         + column
-                        + " darf nicht leer sein");
+                        + " darf nicht leer sein", column);
             return oldValue;
         }
 
@@ -170,32 +169,32 @@ public class FgBaGmdRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("gmd_nr"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gmd_nr darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut gmd_nr darf nicht leer sein", "gmd_nr");
+                return new ErrorDetails(feature, "gmd_nr");
             } else if (isValueEmpty(feature.getProperty("amt_nr"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut amt_nr darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut amt_nr darf nicht leer sein", "amt_nr");
+                return new ErrorDetails(feature, "amt_nr");
             } else if (isValueEmpty(feature.getProperty("amt_name"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut amt_name darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut amt_name darf nicht leer sein", "amt_name");
+                return new ErrorDetails(feature, "amt_name");
             } else if (isValueEmpty(feature.getProperty("kreis_nr"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut kreis_nr darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut kreis_nr darf nicht leer sein", "kreis_nr");
+                return new ErrorDetails(feature, "kreis_nr");
             } else if (isValueEmpty(feature.getProperty("kreis_name"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut kreis_name darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut kreis_name darf nicht leer sein", "kreis_name");
+                return new ErrorDetails(feature, "kreis_name");
             }
         }
 
-        return true;
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

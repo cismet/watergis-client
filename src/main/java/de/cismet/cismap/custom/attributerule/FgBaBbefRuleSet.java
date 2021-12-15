@@ -47,7 +47,6 @@ import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 
 import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.arrayContains;
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRange;
 
 /**
  * DOCUMENT ME!
@@ -122,10 +121,9 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("l_rl") || column.equals("bbef")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -170,7 +168,8 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                                 + newValue.toString()
                                 + ", dann muss das Attribut material "
                                 + arrayToString(allowedMaterialVArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             }
@@ -185,7 +184,8 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                                 + newValue
                                 + ", dann muss das Attribut material "
                                 + arrayToString(allowedMaterialVArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             }
@@ -195,7 +195,7 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                     && (feature.getProperty("ho_d_u") != null)) {
             if (((Number)newValue).doubleValue()
                         <= ((Number)feature.getProperty("ho_d_u")).doubleValue()) {
-                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.", column);
                 return oldValue;
             }
         }
@@ -204,7 +204,7 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                     && (feature.getProperty("ho_d_o") != null)) {
             if (((Number)feature.getProperty("ho_d_o")).doubleValue()
                         <= ((Number)newValue).doubleValue()) {
-                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.", column);
                 return oldValue;
             }
         }
@@ -374,28 +374,31 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("l_rl"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut l_rl darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut l_rl darf nicht leer sein", "l_rl");
+                return new ErrorDetails(feature, "l_rl");
             }
             if (isValueEmpty(feature.getProperty("bbef"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut bbef darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut bbef darf nicht leer sein", "bbef");
+                return new ErrorDetails(feature, "bbef");
             }
             if (!checkRange("br", feature.getProperty("br"), 0, 15, 0, 30, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
 
             if (!checkRange("ho_d_o", feature.getProperty("ho_d_o"), 0, 10, 0, 15, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_o");
             }
 
             if (!checkRange("ho_d_u", feature.getProperty("ho_d_u"), 0, 10, 0, 15, true, true, false)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_u");
             }
 
             if (
@@ -406,7 +409,7 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                             getCurrentYear()
                             + 2,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
 
             if ((feature.getProperty("bbef") != null) && feature.getProperty("bbef").toString().equals("Rin")) {
@@ -415,18 +418,16 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                                 toNumber(feature.getProperty("ba_st_von")).doubleValue()
                                 - toNumber(feature.getProperty("ba_st_bis")).doubleValue())
                             > 10) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei Rin darf die Geometrie nicht länger als 10 m sein.");
-                    return false;
+                    showMessage("Bei Rin darf die Geometrie nicht länger als 10 m sein.", "ba_st_bis");
+                    return new ErrorDetails(feature, "ba_st_bis");
                 }
             }
 
             if ((feature.getProperty("ho_d_o") != null) && (feature.getProperty("ho_d_u") != null)) {
                 if (((Number)feature.getProperty("ho_d_o")).doubleValue()
                             <= ((Number)feature.getProperty("ho_d_u")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
-                    return false;
+                    showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.", "ho_d_o");
+                    return new ErrorDetails(feature, "ho_d_o");
                 }
             }
 
@@ -439,19 +440,19 @@ public class FgBaBbefRuleSet extends WatergisDefaultRuleSet {
                                     allowedMaterialVArray,
                                     ((feature.getProperty("material") != null)
                                         ? feature.getProperty("material").toString() : null))) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut bbef = "
+                        showMessage("Wenn das Attribut bbef = "
                                     + feature.getProperty("bbef").toString()
                                     + ", dann muss das Attribut material "
                                     + arrayToString(allowedMaterialVArray)
-                                    + " sein.");
-                        return false;
+                                    + " sein.",
+                            "material");
+                        return new ErrorDetails(feature, "material");
                     }
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

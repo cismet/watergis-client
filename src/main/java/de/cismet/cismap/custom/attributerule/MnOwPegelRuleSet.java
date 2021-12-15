@@ -105,15 +105,13 @@ public class MnOwPegelRuleSet extends WatergisDefaultRuleSet {
             final Object oldValue,
             final Object newValue) {
         idOfCurrentlyCheckedFeature = feature.getId();
-        if (column.equals("ms_nr") && (isValueEmpty(newValue)) && (isValueEmpty(feature.getProperty("ms_nr_wsa")))) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.");
+        if (column.equals("ms_nr") && (isValueEmpty(newValue)) && (isValueEmpty(feature.getProperty("ms_nr")))) {
+            showMessage("Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.", "ms_nr");
             return oldValue;
         }
 
         if (column.equals("ms_nr_wsa") && (isValueEmpty(newValue)) && (isValueEmpty(feature.getProperty("ms_nr")))) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.");
+            showMessage("Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.", "ms_nr_wsa");
             return oldValue;
         }
 
@@ -164,16 +162,20 @@ public class MnOwPegelRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if ((isValueEmpty(feature.getProperty("ms_nr"))) && (isValueEmpty(feature.getProperty("ms_nr_wsa")))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.");
-                return false;
+                showMessage("Die Attribute ms_nr und ms_nr_wsa dürfen nicht beide leer sein.", "ms_nr");
+                return new ErrorDetails(feature, "ms_nr");
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

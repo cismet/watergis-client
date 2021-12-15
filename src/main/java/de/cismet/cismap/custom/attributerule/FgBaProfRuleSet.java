@@ -111,10 +111,9 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("profil")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -129,17 +128,17 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                                 > Math.min(
                                     ((Number)feature.getProperty("bh_li")).doubleValue(),
                                     ((Number)feature.getProperty("bh_re")).doubleValue())) {
-                        showMessage("Das Attribut mw muss kleiner als das Minimum von bh_re, bh_li sein.");
+                        showMessage("Das Attribut mw muss kleiner als das Minimum von bh_re, bh_li sein.", "mw");
                         return oldValue;
                     }
                 } else if (!isValueEmpty(feature.getProperty("bh_li"))) {
                     if (mw > ((Number)feature.getProperty("bh_li")).doubleValue()) {
-                        showMessage("Das Attribut mw muss kleiner als bh_li sein.");
+                        showMessage("Das Attribut mw muss kleiner als bh_li sein.", "mw");
                         return oldValue;
                     }
                 } else if (!isValueEmpty(feature.getProperty("bh_re"))) {
                     if (mw > ((Number)feature.getProperty("bh_re")).doubleValue()) {
-                        showMessage("Das Attribut mw muss kleiner als bh_re sein.");
+                        showMessage("Das Attribut mw muss kleiner als bh_re sein.", "mw");
                         return oldValue;
                     }
                 }
@@ -201,7 +200,7 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                 final double hoa = toNumber(newValue).doubleValue();
 
                 if (hoe < hoa) {
-                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten");
+                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten", "ho_e");
                     return oldValue;
                 }
             } else if (column.equals("ho_e") && (feature.getProperty("ho_a") != null)) {
@@ -209,7 +208,7 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                 final double hoe = toNumber(newValue).doubleValue();
 
                 if (hoe < hoa) {
-                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten");
+                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten", "ho_e");
                     return oldValue;
                 }
             }
@@ -336,12 +335,16 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("profil"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut profil darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut profil darf nicht leer sein", "profil");
+                return new ErrorDetails(feature, "profil");
             }
             if (
                 !checkRange(
@@ -353,35 +356,35 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                             true,
                             true,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
             if (!checkRange("br", feature.getProperty("br"), 0, 10, 0, 100, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
             if (!checkRange("mw", feature.getProperty("mw"), 0, 10, 0, 15, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "mw");
             }
             if (!checkRangeBetweenOrEqual("ho_e", feature.getProperty("ho_e"), -6, 179, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_e");
             }
             if (!checkRangeBetweenOrEqual("ho_a", feature.getProperty("ho_a"), -6, 179, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_a");
             }
 
             if (!hasValue("bv_re", feature.getProperty("bv_re"), 0.0, true)
                         && !checkRangeBetweenOrEqual("bv_re", feature.getProperty("bv_re"), 0.25, 10, 0.1, 15, true)) {
-                return false;
+                return new ErrorDetails(feature, "bv_re");
             }
             if (!checkRange("bh_re", feature.getProperty("bh_re"), 0, 10, 0, 15, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "bh_re");
             }
 
             if (!hasValue("bv_li", feature.getProperty("bv_li"), 0.0, true)
                         && !checkRangeBetweenOrEqual("bv_li", feature.getProperty("bv_li"), 0.25, 10, 0.1, 15, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_a");
             }
             if (!checkRange("bh_li", feature.getProperty("bh_li"), 0, 10, 0, 15, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "bh_li");
             }
 
             if (!isValueEmpty(feature.getProperty("mw"))) {
@@ -392,21 +395,18 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                                 > Math.min(
                                     ((Number)feature.getProperty("bh_li")).doubleValue(),
                                     ((Number)feature.getProperty("bh_re")).doubleValue())) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Das Attribut mw muss kleiner als das Minimum von bh_re, bh_li sein.");
-                        return false;
+                        showMessage("Das Attribut mw muss kleiner als das Minimum von bh_re, bh_li sein.", "mw");
+                        return new ErrorDetails(feature, "mw");
                     }
                 } else if (!isValueEmpty(feature.getProperty("bh_li"))) {
                     if (mw > ((Number)feature.getProperty("bh_li")).doubleValue()) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Das Attribut mw muss kleiner als bh_li sein.");
-                        return false;
+                        showMessage("Das Attribut mw muss kleiner als bh_li sein.", "mw");
+                        return new ErrorDetails(feature, "mw");
                     }
                 } else if (!isValueEmpty(feature.getProperty("bh_re"))) {
                     if (mw > ((Number)feature.getProperty("bh_re")).doubleValue()) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Das Attribut mw muss kleiner als bh_re sein.");
-                        return false;
+                        showMessage("Das Attribut mw muss kleiner als bh_re sein.", "mw");
+                        return new ErrorDetails(feature, "mw");
                     }
                 }
             }
@@ -414,9 +414,10 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
             if ((feature.getProperty("profil") != null) && feature.getProperty("profil").toString().equals("re")) {
                 if (!hasValue("bv_re", feature.getProperty("bv_re"), 0, true)
                             || !hasValue("bv_li", feature.getProperty("bv_li"), 0, true)) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Die Attribute bv_re und bv_li müssen beide 0 sein, wenn das Attribut profil den Wert re hat.");
-                    return false;
+                    showMessage(
+                        "Die Attribute bv_re und bv_li müssen beide 0 sein, wenn das Attribut profil den Wert re hat.",
+                        "bv_re");
+                    return new ErrorDetails(feature, "bv_re");
                 }
             }
 
@@ -424,37 +425,37 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                 if ((feature.getProperty("bv_re") != null) && (feature.getProperty("bv_li") != null)
                             && hasValue("bv_re", feature.getProperty("bv_re"), 0, true)
                             && hasValue("bv_li", feature.getProperty("bv_li"), 0, true)) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Die Attribute bv_re und bv_li dürfen nicht beide 0 sein, wenn das Attribut profil den Wert tr hat.");
-                    return false;
+                    showMessage(
+                        "Die Attribute bv_re und bv_li dürfen nicht beide 0 sein, wenn das Attribut profil den Wert tr hat.",
+                        "bv_re");
+                    return new ErrorDetails(feature, "bv_re");
                 }
             }
 
             if ((feature.getProperty("ho_e") != null) && (feature.getProperty("ho_a") != null)) {
                 if (toNumber(feature.getProperty("ho_e")).doubleValue()
                             < toNumber(feature.getProperty("ho_a")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribute ho_e muss größer oder gleich dem Attribut ho_a sein.");
-                    return false;
+                    showMessage("Das Attribute ho_e muss größer oder gleich dem Attribut ho_a sein.", "ho_e");
+                    return new ErrorDetails(feature, "ho_e");
                 }
             }
 
             refillFields(feature, true);
 
             if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), 0, 50, -10, 100, true)) {
-                return false;
+                return new ErrorDetails(feature, "gefaelle");
             }
 
             if (!checkRange("bl_re", feature.getProperty("bl_re"), 0, 15, 0, 30, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "bl_re");
             }
 
             if (!checkRange("bl_li", feature.getProperty("bl_li"), 0, 15, 0, 30, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "bl_li");
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

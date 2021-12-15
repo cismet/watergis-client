@@ -79,6 +79,11 @@ public class MnGwPegelRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature f : features) {
             idOfCurrentlyCheckedFeature = f.getId();
             if (isNumberOrNull(f.getProperty("pn")) && (f.getProperty("pn") != null)) {
@@ -86,23 +91,41 @@ public class MnGwPegelRuleSet extends WatergisDefaultRuleSet {
                     if ((f.getProperty("pn_von") != null) || (f.getProperty("pn_bis") != null)
                                 || (f.getProperty("pn_von_h") != null)
                                 || (f.getProperty("pn_bis_h") != null)) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Attribute  pn_von / pn_bis / pn_von_h / pn_bis_h müssen NULL sein, wenn pn = 0.");
-                        return false;
+                        showMessage(
+                            "Die Attribute  pn_von / pn_bis / pn_von_h / pn_bis_h müssen NULL sein, wenn pn = 0.",
+                            "pn_von / pn_bis / pn_von_h / pn_bis_h");
+                        if (f.getProperty("pn_von") != null) {
+                            return new ErrorDetails(f, "pn_von");
+                        } else if (f.getProperty("pn_bis") != null) {
+                            return new ErrorDetails(f, "pn_bis");
+                        } else if (f.getProperty("pn_von_h") != null) {
+                            return new ErrorDetails(f, "pn_von_h");
+                        } else {
+                            return new ErrorDetails(f, "pn_bis_h");
+                        }
                     }
                 } else if ((f.getProperty("pn") != null) && (((Number)f.getProperty("pn")).intValue() > 0)) {
                     if ((isValueEmpty(f.getProperty("pn_von"))) || (isValueEmpty(f.getProperty("pn_bis")))
                                 || (isValueEmpty(f.getProperty("pn_von_h")))
                                 || (isValueEmpty(f.getProperty("pn_bis_h")))) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Attribute  pn_von / pn_bis / pn_von_h / pn_bis_h dürfen nicht NULL sein, wenn pn > 0.");
-                        return false;
+                        showMessage(
+                            "Die Attribute  pn_von / pn_bis / pn_von_h / pn_bis_h dürfen nicht NULL sein, wenn pn > 0.",
+                            "pn_von / pn_bis / pn_von_h / pn_bis_h");
+                        if (isValueEmpty(f.getProperty("pn_von"))) {
+                            return new ErrorDetails(f, "pn_von");
+                        } else if (isValueEmpty(f.getProperty("pn_bis"))) {
+                            return new ErrorDetails(f, "pn_bis");
+                        } else if (isValueEmpty(f.getProperty("pn_von_h"))) {
+                            return new ErrorDetails(f, "pn_von_h");
+                        } else {
+                            return new ErrorDetails(f, "pn_bis_h");
+                        }
                     }
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

@@ -34,6 +34,7 @@ import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableExtendedRuleSet;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
@@ -43,15 +44,13 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRange;
-
 /**
  * DOCUMENT ME!
  *
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class FgBaFgskRuleSet extends WatergisDefaultRuleSet {
+public class FgBaFgskRuleSet extends WatergisDefaultRuleSet implements AttributeTableExtendedRuleSet {
 
     //~ Instance fields --------------------------------------------------------
 
@@ -100,10 +99,9 @@ public class FgBaFgskRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("fgsk_id") || column.equals("vorkart")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -139,36 +137,39 @@ public class FgBaFgskRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("fgsk_id"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut fgsk_id darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut fgsk_id darf nicht leer sein", "fgsk_id");
+                return new ErrorDetails(feature, "fgsk_id");
             }
             if (isValueEmpty(feature.getProperty("vorkart"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut vorkart darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut vorkart darf nicht leer sein", "vorkart");
+                return new ErrorDetails(feature, "vorkart");
             }
             if (!checkRange("gk_sohle", feature.getProperty("gk_sohle"), 0, 5, false, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "gk_sohle");
             }
 
             if (!checkRange("gk_ufer", feature.getProperty("gk_ufer"), 0, 5, false, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "gk_ufer");
             }
 
             if (!checkRange("gk_land", feature.getProperty("gk_land"), 0, 5, false, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "gk_land");
             }
 
             if (!checkRange("gk_gesamt", feature.getProperty("gk_gesamt"), 0, 5, false, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "gk_gesamt");
             }
         }
 
-        return true;
+        return null;
     }
 
     @Override

@@ -130,7 +130,7 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
                     && (feature.getProperty("ho_d_u") != null)) {
             if (((Number)newValue).doubleValue()
                         <= ((Number)feature.getProperty("ho_d_u")).doubleValue()) {
-                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.", column);
                 return oldValue;
             }
         }
@@ -139,7 +139,7 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
                     && (feature.getProperty("ho_d_o") != null)) {
             if (((Number)feature.getProperty("ho_d_o")).doubleValue()
                         <= ((Number)newValue).doubleValue()) {
-                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
+                showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.", column);
                 return oldValue;
             }
         }
@@ -236,31 +236,35 @@ public class FgBaUghzRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (!checkRange("ausbaujahr", feature.getProperty("ausbaujahr"), 1950, 2100, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
             if (!checkRange("br", feature.getProperty("br"), 0, 30, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
             if (!checkRange("ho_d_o", feature.getProperty("ho_d_o"), 0, 15, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_o");
             }
             if (!checkRange("ho_d_u", feature.getProperty("ho_d_u"), 0, 15, true, true, false)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_u");
             }
             if ((feature.getProperty("ho_d_o") != null) && (feature.getProperty("ho_d_u") != null)) {
                 if (((Number)feature.getProperty("ho_d_o")).doubleValue()
                             <= ((Number)feature.getProperty("ho_d_u")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.");
-                    return false;
+                    showMessage("Das Attribut ho_d_o muss größer als das Attribut ho_d_u sein.", "ho_d_o");
+                    return new ErrorDetails(feature, "ho_d_o");
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override
