@@ -128,10 +128,9 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("sbef")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", "sbef");
                 return oldValue;
             }
         }
@@ -173,7 +172,7 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
                 final double hoa = toNumber(newValue).doubleValue();
 
                 if (hoe < hoa) {
-                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten");
+                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten", "ho_e");
                     return oldValue;
                 }
             } else if (column.equals("ho_e") && (feature.getProperty("ho_a") != null)) {
@@ -181,7 +180,7 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
                 final double hoe = toNumber(newValue).doubleValue();
 
                 if (hoe < hoa) {
-                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten");
+                    showMessage("Wert nicht zulässig, weil ho_e >= ho_a nicht eingehalten", "ho_e");
                     return oldValue;
                 }
             }
@@ -242,7 +241,8 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
                                 + feature.getProperty("sbef").toString()
                                 + ", dann muss das Attribut material "
                                 + arrayToString(allowedMaterialVArray)
-                                + " sein.");
+                                + " sein.",
+                        "material");
                     return oldValue;
                 }
             }
@@ -353,27 +353,31 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("sbef"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut sbef darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut sbef darf nicht leer sein", "sbef");
+                return new ErrorDetails(feature, "sbef");
             }
             if (!checkRange("br", feature.getProperty("br"), 0, 100, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
             if (!checkRangeBetweenOrEqual("ho_e", feature.getProperty("ho_e"), -6, 179, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_e");
             }
             if (!checkRangeBetweenOrEqual("ho_a", feature.getProperty("ho_a"), -6, 179, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_a");
             }
             if (!checkRangeBetweenOrEqual("ho_d_e", feature.getProperty("ho_d_e"), 0, 5, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_e");
             }
             if (!checkRangeBetweenOrEqual("ho_d_a", feature.getProperty("ho_d_a"), 0, 5, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_a");
             }
 
             if (
@@ -384,15 +388,14 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
                             getCurrentYear()
                             + 2,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
 
             if ((feature.getProperty("ho_e") != null) && (feature.getProperty("ho_a") != null)) {
                 if (((Number)feature.getProperty("ho_e")).doubleValue()
                             < ((Number)feature.getProperty("ho_a")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribute ho_e muss größer oder gleich dem Attribut ho_a sein.");
-                    return false;
+                    showMessage("Das Attribute ho_e muss größer oder gleich dem Attribut ho_a sein.", "ho_a");
+                    return new ErrorDetails(feature, "ho_e");
                 }
             }
 
@@ -404,13 +407,13 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
                                 && !arrayContains(
                                     allowedMaterialVArray,
                                     feature.getProperty("material").toString())) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut sbef = "
+                        showMessage("Wenn das Attribut sbef = "
                                     + feature.getProperty("sbef").toString()
                                     + ", dann muss das Attribut material "
                                     + arrayToString(allowedMaterialVArray)
-                                    + " sein.");
-                        return false;
+                                    + " sein.",
+                            "material");
+                        return new ErrorDetails(feature, "material");
                     }
                 }
             }
@@ -418,11 +421,11 @@ public class FgBaSbefRuleSet extends WatergisDefaultRuleSet {
             refillGefaelle(feature);
 
             if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), -10, 100, true)) {
-                return false;
+                return new ErrorDetails(feature, "gefaelle");
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

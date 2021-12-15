@@ -99,20 +99,16 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equalsIgnoreCase("wk_nr")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wk_nr darf nicht leer sein");
+                showMessage("Das Attribut wk_nr darf nicht leer sein", "wk_nr");
                 return oldValue;
             } else if (column.equalsIgnoreCase("see_gn")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_gn darf nicht leer sein");
+                showMessage("Das Attribut see_gn darf nicht leer sein", "see_gn");
                 return oldValue;
             } else if (column.equalsIgnoreCase("see_lawa")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_lawa darf nicht leer sein");
+                showMessage("Das Attribut see_lawa darf nicht leer sein", "see_lawa");
                 return oldValue;
             } else if (column.equalsIgnoreCase("see_sp")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_sp darf nicht leer sein");
+                showMessage("Das Attribut see_sp darf nicht leer sein", "see_sp");
                 return oldValue;
             }
         }
@@ -154,28 +150,29 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("wk_nr"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wk_nr darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut wk_nr darf nicht leer sein", "wk_nr");
+                return new ErrorDetails(feature, "wk_nr");
             } else if (isValueEmpty(feature.getProperty("see_gn"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_gn darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut see_gn darf nicht leer sein", "see_gn");
+                return new ErrorDetails(feature, "see_gn");
             } else if (isValueEmpty(feature.getProperty("see_lawa"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gbk_lawa darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut gbk_lawa darf nicht leer sein", "see_lawa");
+                return new ErrorDetails(feature, "see_lawa");
             } else if (isValueEmpty(feature.getProperty("see_sp"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut see_sp darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut see_sp darf nicht leer sein", "see_sp");
+                return new ErrorDetails(feature, "see_sp");
             }
         }
 
-        return true;
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

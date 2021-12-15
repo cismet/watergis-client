@@ -129,19 +129,25 @@ public class SonstHwEnFRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if ((isValueEmpty(feature.getProperty("mail")))
                         && ((isValueEmpty(feature.getProperty("vorwahl")))
                             || (isValueEmpty(feature.getProperty("nummer"))))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Es muss immer entweder das Mail-Feld oder das Vorwahl- und Nummer-Feld gesetzt sein.");
+                showMessage(
+                    "Es muss immer entweder das Mail-Feld oder das Vorwahl- und Nummer-Feld gesetzt sein.",
+                    "mail");
 
-                return false;
+                return new ErrorDetails(feature, "mail");
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

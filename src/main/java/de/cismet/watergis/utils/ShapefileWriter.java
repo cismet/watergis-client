@@ -721,7 +721,8 @@ public class ShapefileWriter implements JUMPWriter {
                                         / Math.pow(10, fields[index].fieldnumdec);
                             DBFrow.add(d);
                         } else {
-                            DBFrow.add((Double)a);
+                            final long val = Math.round((Double)a);
+                            DBFrow.add(val);
                         }
                     }
                 } else if (columnType == AttributeType.DATE) {

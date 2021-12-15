@@ -38,6 +38,7 @@ import de.cismet.cids.custom.watergis.server.search.MergeBaKr;
 import de.cismet.cids.custom.watergis.server.search.MergeBaScha;
 import de.cismet.cids.custom.watergis.server.search.MergeBaSchw;
 import de.cismet.cids.custom.watergis.server.search.MergeBaWehr;
+import de.cismet.cids.custom.watergis.server.search.OverlappedAnllWithR;
 import de.cismet.cids.custom.watergis.server.search.OverlappedRlWithRDDue;
 import de.cismet.cids.custom.watergis.server.search.RlWithHole;
 
@@ -138,7 +139,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
     private static String QUERY_ANLP_ESW;
     private static String QUERY_KR_ESW;
     private static String QUERY_EA_ESW;
-    private static String QUERY_ANLL_GESCHL;
+//    private static String QUERY_ANLL_GESCHL;
     private static String QUERY_KR_MARKED_TWICE;
     private static String QUERY_KR_KEIN_FG_BA;
     private static String QUERY_KR_INVALID;
@@ -1261,103 +1262,54 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + ")";
             }
 
-            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
-                            + " from dlm25w.fg_ba_anll a\n"
-                            + "join dlm25w.fg_ba_linie linie on (a.ba_st = linie.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "left join dlm25w.k_anll ka on (ka.id = a.anll)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and ka.anll <> 'Wka' and \n"
-                            + "((\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") + \n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") +\n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) >= 0.01";
-            } else {
-                QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
-                            + " from dlm25w.fg_ba_anll a\n"
-                            + "join dlm25w.fg_ba_linie linie on (a.ba_st = linie.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "left join dlm25w.k_anll ka on (ka.id = a.anll)\n"
-                            + "where (%1$s is null or s.route = any(%1$s)) and (gr.owner = '"
-                            + user.getUserGroup().getName() + "' or %2$s) and ka.anll <> 'WKA' and \n"
-                            + "((\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") + \n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") +\n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) >= 0.01";
-            }
-
-            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
-                            + " from dlm25w.fg_ba_anll a\n"
-                            + "join dlm25w.fg_ba_linie linie on (a.ba_st = linie.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "left join dlm25w.k_anll ka on (ka.id = a.anll)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and ka.anll <> 'WKA' and \n"
-                            + "((\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") + \n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") +\n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) > 0.01";
-            } else {
-                QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
-                            + " from dlm25w.fg_ba_anll a\n"
-                            + "join dlm25w.fg_ba_linie linie on (a.ba_st = linie.id)\n"
-                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
-                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
-                            + "left join dlm25w.k_anll ka on (ka.id = a.anll)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (gr.owner = '"
-                            + user.getUserGroup().getName() + "' or %2$s) and ka.anll <> 'WKA' and \n"
-                            + "((\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") + \n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ") +\n"
-                            + "(\n"
-                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
-                            + ")) > 0.01";
-            }
+//            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+//                QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
+//                            + " from dlm25w.fg_ba_anll a\n"
+//                            + "join dlm25w.fg_ba_linie linie on (a.ba_st = linie.id)\n"
+//                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
+//                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
+//                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
+//                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+//                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+//                            + "left join dlm25w.k_anll ka on (ka.id = a.anll)\n"
+//                            + "where (%1$s is null or von.route = any(%1$s)) and ka.anll <> 'WKA' and \n"
+//                            + "((\n"
+//                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+//                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+//                            + ") + \n"
+//                            + "(\n"
+//                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+//                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+//                            + ") +\n"
+//                            + "(\n"
+//                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+//                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+//                            + ")) > 0.01";
+//            } else {
+//                QUERY_ANLL_GESCHL = "select distinct " + FG_BA_ANLL.getID() + ", a." + FG_BA_ANLL.getPrimaryKey()
+//                            + " from dlm25w.fg_ba_anll a\n"
+//                            + "join dlm25w.fg_ba_linie linie on (a.ba_st = linie.id)\n"
+//                            + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
+//                            + "join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
+//                            + "join dlm25w.fg_ba ba on (von.route = ba.id)\n"
+//                            + "join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
+//                            + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
+//                            + "left join dlm25w.k_anll ka on (ka.id = a.anll)\n"
+//                            + "where (%1$s is null or von.route = any(%1$s)) and (gr.owner = '"
+//                            + user.getUserGroup().getName() + "' or %2$s) and ka.anll <> 'WKA' and \n"
+//                            + "((\n"
+//                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+//                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+//                            + ") + \n"
+//                            + "(\n"
+//                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+//                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+//                            + ") +\n"
+//                            + "(\n"
+//                            + "select coalesce(sum(least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert))), 0) from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
+//                            + "where v.route = von.route and least(greatest(v.wert, b.wert), greatest(von.wert, bis.wert)) - greatest(least(v.wert, b.wert), least(von.wert, bis.wert)) > 0\n"
+//                            + ")) > 0.01";
+//            }
 
             if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
                 QUERY_KR_MARKED_TWICE = "select distinct " + FG_BA_KR.getID() + ", k1." + FG_BA_KR.getPrimaryKey()
@@ -2097,13 +2049,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 CHECKS_BAUWERKE_EA_EA__ESW_FUER_GESCHLOSSEN));
         increaseProgress(wd, 1);
 
-        query = (useExpCond
-                ? String.format(QUERY_ANLL_GESCHL, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
-                : String.format(QUERY_ANLL_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)));
-        result.setAnllGeschl(analyseByQuery(
-                FG_BA_ANLL,
-                query,
-                CHECKS_BAUWERKE_ANLL_ANLL_AUF_GESCHLOSSEN));
+        result.setAnllGeschl(analyseByCustomSearch(
+                new OverlappedAnllWithR(user, selectedIds, export),
+                CHECKS_BAUWERKE_ANLL_ANLL_AUF_GESCHLOSSEN,
+                serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
 //        query = (useExpCond

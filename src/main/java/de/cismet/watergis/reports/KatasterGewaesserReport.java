@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import de.cismet.cids.custom.watergis.server.search.AllGewWithParts;
@@ -337,10 +338,16 @@ public class KatasterGewaesserReport {
             feature.put(
                 "offene_a",
                 toNullIfZero(
-                    getLengthOffeneAbschn(gew)
+                    (getLengthGew(gew) - getLengthGeschlAbschn(gew)
+                                - getLengthLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew))
                             * 100.0
                             / (getLengthOffeneAbschn(gew) + getLengthGeschlAbschn(gew))));
-            feature.put("offene_l", toNullIfZero(getLengthOffeneAbschn(gew)));
+            feature.put(
+                "offene_l",
+                toNullIfZero(
+                    getLengthGew(gew)
+                            - getLengthGeschlAbschn(gew)
+                            - getLengthLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew)));
             feature.put("see_a", toNullIfZero(getCountLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew)));
             feature.put("see_l", toNullIfZero(getLengthLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew)));
             feature.put(
@@ -371,7 +378,13 @@ public class KatasterGewaesserReport {
             feature.put("gmd_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_gmd, gew)));
             feature.put("sb_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_sb, gew)));
             feature.put("sb_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, gew)));
-            feature.put("prof_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_prof, gew)));
+            feature.put(
+                "prof_a",
+                toNullIfZero(
+                    percentage(
+                        getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gew),
+                        getLengthOffeneAbschn(gew))));
+//            feature.put("prof_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_prof, gew)));
             feature.put("prof_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gew)));
             feature.put("sbef_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, gew)));
             feature.put("sbef_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, gew)));
@@ -415,6 +428,24 @@ public class KatasterGewaesserReport {
         kumObj.put("gewName", null);
         features.add(kumObj);
         return new FeatureDataSource(features);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   part   DOCUMENT ME!
+     * @param   total  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private double percentage(final double part, final double total) {
+        if (part == 0.0) {
+            return 0.0;
+        } else if (total == 0.0) {
+            return 0.0;
+        }
+
+        return part * 100 / total;
     }
 
     /**
@@ -556,11 +587,20 @@ public class KatasterGewaesserReport {
                     gew.getTill()));
             feature.put(
                 "prof_a",
-                getCountLineObjects(
-                    AllLineObjects.Table.fg_ba_prof,
-                    gew.getId(),
-                    gew.getFrom(),
-                    gew.getTill()));
+                percentage(
+                    getLengthLineObjects(
+                        AllLineObjects.Table.fg_ba_prof,
+                        gew.getId(),
+                        gew.getFrom(),
+                        gew.getTill()),
+                    getLengthOffeneAbschn(gew.getId(), gew.getFrom(), gew.getTill())));
+//            feature.put(
+//                "prof_a",
+//                getCountLineObjects(
+//                    AllLineObjects.Table.fg_ba_prof,
+//                    gew.getId(),
+//                    gew.getFrom(),
+//                    gew.getTill()));
             feature.put(
                 "prof_l",
                 getLengthLineObjects(
@@ -875,7 +915,13 @@ public class KatasterGewaesserReport {
             feature.put("gmd_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gmd, guName));
             feature.put("sb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sb, guName));
             feature.put("sb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, guName));
-            feature.put("prof_a", getCountLineObjects(AllLineObjects.Table.fg_ba_prof, guName));
+//            feature.put("prof_a", getCountLineObjects(AllLineObjects.Table.fg_ba_prof, guName));
+
+            feature.put(
+                "prof_a",
+                percentage(
+                    getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName),
+                    getLengthOffeneAbschn(guName)));
             feature.put("prof_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName));
             feature.put("sbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, guName));
             feature.put("sbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, guName));
@@ -1042,10 +1088,15 @@ public class KatasterGewaesserReport {
                         wdm));
                 feature.put(
                     "prof_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_prof,
-                        guName,
-                        wdm));
+                    percentage(
+                        getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName),
+                        getLengthOffeneAbschn(guName, wdm)));
+//                feature.put(
+//                    "prof_a",
+//                    getCountLineObjects(
+//                        AllLineObjects.Table.fg_ba_prof,
+//                        guName,
+//                        wdm));
                 feature.put(
                     "prof_l",
                     getLengthLineObjects(
@@ -1310,7 +1361,7 @@ public class KatasterGewaesserReport {
 //                kumFeature.put(key, sum);
 //            } else
             if ((Arrays.binarySearch(exceptionalNumberFields, key) < 0)) {
-                if (isGeschDouble && (key.equals("geschl_a") || key.equals("offene_a"))) {
+                if (isGeschDouble && (key.equals("geschl_a") || key.equals("offene_a") || key.equals("prof_a"))) {
                     // will be calculated later
                 } else {
                     double sum = 0.0;
@@ -1347,6 +1398,7 @@ public class KatasterGewaesserReport {
         if (isGeschDouble) {
             Double offene = (Double)kumFeature.get("offene_l");
             Double geschl = (Double)kumFeature.get("geschl_l");
+            Double prof = (Double)kumFeature.get("prof_l");
 
             if (offene == null) {
                 offene = 0.0;
@@ -1354,9 +1406,17 @@ public class KatasterGewaesserReport {
             if (geschl == null) {
                 geschl = 0.0;
             }
+            if (prof == null) {
+                prof = 0.0;
+            }
 
             kumFeature.put("offene_a", toNullIfZero(offene * 100.0 / (offene + geschl)));
             kumFeature.put("geschl_a", toNullIfZero(geschl * 100.0 / (offene + geschl)));
+            if (offene == 0.0) {
+                kumFeature.put("prof_a", 0.0);
+            } else {
+                kumFeature.put("prof_a", toNullIfZero(prof * 100.0 / (offene)));
+            }
         }
 
         kumFeature.put("gmd_a", null);
@@ -2097,15 +2157,15 @@ public class KatasterGewaesserReport {
      * @return  DOCUMENT ME!
      */
     private int getCountLineObjects(final GewaesserData.LineFromPolygonTable table, final int gewId) {
-        int count = 0;
+        final TreeSet<Integer> ts = new TreeSet<Integer>();
 
         for (final KatasterGewObj tmp : parts) {
             if ((gewId < 0) || (gewId == tmp.getId())) {
-                count += gd.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ts.addAll(gd.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ts.size();
     }
 
     /**

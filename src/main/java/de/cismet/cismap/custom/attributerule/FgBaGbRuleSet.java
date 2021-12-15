@@ -90,10 +90,9 @@ public class FgBaGbRuleSet extends WatergisDefaultRuleSet {
             final Object newValue) {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
+            showMessage("Das Attribut "
                         + column
-                        + " darf nicht leer sein");
+                        + " darf nicht leer sein", column);
             return oldValue;
         }
 
@@ -169,16 +168,20 @@ public class FgBaGbRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (feature.getProperty("gb") == null) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut gb darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut gb darf nicht leer sein", "gb");
+                return new ErrorDetails(feature, "gb");
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

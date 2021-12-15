@@ -74,8 +74,6 @@ import de.cismet.watergis.gui.panels.Photo;
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.showMessage;
-
 /**
  * DOCUMENT ME!
  *
@@ -224,7 +222,7 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
 
                 // d.year = year - 1900
                 if ((d.getYear() < 0) || d.after(new Date())) {
-                    showMessage("Es sind nur Datumseingaben zwischen dem 01.01.1900 und heute erlaubt");
+                    showMessage("Es sind nur Datumseingaben zwischen dem 01.01.1900 und heute erlaubt", "aufn_datum");
                     return oldValue;
                 }
 
@@ -353,13 +351,19 @@ public class FotoRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (!checkRange("winkel", feature.getProperty("winkel"), 0, 360, true, true, false)) {
-                return false;
+                return new ErrorDetails(feature, "winkel");
             }
         }
-        return super.prepareForSave(features);
+
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

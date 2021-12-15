@@ -161,7 +161,7 @@ public class QpRuleSet extends WatergisDefaultRuleSet {
 
                 // d.year = year - 1900
                 if ((d.getYear() < 0) || d.after(new Date())) {
-                    showMessage("Es sind nur Datumseingaben zwischen dem 01.01.1900 und heute erlaubt");
+                    showMessage("Es sind nur Datumseingaben zwischen dem 01.01.1900 und heute erlaubt", column);
                     return oldValue;
                 }
 

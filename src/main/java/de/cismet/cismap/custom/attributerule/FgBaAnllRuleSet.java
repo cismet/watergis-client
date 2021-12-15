@@ -100,10 +100,9 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("anll")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -238,12 +237,17 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("anll"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut anll darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut anll darf nicht leer sein", "anll");
+
+                return new ErrorDetails(feature, "anll");
             }
 
             if (
@@ -256,7 +260,7 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
                             true,
                             true,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
 
             if ((feature.getProperty("anll") != null)
@@ -267,7 +271,7 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
                     final double length = round(geom.getLength());
 
                     if (!checkRange("laenge", length, 20, 20000, 5, 50000, true, true, false)) {
-                        return false;
+                        return new ErrorDetails(feature, "ba_st_bis");
                     }
                 }
             }
@@ -281,7 +285,7 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
                     final double length = round(geom.getLength());
 
                     if (!checkRange("laenge", length, 10, 100, 5, 200, true, true, false)) {
-                        return false;
+                        return new ErrorDetails(feature, "ba_st_bis");
                     }
                 }
             }
@@ -297,7 +301,7 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
                     final double length = round(geom.getLength());
 
                     if (!checkRange("laenge", length, 1, 50, 1, 200, true, true, false)) {
-                        return false;
+                        return new ErrorDetails(feature, "ba_st_bis");
                     }
                 }
             }
@@ -310,12 +314,12 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
                 if ((feature.getProperty("anll") != null)
                             && isValueIn(feature.getProperty("anll"), new String[] { "See", "Spei" }, false)) {
                     if (!checkRange("länge", length, 20, 20000, 5, 50000, false, true, true)) {
-                        return false;
+                        return new ErrorDetails(feature, "ba_st_bis");
                     }
                 } else if ((feature.getProperty("anll") != null)
                             && isValueIn(feature.getProperty("anll"), new String[] { "Drte", "Faa", "Rb" }, false)) {
                     if (!checkRange("länge", length, 10, 100, 5, 200, false, true, true)) {
-                        return false;
+                        return new ErrorDetails(feature, "ba_st_bis");
                     }
                 } else if ((feature.getProperty("anll") != null)
                             && isValueIn(
@@ -323,13 +327,13 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
                                 new String[] { "Ds", "Sf", "Si", "Sleu", "Tosb", "WKA" },
                                 false)) {
                     if (!checkRange("länge", length, 1, 20, 1, 200, false, true, true)) {
-                        return false;
+                        return new ErrorDetails(feature, "ba_st_bis");
                     }
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

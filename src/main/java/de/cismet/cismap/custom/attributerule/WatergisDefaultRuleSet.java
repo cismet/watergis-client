@@ -81,6 +81,7 @@ import de.cismet.cismap.cidslayer.StationCreationCheck;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableExtendedRuleSet;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 
 import de.cismet.cismap.linearreferencing.FeatureRegistry;
@@ -115,7 +116,8 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSet {
+public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSet
+        implements AttributeTableExtendedRuleSet {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -581,6 +583,36 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     /**
      * DOCUMENT ME!
      *
+     * @param   propertyName  DOCUMENT ME!
+     * @param   value         DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected CidsLayerFeatureFilter createCidsLayerFeatureFilter(final String propertyName, final String value) {
+        return new CidsLayerFeatureFilter() {
+
+                @Override
+                public boolean accept(final CidsLayerFeature bean) {
+                    if (bean == null) {
+                        return true;
+                    }
+
+                    if (bean.getProperty(propertyName) != null) {
+                        final String vals = (String)bean.getProperty(propertyName);
+                        if (vals != null) {
+                            final String[] valueArray = vals.split(",");
+                            return Arrays.asList(valueArray).contains(value);
+                        }
+                    }
+
+                    return false;
+                }
+            };
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @return  DOCUMENT ME!
      */
     protected static int getCurrentYear() {
@@ -645,7 +677,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean checkRangeBetweenOrEqual(final String columnName,
+    protected boolean checkRangeBetweenOrEqual(final String columnName,
             final Object newValue,
             final double from,
             final double to,
@@ -664,7 +696,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean checkRangeBetweenOrEqual(final String columnName,
+    protected boolean checkRangeBetweenOrEqual(final String columnName,
             final Object newValue,
             final int from,
             final int to,
@@ -704,7 +736,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean isNoInteger(final String propName, final Object value, final boolean allowNull) {
+    protected boolean isNoInteger(final String propName, final Object value, final boolean allowNull) {
         if (!isNumberOrNull(value)) {
             return true;
         } else {
@@ -715,10 +747,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             }
 
             if (n.doubleValue() != n.intValue()) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + propName
-                            + " darf keine Nachkommastellen enthalten");
+                            + " darf keine Nachkommastellen enthalten", propName);
                 return true;
             } else {
                 return false;
@@ -735,7 +766,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean isNoIntegerTempMessage(final String propName,
+    protected boolean isNoIntegerTempMessage(final String propName,
             final Object value,
             final boolean allowNull) {
         if (!isNumberOrNull(value)) {
@@ -748,7 +779,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             }
 
             if (n.doubleValue() != n.intValue()) {
-                showMessage("Eingabe ist nur ganzzahlig zulässig");
+                showMessage("Eingabe ist nur ganzzahlig zulässig", propName);
                 return true;
             } else {
                 return false;
@@ -769,7 +800,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean checkRange(final String columnName,
+    protected boolean checkRange(final String columnName,
             Object newValue,
             final double from,
             final double to,
@@ -779,7 +810,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         if ((newValue == null) && !nullable) {
             showMessage("Das Attribut "
                         + columnName
-                        + " darf nicht leer sein");
+                        + " darf nicht leer sein", columnName);
             return false;
         } else if (newValue == null) {
             return true;
@@ -791,7 +822,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             } catch (NumberFormatException e) {
                 showMessage("Das Attribut "
                             + columnName
-                            + " darf nur numerische Werte enthalten");
+                            + " darf nur numerische Werte enthalten", columnName);
                 return false;
             }
         }
@@ -810,7 +841,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         + " bis " + (toEqualAllowed ? "" : "<")
                         + trimTrailingZeros(
                             new BigDecimal(to).setScale(7, BigDecimal.ROUND_HALF_UP).toPlainString().replace('.', ','))
-                        + " erlaubt.");
+                        + " erlaubt.",
+                columnName);
             return false;
         }
 
@@ -855,7 +887,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean checkRange(final String columnName,
+    protected boolean checkRange(final String columnName,
             Object newValue,
             final int from,
             final int to,
@@ -865,7 +897,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         if ((newValue == null) && !nullable) {
             showMessage("Das Attribut "
                         + columnName
-                        + " darf nicht leer sein");
+                        + " darf nicht leer sein", columnName);
             return false;
         } else if (newValue == null) {
             return true;
@@ -877,7 +909,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             } catch (NumberFormatException e) {
                 showMessage("Das Attribut "
                             + columnName
-                            + " darf nur numerische Werte enthalten");
+                            + " darf nur numerische Werte enthalten", columnName);
                 return false;
             }
         }
@@ -892,7 +924,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         + from
                         + " bis " + (toEqualAllowed ? "" : "<")
                         + to
-                        + " erlaubt.");
+                        + " erlaubt.",
+                columnName);
             return false;
         }
 
@@ -926,7 +959,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         if ((newValue == null) && !nullable) {
             showMessage("Das Attribut "
                         + columnName
-                        + " darf nicht leer sein");
+                        + " darf nicht leer sein", columnName);
             return false;
         } else if (newValue == null) {
             return true;
@@ -938,7 +971,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             } catch (NumberFormatException e) {
                 showMessage("Das Attribut "
                             + columnName
-                            + " darf nur numerische Werte enthalten");
+                            + " darf nur numerische Werte enthalten", columnName);
                 return false;
             }
         }
@@ -961,7 +994,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         + fromMax
                         + ", "
                         + toMax
-                        + (toEqualAllowed ? " ]" : " )"));
+                        + (toEqualAllowed ? " ]" : " )"),
+                columnName);
             return false;
         }
 
@@ -993,10 +1027,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             final boolean fromEqualAllowed,
             final boolean toEqualAllowed) {
         if ((newValue == null) && !nullable) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
+            showMessage("Das Attribut "
                         + columnName
-                        + " darf nicht leer sein");
+                        + " darf nicht leer sein", columnName);
             return false;
         } else if (newValue == null) {
             return true;
@@ -1006,10 +1039,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             try {
                 newValue = Double.parseDouble(String.valueOf(newValue));
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + columnName
-                            + " darf nur numerische Werte enthalten");
+                            + " darf nur numerische Werte enthalten", columnName);
                 return false;
             }
         }
@@ -1032,7 +1064,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         + fromMax
                         + ", "
                         + toMax
-                        + (toEqualAllowed ? " ]" : " )"));
+                        + (toEqualAllowed ? " ]" : " )"),
+                columnName);
             return false;
         }
 
@@ -1042,9 +1075,22 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     /**
      * DOCUMENT ME!
      *
+     * @param  text   DOCUMENT ME!
+     * @param  field  DOCUMENT ME!
+     */
+    protected void showMessage(final String text, final String field) {
+        final String title = "Ungültig ID: " + idOfCurrentlyCheckedFeature + " Feld: " + field;
+        final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(), true, text, title);
+        d.setSize(500, 80);
+        StaticSwingTools.showDialog(d);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
      * @param  text  DOCUMENT ME!
      */
-    protected static void showMessage(final String text) {
+    protected void showMessage(final String text) {
         final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(), true, text);
         d.setSize(500, 80);
         StaticSwingTools.showDialog(d);
@@ -1110,16 +1156,15 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean checkGreaterThan(final String columnName,
+    protected boolean checkGreaterThan(final String columnName,
             Object newValue,
             final double minVal,
             final boolean nullable,
             final boolean minEqualAllowed) {
         if ((newValue == null) && !nullable) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
+            showMessage("Das Attribut "
                         + columnName
-                        + " darf nicht leer sein");
+                        + " darf nicht leer sein", columnName);
             return false;
         } else if (newValue == null) {
             return true;
@@ -1129,10 +1174,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             try {
                 newValue = Double.parseDouble(String.valueOf(newValue));
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + columnName
-                            + " darf nur numerische Werte enthalten");
+                            + " darf nur numerische Werte enthalten", columnName);
                 return false;
             }
         }
@@ -1140,13 +1184,12 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         if ((minEqualAllowed && (((Number)newValue).doubleValue() < minVal))
                     || (!minEqualAllowed && (((Number)newValue).doubleValue() <= minVal))) {
             final String greaterText = (minEqualAllowed ? " größer oder gleich " : " größer ");
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
+            showMessage("Das Attribut "
                         + columnName
                         + " muss"
                         + greaterText
                         + minVal
-                        + " sein.");
+                        + " sein.", columnName);
             return false;
         }
 
@@ -1187,15 +1230,14 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @return  DOCUMENT ME!
      */
-    protected static boolean hasValue(final String columnName,
+    protected boolean hasValue(final String columnName,
             Object newValue,
             final double value,
             final boolean nullable) {
         if ((newValue == null) && !nullable) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                "Das Attribut "
+            showMessage("Das Attribut "
                         + columnName
-                        + " darf nicht leer sein");
+                        + " darf nicht leer sein", columnName);
             return false;
         } else if (newValue == null) {
             return true;
@@ -1205,10 +1247,9 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             try {
                 newValue = Double.parseDouble(String.valueOf(newValue));
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + columnName
-                            + " darf nur numerische Werte enthalten");
+                            + " darf nur numerische Werte enthalten", columnName);
                 return false;
             }
         }
@@ -1645,43 +1686,40 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             if (result.getValidationResult() == Validation.OK) {
                 return newValue;
             } else if (result.getValidationResult() == Validation.NULL) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             } else if (result.getValidationResult() == Validation.SIZE_CORRECTION) {
                 return result.getChangedValue();
             } else if (result.getValidationResult() == Validation.OUT_OF_SIZE) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
                             + " muss den Datentyp "
                             + type.toString()
-                            + " haben");
+                            + " haben", column);
                 return oldValue;
             } else if (result.getValidationResult() == Validation.WRONG_DATA_TYPE) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
                             + " muss den Datentyp "
                             + type.toString()
-                            + " haben");
+                            + " haben", column);
                 return oldValue;
             } else if (result.getValidationResult() == Validation.WRONG_RANGE) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
                             + " hat folgenden Wertebereich: "
-                            + type.range(column));
+                            + type.range(column), column);
                 return oldValue;
             } else if (result.getValidationResult() == Validation.NOT_BINARY) {
                 showMessage("Wert nicht zulässig, weil außerhalb (0/1"
                             + (type.isNotNull() ? "" : "/NULL")
-                            + ")");
+                            + ")",
+                    column);
                 return oldValue;
             } else if (result.getValidationResult() == Validation.WBBL_NOT_ACCESSIBLE) {
-                showMessage("Wert nicht zulässig, weil Wasserbuchblatt nicht existiert");
+                showMessage("Wert nicht zulässig, weil Wasserbuchblatt nicht existiert", column);
                 return oldValue;
             }
         }
@@ -1690,6 +1728,11 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final String attribute : typeMap.keySet()) {
             final Map<Integer, String> idValueMap = new HashMap<Integer, String>();
             final DataType type = typeMap.get(attribute);
@@ -1715,13 +1758,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 final ValidationResult result = type.isValidValue(feature.getProperty(attribute));
 
                 if (result.getValidationResult() == Validation.NULL) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut "
+                    showMessage("Das Attribut "
                                 + attribute
-                                + " darf nicht leer sein",
-                        fieldId,
-                        JOptionPane.ERROR_MESSAGE);
-                    return false;
+                                + " darf nicht leer sein", attribute);
+                    return new ErrorDetails(feature, attribute);
                 } else if (result.getValidationResult() == Validation.SIZE_CORRECTION) {
                     try {
                         feature.setProperty(attribute, result.changedValue);
@@ -1729,15 +1769,13 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         LOG.error("Error while set corrected property value", e);
                     }
                 } else if (result.getValidationResult() == Validation.OUT_OF_SIZE) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut "
+                    showMessage("Das Attribut "
                                 + attribute
                                 + " muss den Datentyp "
                                 + type.toString()
                                 + " haben",
-                        fieldId,
-                        JOptionPane.ERROR_MESSAGE);
-                    return false;
+                        attribute);
+                    return new ErrorDetails(feature, attribute);
                 } else if (result.getValidationResult() == Validation.WRONG_DATA_TYPE) {
                     JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                         "Das Attribut "
@@ -1747,32 +1785,25 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 + " haben",
                         fieldId,
                         JOptionPane.ERROR_MESSAGE);
-                    return false;
+                    return new ErrorDetails(feature, attribute);
                 } else if (result.getValidationResult() == Validation.WRONG_RANGE) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut "
+                    showMessage("Das Attribut "
                                 + attribute
                                 + " hat folgenden Wertebereich: "
                                 + type.range(attribute),
-                        fieldId,
-                        JOptionPane.ERROR_MESSAGE);
-                    return false;
+                        attribute);
+                    return new ErrorDetails(feature, attribute);
                 } else if (result.getValidationResult() == Validation.NOT_BINARY) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut "
+                    showMessage("Das Attribut "
                                 + attribute
                                 + " hat einen ungültigen Wert. Der Wertebereich ist (0/1"
                                 + (type.isNotNull() ? "" : "/NULL")
                                 + ")",
-                        fieldId,
-                        JOptionPane.ERROR_MESSAGE);
-                    return false;
+                        attribute);
+                    return new ErrorDetails(feature, attribute);
                 } else if (result.getValidationResult() == Validation.WBBL_NOT_ACCESSIBLE) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wert nicht zulässig, weil Wasserbuchblatt nicht existiert",
-                        fieldId,
-                        JOptionPane.ERROR_MESSAGE);
-                    return false;
+                    showMessage("Wert nicht zulässig, weil Wasserbuchblatt nicht existiert", attribute);
+                    return new ErrorDetails(feature, attribute);
                 }
             }
 
@@ -1801,7 +1832,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                         + " "
                                         + fieldId,
                                 JOptionPane.ERROR_MESSAGE);
-                            return false;
+                            return new ErrorDetails(getFeatureWithId(features, idOfCurrentlyCheckedFeature), attribute);
                         }
                     }
                 } catch (final Exception e) {
@@ -1818,7 +1849,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 + fieldId,
                         JOptionPane.ERROR_MESSAGE);
                     LOG.error("Error while checking the uniqueness of the ba_cd field.", e);
-                    return false;
+                    return new ErrorDetails(getFeatureWithId(features, idOfCurrentlyCheckedFeature), attribute);
                 }
             }
         }
@@ -1831,15 +1862,11 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
                 if ((from != null) && (till != null)) {
                     if (Math.abs(till - from) < minBaLength) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Länge des Objektes mit der id "
-                                    + feature.getId()
-                                    + " darf nicht kleiner "
+                        showMessage("Die Länge des Objektes darf nicht kleiner "
                                     + minBaLength
                                     + " sein",
-                            "Ungültiger Wert",
-                            JOptionPane.ERROR_MESSAGE);
-                        return false;
+                            "ba_st_bis");
+                        return new ErrorDetails(feature, "ba_st_bis");
                     }
                 }
             }
@@ -1849,56 +1876,36 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
                 if ((from != null) && (till != null)) {
                     if (Math.abs(till - from) < minLaLength) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Die Länge des Objektes mit der id "
-                                    + feature.getId()
-                                    + " darf nicht kleiner "
+                        showMessage("Die Länge des Objektes darf nicht kleiner "
                                     + minLaLength
                                     + " sein",
-                            "Ungültiger Wert",
-                            JOptionPane.ERROR_MESSAGE);
+                            "ba_st_bis");
 
-                        return false;
+                        return new ErrorDetails(feature, "ba_st_bis");
                     }
                 }
             }
         }
 
-//        final CrossedLinesCheck check = new CrossedLinesCheck();
-//
-//        for (final FeatureServiceFeature feature : features) {
-//            final Geometry geo = feature.getGeometry();
-//            if (!check.check(geo, null, false)) {
-//                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-//                    "Die Geometrie des Objektes mit der id "
-//                            + feature.getId()
-//                            + " überschneidet sich ",
-//                    "Ungültiger Wert",
-//                    JOptionPane.ERROR_MESSAGE);
-//
-//                return false;
-//            } else {
-//                final Coordinate[] coords = geo.getCoordinates();
-//                Coordinate lastCoord = null;
-//
-//                for (final Coordinate c : coords) {
-//                    if ((lastCoord != null) && lastCoord.equals(c)) {
-//                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-//                            "Die Geometrie des Objektes mit der id "
-//                                    + feature.getId()
-//                                    + " besitzt doppelte Punkte",
-//                            "Ungültiger Wert",
-//                            JOptionPane.ERROR_MESSAGE);
-//
-//                        return false;
-//                    }
-//
-//                    lastCoord = c;
-//                }
-//            }
-//        }
+        return null;
+    }
 
-        return true;
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   features  DOCUMENT ME!
+     * @param   id        DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private FeatureServiceFeature getFeatureWithId(final List<FeatureServiceFeature> features, final Integer id) {
+        for (final FeatureServiceFeature f : features) {
+            if (f.getId() == id) {
+                return f;
+            }
+        }
+
+        return null;
     }
 
     /**

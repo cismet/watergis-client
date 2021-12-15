@@ -86,10 +86,9 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("titel") || column.equals("doc")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -144,21 +143,24 @@ public class FgBaDocRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("titel"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut titel darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut titel darf nicht leer sein", "titel");
+                return new ErrorDetails(feature, "titel");
             }
             if (isValueEmpty(feature.getProperty("doc"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut doc darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut doc darf nicht leer sein", "doc");
+                return new ErrorDetails(feature, "doc");
             }
         }
 
-        return true;
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

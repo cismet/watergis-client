@@ -67,7 +67,7 @@ public class MessageDialog extends javax.swing.JDialog {
     @Override
     public void setVisible(final boolean b) {
         if (b) {
-            final Timer t = new Timer(3000, new ActionListener() {
+            final Timer t = new Timer(4000, new ActionListener() {
 
                         @Override
                         public void actionPerformed(final ActionEvent e) {

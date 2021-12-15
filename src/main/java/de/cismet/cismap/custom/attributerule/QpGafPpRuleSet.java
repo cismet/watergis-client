@@ -205,6 +205,11 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             final Object kz = feature.getProperty("kz");
@@ -229,7 +234,14 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
                     "Wenn das Attribut rk leer ist, dann müssen rk_name, rk_k und rk_kst gesetzt sein.",
                     "Fehlerhaft Attributbelegung",
                     JOptionPane.ERROR_MESSAGE);
-                return false;
+
+                if (isValueEmpty(feature.getProperty("rk_name"))) {
+                    return new ErrorDetails(feature, "rk_name");
+                } else if (isValueEmpty(feature.getProperty("rk_k"))) {
+                    return new ErrorDetails(feature, "rk_k");
+                } else {
+                    return new ErrorDetails(feature, "rk_kst");
+                }
             }
             if (isValueEmpty(bk)
                         && (isValueEmpty(feature.getProperty("bk_name")) || isValueEmpty(feature.getProperty("bk_ax"))
@@ -239,11 +251,20 @@ public class QpGafPpRuleSet extends WatergisDefaultRuleSet {
                     "Wenn das Attribut rk leer ist, dann müssen bk_name, bk_ax, bk_ay und bk_dp gesetzt sein.",
                     "Fehlerhaft Attributbelegung",
                     JOptionPane.ERROR_MESSAGE);
-                return false;
+
+                if (isValueEmpty(feature.getProperty("bk_name"))) {
+                    return new ErrorDetails(feature, "bk_name");
+                } else if (isValueEmpty(feature.getProperty("bk_ax"))) {
+                    return new ErrorDetails(feature, "bk_ax");
+                } else if (isValueEmpty(feature.getProperty("bk_ay"))) {
+                    return new ErrorDetails(feature, "bk_ay");
+                } else {
+                    return new ErrorDetails(feature, "bk_dp");
+                }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

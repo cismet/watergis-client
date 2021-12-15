@@ -119,8 +119,7 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
                 final File f = new File((String)newValue);
 
                 if (!f.exists() && Files.notExists(f.toPath())) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Die angegebene Datei existiert nicht");
+                    showMessage("Die angegebene Datei existiert nicht", column);
                     return newValue;
                 } else if (!f.exists() && !Files.notExists(f.toPath())) {
                     final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
@@ -204,9 +203,14 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
-        for (final FeatureServiceFeature feature : features) {
-            idOfCurrentlyCheckedFeature = feature.getId();
+        return prepareForSaveWithDetails(features) == null;
+    }
 
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
+//        for (final FeatureServiceFeature feature : features) {
+//            idOfCurrentlyCheckedFeature = feature.getId();
+//
 //            if (!isValueEmpty(feature.getProperty("doc"))) {
 //                if (isLink(feature.getProperty("doc"))) {
 //                    final File f = new File((String)feature.getProperty("doc"));
@@ -218,9 +222,9 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
 //                    }
 //                }
 //            }
-        }
+//        }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override
@@ -317,8 +321,7 @@ public class FgBaDokuRuleSet extends WatergisDefaultRuleSet {
                                 log.error("Cannot open the url:" + value.toString(), ex);
                             }
                         } else {
-                            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                                "Dokument wurde verschoben, gelöscht oder umbenannt.");
+                            showMessage("Dokument wurde verschoben, gelöscht oder umbenannt.");
                         }
                     } catch (MalformedURLException ex) {
                         // nothing to do

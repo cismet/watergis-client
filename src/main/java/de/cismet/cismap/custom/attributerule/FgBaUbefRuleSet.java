@@ -118,10 +118,9 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("l_rl") || column.equals("ubef")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", "ubef");
                 return oldValue;
             }
         }
@@ -149,25 +148,6 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
             return oldValue;
         }
 
-//        if (column.equals("ubef") && !isValueEmpty(newValue)) {
-//            final String[] allowedMaterialVArray = allowedMaterial.get(newValue.toString());
-//
-//            if (allowedMaterialVArray != null) {
-//                if (!isValueEmpty(feature.getProperty("material"))
-//                            && !arrayContains(
-//                                allowedMaterialVArray,
-//                                ((feature.getProperty("material") != null) ? feature.getProperty("material")
-//                                        .toString() : null))) {
-//                    showMessage("Wenn das Attribut ubef = "
-//                                + newValue
-//                                + ", dann muss das Attribut material "
-//                                + arrayToString(allowedMaterialVArray)
-//                                + " sein.");
-//                    return oldValue;
-//                }
-//            }
-//        }
-
         if (column.equals("material") && !isValueEmpty(newValue)) {
             final String[] allowedMaterialVArray = allowedMaterial.get(feature.getProperty("ubef").toString());
 
@@ -177,7 +157,8 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
                                 + feature.getProperty("ubef").toString()
                                 + ", dann muss das Attribut material "
                                 + arrayToString(allowedMaterialVArray)
-                                + " sein.");
+                                + " sein.",
+                        "material");
                     return oldValue;
                 }
             }
@@ -305,23 +286,26 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("l_rl"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut l_rl darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut l_rl darf nicht leer sein", "l_rl");
+                return new ErrorDetails(feature, "l_rl");
             }
             if (isValueEmpty(feature.getProperty("ubef"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ubef darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut ubef darf nicht leer sein", "ubef");
+                return new ErrorDetails(feature, "ubef");
             }
             if (!checkRange("br", feature.getProperty("br"), 0, 10, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
-            if (!checkRange("br", feature.getProperty("br"), 0, 15, true, false, true)) {
-                return false;
+            if (!checkRange("ho_d_o", feature.getProperty("ho_d_o"), 0, 15, true, false, true)) {
+                return new ErrorDetails(feature, "ho_d_o");
             }
 
             if (
@@ -332,7 +316,7 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
                             getCurrentYear()
                             + 2,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
 
             if (feature.getProperty("ubef") != null) {
@@ -344,19 +328,19 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
                                     allowedMaterialVArray,
                                     ((feature.getProperty("material") != null)
                                         ? feature.getProperty("material").toString() : null))) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut ubef = "
+                        showMessage("Wenn das Attribut ubef = "
                                     + feature.getProperty("ubef").toString()
                                     + ", dann muss das Attribut material "
                                     + arrayToString(allowedMaterialVArray)
-                                    + " sein.");
-                        return false;
+                                    + " sein.",
+                            "material");
+                        return new ErrorDetails(feature, "material");
                     }
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

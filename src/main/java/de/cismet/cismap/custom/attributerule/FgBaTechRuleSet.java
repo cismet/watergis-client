@@ -100,32 +100,28 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
             if (column.equals("tech")) {
                 if (isValueEmpty(feature.getProperty("na_gu")) && isValueEmpty(feature.getProperty("mahd_gu"))
                             && isValueEmpty(feature.getProperty("gu_gu"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
+                    showMessage("Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein", column);
                     return oldValue;
                 }
             }
             if (column.equals("na_gu")) {
                 if (isValueEmpty(feature.getProperty("tech")) && isValueEmpty(feature.getProperty("mahd_gu"))
                             && isValueEmpty(feature.getProperty("gu_gu"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
+                    showMessage("Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein", column);
                     return oldValue;
                 }
             }
             if (column.equals("mahd_gu")) {
                 if (isValueEmpty(feature.getProperty("tech")) && isValueEmpty(feature.getProperty("na_gu"))
                             && isValueEmpty(feature.getProperty("gu_gu"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
+                    showMessage("Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein", column);
                     return oldValue;
                 }
             }
             if (column.equals("gu_gu")) {
                 if (isValueEmpty(feature.getProperty("tech")) && isValueEmpty(feature.getProperty("na_gu"))
                             && isValueEmpty(feature.getProperty("mahd_gu"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
+                    showMessage("Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein", column);
                     return oldValue;
                 }
             }
@@ -188,6 +184,7 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
 
             return editor;
         } else if (columnName.equals("tech")) {
+//            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("wbv", /*todo: Wert bestimmen*/);
             final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("erlaubt");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
@@ -264,18 +261,32 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("tech")) && isValueEmpty(feature.getProperty("na_gu"))
                         && isValueEmpty(feature.getProperty("mahd_gu"))
                         && isValueEmpty(feature.getProperty("gu_gu"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein");
-                return false;
+                showMessage(
+                    "Die Attribute tech, na_gu, mahd_gu und gu_gu dürfen nicht alle leer sein",
+                    "tech / na_gu / mahd_gu / gu_gu");
+                if (isValueEmpty(feature.getProperty("tech"))) {
+                    return new ErrorDetails(feature, "tech");
+                } else if (isValueEmpty(feature.getProperty("na_gu"))) {
+                    return new ErrorDetails(feature, "na_gu");
+                } else if (isValueEmpty(feature.getProperty("mahd_gu"))) {
+                    return new ErrorDetails(feature, "mahd_gu");
+                } else {
+                    return new ErrorDetails(feature, "gu_gu");
+                }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

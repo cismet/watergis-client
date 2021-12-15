@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="3332" pageHeight="595" orientation="Landscape" columnWidth="3292" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.4641000000000022"/>
-	<property name="ireport.x" value="322"/>
+	<property name="ireport.x" value="1660"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -86,7 +86,7 @@
 	<field name="gb_l" class="java.lang.Double"/>
 	<field name="sb_a" class="java.lang.Integer"/>
 	<field name="sb_l" class="java.lang.Double"/>
-	<field name="prof_a" class="java.lang.Integer"/>
+	<field name="prof_a" class="java.lang.Double"/>
 	<field name="prof_l" class="java.lang.Double"/>
 	<field name="sbef_a" class="java.lang.Integer"/>
 	<field name="sbef_l" class="java.lang.Double"/>

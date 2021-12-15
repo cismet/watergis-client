@@ -94,10 +94,9 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("kr")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -250,15 +249,19 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("kr"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut kr darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut kr darf nicht leer sein", "kr");
+                return new ErrorDetails(feature, "kr");
             }
             if (!checkRange("br", feature.getProperty("br"), 0, 100, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
             if (
                 !checkRange(
@@ -270,27 +273,25 @@ public class FgBaKrRuleSet extends WatergisDefaultRuleSet {
                             true,
                             true,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
 
             if ((feature.getProperty("kr") != null) && feature.getProperty("kr").toString().equals("Br")) {
                 if ((feature.getProperty("l_oiu") != null) && !feature.getProperty("l_oiu").toString().equals("o")) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut kr = Br, dann muss das Attribut l_oiu = o.");
-                    return false;
+                    showMessage("Wenn das Attribut kr = Br, dann muss das Attribut l_oiu = o.", "l_oiu");
+                    return new ErrorDetails(feature, "l_oiu");
                 }
             }
 
             if ((feature.getProperty("kr") != null) && feature.getProperty("kr").toString().equals("U")) {
                 if ((feature.getProperty("l_oiu") != null) && !feature.getProperty("l_oiu").toString().equals("u")) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut kr = U, dann muss das Attribut l_oiu = u.");
-                    return false;
+                    showMessage("Wenn das Attribut kr = U, dann muss das Attribut l_oiu = u.", "l_oiu");
+                    return new ErrorDetails(feature, "l_oiu");
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

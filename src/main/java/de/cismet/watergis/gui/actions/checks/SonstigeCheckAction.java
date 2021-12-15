@@ -474,7 +474,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 20;
+        return 17;
     }
 
     @Override
@@ -547,14 +547,10 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                                             result.getGapWiweErrors(),
                                             result.getGapTechErrors(),
                                             result.getOverlappedTechErrors(),
-                                            result.getGapDeichErrors()
-                                                    + result.getGerinneDeichErrors(),
-                                            result.getGapWiweErrors()
-                                                    + result.getGerinneWiweErrors(),
+                                            result.getGerinneDeichErrors(),
+                                            result.getGerinneWiweErrors(),
                                             result.getGerinneLeisErrors(),
-                                            result.getGapTechErrors()
-                                                    + result.getOverlappedTechErrors()
-                                                    + result.getOffGerinneTechErrors()
+                                            result.getOffGerinneTechErrors()
                                                     + result.getGeschGerinneTechErrors()
                                                     + result.getdTechErrors()
                                                     + result.getvTechErrors()
@@ -582,14 +578,10 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                                             result.getGapWiweErrors(),
                                             result.getGapTechErrors(),
                                             result.getOverlappedTechErrors(),
-                                            result.getGapDeichErrors()
-                                                    + result.getGerinneDeichErrors(),
-                                            result.getGapWiweErrors()
-                                                    + result.getGerinneWiweErrors(),
+                                            result.getGerinneDeichErrors(),
+                                            result.getGerinneWiweErrors(),
                                             result.getGerinneLeisErrors(),
-                                            result.getGapTechErrors()
-                                                    + result.getOverlappedTechErrors()
-                                                    + result.getOffGerinneTechErrors()
+                                            result.getOffGerinneTechErrors()
                                                     + result.getGeschGerinneTechErrors()
                                                     + result.getdTechErrors()
                                                     + result.getvTechErrors()
@@ -713,23 +705,23 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         }
 
         // start auto correction
-        if (!isExport) {
-            final CidsServerSearch mergeFoto = new MergeBaFoto(user);
-            SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeFoto);
-        }
-        increaseProgress(wd, 1);
-        final CidsServerSearch mergeUghz = new MergeBaUghz(user);
-        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeUghz);
-        increaseProgress(wd, 1);
+// if (!isExport) {
+// final CidsServerSearch mergeFoto = new MergeBaFoto(user);
+// SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeFoto);
+// }
+// increaseProgress(wd, 1);
+// final CidsServerSearch mergeUghz = new MergeBaUghz(user);
+// SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeUghz);
+// increaseProgress(wd, 1);
 
         // the merge for tech should not be executed
 // final CidsServerSearch mergeTech = new MergeBaTech(user);
 // SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeTech);
 // increaseProgress(wd, 1);
 
-        final CidsServerSearch mergeLeis = new MergeBaLeis(user);
-        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeLeis);
-        increaseProgress(wd, 1);
+// final CidsServerSearch mergeLeis = new MergeBaLeis(user);
+// SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeLeis);
+// increaseProgress(wd, 1);
 
         final List<FeatureServiceAttribute> serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
 
