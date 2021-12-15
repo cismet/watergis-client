@@ -27,6 +27,7 @@ import de.cismet.cids.custom.watergis.server.search.AllLineObjects;
 import de.cismet.cids.custom.watergis.server.search.AllPunktObjects;
 import de.cismet.cids.custom.watergis.server.search.SchuUeberReport;
 import de.cismet.cids.custom.watergis.server.search.SchuWasserReport;
+import de.cismet.cids.custom.watergis.server.search.SeeReport;
 
 import de.cismet.cids.server.search.CidsServerSearch;
 
@@ -139,6 +140,34 @@ public class GewaesserData {
             for (final PointObjectData pointObj : points) {
                 if (pointObj.isInGewPart(gew, from, till)) {
                     ids.add(pointObj.getId());
+                }
+            }
+        }
+
+        return ids;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   table  DOCUMENT ME!
+     * @param   gew    DOCUMENT ME!
+     * @param   from   DOCUMENT ME!
+     * @param   till   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public Collection<Integer> getIds(final LineFromPolygonTable table,
+            final int gew,
+            final double from,
+            final double till) {
+        final TreeSet<Integer> ids = new TreeSet<Integer>();
+        final List<LineObjectData> lines = lineFromPolygonMap.get(table);
+
+        if (lines != null) {
+            for (final LineObjectData lineObj : lines) {
+                if (lineObj.isInGewPart(gew, from, till)) {
+                    ids.add(lineObj.getId());
                 }
             }
         }
@@ -440,22 +469,23 @@ public class GewaesserData {
      * @throws  Exception  DOCUMENT ME!
      */
     private List<LineObjectData> createSee(final int[] gew) throws Exception {
-//        final User user = SessionManager.getSession().getUser();
-//        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
-//                    .customServerSearch(user, new SeeReport(gew));
+        final User user = SessionManager.getSession().getUser();
+        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(user, new SeeReport(gew));
         final List<LineObjectData> objList = new ArrayList<LineObjectData>();
 
-//        if ((attributes != null) && !attributes.isEmpty()) {
-//            for (final ArrayList f : attributes) {
-//                objList.add(new LineObjectData(
-//                        (Integer)f.get(3),
-//                        (String)f.get(2),
-//                        (Double)f.get(0),
-//                        (Double)f.get(1),
-//                        (Double)f.get(1)
-//                                - (Double)f.get(0)));
-//            }
-//        }
+        if ((attributes != null) && !attributes.isEmpty()) {
+            for (final ArrayList f : attributes) {
+                objList.add(new LineObjectData(
+                        (Integer)f.get(3),
+                        (String)f.get(2),
+                        (Double)f.get(0),
+                        (Double)f.get(1),
+                        (Double)f.get(1)
+                                - (Double)f.get(0),
+                        (Integer)f.get(4)));
+            }
+        }
 
         return objList;
     }
@@ -485,7 +515,7 @@ public class GewaesserData {
                         (Double)f.get(3),
                         (Double)f.get(4),
                         (Double)f.get(1),
-                        (Integer)f.get(6)));
+                        (Integer)((f.get(6) == null) ? 0 : f.get(6))));
             }
         }
 
