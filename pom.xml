@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>7.0.6</version>
+                <version>7.0.9</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -95,7 +95,7 @@
             <dependency>
                 <groupId>de.cismet.cismap</groupId>
                 <artifactId>cismap-plugin</artifactId>
-                <version>7.1.1</version>
+                <version>7.1.2</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>de.cismet.watergis</groupId>
                 <artifactId>watergis-server</artifactId>
-                <version>7.0.7</version>
+                <version>7.0.8</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>

@@ -100,10 +100,9 @@ public class FgBaSchaRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("scha")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -235,12 +234,17 @@ public class FgBaSchaRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("scha"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut scha darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut scha darf nicht leer sein", "scha");
+
+                return new ErrorDetails(feature, "scha");
             }
 
             if (
@@ -253,17 +257,17 @@ public class FgBaSchaRuleSet extends WatergisDefaultRuleSet {
                             true,
                             true,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
             if (!checkRange("ho_so", feature.getProperty("ho_so"), -6, 179, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_so");
             }
             if (!checkRange("ho_d_so_ok", feature.getProperty("ho_d_so_ok"), 0, 10, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_so_ok");
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

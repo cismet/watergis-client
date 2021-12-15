@@ -40,8 +40,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRange;
-
 /**
  * DOCUMENT ME!
  *
@@ -131,7 +129,7 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
         if (newValue instanceof Geometry) {
             final Geometry g = (Geometry)newValue;
             if ((g.getLength() < 1) && (g.getLength() != lastLength)) {
-                showMessage("Die Länge der Geometry darf nicht kleiner als 1m sein.");
+                showMessage("Die Länge der Geometry darf nicht kleiner als 1m sein.", column);
 
                 return oldValue;
             }
@@ -145,12 +143,12 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                 if ((isValueEmpty(feature.getProperty("material")))
                             || !arrayContains(allowedMaterialArray,
                                 feature.getProperty("material").toString())) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wiwe = "
+                    showMessage("Wenn das Attribut wiwe = "
                                 + newValue.toString()
                                 + ", dann muss das Attribut material "
                                 + arrayToString(allowedMaterialArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             }
@@ -163,12 +161,12 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                 if ((isValueEmpty(newValue))
                             || !arrayContains(allowedMaterialArray,
                                 newValue.toString())) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wiwe = "
+                    showMessage("Wenn das Attribut wiwe = "
                                 + feature.getProperty("wiwe").toString()
                                 + ", dann muss das Attribut material "
                                 + arrayToString(allowedMaterialArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             }
@@ -287,6 +285,11 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (
@@ -299,10 +302,10 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                             true,
                             true,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
             if (!checkRange("br", feature.getProperty("br"), 0, 30, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
 
             if (feature.getProperty("wiwe") != null) {
@@ -312,19 +315,19 @@ public class GuWiweRuleSet extends WatergisDefaultRuleSet {
                     if ((isValueEmpty(feature.getProperty("material")))
                                 || !arrayContains(allowedMaterialArray,
                                     feature.getProperty("material").toString())) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut wiwe = "
+                        showMessage("Wenn das Attribut wiwe = "
                                     + feature.getProperty("wiwe").toString()
                                     + ", dann muss das Attribut material "
                                     + arrayToString(allowedMaterialArray)
-                                    + " sein.");
-                        return false;
+                                    + " sein.",
+                            "material");
+                        return new ErrorDetails(feature, "material");
                     }
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

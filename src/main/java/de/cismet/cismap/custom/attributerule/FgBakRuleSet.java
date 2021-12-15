@@ -213,6 +213,11 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         final Map<Integer, String> baCdMap = new HashMap<Integer, String>();
 
         for (final FeatureServiceFeature feature : features) {
@@ -253,7 +258,8 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
                                 list.get(0)),
                             NbBundle.getMessage(FgBakRuleSet.class, "FgBakRuleSet.prepareForSave().title"),
                             JOptionPane.ERROR_MESSAGE);
-                        return false;
+
+                        return new ErrorDetails(getFeatureByBaCd(features, String.valueOf(list.get(0))), "ba_cd");
                     }
                 }
             } catch (final Exception e) {
@@ -262,11 +268,29 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
                     NbBundle.getMessage(FgBakRuleSet.class, "FgBakRuleSet.prepareForSave().error.title"),
                     JOptionPane.ERROR_MESSAGE);
                 LOG.error("Error while checking the uniqueness of the ba_cd field.", e);
-                return false;
+                return new ErrorDetails(null, "ba_cd");
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   features  DOCUMENT ME!
+     * @param   baCd      DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private FeatureServiceFeature getFeatureByBaCd(final List<FeatureServiceFeature> features, final String baCd) {
+        for (final FeatureServiceFeature f : features) {
+            if (f.getProperty("ba_cd").equals(baCd)) {
+                return f;
+            }
+        }
+
+        return null;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="3332" pageHeight="595" orientation="Landscape" columnWidth="3292" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.1000000000000005"/>
-	<property name="ireport.x" value="1043"/>
+	<property name="ireport.x" value="1108"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -85,7 +85,7 @@
 	<field name="gb_l" class="java.lang.Double"/>
 	<field name="sb_a" class="java.lang.Integer"/>
 	<field name="sb_l" class="java.lang.Double"/>
-	<field name="prof_a" class="java.lang.Integer"/>
+	<field name="prof_a" class="java.lang.Double"/>
 	<field name="prof_l" class="java.lang.Double"/>
 	<field name="sbef_a" class="java.lang.Integer"/>
 	<field name="sbef_l" class="java.lang.Double"/>
@@ -186,9 +186,7 @@
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="536" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="c4ac5291-8d16-4333-a361-9fa4d269e029">
-						<printWhenExpression><![CDATA[false]]></printWhenExpression>
-					</reportElement>
+					<reportElement style="column_header_style" mode="Opaque" x="536" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="c4ac5291-8d16-4333-a361-9fa4d269e029"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -196,9 +194,7 @@
 					<text><![CDATA[Anzahl]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="581" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="4fe534bc-ee51-4f8f-943c-4c19668e265d">
-						<printWhenExpression><![CDATA[false]]></printWhenExpression>
-					</reportElement>
+					<reportElement style="column_header_style" mode="Opaque" x="581" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="4fe534bc-ee51-4f8f-943c-4c19668e265d"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
@@ -206,9 +202,7 @@
 					<text><![CDATA[Länge]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="column_header_style" mode="Opaque" x="536" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="e5f0a477-5244-4f7f-8985-85e2f2dab90d">
-						<printWhenExpression><![CDATA[false]]></printWhenExpression>
-					</reportElement>
+					<reportElement style="column_header_style" mode="Opaque" x="536" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="e5f0a477-5244-4f7f-8985-85e2f2dab90d"/>
 					<box leftPadding="2" rightPadding="2"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
@@ -1956,9 +1950,7 @@ leitungen]]></text>
 					</textElement>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="536" y="0" width="94" height="14" backcolor="#FDFD00" uuid="cab6c20f-c861-4e6c-8592-569830f7c578">
-						<printWhenExpression><![CDATA[false]]></printWhenExpression>
-					</reportElement>
+					<reportElement style="column_header_style" mode="Opaque" x="536" y="0" width="94" height="14" backcolor="#FDFD00" uuid="cab6c20f-c861-4e6c-8592-569830f7c578"/>
 					<box leftPadding="5">
 						<pen lineWidth="0.25"/>
 						<topPen lineWidth="0.25"/>
@@ -1971,9 +1963,7 @@ leitungen]]></text>
 					</textElement>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement style="column_header_style" mode="Opaque" x="536" y="14" width="94" height="14" backcolor="#FDFD00" uuid="969345ca-ceac-47d3-9cd3-6dc318ac003e">
-						<printWhenExpression><![CDATA[false]]></printWhenExpression>
-					</reportElement>
+					<reportElement style="column_header_style" mode="Opaque" x="536" y="14" width="94" height="14" backcolor="#FDFD00" uuid="969345ca-ceac-47d3-9cd3-6dc318ac003e"/>
 					<box leftPadding="5">
 						<pen lineWidth="0.25"/>
 						<topPen lineWidth="0.0"/>
@@ -2057,9 +2047,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{offene_l}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="536" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="1138e8c3-20ba-4c55-838a-2f7b30ca4427">
-					<printWhenExpression><![CDATA[false]]></printWhenExpression>
-				</reportElement>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="536" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="1138e8c3-20ba-4c55-838a-2f7b30ca4427"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
@@ -2067,9 +2055,7 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{see_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="581" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="b6a8d37d-01ae-4bf8-8521-5f4aff7a2851">
-					<printWhenExpression><![CDATA[false]]></printWhenExpression>
-				</reportElement>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="581" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="b6a8d37d-01ae-4bf8-8521-5f4aff7a2851"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>

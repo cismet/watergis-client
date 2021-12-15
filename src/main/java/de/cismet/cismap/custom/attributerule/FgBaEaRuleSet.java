@@ -102,10 +102,9 @@ public class FgBaEaRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("ea") || column.equals("l_rl")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -256,30 +255,33 @@ public class FgBaEaRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("ea"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ea darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut ea darf nicht leer sein", "ea");
+                return new ErrorDetails(feature, "ea");
             }
 
             if (isValueEmpty(feature.getProperty("l_rl"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut l_rl darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut l_rl darf nicht leer sein", "l_rl");
+                return new ErrorDetails(feature, "l_rl");
             }
 
             if (!checkRange("br", feature.getProperty("br"), 0, 30, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
 
             if (!checkRange("ho_ea", feature.getProperty("ho_ea"), -6, 179, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_ea");
             }
 
             if (!checkRange("ho_d_ea", feature.getProperty("ho_d_ea"), 0, 15, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_ea");
             }
 
             if (
@@ -290,11 +292,11 @@ public class FgBaEaRuleSet extends WatergisDefaultRuleSet {
                             getCurrentYear()
                             + 2,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

@@ -98,11 +98,6 @@ public class QpGafLRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
-        return true;
-    }
-
-    @Override
     public void beforeSave(final FeatureServiceFeature feature) {
     }
 

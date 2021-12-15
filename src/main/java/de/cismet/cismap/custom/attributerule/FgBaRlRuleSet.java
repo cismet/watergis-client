@@ -50,8 +50,6 @@ import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.isNoInteger;
-
 /**
  * DOCUMENT ME!
  *
@@ -113,10 +111,9 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
 
         if (isValueEmpty(newValue)) {
             if (column.equals("profil")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -213,7 +210,7 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
         if (column.equals("ho_li") || column.equals("br_tr_o_li")) {
             if (!isValueEmpty(newValue) && (feature.getProperty("profil") != null)
                         && feature.getProperty("profil").equals("kr")) {
-                showMessage("Bei Profil = kr ist kein Wert für " + column + " zulässig");
+                showMessage("Bei Profil = kr ist kein Wert für " + column + " zulässig", column);
                 return null;
             }
         }
@@ -222,7 +219,8 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
             if (!isValueEmpty(newValue) && (feature.getProperty("profil") != null)
                         && isValueIn(feature.getProperty("profil"), new String[] { "ei", "kr", "re" }, false)) {
                 showMessage("Bei Profil = " + feature.getProperty("profil") + " ist kein Wert für " + column
-                            + " zulässig");
+                            + " zulässig",
+                    column);
                 return null;
             }
         }
@@ -232,7 +230,7 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                         && feature.getProperty("profil").equals("tr")) {
                 if ((newValue != null) && (feature.getProperty("br_tr_o_li") != null)
                             && newValue.equals(feature.getProperty("br_tr_o_li"))) {
-                    showMessage("Bei Profil = tr dürfen br_dm und br_tr_o_li nicht gleich sein.");
+                    showMessage("Bei Profil = tr dürfen br_dm und br_tr_o_li nicht gleich sein.", column);
                     return oldValue;
                 }
             }
@@ -243,7 +241,7 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                         && feature.getProperty("profil").equals("tr")) {
                 if ((newValue != null) && (feature.getProperty("br_dm") != null)
                             && newValue.equals(feature.getProperty("br_dm"))) {
-                    showMessage("Bei Profil = tr dürfen br_dm und br_tr_o_li nicht gleich sein.");
+                    showMessage("Bei Profil = tr dürfen br_dm und br_tr_o_li nicht gleich sein.", column);
                     return oldValue;
                 }
             }
@@ -404,12 +402,16 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("profil"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut Profil darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut Profil darf nicht leer sein", "profil");
+                return new ErrorDetails(feature, "profil");
             }
 
             if (
@@ -420,71 +422,76 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                             getCurrentYear()
                             + 2,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
             if (!checkRangeBetweenOrEqual("ho_e", feature.getProperty("ho_e"), -6, 179, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_e");
             }
             if (!checkRangeBetweenOrEqual("ho_a", feature.getProperty("ho_a"), -6, 179, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_a");
             }
             if (!checkRangeBetweenOrEqual("gefaelle", feature.getProperty("gefaelle"), 0, 50, true)) {
-                return false;
+                return new ErrorDetails(feature, "gefaelle");
             }
             if (!checkRangeBetweenOrEqual("ho_d_e", feature.getProperty("ho_d_e"), 0, 5, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_e");
             }
             if (!checkRangeBetweenOrEqual("ho_d_a", feature.getProperty("ho_d_a"), 0, 5, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_d_a");
             }
             if (!checkRangeBetweenOrEqual("br_tr_o_li", feature.getProperty("br_tr_o_li"), 0.025, 5, true)) {
-                return false;
+                return new ErrorDetails(feature, "br_tr_o_li");
             }
 
             if (feature.getProperty("profil").equals("kr") || feature.getProperty("profil").equals("ei")) {
                 if (!checkRangeBetweenOrEqual("br_dm_li", feature.getProperty("br_dm_li"), 25, 5000, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "br_dm_li");
                 }
                 if (isNoInteger("br_dm_li", feature.getProperty("br_dm_li"), false)) {
-                    return false;
+                    return new ErrorDetails(feature, "br_dm_li");
                 }
             }
             if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
                 if (!checkRangeBetweenOrEqual("br_dm_li", feature.getProperty("br_dm_li"), 0.05, 2, 0.025, 5, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "br_dm_li");
                 }
                 if (isNoInteger("ho_li", feature.getProperty("ho_li"), false)) {
-                    return false;
+                    return new ErrorDetails(feature, "ho_li");
                 }
             }
             if (feature.getProperty("profil").equals("ei")) {
                 if (!checkRangeBetweenOrEqual("ho_li", feature.getProperty("ho_li"), 25, 5000, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "ho_li");
                 }
             }
             if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
                 if (!checkRangeBetweenOrEqual("ho_li", feature.getProperty("ho_li"), 0.025, 5, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "ho_li");
                 }
             }
             if (feature.getProperty("profil").equals("kr")
                         && ((feature.getProperty("ho_li") != null) || (feature.getProperty("br_tr_o_li") != null))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Die Attribute ho_li und br_tr_o_li dürfen nicht belegt sein, wenn profil = kr.");
-                return false;
+                showMessage(
+                    "Die Attribute ho_li und br_tr_o_li dürfen nicht belegt sein, wenn profil = kr.",
+                    "ho_li / br_tr_o_li");
+                if (feature.getProperty("ho_li") != null) {
+                    return new ErrorDetails(feature, "ho_li");
+                } else {
+                    return new ErrorDetails(feature, "br_tr_o_li");
+                }
             }
             if ((feature.getProperty("profil").equals("ei") || feature.getProperty("profil").equals("re"))
                         && (feature.getProperty("br_tr_o_li") != null)) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribute br_tr_o_li darf nicht belegt sein, wenn profil = ei oder re.");
-                return false;
+                showMessage("Das Attribute br_tr_o_li darf nicht belegt sein, wenn profil = ei oder re.", "br_tr_o_li");
+                return new ErrorDetails(feature, "br_tr_o_li");
             }
             if (feature.getProperty("profil").equals("tr")
                         && ((feature.getProperty("br_dm_li") != null) && (feature.getProperty("br_tr_o_li") != null))) {
                 if (feature.getProperty("br_dm_li").equals(feature.getProperty("br_tr_o_li"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Die Attribute br_dm_li und br_tr_o_li dürfen nicht gleich sein, wenn profil = tr.");
-                    return false;
+                    showMessage(
+                        "Die Attribute br_dm_li und br_tr_o_li dürfen nicht gleich sein, wenn profil = tr.",
+                        "br_dm_li");
+                    return new ErrorDetails(feature, "br_dm_li");
                 }
             }
             if ((feature.getProperty("ho_e") != null) && (feature.getProperty("ho_a") != null)) {
@@ -496,14 +503,18 @@ public class FgBaRlRuleSet extends WatergisDefaultRuleSet {
                                     + ") kleiner als das Attribut ho_a("
                                     + feature.getProperty("ho_a")
                                     + ") sein soll?",
-                            "Bestätigung",
+                            "Bestätigung ID: "
+                                    + idOfCurrentlyCheckedFeature
+                                    + " Feld: ho_e",
                             JOptionPane.YES_NO_OPTION);
-                    return answ == JOptionPane.OK_OPTION;
+                    if (answ != JOptionPane.OK_OPTION) {
+                        return new ErrorDetails(feature, "ho_e");
+                    }
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

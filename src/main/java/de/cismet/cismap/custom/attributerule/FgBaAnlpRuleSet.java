@@ -47,9 +47,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
-
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.checkRange;
 
 /**
  * DOCUMENT ME!
@@ -103,10 +100,9 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("anlp") || column.equals("l_rl")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -148,8 +144,9 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                 final Object rl = newValue;
 
                 if ((rl != null) && !rl.toString().equals("mi")) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei anlp = Albw/Elbw/Fu/Rsk/Schi/Slu/Stt darf das Attribut l_rl nur den Wert mi haben.");
+                    showMessage(
+                        "Bei anlp = Albw/Elbw/Fu/Rsk/Schi/Slu/Stt darf das Attribut l_rl nur den Wert mi haben.",
+                        column);
                     return oldValue;
                 }
             } else if (isValueIn(
@@ -162,8 +159,9 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                             || !(rl.toString().equals("mi") || rl.toString().equals("re")
                                 || rl.toString().equals("li") || rl.toString().equals("bs")
                                 || rl.toString().equals("nb"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei anlp = P/P-Gr/P-Steg/P-Gr-Ste/P-Lat/Sta darf das Attribut l_rl nur die Werte re/li/mi/bs/nb haben.");
+                    showMessage(
+                        "Bei anlp = P/P-Gr/P-Steg/P-Gr-Ste/P-Lat/Sta darf das Attribut l_rl nur die Werte re/li/mi/bs/nb haben.",
+                        column);
                     return oldValue;
                 }
             } else if (isValueIn(feature.getProperty("anlp"), new Object[] { "Steg", "Vt", "Wes" }, false)) {
@@ -172,8 +170,9 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                 if ((rl == null)
                             || !(rl.toString().equals("bs") || rl.toString().equals("re")
                                 || rl.toString().equals("li") || rl.toString().equals("nb"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei anlp = Steg/Vt/Wes darf das Attribut l_rl nur die Werte re/li/bs/nb haben.");
+                    showMessage(
+                        "Bei anlp = Steg/Vt/Wes darf das Attribut l_rl nur die Werte re/li/bs/nb haben.",
+                        column);
                     return oldValue;
                 }
             }
@@ -364,22 +363,24 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("anlp"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut anlp darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut anlp darf nicht leer sein", "anlp");
+                return new ErrorDetails(feature, "anlp");
             }
             if (isValueEmpty(feature.getProperty("l_rl"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut l_rl darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut l_rl darf nicht leer sein", "l_rl");
+                return new ErrorDetails(feature, "l_rl");
             }
             if (isValueEmpty(feature.getProperty("br"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut br darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut br darf nicht leer sein", "br");
+                return new ErrorDetails(feature, "br");
             }
 
             if (
@@ -392,24 +393,24 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                             true,
                             true,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
 
             if (isValueIn(feature.getProperty("anlp"), new Object[] { "Steg", "VT", "Wee" }, false)) {
                 final Number br = toNumber(feature.getProperty("br"));
 
                 if ((br.doubleValue() < 1) || (br.doubleValue() > 200)) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut br muss zwischen 1 und 200 liegen, wenn anlp = Steg/VT/Wee");
-                    return false;
+                    showMessage("Das Attribut br muss zwischen 1 und 200 liegen, wenn anlp = Steg/VT/Wee", "br");
+                    return new ErrorDetails(feature, "br");
                 }
             } else {
                 final Number br = toNumber(feature.getProperty("br"));
 
                 if ((br.doubleValue() < 0) || (br.doubleValue() > 10)) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut br muss zwischen 0 und 10 liegen, wenn anlp nicht gleich Steg/VT/Wee");
-                    return false;
+                    showMessage(
+                        "Das Attribut br muss zwischen 0 und 10 liegen, wenn anlp nicht gleich Steg/VT/Wee",
+                        "br");
+                    return new ErrorDetails(feature, "br");
                 }
             }
 
@@ -420,9 +421,10 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                 final Object rl = feature.getProperty("l_rl");
 
                 if ((rl != null) && !rl.toString().equals("mi")) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei anlp = Albw/Elbw/Fu/Rsk/Schi/Slu/Stt darf das Attribut l_rl nur den Wert mi haben.");
-                    return false;
+                    showMessage(
+                        "Bei anlp = Albw/Elbw/Fu/Rsk/Schi/Slu/Stt darf das Attribut l_rl nur den Wert mi haben.",
+                        "l_rl");
+                    return new ErrorDetails(feature, "l_rl");
                 }
             } else if (isValueIn(
                             feature.getProperty("anlp"),
@@ -434,9 +436,10 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                             || !(rl.toString().equals("mi") || rl.toString().equals("re")
                                 || rl.toString().equals("li") || rl.toString().equals("bs")
                                 || rl.toString().equals("nb"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei anlp = P/P-Gr/P-Steg/P-Gr-Ste/P-Lat/Sta darf das Attribut l_rl nur die Werte re/li/mi/bs/nb haben.");
-                    return false;
+                    showMessage(
+                        "Bei anlp = P/P-Gr/P-Steg/P-Gr-Ste/P-Lat/Sta darf das Attribut l_rl nur die Werte re/li/mi/bs/nb haben.",
+                        "l_rl");
+                    return new ErrorDetails(feature, "l_rl");
                 }
             } else if (isValueIn(feature.getProperty("anlp"), new Object[] { "Steg", "Vt", "Wes" }, false)) {
                 final Object rl = feature.getProperty("l_rl");
@@ -444,14 +447,15 @@ public class FgBaAnlpRuleSet extends WatergisDefaultRuleSet {
                 if ((rl == null)
                             || !(rl.toString().equals("bs") || rl.toString().equals("re")
                                 || rl.toString().equals("li") || rl.toString().equals("nb"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Bei anlp = Steg/Vt/Wes darf das Attribut l_rl nur die Werte re/li/bs/nb haben.");
-                    return false;
+                    showMessage(
+                        "Bei anlp = Steg/Vt/Wes darf das Attribut l_rl nur die Werte re/li/bs/nb haben.",
+                        "l_rl");
+                    return new ErrorDetails(feature, "l_rl");
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

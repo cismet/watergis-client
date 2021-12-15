@@ -142,10 +142,9 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equalsIgnoreCase("deich") || column.equalsIgnoreCase("ord") || column.equalsIgnoreCase("l_fk")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -193,8 +192,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                 }
 
                 if (!isValueIn(feature.getProperty("l_rl"), new Object[] { "re", "li", "nb" }, false)) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn l_fk = fd, dann muss l_rl = re, li oder nb");
+                    showMessage("Wenn l_fk = fd, dann muss l_rl = re, li oder nb", "l_rl");
                     return oldValue;
                 }
             } else if (isValueIn(newValue, new Object[] { "bd", "kd" }, false)) {
@@ -298,8 +296,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         if ((column.equals("ba_cd") || column.equals("ba_st_von") || column.equals("ba_st_bis"))
                     && (newValue != null)) {
             if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Es darf keine Stationierung angegeben sein, wenn l_fk = bd oder kd");
+                showMessage("Es darf keine Stationierung angegeben sein, wenn l_fk = bd oder kd", "ba_cd");
                 removeStationLine((CidsLayerFeature)feature);
                 return oldValue;
             }
@@ -310,7 +307,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
             if ((newValue != null) && (feature.getProperty("br_k") != null)) {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("br_k")).doubleValue()) {
-                    showMessage("Das Attribute br_f muss größer br_k sein.");
+                    showMessage("Das Attribute br_f muss größer br_k sein.", "br_f");
                     return oldValue;
                 }
             }
@@ -320,7 +317,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
             if ((feature.getProperty("br_f") != null) && (newValue != null)) {
                 if (((Number)feature.getProperty("br_f")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribute br_f muss größer br_k sein.");
+                    showMessage("Das Attribute br_f muss größer br_k sein.", "br_k");
                     return oldValue;
                 }
             }
@@ -330,7 +327,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
             if ((newValue != null) && (feature.getProperty("ho_k_pn") != null)) {
                 if (((Number)feature.getProperty("ho_k_pn")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribute ho_k_pn muss größer ho_k_f sein.");
+                    showMessage("Das Attribute ho_k_pn muss größer ho_k_f sein.", column);
                     return oldValue;
                 }
             }
@@ -340,14 +337,14 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
             if ((feature.getProperty("ho_k_f") != null) && (newValue != null)) {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("ho_k_f")).doubleValue()) {
-                    showMessage("Das Attribute ho_k_pn muss größer ho_k_f sein.");
+                    showMessage("Das Attribute ho_k_pn muss größer ho_k_f sein.", column);
                     return oldValue;
                 }
             }
             if ((feature.getProperty("ho_bhw_pn") != null) && (newValue != null)) {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("ho_bhw_pn")).doubleValue()) {
-                    showMessage("Das Attribute ho_k_pn muss größer ho_bhw_pn sein.");
+                    showMessage("Das Attribute ho_k_pn muss größer ho_bhw_pn sein.", column);
                     return oldValue;
                 }
             }
@@ -357,14 +354,14 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
             if ((newValue != null) && (feature.getProperty("ho_k_pn") != null)) {
                 if (((Number)feature.getProperty("ho_k_pn")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribute ho_k_pn muss größer ho_bhw_pn sein.");
+                    showMessage("Das Attribute ho_k_pn muss größer ho_bhw_pn sein.", column);
                     return oldValue;
                 }
             }
             if ((newValue != null) && (feature.getProperty("ho_mw_pn") != null)) {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("ho_mw_pn")).doubleValue()) {
-                    showMessage("Das Attribute ho_bhw_pn muss größer ho_mw_pn sein.");
+                    showMessage("Das Attribute ho_bhw_pn muss größer ho_mw_pn sein.", column);
                     return oldValue;
                 }
             }
@@ -374,14 +371,14 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
             if ((feature.getProperty("ho_bhw_pn") != null) && (newValue != null)) {
                 if (((Number)feature.getProperty("ho_bhw_pn")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribute ho_bhw_pn muss größer ho_mw_pn sein.");
+                    showMessage("Das Attribute ho_bhw_pn muss größer ho_mw_pn sein.", column);
                     return oldValue;
                 }
             }
             if ((feature.getProperty("ho_k_pn") != null) && (newValue != null)) {
                 if (((Number)feature.getProperty("ho_k_pn")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribute ho_k_pn muss größer ho_mw_pn sein.");
+                    showMessage("Das Attribute ho_k_pn muss größer ho_mw_pn sein.", column);
                     return oldValue;
                 }
             }
@@ -391,7 +388,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
             if ((newValue != null) && (feature.getProperty("ho_mw_pn") != null)) {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("ho_mw_pn")).doubleValue()) {
-                    showMessage("Das Attribute ho_k_pn muss größer ho_mw_pn sein.");
+                    showMessage("Das Attribute ho_k_pn muss größer ho_mw_pn sein.", column);
                     return oldValue;
                 }
             }
@@ -645,22 +642,24 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("deich"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut deich darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut deich darf nicht leer sein", "deich");
+                return new ErrorDetails(feature, "deich");
             }
             if (isValueEmpty(feature.getProperty("ord"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut ord darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut ord darf nicht leer sein", "ord");
+                return new ErrorDetails(feature, "ord");
             }
             if (isValueEmpty(feature.getProperty("l_fk"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut l_fk darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut l_fk darf nicht leer sein", "l_fk");
+                return new ErrorDetails(feature, "l_fk");
             }
             if (
                 !checkRangeBetweenOrEqual(
@@ -670,109 +669,101 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
                             getCurrentYear()
                             + 2,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
 
             if (!checkRangeBetweenOrEqual("bv_w", feature.getProperty("bv_w"), 1, 15, true)) {
-                return false;
+                return new ErrorDetails(feature, "bv_w");
             }
 
             if (!checkRangeBetweenOrEqual("bv_b", feature.getProperty("bv_b"), 1, 15, true)) {
-                return false;
+                return new ErrorDetails(feature, "bv_b");
             }
 
             if (isValueIn(feature.getProperty("l_fk"), new Object[] { "fd" }, false)) {
                 if (!checkRangeBetweenOrEqual("br_f", feature.getProperty("br_f"), 2, 50, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "br_f");
                 }
                 if (!checkRangeBetweenOrEqual("br_k", feature.getProperty("br_k"), 0.5, 10, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "br_k");
                 }
                 if (!checkRangeBetweenOrEqual("ho_k_f", feature.getProperty("ho_k_f"), 0.5, 15, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "ho_k_f");
                 }
                 if (!checkRangeBetweenOrEqual("ho_k_pn", feature.getProperty("ho_k_pn"), 2, 25, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "ho_k_pn");
                 }
                 if (!checkRangeBetweenOrEqual("ho_bhw_pn", feature.getProperty("ho_bhw_pn"), 2, 25, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "ho_bhw_pn");
                 }
 
                 if (!isValueIn(feature.getProperty("l_rl"), new Object[] { "re", "li", "nb" }, false)) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn l_fk = fd, dann muss l_rl = re, li oder nb");
-                    return false;
+                    showMessage("Wenn l_fk = fd, dann muss l_rl = re, li oder nb", "l_rl");
+                    return new ErrorDetails(feature, "l_rl");
                 }
             } else if (isValueIn(feature.getProperty("l_fk"), new Object[] { "bd", "kd" }, false)) {
                 if (!checkRangeBetweenOrEqual("br_f", feature.getProperty("br_f"), 2, 100, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "br_f");
                 }
                 if (!checkRangeBetweenOrEqual("br_k", feature.getProperty("br_k"), 0.5, 20, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "br_k");
                 }
                 if (!checkRangeBetweenOrEqual("ho_k_f", feature.getProperty("ho_k_f"), 1, 15, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "ho_k_f");
                 }
                 if (!checkRangeBetweenOrEqual("ho_k_pn", feature.getProperty("ho_k_pn"), 1, 20, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "ho_k_pn");
                 }
                 if (!checkRange("ho_bhw_pn", feature.getProperty("ho_bhw_pn"), 0, 20, true, false, true)) {
-                    return false;
+                    return new ErrorDetails(feature, "ho_bhw_pn");
                 }
                 if (!isValueEmpty(feature.getProperty("l_rl"))) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut l_rl muss leer sein, wenn l_fk = bd oder kd");
-                    return false;
+                    showMessage("Das Attribut l_rl muss leer sein, wenn l_fk = bd oder kd", "l_rl");
+                    return new ErrorDetails(feature, "l_rl");
                 }
                 if (feature.getProperty("ba_st") != null) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Es darf keine Stationierung angegeben sein, wenn l_fk = bd oder kd");
-                    return false;
+                    showMessage("Es darf keine Stationierung angegeben sein, wenn l_fk = bd oder kd", "ba_st");
+                    return new ErrorDetails(feature, "ba_st");
                 }
             }
 
             if ((feature.getProperty("br_f") != null) && (feature.getProperty("br_k") != null)) {
                 if (((Number)feature.getProperty("br_f")).doubleValue()
                             <= ((Number)feature.getProperty("br_k")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribute br_f muss größer br_k sein.");
-                    return false;
+                    showMessage("Das Attribute br_f muss größer br_k sein.", "br_f");
+                    return new ErrorDetails(feature, "br_f");
                 }
             }
             if ((feature.getProperty("ho_k_f") != null) && (feature.getProperty("ho_k_pn") != null)) {
                 if (((Number)feature.getProperty("ho_k_pn")).doubleValue()
                             <= ((Number)feature.getProperty("ho_k_f")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribute ho_k_pn muss größer ho_k_f sein.");
-                    return false;
+                    showMessage("Das Attribute ho_k_pn muss größer ho_k_f sein.", "ho_k_pn");
+                    return new ErrorDetails(feature, "ho_k_pn");
                 }
             }
             if ((feature.getProperty("ho_bhw_pn") != null) && (feature.getProperty("ho_k_pn") != null)) {
                 if (((Number)feature.getProperty("ho_k_pn")).doubleValue()
                             <= ((Number)feature.getProperty("ho_bhw_pn")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribute ho_k_pn muss größer ho_bhw_pn sein.");
-                    return false;
+                    showMessage("Das Attribute ho_k_pn muss größer ho_bhw_pn sein.", "ho_k_pn");
+                    return new ErrorDetails(feature, "ho_k_pn");
                 }
             }
             if ((feature.getProperty("ho_bhw_pn") != null) && (feature.getProperty("ho_mw_pn") != null)) {
                 if (((Number)feature.getProperty("ho_bhw_pn")).doubleValue()
                             <= ((Number)feature.getProperty("ho_mw_pn")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribute ho_bhw_pn muss größer ho_mw_pn sein.");
-                    return false;
+                    showMessage("Das Attribute ho_bhw_pn muss größer ho_mw_pn sein.", "ho_bhw_pn");
+                    return new ErrorDetails(feature, "ho_bhw_pn");
                 }
             }
             if ((feature.getProperty("ho_k_pn") != null) && (feature.getProperty("ho_mw_pn") != null)) {
                 if (((Number)feature.getProperty("ho_k_pn")).doubleValue()
                             <= ((Number)feature.getProperty("ho_mw_pn")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribute ho_k_pn muss größer ho_mw_pn sein.");
-                    return false;
+                    showMessage("Das Attribute ho_k_pn muss größer ho_mw_pn sein.", "ho_k_pn");
+                    return new ErrorDetails(feature, "ho_k_pn");
                 }
             }
         }
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

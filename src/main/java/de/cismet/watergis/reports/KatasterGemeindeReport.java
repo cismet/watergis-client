@@ -279,7 +279,7 @@ public class KatasterGemeindeReport {
                         tmp.getId(),
                         tmp.getFrom(),
                         tmp.getTill());
-                if (!tmp.getArt().equals("g") && (length > 0)) {
+                if (!tmp.getArt().equals("g") && (length >= 0.01)) {
                     if (length == Math.abs(tmp.getTill() - tmp.getFrom())) {
                         tmp.setArt("s");
                         newParts.add(tmp);
@@ -345,15 +345,15 @@ public class KatasterGemeindeReport {
         for (int i = 1; i < routes.size(); ++i) {
             final GmdPartObj tmp = routes.get(i);
 
-//            if (lastRoute.getArt().equals(tmp.getArt()) && (lastRoute.getId() == tmp.getId())
-//                        && (lastRoute.getTill() == tmp.getFrom())
-//                        && (lastRoute.getNr_li() == tmp.getNr_li())
-//                        && (lastRoute.getNr_re() == tmp.getNr_re())) {
-//                lastRoute.setTill(tmp.getTill());
-//            } else {
-            newRoutes.add(lastRoute);
-            lastRoute = tmp;
-//            }
+            if (lastRoute.getArt().equals(tmp.getArt()) && (lastRoute.getId() == tmp.getId())
+                        && (lastRoute.getTill() > (tmp.getFrom() - 0.01))
+                        && (lastRoute.getNr_li() == tmp.getNr_li())
+                        && (lastRoute.getNr_re() == tmp.getNr_re())) {
+                lastRoute.setTill(tmp.getTill());
+            } else {
+                newRoutes.add(lastRoute);
+                lastRoute = tmp;
+            }
         }
 
         newRoutes.add(lastRoute);
@@ -460,66 +460,109 @@ public class KatasterGemeindeReport {
             final Map<String, Object> feature = new HashMap<String, Object>();
             feature.put("name", gemDataMap.get(gem).getGmdName());
             feature.put("nummer", gem);
-            feature.put("gew_a", getCountGewAll(gem));
-            feature.put("gew_l", getLengthGewAll(gem));
-            feature.put("offene_a", getCountOffeneAbschn(gem));
-            feature.put("offene_l", getLengthOffeneAbschn(gem));
-            feature.put("see_a", getCountSeeAbschn(gem));
-            feature.put("see_l", getLengthSeeAbschn(gem));
-            feature.put("geschl_a", getCountGeschlAbschn(gem));
-            feature.put("geschl_l", getLengthGeschlAbschn(gem));
-            feature.put("wschutz_a", getCountLineObjectsAll(GemeindenData.LineFromPolygonTable.wr_sg_wsg, gem));
-            feature.put("wschutz_l", getLengthLineObjectsAll(GemeindenData.LineFromPolygonTable.wr_sg_wsg, gem));
-            feature.put("ueber_a", getCountLineObjectsAll(GemeindenData.LineFromPolygonTable.wr_sg_uesg, gem));
-            feature.put("ueber_l", getLengthLineObjectsAll(GemeindenData.LineFromPolygonTable.wr_sg_uesg, gem));
-            feature.put("ben_a", getCountPointObjectsAll(AllPunktObjects.Table.wr_wbu_ben, gem));
-            feature.put("aus_a", getCountPointObjectsAll(AllPunktObjects.Table.wr_wbu_aus, gem));
-            feature.put("pegel_a", getCountPointObjectsAll(AllPunktObjects.Table.mn_ow_pegel, gem));
-            feature.put("gb_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_gb, gem));
-            feature.put("gb_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_gb, gem));
-            feature.put("sb_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_sb, gem));
-            feature.put("sb_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_sb, gem));
-            feature.put("prof_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_prof, gem));
-            feature.put("prof_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_prof, gem));
-            feature.put("sbef_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_sbef, gem));
-            feature.put("sbef_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_sbef, gem));
-            feature.put("ubef_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_ubef, gem));
-            feature.put("ubef_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_ubef, gem));
-            feature.put("bbef_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_bbef, gem));
-            feature.put("bbef_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_bbef, gem));
-            feature.put("rl_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_rl, gem));
-            feature.put("rl_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_rl, gem));
-            feature.put("d_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_d, gem));
-            feature.put("d_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_d, gem));
-            feature.put("due_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_due, gem));
-            feature.put("due_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_due, gem));
-            feature.put("scha_a", getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_scha, gem));
-            feature.put("wehr_a", getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_wehr, gem));
-            feature.put("schw_a", getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_schw, gem));
-            feature.put("foto_a", getCountPointObjectsAll(AllPunktObjects.Table.foto, gem));
-            feature.put("anlp_a", getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_anlp, gem));
-            feature.put("anll_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_anll, gem));
-            feature.put("anll_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_anll, gem));
-            feature.put("kr_a", getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_kr, gem));
-            feature.put("ea_a", getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_ea, gem));
-            feature.put("deich_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_deich, gem));
-            feature.put("deich_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_deich, gem));
-            feature.put("ughz_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_ughz, gem));
-            feature.put("ughz_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_ughz, gem));
-            feature.put("leis_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_leis, gem));
-            feature.put("leis_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_leis, gem));
-            feature.put("tech_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_tech, gem));
-            feature.put("tech_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_tech, gem));
-            feature.put("dok_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_doku, gem));
-            feature.put("dok_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_doku, gem));
-            feature.put("proj_a", getCountLineObjectsAll(AllLineObjects.Table.fg_ba_proj, gem));
-            feature.put("proj_l", getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_proj, gem));
+            feature.put("gew_a", toNullIfZero(getCountGewAll(gem)));
+            feature.put("gew_l", toNullIfZero(getLengthGewAll(gem)));
+            feature.put(
+                "offene_a",
+                toNullIfZero(
+                    (getLengthGewAll(gem) - getLengthGeschlAbschn(gem) - getLengthSeeAbschn(gem))
+                            * 100
+                            / (getLengthOffeneAbschn(gem) + getLengthGeschlAbschn(gem))));
+            feature.put(
+                "offene_l",
+                toNullIfZero(getLengthGewAll(gem) - getLengthGeschlAbschn(gem) - getLengthSeeAbschn(gem)));
+            feature.put("see_a", toNullIfZero(getCountSeeAbschn(gem)));
+            feature.put("see_l", toNullIfZero(getLengthSeeAbschn(gem)));
+            feature.put(
+                "geschl_a",
+                toNullIfZero(
+                    getLengthGeschlAbschn(gem)
+                            * 100
+                            / (getLengthOffeneAbschn(gem) + getLengthGeschlAbschn(gem))));
+            feature.put("geschl_l", toNullIfZero(getLengthGeschlAbschn(gem)));
+            feature.put(
+                "wschutz_a",
+                toNullIfZero(getCountLineObjectsAll(GemeindenData.LineFromPolygonTable.wr_sg_wsg, gem)));
+            feature.put(
+                "wschutz_l",
+                toNullIfZero(getLengthLineObjectsAll(GemeindenData.LineFromPolygonTable.wr_sg_wsg, gem)));
+            feature.put(
+                "ueber_a",
+                toNullIfZero(getCountLineObjectsAll(GemeindenData.LineFromPolygonTable.wr_sg_uesg, gem)));
+            feature.put(
+                "ueber_l",
+                toNullIfZero(getLengthLineObjectsAll(GemeindenData.LineFromPolygonTable.wr_sg_uesg, gem)));
+            feature.put("ben_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.wr_wbu_ben, gem)));
+            feature.put("aus_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.wr_wbu_aus, gem)));
+            feature.put("pegel_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.mn_ow_pegel, gem)));
+            feature.put("gb_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_gb, gem)));
+            feature.put("gb_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_gb, gem)));
+            feature.put("sb_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_sb, gem)));
+            feature.put("sb_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_sb, gem)));
+            feature.put(
+                "prof_a",
+                toNullIfZero(
+                    percentage(
+                        getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_prof, gem),
+                        getLengthOffeneAbschn(gem))));
+            feature.put("prof_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_prof, gem)));
+            feature.put("sbef_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_sbef, gem)));
+            feature.put("sbef_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_sbef, gem)));
+            feature.put("ubef_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_ubef, gem)));
+            feature.put("ubef_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_ubef, gem)));
+            feature.put("bbef_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_bbef, gem)));
+            feature.put("bbef_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_bbef, gem)));
+            feature.put("rl_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_rl, gem)));
+            feature.put("rl_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_rl, gem)));
+            feature.put("d_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_d, gem)));
+            feature.put("d_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_d, gem)));
+            feature.put("due_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_due, gem)));
+            feature.put("due_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_due, gem)));
+            feature.put("scha_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_scha, gem)));
+            feature.put("wehr_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_wehr, gem)));
+            feature.put("schw_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_schw, gem)));
+            feature.put("foto_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.foto, gem)));
+            feature.put("anlp_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_anlp, gem)));
+            feature.put("anll_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_anll, gem)));
+            feature.put("anll_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_anll, gem)));
+            feature.put("kr_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_kr, gem)));
+            feature.put("ea_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_ea, gem)));
+            feature.put("deich_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_deich, gem)));
+            feature.put("deich_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_deich, gem)));
+            feature.put("ughz_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_ughz, gem)));
+            feature.put("ughz_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_ughz, gem)));
+            feature.put("leis_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_leis, gem)));
+            feature.put("leis_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_leis, gem)));
+            feature.put("tech_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_tech, gem)));
+            feature.put("tech_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_tech, gem)));
+            feature.put("dok_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_doku, gem)));
+            feature.put("dok_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_doku, gem)));
+            feature.put("proj_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_proj, gem)));
+            feature.put("proj_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_proj, gem)));
 
             features.add(feature);
         }
-        features.add(createKumFeature(features, false));
+        features.add(createKumFeature(features, false, true));
 
         return new FeatureDataSource(features);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   part   DOCUMENT ME!
+     * @param   total  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private double percentage(final double part, final double total) {
+        if (part == 0.0) {
+            return 0.0;
+        } else if (total == 0.0) {
+            return 0.0;
+        }
+
+        return part * 100 / total;
     }
 
     /**
@@ -572,7 +615,11 @@ public class KatasterGemeindeReport {
                 feature.put("gb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, gem, gew));
                 feature.put("sb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sb, gem, gew));
                 feature.put("sb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, gem, gew));
-                feature.put("prof_a", getCountLineObjects(AllLineObjects.Table.fg_ba_prof, gem, gew));
+                feature.put(
+                    "prof_a",
+                    percentage(
+                        getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gem, gew),
+                        getLengthOffeneAbschn(gem, gew)));
                 feature.put("prof_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gem, gew));
                 feature.put("sbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, gem, gew));
                 feature.put("sbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, gem, gew));
@@ -611,7 +658,7 @@ public class KatasterGemeindeReport {
                 features.add(feature);
                 featureListKum.add(feature);
             }
-            features.add(createKumFeature(featureListKum, false));
+            features.add(createKumFeature(featureListKum, false, false));
         }
         return new FeatureDataSource(features);
     }
@@ -747,12 +794,14 @@ public class KatasterGemeindeReport {
                         gew.getTill()));
                 feature.put(
                     "prof_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_prof,
-                        gem,
-                        gew.getId(),
-                        gew.getFrom(),
-                        gew.getTill()));
+                    percentage(
+                        getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_prof,
+                            gem,
+                            gew.getId(),
+                            gew.getFrom(),
+                            gew.getTill()),
+                        getLengthOffeneAbschn(gem, gew.getId(), gew.getFrom(), gew.getTill())));
                 feature.put(
                     "prof_l",
                     getLengthLineObjects(
@@ -1013,7 +1062,7 @@ public class KatasterGemeindeReport {
                 final String newCode = getBaCd(gem, gew.getId());
 
                 if ((code != null) && !code.equals(newCode)) {
-                    final Map<String, Object> kumObj = createKumFeature(featureListGewKum, true);
+                    final Map<String, Object> kumObj = createKumFeature(featureListGewKum, true, false);
                     kumObj.remove("von");
                     kumObj.remove("bis");
                     kumObj.remove("gewLaenge");
@@ -1027,7 +1076,7 @@ public class KatasterGemeindeReport {
                 featureListGewKum.add(feature);
             }
             // generate the last sub total (start)
-            Map<String, Object> kumObj = createKumFeature(featureListGewKum, true);
+            Map<String, Object> kumObj = createKumFeature(featureListGewKum, true, false);
             kumObj.remove("von");
             kumObj.remove("bis");
             kumObj.remove("gewLaenge");
@@ -1035,7 +1084,7 @@ public class KatasterGemeindeReport {
             featureListGewKum.clear();
             // generate the last sub total (end)
 
-            kumObj = createKumFeature(featureListKum, false);
+            kumObj = createKumFeature(featureListKum, false, false);
             kumObj.remove("code");
             kumObj.remove("gewName");
             kumObj.remove("von");
@@ -1100,7 +1149,11 @@ public class KatasterGemeindeReport {
                 feature.put("gb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, gem, guName));
                 feature.put("sb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sb, gem, guName));
                 feature.put("sb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, gem, guName));
-                feature.put("prof_a", getCountLineObjects(AllLineObjects.Table.fg_ba_prof, gem, guName));
+                feature.put(
+                    "prof_a",
+                    percentage(
+                        getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gem, guName),
+                        getLengthOffeneAbschn(gem, guName)));
                 feature.put("prof_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gem, guName));
                 feature.put("sbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, gem, guName));
                 feature.put("sbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, gem, guName));
@@ -1139,7 +1192,7 @@ public class KatasterGemeindeReport {
                 features.add(feature);
                 featureListKum.add(feature);
             }
-            features.add(createKumFeature(featureListKum, false));
+            features.add(createKumFeature(featureListKum, false, false));
         }
         return new FeatureDataSource(features);
     }
@@ -1256,10 +1309,12 @@ public class KatasterGemeindeReport {
                             wdm));
                     feature.put(
                         "prof_a",
-                        getCountLineObjects(
-                            AllLineObjects.Table.fg_ba_prof,
-                            gem,
-                            wdm));
+                        percentage(
+                            getLengthLineObjects(
+                                AllLineObjects.Table.fg_ba_prof,
+                                gem,
+                                wdm),
+                            getLengthOffeneAbschn(gem, guName, wdm)));
                     feature.put(
                         "prof_l",
                         getLengthLineObjects(
@@ -1468,9 +1523,9 @@ public class KatasterGemeindeReport {
                     featureListKum.add(feature);
                     featureListGuKum.add(feature);
                 }
-                features.add(createKumFeature(featureListGuKum, true));
+                features.add(createKumFeature(featureListGuKum, true, false));
             }
-            features.add(createKumFeature(featureListKum, false));
+            features.add(createKumFeature(featureListKum, false, false));
         }
         return new FeatureDataSource(features);
     }
@@ -1518,7 +1573,11 @@ public class KatasterGemeindeReport {
             feature.put("gb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, guName));
             feature.put("sb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sb, guName));
             feature.put("sb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, guName));
-            feature.put("prof_a", getCountLineObjects(AllLineObjects.Table.fg_ba_prof, guName));
+            feature.put(
+                "prof_a",
+                percentage(
+                    getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName),
+                    getLengthOffeneAbschn(guName)));
             feature.put("prof_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName));
             feature.put("sbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, guName));
             feature.put("sbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, guName));
@@ -1557,7 +1616,7 @@ public class KatasterGemeindeReport {
             features.add(feature);
             featureListKum.add(feature);
         }
-        features.add(createKumFeature(featureListKum, false));
+        features.add(createKumFeature(featureListKum, false, false));
 
         return new FeatureDataSource(features);
     }
@@ -1670,10 +1729,12 @@ public class KatasterGemeindeReport {
                         wdm));
                 feature.put(
                     "prof_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_prof,
-                        guName,
-                        wdm));
+                    percentage(
+                        getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_prof,
+                            guName,
+                            wdm),
+                        getLengthOffeneAbschn(guName, wdm)));
                 feature.put(
                     "prof_l",
                     getLengthLineObjects(
@@ -1882,9 +1943,9 @@ public class KatasterGemeindeReport {
                 featureListKum.add(feature);
                 featureListGuKum.add(feature);
             }
-            features.add(createKumFeature(featureListGuKum, true));
+            features.add(createKumFeature(featureListGuKum, true, false));
         }
-        features.add(createKumFeature(featureListKum, false));
+        features.add(createKumFeature(featureListKum, false, false));
 //        }
         return new FeatureDataSource(features);
     }
@@ -1894,11 +1955,13 @@ public class KatasterGemeindeReport {
      *
      * @param   featureListKum  DOCUMENT ME!
      * @param   subtotal        DOCUMENT ME!
+     * @param   isGeschDouble   DOCUMENT ME!
      *
      * @return  DOCUMENT ME!
      */
     private Map<String, Object> createKumFeature(final List<Map<String, Object>> featureListKum,
-            final boolean subtotal) {
+            final boolean subtotal,
+            final boolean isGeschDouble) {
         final Map<String, Object> kumFeature = new HashMap<String, Object>();
 
         kumFeature.put("summe", Boolean.TRUE);
@@ -1913,13 +1976,19 @@ public class KatasterGemeindeReport {
         for (final String key : firstElement.keySet()) {
             final Object value = firstElement.get(key);
 
+            if (value == null) {
+                continue;
+            }
+
             if ((key != null) && key.equalsIgnoreCase("group")) {
                 kumFeature.put(key, value);
             } else if ((Arrays.binarySearch(exceptionalFields, key) < 0) && (value instanceof Integer)) {
                 int sum = 0;
 
                 for (final Map<String, Object> f : featureListKum) {
-                    sum += (Integer)f.get(key);
+                    if (f.get(key) instanceof Number) {
+                        sum += (Integer)f.get(key);
+                    }
                 }
 
                 kumFeature.put(key, sum);
@@ -1927,7 +1996,9 @@ public class KatasterGemeindeReport {
                 double sum = 0;
 
                 for (final Map<String, Object> f : featureListKum) {
-                    sum += (Double)f.get(key);
+                    if (f.get(key) instanceof Number) {
+                        sum += (Double)f.get(key);
+                    }
                 }
 
                 kumFeature.put(key, sum);
@@ -1936,7 +2007,48 @@ public class KatasterGemeindeReport {
             }
         }
 
+        if (isGeschDouble) {
+            Double offene = (Double)kumFeature.get("offene_l");
+            Double geschl = (Double)kumFeature.get("geschl_l");
+            Double prof = (Double)kumFeature.get("prof_l");
+
+            if (offene == null) {
+                offene = 0.0;
+            }
+            if (geschl == null) {
+                geschl = 0.0;
+            }
+            if (prof == null) {
+                prof = 0.0;
+            }
+
+            kumFeature.put("offene_a", toNullIfZero(offene * 100.0 / (offene + geschl)));
+            kumFeature.put("geschl_a", toNullIfZero(geschl * 100.0 / (offene + geschl)));
+            if (offene == 0.0) {
+                kumFeature.put("prof_a", 0.0);
+            } else {
+                kumFeature.put("prof_a", toNullIfZero(prof * 100.0 / (offene)));
+            }
+        }
+
         return kumFeature;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   o  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private Object toNullIfZero(final Object o) {
+        if (o instanceof Number) {
+            if (((Number)o).doubleValue() == 0.0) {
+                return null;
+            }
+        }
+
+        return o;
     }
 
     /**

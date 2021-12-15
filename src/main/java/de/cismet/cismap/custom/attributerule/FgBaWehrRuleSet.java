@@ -139,10 +139,9 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("wehr") || column.equals("wehr_v") || column.equals("wehr_av")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -184,7 +183,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             if ((newValue != null) && (feature.getProperty("az") != null)) {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("az")).doubleValue()) {
-                    showMessage("Das Attribut sz muss größer als das Attribut az sein.");
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.", column);
                     return oldValue;
                 }
             }
@@ -194,7 +193,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             if (((feature.getProperty("sz") != null) && (newValue != null))) {
                 if (((Number)feature.getProperty("sz")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribut sz muss größer als das Attribut az sein.");
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.", column);
                     return oldValue;
                 }
             }
@@ -204,7 +203,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             if ((newValue != null) && (feature.getProperty("ho_so") != null)) {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("ho_so")).doubleValue()) {
-                    showMessage("Das Attribut sz muss größer als das Attribut ho_so sein.");
+                    showMessage("Das Attribut sz muss größer als das Attribut ho_so sein.", column);
                     return oldValue;
                 }
             }
@@ -214,7 +213,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             if (((feature.getProperty("sz") != null) && (newValue != null))) {
                 if (((Number)feature.getProperty("sz")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribut sz muss größer als das Attribut ho_so sein.");
+                    showMessage("Das Attribut sz muss größer als das Attribut ho_so sein.", column);
                     return oldValue;
                 }
             }
@@ -224,7 +223,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             if ((newValue != null) && (feature.getProperty("ho_so") != null)) {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("ho_so")).doubleValue()) {
-                    showMessage("Das Attribut az muss größer als das Attribut ho_so sein.");
+                    showMessage("Das Attribut az muss größer als das Attribut ho_so sein.", column);
                     return oldValue;
                 }
             }
@@ -234,7 +233,7 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
             if (((feature.getProperty("az") != null) && (newValue != null))) {
                 if (((Number)feature.getProperty("az")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribut az muss größer als das Attribut ho_so sein.");
+                    showMessage("Das Attribut az muss größer als das Attribut ho_so sein.", column);
                     return oldValue;
                 }
             }
@@ -284,12 +283,12 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             || !arrayContains(
                                 allowedWehrVArray,
                                 newValue.toString().toLowerCase())) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr = "
+                    showMessage("Wenn das Attribut wehr = "
                                 + feature.getProperty("wehr").toString()
                                 + ", dann muss das Attribut wehr_v "
                                 + arrayToString(allowedWehrVArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             }
@@ -304,12 +303,12 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             || !arrayContains(
                                 allowedWehrAVArray,
                                 newValue.toString().toLowerCase())) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr = "
+                    showMessage("Wenn das Attribut wehr = "
                                 + newValue.toString()
                                 + ", dann muss das Attribut wehr_av "
                                 + arrayToString(allowedWehrAVArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             }
@@ -323,20 +322,20 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             || !arrayContains(
                                 allowedMaterialVArray,
                                 feature.getProperty("material_v").toString().toLowerCase())) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr_v = "
+                    showMessage("Wenn das Attribut wehr_v = "
                                 + newValue.toString()
                                 + ", dann muss das Attribut material_v "
                                 + arrayToString(allowedMaterialVArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             } else {
                 if (feature.getProperty("material_v") != null) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr_v = "
+                    showMessage("Wenn das Attribut wehr_v = "
                                 + newValue.toString()
-                                + ", dann muss das Attribut material_v null sein");
+                                + ", dann muss das Attribut material_v null sein",
+                        column);
                 }
             }
         }
@@ -351,20 +350,20 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             || !arrayContains(
                                 allowedMaterialVArray,
                                 newValue.toString().toLowerCase())) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr_v = "
+                    showMessage("Wenn das Attribut wehr_v = "
                                 + feature.getProperty("wehr_v").toString()
                                 + ", dann muss das Attribut material_v "
                                 + arrayToString(allowedMaterialVArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             } else {
                 if (newValue != null) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr_v = "
+                    showMessage("Wenn das Attribut wehr_v = "
                                 + feature.getProperty("wehr_v").toString()
-                                + ", dann muss das Attribut material_v null sein");
+                                + ", dann muss das Attribut material_v null sein",
+                        column);
                 }
             }
         }
@@ -377,20 +376,20 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             || !arrayContains(
                                 allowedMaterialAArray,
                                 feature.getProperty("material_a").toString().toLowerCase())) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr_a = "
+                    showMessage("Wenn das Attribut wehr_a = "
                                 + newValue.toString()
                                 + ", dann muss das Attribut material_a "
                                 + arrayToString(allowedMaterialAArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             } else {
                 if (feature.getProperty("material_a") != null) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr_a = "
+                    showMessage("Wenn das Attribut wehr_a = "
                                 + newValue.toString()
-                                + ", dann muss das Attribut material_a null sein");
+                                + ", dann muss das Attribut material_a null sein",
+                        column);
                 }
             }
         }
@@ -404,20 +403,20 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             || !arrayContains(
                                 allowedMaterialAArray,
                                 newValue.toString().toLowerCase())) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr_a = "
+                    showMessage("Wenn das Attribut wehr_a = "
                                 + feature.getProperty("wehr_a").toString()
                                 + ", dann muss das Attribut material_a "
                                 + arrayToString(allowedMaterialAArray)
-                                + " sein.");
+                                + " sein.",
+                        column);
                     return oldValue;
                 }
             } else {
                 if (newValue != null) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Wenn das Attribut wehr_a = "
+                    showMessage("Wenn das Attribut wehr_a = "
                                 + feature.getProperty("wehr_a").toString()
-                                + ", dann muss das Attribut material_a null sein");
+                                + ", dann muss das Attribut material_a null sein",
+                        column);
                 }
             }
         }
@@ -600,22 +599,24 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("wehr"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wehr darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut wehr darf nicht leer sein", "wehr");
+                return new ErrorDetails(feature, "wehr");
             }
             if (isValueEmpty(feature.getProperty("wehr_v"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wehr_v darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut wehr_v darf nicht leer sein", "wehr_v");
+                return new ErrorDetails(feature, "wehr_v");
             }
             if (isValueEmpty(feature.getProperty("wehr_av"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut wehr_av darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut wehr_av darf nicht leer sein", "wehr_av");
+                return new ErrorDetails(feature, "wehr_av");
             }
 
             if (
@@ -628,48 +629,45 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                             true,
                             true,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
             if (!checkRange("br", feature.getProperty("br"), 0, 30, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
             if (!checkRange("br_li", feature.getProperty("br_li"), 0, 100, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br_li");
             }
             if (!checkRange("ho_so", feature.getProperty("ho_so"), -6, 179, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "ho_so");
             }
             if (!checkRange("sz", feature.getProperty("sz"), -6, 179, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "sz");
             }
             if (!checkRange("az", feature.getProperty("az"), -6, 179, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "az");
             }
 
             if ((feature.getProperty("sz") != null) && (feature.getProperty("az") != null)) {
                 if (((Number)feature.getProperty("sz")).doubleValue()
                             <= ((Number)feature.getProperty("az")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut sz muss größer als das Attribut az sein.");
-                    return false;
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.", "sz");
+                    return new ErrorDetails(feature, "sz");
                 }
             }
 
             if ((feature.getProperty("sz") != null) && (feature.getProperty("ho_so") != null)) {
                 if (((Number)feature.getProperty("sz")).doubleValue()
                             <= ((Number)feature.getProperty("ho_so")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut sz muss größer als das Attribut ho_so sein.");
-                    return false;
+                    showMessage("Das Attribut sz muss größer als das Attribut ho_so sein.", "sz");
+                    return new ErrorDetails(feature, "sz");
                 }
             }
 
             if ((feature.getProperty("az") != null) && (feature.getProperty("ho_so") != null)) {
                 if (((Number)feature.getProperty("az")).doubleValue()
                             <= ((Number)feature.getProperty("ho_so")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut az muss größer als das Attribut ho_so sein.");
-                    return false;
+                    showMessage("Das Attribut az muss größer als das Attribut ho_so sein.", "az");
+                    return new ErrorDetails(feature, "az");
                 }
             }
 
@@ -684,13 +682,13 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                                 || !arrayContains(
                                     allowedWehrVArray,
                                     feature.getProperty("wehr_v").toString().toLowerCase())) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut wehr = "
+                        showMessage("Wenn das Attribut wehr = "
                                     + feature.getProperty("wehr").toString()
                                     + ", dann muss das Attribut wehr_v "
                                     + arrayToString(allowedWehrVArray)
-                                    + " sein.");
-                        return false;
+                                    + " sein.",
+                            "wehr_v");
+                        return new ErrorDetails(feature, "wehr_v");
                     }
                 }
 
@@ -699,13 +697,13 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                                 || !arrayContains(
                                     allowedWehrAVArray,
                                     feature.getProperty("wehr_av").toString().toLowerCase())) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut wehr = "
+                        showMessage("Wenn das Attribut wehr = "
                                     + feature.getProperty("wehr").toString()
                                     + ", dann muss das Attribut wehr_av "
                                     + arrayToString(allowedWehrAVArray)
-                                    + " sein.");
-                        return false;
+                                    + " sein.",
+                            "wehr_av");
+                        return new ErrorDetails(feature, "wehr_av");
                     }
                 }
             }
@@ -719,21 +717,21 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                                 || !arrayContains(
                                     allowedMaterialVArray,
                                     feature.getProperty("material_v").toString().toLowerCase())) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut wehr_v = "
+                        showMessage("Wenn das Attribut wehr_v = "
                                     + feature.getProperty("wehr_v").toString()
                                     + ", dann muss das Attribut material_v "
                                     + arrayToString(allowedMaterialVArray)
-                                    + " sein.");
-                        return false;
+                                    + " sein.",
+                            "material_v");
+                        return new ErrorDetails(feature, "material_v");
                     }
                 } else {
                     if (feature.getProperty("material_v") != null) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut wehr_v = "
+                        showMessage("Wenn das Attribut wehr_v = "
                                     + feature.getProperty("wehr_v").toString()
-                                    + ", dann muss das Attribut material_v null sein");
-                        return false;
+                                    + ", dann muss das Attribut material_v null sein",
+                            "material_v");
+                        return new ErrorDetails(feature, "material_v");
                     }
                 }
             }
@@ -747,27 +745,27 @@ public class FgBaWehrRuleSet extends WatergisDefaultRuleSet {
                                 || !arrayContains(
                                     allowedMaterialAArray,
                                     feature.getProperty("material_a").toString().toLowerCase())) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut wehr_a = "
+                        showMessage("Wenn das Attribut wehr_a = "
                                     + feature.getProperty("wehr_a").toString()
                                     + ", dann muss das Attribut material_a "
                                     + arrayToString(allowedMaterialAArray)
-                                    + " sein.");
-                        return false;
+                                    + " sein.",
+                            "material_a");
+                        return new ErrorDetails(feature, "material_a");
                     }
                 } else {
                     if (feature.getProperty("material_a") != null) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Wenn das Attribut wehr_a = "
+                        showMessage("Wenn das Attribut wehr_a = "
                                     + feature.getProperty("wehr_a").toString()
-                                    + ", dann muss das Attribut material_a null sein");
-                        return false;
+                                    + ", dann muss das Attribut material_a null sein",
+                            "material_a");
+                        return new ErrorDetails(feature, "material_a");
                     }
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override

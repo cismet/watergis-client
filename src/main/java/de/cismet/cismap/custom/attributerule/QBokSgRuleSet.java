@@ -58,11 +58,6 @@ public class QBokSgRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public boolean prepareForSave(final List<FeatureServiceFeature> features) {
-        return true;
-    }
-
-    @Override
     public String[] getAdditionalFieldNames() {
         return new String[] { "flaeche" };
     }

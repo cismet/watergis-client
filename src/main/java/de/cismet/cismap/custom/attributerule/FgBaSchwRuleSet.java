@@ -111,10 +111,9 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
         idOfCurrentlyCheckedFeature = feature.getId();
         if (isValueEmpty(newValue)) {
             if (column.equals("schw")) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut "
+                showMessage("Das Attribut "
                             + column
-                            + " darf nicht leer sein");
+                            + " darf nicht leer sein", column);
                 return oldValue;
             }
         }
@@ -182,7 +181,7 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
             if ((newValue != null) && (feature.getProperty("az") != null)) {
                 if (((Number)newValue).doubleValue()
                             <= ((Number)feature.getProperty("az")).doubleValue()) {
-                    showMessage("Das Attribut sz muss größer als das Attribut az sein.");
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.", column);
                     return oldValue;
                 }
             }
@@ -192,7 +191,7 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
             if (((feature.getProperty("sz") != null) && (newValue != null))) {
                 if (((Number)feature.getProperty("sz")).doubleValue()
                             <= ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribut sz muss größer als das Attribut az sein.");
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.", column);
                     return oldValue;
                 }
             }
@@ -202,7 +201,7 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
             if ((newValue != null) && (feature.getProperty("v_fl") != null)) {
                 if (((Number)newValue).doubleValue()
                             < ((Number)feature.getProperty("v_fl")).doubleValue()) {
-                    showMessage("Das Attribut ezg_fl darf nicht kleiner als das Attribut v_fl sein.");
+                    showMessage("Das Attribut ezg_fl darf nicht kleiner als das Attribut v_fl sein.", column);
                     return oldValue;
                 }
             }
@@ -212,7 +211,7 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
             if ((feature.getProperty("ezg_fl") != null) && (newValue != null)) {
                 if (((Number)feature.getProperty("ezg_fl")).doubleValue()
                             < ((Number)newValue).doubleValue()) {
-                    showMessage("Das Attribut ezg_fl darf nicht kleiner als das Attribut v_fl sein.");
+                    showMessage("Das Attribut ezg_fl darf nicht kleiner als das Attribut v_fl sein.", column);
                     return oldValue;
                 }
             }
@@ -302,12 +301,16 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean prepareForSave(final List<FeatureServiceFeature> features) {
+        return prepareForSaveWithDetails(features) == null;
+    }
+
+    @Override
+    public ErrorDetails prepareForSaveWithDetails(final List<FeatureServiceFeature> features) {
         for (final FeatureServiceFeature feature : features) {
             idOfCurrentlyCheckedFeature = feature.getId();
             if (isValueEmpty(feature.getProperty("schw"))) {
-                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                    "Das Attribut schw darf nicht leer sein");
-                return false;
+                showMessage("Das Attribut schw darf nicht leer sein", "schw");
+                return new ErrorDetails(feature, "schw");
             }
 
             if (
@@ -320,57 +323,55 @@ public class FgBaSchwRuleSet extends WatergisDefaultRuleSet {
                             true,
                             true,
                             true)) {
-                return false;
+                return new ErrorDetails(feature, "ausbaujahr");
             }
             if (!checkRange("br", feature.getProperty("br"), 0, 30, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "br");
             }
             if (!checkRange("ezg_fl", feature.getProperty("ezg_fl"), 0, 100, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "ezg_fl");
             }
             if (!checkRange("v_fl", feature.getProperty("v_fl"), 0, 100, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "v_fl");
             }
             if (!checkRange("pu_anz1", feature.getProperty("pu_anz1"), 1, 9, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "pu_anz1");
             }
             if (!checkRange("pu_motl1", feature.getProperty("pu_motl1"), 0, 500, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "pu_motl1");
             }
             if (!checkRange("pu_foel1", feature.getProperty("pu_foel1"), 0, 100, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "pu_foel1");
             }
 
             if (!checkRange("pu_anz2", feature.getProperty("pu_anz2"), 1, 9, true, true, true)) {
-                return false;
+                return new ErrorDetails(feature, "pu_anz2");
             }
             if (!checkRange("pu_motl2", feature.getProperty("pu_motl2"), 0, 500, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "pu_motl2");
             }
             if (!checkRange("pu_foel2", feature.getProperty("pu_foel2"), 0, 100, true, false, true)) {
-                return false;
+                return new ErrorDetails(feature, "pu_foel2");
             }
 
             if ((feature.getProperty("sz") != null) && (feature.getProperty("az") != null)) {
                 if (((Number)feature.getProperty("sz")).doubleValue()
                             <= ((Number)feature.getProperty("az")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut sz muss größer als das Attribut az sein.");
-                    return false;
+                    showMessage("Das Attribut sz muss größer als das Attribut az sein.", "sz");
+                    return new ErrorDetails(feature, "sz");
                 }
             }
 
             if ((feature.getProperty("ezg_fl") != null) && (feature.getProperty("v_fl") != null)) {
                 if (((Number)feature.getProperty("ezg_fl")).doubleValue()
                             < ((Number)feature.getProperty("v_fl")).doubleValue()) {
-                    JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                        "Das Attribut ezg_fl darf nicht kleiner als das Attribut v_fl sein.");
-                    return false;
+                    showMessage("Das Attribut ezg_fl darf nicht kleiner als das Attribut v_fl sein.", "ezg_fl");
+                    return new ErrorDetails(feature, "ezg_fl");
                 }
             }
         }
 
-        return super.prepareForSave(features);
+        return super.prepareForSaveWithDetails(features);
     }
 
     @Override
