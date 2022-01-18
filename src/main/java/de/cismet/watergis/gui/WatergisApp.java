@@ -100,6 +100,8 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -167,6 +169,7 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
+import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
@@ -752,13 +755,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     .showExceptionDialog(this, ExceptionManager.ERROR, "Exception", e.getMessage(), messages);
         }
         try {
-            // clear all locks from the previous session
-            H2FeatureService.clearLocks();
-            H2FeatureService.removeUnusedSequences();
-        } catch (IllegalStateException e) {
+            H2FeatureServiceFactory.tryDBConnection(null);
+        } catch (SQLException e) {
             System.err.println("Database is already in use");
+            final List<String> messages = new ArrayList<String>();
+            messages.add(
+                "Die interne Datenbank wird bereits genutzt. Wahrscheinlich läuft bereits eine Instanz der Anwendung und es können keine 2 Instanzen parallel laufen.");
+            ExceptionManager.getManager()
+                    .showExceptionDialog(this, ExceptionManager.ERROR, "Exception", e.getMessage(), messages);
             System.exit(1);
         }
+        // clear all locks from the previous session
+        H2FeatureService.clearLocks();
+        H2FeatureService.removeUnusedSequences();
         final Map<HostConfiguration, Integer> maxHostConnections = new HashMap<HostConfiguration, Integer>();
         maxHostConnections.put(HostConfiguration.ANY_HOST_CONFIGURATION, 128);
         HttpConnectionManagerParams.getDefaultParams()
