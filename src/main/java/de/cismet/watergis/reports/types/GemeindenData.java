@@ -178,6 +178,34 @@ public class GemeindenData {
      *
      * @return  DOCUMENT ME!
      */
+    public Collection<Integer> getIds(final AllPunktObjects.Table table,
+            final int gew,
+            final double from,
+            final double till) {
+        final List<PointObjectData> points = pointMap.get(table);
+        final TreeSet<Integer> ids = new TreeSet<Integer>();
+
+        if (points != null) {
+            for (final PointObjectData pointObj : points) {
+                if (pointObj.isInGewPart(gew, from, till)) {
+                    ids.add(pointObj.getId());
+                }
+            }
+        }
+
+        return ids;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   table  DOCUMENT ME!
+     * @param   gew    DOCUMENT ME!
+     * @param   from   DOCUMENT ME!
+     * @param   till   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     public int getCount(final AllLineObjects.Table table, final int gew, final double from, final double till) {
         final List<LineObjectData> lines = lineMap.get(table);
         int count = 0;
@@ -604,7 +632,11 @@ public class GemeindenData {
 
         if ((attributes != null) && !attributes.isEmpty()) {
             for (final ArrayList f : attributes) {
-                objList.add(new PointObjectData((Integer)f.get(0), (String)f.get(1), (Double)f.get(2)));
+                objList.add(new PointObjectData(
+                        (Integer)f.get(0),
+                        (String)f.get(1),
+                        (Double)f.get(2),
+                        (Integer)f.get(3)));
             }
         }
 
@@ -625,6 +657,7 @@ public class GemeindenData {
         private int gewId;
         private String baCd;
         private double from;
+        private int id;
 
         //~ Constructors -------------------------------------------------------
 
@@ -640,11 +673,13 @@ public class GemeindenData {
          * @param  gewId  DOCUMENT ME!
          * @param  baCd   DOCUMENT ME!
          * @param  from   DOCUMENT ME!
+         * @param  id     DOCUMENT ME!
          */
-        public PointObjectData(final int gewId, final String baCd, final double from) {
+        public PointObjectData(final int gewId, final String baCd, final double from, final int id) {
             this.gewId = gewId;
             this.baCd = baCd;
             this.from = from;
+            this.id = id;
         }
 
         //~ Methods ------------------------------------------------------------
@@ -659,7 +694,12 @@ public class GemeindenData {
          * @return  DOCUMENT ME!
          */
         public boolean isInGewPart(final int gew, final double from, final double till) {
-            return (gew == gewId) && (Math.min(roundCor(from), roundCor(till)) <= round(this.from))
+            // || (Math.min(roundCor(from), roundCor(till)) == round(this.from) && round(this.from) == 0.0 ) to ensure
+            // that the point does not count in two gemeinden
+            return (gew == gewId)
+                        && ((Math.min(roundCor(from), roundCor(till)) < round(this.from))
+                            || ((Math.min(roundCor(from), roundCor(till)) == round(this.from))
+                                && (round(this.from) == 0.0)))
                         && (Math.max(roundCor(from), roundCor(till)) >= round(this.from));
         }
 
@@ -719,6 +759,24 @@ public class GemeindenData {
          */
         public void setFrom(final double from) {
             this.from = from;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the from
+         */
+        public int getId() {
+            return id;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  id  from the from to set
+         */
+        public void setId(final int id) {
+            this.id = id;
         }
     }
 
@@ -841,11 +899,22 @@ public class GemeindenData {
             if (gew == gewId) {
                 return Math.max(
                         0.0,
-                        Math.min(Math.max(this.from, this.to), Math.max(from, till))
-                                - Math.max(Math.min(this.from, this.to), Math.min(from, till)));
+                        round(Math.min(Math.max(this.from, this.to), Math.max(from, till)))
+                                - round(Math.max(Math.min(this.from, this.to), Math.min(from, till))));
             } else {
                 return 0;
             }
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   val  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        private double round(final double val) {
+            return (Math.round(val * 100)) / 100.0;
         }
 
         /**

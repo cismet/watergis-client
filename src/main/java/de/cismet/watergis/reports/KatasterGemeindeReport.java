@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -1975,14 +1976,24 @@ public class KatasterGemeindeReport {
 
         for (final String key : firstElement.keySet()) {
             final Object value = firstElement.get(key);
+            Object firstNonNullvalue = firstElement.get(key);
 
-            if (value == null) {
+            if (firstNonNullvalue == null) {
+                for (final Map<String, Object> f : featureListKum) {
+                    if (f.get(key) != null) {
+                        firstNonNullvalue = f.get(key);
+                        break;
+                    }
+                }
+            }
+
+            if ((value == null) && (firstNonNullvalue == null)) {
                 continue;
             }
 
             if ((key != null) && key.equalsIgnoreCase("group")) {
                 kumFeature.put(key, value);
-            } else if ((Arrays.binarySearch(exceptionalFields, key) < 0) && (value instanceof Integer)) {
+            } else if ((Arrays.binarySearch(exceptionalFields, key) < 0) && (firstNonNullvalue instanceof Integer)) {
                 int sum = 0;
 
                 for (final Map<String, Object> f : featureListKum) {
@@ -1992,7 +2003,7 @@ public class KatasterGemeindeReport {
                 }
 
                 kumFeature.put(key, sum);
-            } else if ((Arrays.binarySearch(exceptionalFields, key) < 0) && (value instanceof Double)) {
+            } else if ((Arrays.binarySearch(exceptionalFields, key) < 0) && (firstNonNullvalue instanceof Double)) {
                 double sum = 0;
 
                 for (final Map<String, Object> f : featureListKum) {
@@ -3407,15 +3418,34 @@ public class KatasterGemeindeReport {
     private int getCountPointObjects(final AllPunktObjects.Table table, final int gemNr, final int gewId) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
         final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-        int count = 0;
+        final TreeSet<Integer> ids = new TreeSet<Integer>();
+        final int count = 0;
 
         for (final GmdPartObj tmp : gemList) {
             if ((gewId < 0) || (gewId == tmp.getId())) {
-                count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ids.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ids.size();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   ids  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String print(final TreeSet<Integer> ids) {
+        final StringBuilder sb = new StringBuilder();
+        final Iterator<Integer> it = ids.descendingIterator();
+
+        while (it.hasNext()) {
+            sb.append(it.next() + "\n");
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -3520,7 +3550,7 @@ public class KatasterGemeindeReport {
             final double till) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
 
-        return gemData.getCount(table, gewId, from, till);
+        return gemData.getIds(table, gewId, from, till).size();
     }
 
     /**
@@ -3535,7 +3565,7 @@ public class KatasterGemeindeReport {
     private int getCountLineObjects(final AllLineObjects.Table table, final int gemNr, final String owner) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
         final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-        final TreeSet<Integer> set = new TreeSet<Integer>();
+        final TreeSet<Integer> set = new TreeSet<>();
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner)) {
@@ -3631,15 +3661,15 @@ public class KatasterGemeindeReport {
     private int getCountPointObjects(final AllPunktObjects.Table table, final int gemNr, final String owner) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
         final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-        int count = 0;
+        final TreeSet<Integer> ids = new TreeSet<>();
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner)) {
-                count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ids.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ids.size();
     }
 
     /**
@@ -3766,15 +3796,15 @@ public class KatasterGemeindeReport {
             final int wdm) {
         final GemeindenData gemData = gemDataMap.get(gemNr);
         final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
-        int count = 0;
+        final TreeSet<Integer> ids = new TreeSet<>();
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                ids.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
             }
         }
 
-        return count;
+        return ids.size();
     }
 
     /**
@@ -3891,19 +3921,19 @@ public class KatasterGemeindeReport {
      * @return  DOCUMENT ME!
      */
     private int getCountPointObjects(final AllPunktObjects.Table table, final String owner, final int wdm) {
-        int count = 0;
+        final TreeSet<Integer> ids = new TreeSet<>();
 
         for (final Integer gemNr : gemDataMap.keySet()) {
             final GemeindenData gemData = gemDataMap.get(gemNr);
             final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                    count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                    ids.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
                 }
             }
         }
 
-        return count;
+        return ids.size();
     }
 
     /**
@@ -4016,7 +4046,7 @@ public class KatasterGemeindeReport {
      * @return  DOCUMENT ME!
      */
     private int getCountPointObjects(final AllPunktObjects.Table table, final String owner) {
-        int count = 0;
+        final TreeSet<Integer> ids = new TreeSet<>();
 
         for (final int gemNr : gemDataMap.keySet()) {
             final GemeindenData gemData = gemDataMap.get(gemNr);
@@ -4024,12 +4054,12 @@ public class KatasterGemeindeReport {
 
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner)) {
-                    count += gemData.getCount(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+                    ids.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
                 }
             }
         }
 
-        return count;
+        return ids.size();
     }
 
     /**

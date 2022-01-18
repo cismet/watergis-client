@@ -145,7 +145,7 @@ public class FgBaAnllRuleSet extends WatergisDefaultRuleSet {
                                 feature.getProperty("anll"),
                                 new String[] { "Ds", "Sf", "Si", "Sleu", "Tosb", "WKA" },
                                 false)) {
-                    if (!checkRange("länge", length, 1, 20, 1, 200, false, true, true)) {
+                    if (!checkRange("länge", length, 1, 50, 1, 200, false, true, true)) {
                         return false;
                     }
                 }
