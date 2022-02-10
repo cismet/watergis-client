@@ -156,9 +156,6 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      * @return  DOCUMENT ME!
      */
     private static final String PROTECTED_AREA_ACTION = "geschuetzte_wbbl";
-    protected static Double minLaLength = null;
-    protected static Double minBaLength = null;
-    protected static Double maxBaLength = null;
 
     //~ Enums ------------------------------------------------------------------
 
@@ -175,6 +172,11 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     }
 
     //~ Instance fields --------------------------------------------------------
+
+    protected Double minLaLength = null;
+    protected Double minBaLength = null;
+    protected Double maxBaLength = null;
+    protected Double maxConfirmationlessLength = null;
 
     protected int idOfCurrentlyCheckedFeature = -1;
 
@@ -1867,6 +1869,40 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                     + " sein",
                             "ba_st_bis");
                         return new ErrorDetails(feature, "ba_st_bis");
+                    }
+                }
+            }
+            if (maxBaLength != null) {
+                final Double from = (Double)feature.getProperty("ba_st_von");
+                final Double till = (Double)feature.getProperty("ba_st_bis");
+
+                if ((from != null) && (till != null)) {
+                    if (Math.abs(till - from) > maxBaLength) {
+                        showMessage("Die Länge des Objektes darf nicht größer "
+                                    + maxBaLength
+                                    + " sein",
+                            "ba_st_bis");
+                        return new ErrorDetails(feature, "ba_st_bis");
+                    }
+                }
+            }
+            if (maxConfirmationlessLength != null) {
+                final Double from = (Double)feature.getProperty("ba_st_von");
+                final Double till = (Double)feature.getProperty("ba_st_bis");
+
+                if ((from != null) && (till != null)) {
+                    if (Math.abs(till - from) > maxConfirmationlessLength) {
+                        if (
+                            !showSecurityQuestion(
+                                        "Wert außerhalb Standardbereich ("
+                                        + minBaLength
+                                        + ", "
+                                        + maxConfirmationlessLength
+                                        + ") --> verwenden ?",
+                                        "Länge",
+                                        Math.abs(till - from))) {
+                            return new ErrorDetails(feature, "ba_st_bis");
+                        }
                     }
                 }
             }

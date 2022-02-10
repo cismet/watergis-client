@@ -11,15 +11,14 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import Sirius.server.middleware.types.MetaClass;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.apache.log4j.Logger;
 
-import java.sql.Timestamp;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -52,6 +51,7 @@ public class FgBaWkRuleSet extends WatergisDefaultRuleSet {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(FgBaWkRuleSet.class);
+    private static final String URL_TEMPLATE = "https://fis-wasser-mv.de/charts/steckbriefe/rw/rw_wk.php?fg=%1s";
 
     //~ Instance initializers --------------------------------------------------
 
@@ -168,7 +168,17 @@ public class FgBaWkRuleSet extends WatergisDefaultRuleSet {
             final int clickCount) {
         if (columnName.equals("wk_nr")) {
             if ((value instanceof String) && (clickCount == 1)) {
-                downloadDocumentFromWebDav(WK_FG_WEBDAV_PATH, addExtension(value.toString().toUpperCase(), "pdf"));
+                try {
+                    final URL u = new URL(String.format(URL_TEMPLATE, value.toString()));
+
+                    try {
+                        de.cismet.tools.BrowserLauncher.openURL(u.toString());
+                    } catch (Exception ex) {
+                        LOG.error("Cannot open the url:" + u, ex);
+                    }
+                } catch (MalformedURLException ex) {
+                    // nothing to do
+                }
             }
         }
     }

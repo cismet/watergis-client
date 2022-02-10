@@ -78,7 +78,8 @@ public class FgBaDuvDRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
         minBaLength = 0.5;
-        maxBaLength = 100.0;
+        maxConfirmationlessLength = 100.0;
+        maxBaLength = 250.0;
     }
 
     //~ Methods ----------------------------------------------------------------

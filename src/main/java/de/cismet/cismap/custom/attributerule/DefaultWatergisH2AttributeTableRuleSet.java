@@ -63,8 +63,6 @@ import de.cismet.cismap.linearreferencing.tools.StationTableCellEditorInterface;
 
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
-import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.minBaLength;
-
 /**
  * DOCUMENT ME!
  *
