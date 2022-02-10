@@ -11,17 +11,15 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import com.vividsolutions.jts.geom.Geometry;
+
+import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
 
-import java.sql.Timestamp;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import java.util.List;
-
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -35,9 +33,8 @@ import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 
-import de.cismet.watergis.broker.AppBroker;
-
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
+import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -47,11 +44,16 @@ import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
  */
 public class KgWkRuleSet extends WatergisDefaultRuleSet {
 
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(KgWkRuleSet.class);
+    private static final String URL_TEMPLATE = "https://fis-wasser-mv.de/charts/steckbriefe/cw/cw_wk.php?kg=%1s";
+
     //~ Instance initializers --------------------------------------------------
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("wk_nr", new Varchar(10, true, true));
+//        typeMap.put("wk_nr", new Varchar(10, true, true));
         typeMap.put("wk_nr", new Catalogue("k_wk_kg", true, true, new Varchar(10, false, false)));
         typeMap.put("kkm_ort", new Varchar(30, false, true));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
@@ -69,7 +71,11 @@ public class KgWkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        return super.getCellRenderer(columnName);
+        if (columnName.equals("wk_nr")) {
+            return new LinkTableCellRenderer();
+        } else {
+            return super.getCellRenderer(columnName);
+        }
     }
 
     @Override
@@ -156,5 +162,27 @@ public class KgWkRuleSet extends WatergisDefaultRuleSet {
         c.setMinArea(MIN_AREA_SIZE);
 
         return c;
+    }
+
+    @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        if (columnName.equals("wk_nr")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                try {
+                    final URL u = new URL(String.format(URL_TEMPLATE, value.toString()));
+
+                    try {
+                        de.cismet.tools.BrowserLauncher.openURL(u.toString());
+                    } catch (Exception ex) {
+                        LOG.error("Cannot open the url:" + u, ex);
+                    }
+                } catch (MalformedURLException ex) {
+                    // nothing to do
+                }
+            }
+        }
     }
 }

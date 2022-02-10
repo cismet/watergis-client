@@ -20,6 +20,9 @@ import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import java.sql.Timestamp;
 
 import java.util.List;
@@ -52,6 +55,10 @@ import de.cismet.watergis.utils.LinkTableCellRenderer;
  * @version  $Revision$, $Date$
  */
 public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final String URL_TEMPLATE = "https://fis-wasser-mv.de/charts/steckbriefe/lw/lw_wk.php?sg=%1s";
 
     //~ Instance fields --------------------------------------------------------
 
@@ -117,10 +124,16 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
-        if (columnName.equals("tabelle")) {
-            return new LinkTableCellRenderer();
-        } else {
-            return super.getCellRenderer(columnName);
+        switch (columnName) {
+            case "wk_nr": {
+                return new LinkTableCellRenderer();
+            }
+            case "tabelle": {
+                return new LinkTableCellRenderer();
+            }
+            default: {
+                return super.getCellRenderer(columnName);
+            }
         }
     }
 
@@ -248,6 +261,20 @@ public class SgSeeWkRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("tabelle")) {
             if ((value instanceof String) && (clickCount == 1)) {
                 downloadDocumentFromWebDav(getSgLinkTablePath(), addExtension(value.toString(), "xlsx"));
+            }
+        } else if (columnName.equals("wk_nr")) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                try {
+                    final URL u = new URL(String.format(URL_TEMPLATE, value.toString()));
+
+                    try {
+                        de.cismet.tools.BrowserLauncher.openURL(u.toString());
+                    } catch (Exception ex) {
+                        LOG.error("Cannot open the url:" + u, ex);
+                    }
+                } catch (MalformedURLException ex) {
+                    // nothing to do
+                }
             }
         }
     }

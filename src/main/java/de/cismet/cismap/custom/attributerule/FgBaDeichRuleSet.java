@@ -70,10 +70,6 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
 
     private static Logger LOG = Logger.getLogger(FgBaDeichRuleSet.class);
 
-    static {
-        minBaLength = 10.0;
-    }
-
     //~ Instance initializers --------------------------------------------------
 
     {
@@ -118,6 +114,7 @@ public class FgBaDeichRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+        minBaLength = 10.0;
     }
 
     //~ Methods ----------------------------------------------------------------

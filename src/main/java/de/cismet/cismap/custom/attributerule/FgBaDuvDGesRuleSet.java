@@ -54,8 +54,6 @@ public class FgBaDuvDGesRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
-        minBaLength = 0.5;
-        maxBaLength = 100.0;
     }
 
     //~ Methods ----------------------------------------------------------------

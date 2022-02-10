@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="3302" pageHeight="595" orientation="Landscape" columnWidth="3262" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.4641000000000008"/>
-	<property name="ireport.x" value="3059"/>
+	<property name="ireport.x" value="527"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -60,7 +60,7 @@
 	<parameter name="proj" class="java.lang.Boolean"/>
 	<field name="name" class="java.lang.String"/>
 	<field name="nummer" class="java.lang.Integer"/>
-	<field name="gew_a" class="java.lang.Integer"/>
+	<field name="gew_a" class="java.lang.Double"/>
 	<field name="gew_l" class="java.lang.Double"/>
 	<field name="offene_a" class="java.lang.Double"/>
 	<field name="offene_l" class="java.lang.Double"/>
@@ -146,7 +146,7 @@
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<textField>
-				<reportElement mode="Opaque" x="0" y="0" width="758" height="14" backcolor="#FDFD00" uuid="64c87194-d531-463b-9e7a-0122fa0241e5"/>
+				<reportElement mode="Opaque" x="0" y="0" width="382" height="14" backcolor="#FDFD00" uuid="64c87194-d531-463b-9e7a-0122fa0241e5"/>
 				<box leftPadding="5">
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -172,7 +172,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[Anzahl]]></text>
+				<text><![CDATA[Anteil]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="333" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="fb86c1fc-fc90-4e80-ad85-5993b0bec0f0"/>
@@ -1716,7 +1716,7 @@ leitungen]]></text>
 				</textElement>
 			</textField>
 			<textField>
-				<reportElement mode="Opaque" x="0" y="14" width="758" height="14" backcolor="#FDFD00" uuid="e88b0246-30ab-462c-91fe-46359b5c4246"/>
+				<reportElement mode="Opaque" x="0" y="14" width="382" height="14" backcolor="#FDFD00" uuid="e88b0246-30ab-462c-91fe-46359b5c4246"/>
 				<box leftPadding="5">
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.0"/>
@@ -1900,7 +1900,9 @@ leitungen]]></text>
 				</textElement>
 			</textField>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="382" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="0bfc6d2b-76bc-49a7-966d-fef596309f1d"/>
+				<reportElement style="column_header_style" mode="Opaque" x="382" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="0bfc6d2b-76bc-49a7-966d-fef596309f1d">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="2" rightPadding="2">
 					<rightPen lineWidth="1.0" lineStyle="Double"/>
 				</box>
@@ -1910,7 +1912,9 @@ leitungen]]></text>
 				<text><![CDATA[Abschnitte]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="427" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="e1e0b4ca-592d-404a-af69-324603e0516d"/>
+				<reportElement style="column_header_style" mode="Opaque" x="427" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="e1e0b4ca-592d-404a-af69-324603e0516d">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="2" rightPadding="2">
 					<rightPen lineWidth="1.0" lineStyle="Double"/>
 				</box>
@@ -1920,13 +1924,75 @@ leitungen]]></text>
 				<text><![CDATA[Länge]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="column_header_style" mode="Opaque" x="382" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="d058a40a-612d-44c5-bc46-58f7a5674b00"/>
+				<reportElement style="column_header_style" mode="Opaque" x="382" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="d058a40a-612d-44c5-bc46-58f7a5674b00">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Anzahl]]></text>
 			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="476" y="0" width="282" height="14" backcolor="#FDFD00" uuid="0243422e-5175-4694-95a2-5dc8b86fe90e">
+					<printWhenExpression><![CDATA[$P{wasserschutz}]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="5">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="476" y="14" width="282" height="14" backcolor="#FDFD00" uuid="32cb21e0-0927-4cfd-a9d6-197084cdd6ec">
+					<printWhenExpression><![CDATA[$P{wasserschutz}]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="5">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="382" y="0" width="94" height="14" backcolor="#FDFD00" uuid="80aeccc0-99ec-4007-a779-962bbe91623c">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="5">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="382" y="14" width="94" height="14" backcolor="#FDFD00" uuid="d6694dd5-2102-4643-9728-b9ecb786bfb2">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="5">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>
@@ -1947,7 +2013,7 @@ leitungen]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nummer}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="288" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="6779a625-d5ce-4620-bbd9-f393a720f814"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
@@ -2486,7 +2552,9 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[$F{proj_a}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="382" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="f1ee7b34-64ca-4b23-a6db-b0844f2bd21a"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="382" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="f1ee7b34-64ca-4b23-a6db-b0844f2bd21a">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font fontName="SansSerif" size="10"/>
@@ -2494,7 +2562,9 @@ leitungen]]></text>
 				<textFieldExpression><![CDATA[($F{offene_a} != null ? $F{offene_a} : 0) + ($F{see_a} != null ? $F{see_a} : 0) + ($F{geschl_a} != null ? $F{geschl_a} : 0)]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="427" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="41c1ca1b-3962-4607-a0ef-e9b1138df097"/>
+				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="427" y="0" width="49" height="14" isPrintWhenDetailOverflows="true" uuid="41c1ca1b-3962-4607-a0ef-e9b1138df097">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="2" rightPadding="2">
 					<rightPen lineWidth="1.0" lineStyle="Double"/>
 				</box>
