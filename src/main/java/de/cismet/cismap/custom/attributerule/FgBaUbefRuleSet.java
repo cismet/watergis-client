@@ -69,7 +69,6 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         allowedMaterial.put("SP", new String[] { "Ste", "Ste-Fs", "Ste-Wb" });
         allowedMaterial.put("Spw", new String[] { "H", "K", "St", "St-B", "Ste-Gab" });
         allowedMaterial.put("Wistü", new String[] { "B", "K", "St", "St-B" });
-        minBaLength = 0.5;
     }
 
     //~ Instance initializers --------------------------------------------------
@@ -98,6 +97,7 @@ public class FgBaUbefRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
+        minBaLength = 0.5;
     }
 
     //~ Methods ----------------------------------------------------------------

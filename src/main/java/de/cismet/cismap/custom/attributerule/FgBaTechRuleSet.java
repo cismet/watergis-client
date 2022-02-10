@@ -184,8 +184,17 @@ public class FgBaTechRuleSet extends WatergisDefaultRuleSet {
 
             return editor;
         } else if (columnName.equals("tech")) {
-//            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("wbv", /*todo: Wert bestimmen*/);
-            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("erlaubt");
+            String wbvPraefix = (String)AppBroker.getInstance().getOwnWwGr().getProperty("praefix");
+
+            try {
+                Integer.parseInt(wbvPraefix);
+            } catch (NumberFormatException w) {
+                wbvPraefix = null;
+            }
+
+            final CidsLayerFeatureFilter filter = ((wbvPraefix != null)
+                    ? createCidsLayerFeatureFilter("wbv", wbvPraefix) : null);
+//            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("erlaubt");
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         columnName,

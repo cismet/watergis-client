@@ -787,6 +787,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
         wwGrMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_ww_gr");
         initComponents();
+        menSteckbriefWasserkoerper.setVisible(false);
         selectionModeAction.setButton(cmdSelectionMode);
         configureButtons();
         cmdSelectAll.setVisible(false);

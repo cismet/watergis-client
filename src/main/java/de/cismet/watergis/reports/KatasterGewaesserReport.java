@@ -1399,9 +1399,13 @@ public class KatasterGewaesserReport {
             Double offene = (Double)kumFeature.get("offene_l");
             Double geschl = (Double)kumFeature.get("geschl_l");
             Double prof = (Double)kumFeature.get("prof_l");
+            Double see = (Double)kumFeature.get("see_l");
 
             if (offene == null) {
                 offene = 0.0;
+            }
+            if (see == null) {
+                see = 0.0;
             }
             if (geschl == null) {
                 geschl = 0.0;
@@ -1410,8 +1414,8 @@ public class KatasterGewaesserReport {
                 prof = 0.0;
             }
 
-            kumFeature.put("offene_a", toNullIfZero(offene * 100.0 / (offene + geschl)));
-            kumFeature.put("geschl_a", toNullIfZero(geschl * 100.0 / (offene + geschl)));
+            kumFeature.put("offene_a", toNullIfZero(offene * 100.0 / (offene + geschl + see)));
+            kumFeature.put("geschl_a", toNullIfZero(geschl * 100.0 / (offene + geschl + see)));
             if (offene == 0.0) {
                 kumFeature.put("prof_a", 0.0);
             } else {
