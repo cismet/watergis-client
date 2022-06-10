@@ -86,9 +86,11 @@ import de.cismet.tools.CismetThreadPool;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.profile.GafReader;
+import de.cismet.watergis.profile.WPROFReader;
+
 import de.cismet.watergis.utils.CidsBeanUtils;
 import de.cismet.watergis.utils.ConversionUtils;
-import de.cismet.watergis.utils.GafReader;
 import de.cismet.watergis.utils.RendererTools;
 
 /**

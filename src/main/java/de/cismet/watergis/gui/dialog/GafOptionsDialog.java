@@ -109,6 +109,7 @@ public class GafOptionsDialog extends javax.swing.JDialog {
     private GafOptionsDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        jPanel2.setVisible(false);
 
         addWindowListener(new WindowAdapter() {
 

@@ -52,20 +52,32 @@ import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
+
+import de.cismet.commons.security.WebDavClient;
+import de.cismet.commons.security.WebDavHelper;
+
+import de.cismet.netutil.ProxyHandler;
 
 import de.cismet.security.WebAccessManager;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
+import de.cismet.tools.gui.downloadmanager.DownloadManager;
+import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
+import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.dialog.GafExportDialog;
 import de.cismet.watergis.gui.panels.GafProf;
+import de.cismet.watergis.gui.panels.Photo;
+
+import de.cismet.watergis.profile.GafReader;
+import de.cismet.watergis.profile.QpUplDownload;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
-import de.cismet.watergis.utils.GafReader;
 import de.cismet.watergis.utils.JumpShapeWriter;
 
 /**
@@ -105,405 +117,372 @@ public class ExportAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        if (ppLayer == null) {
-            ppLayer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                        AppBroker.DOMAIN_NAME,
-                        "dlm25w.qp_gaf_pp"));
-        }
-        StaticSwingTools.showDialog(GafExportDialog.getInstance());
-
-        if (!GafExportDialog.getInstance().isCancelled()) {
+        try {
             final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
-                    AppBroker.GAF_PROF_MC_NAME);
+                    AppBroker.QP_UPL_MC_NAME);
+
+            if (features == null || features.isEmpty()) {
+                List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(AppBroker.QP_UPL_MC_NAME);
+
+                if (services != null && !services.isEmpty()) {
+                    FeatureServiceHelper.getFeatures(services.get(0), false);
+                }
+            } else {
+                LOG.warn("No qp_upl objects found to create qp_upl export");
+            }
 
             if (!features.isEmpty()) {
-                final File zipFile = new File(GafExportDialog.getInstance().getZipFile());
-                final File tmpBaseDir = createTmpDirectory(zipFile.getParentFile());
+                if (DownloadManagerDialog.showAskingForUserTitle(AppBroker.getInstance().getRootWindow())) {
+                    final String jobname = DownloadManagerDialog.getInstance().getJobName();
 
-                final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
-                        StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
-                        true,
-                        NbBundle.getMessage(ReportAction.class, "ExportAction.actionPerformed.waitingDialog"),
-                        null,
-                        100,
-                        true) {
+                    final WebDavClient webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(),
+                            Photo.WEB_DAV_USER,
+                            Photo.WEB_DAV_PASSWORD,
+                            true);
+                    final File f = new File(DownloadManager.instance().getDestinationDirectory(), jobname);
 
-                        @Override
-                        protected Boolean doInBackground() throws Exception {
-                            wd.setMax(features.size());
-                            int i = 0;
-                            wd.setText(NbBundle.getMessage(
-                                    ReportAction.class,
-                                    "ExportAction.actionPerformed.progress",
-                                    i,
-                                    features.size()));
-
-                            final File tmpShapeDir = new File(tmpBaseDir, "Shapes");
-                            final File tmpReportBasisDir = new File(tmpBaseDir, "Steckbriefe_Basis");
-                            final File tmpReportLawaDir = new File(tmpBaseDir, "Steckbriefe_LAWA");
-                            final File tmpReportWithoutDir = new File(tmpBaseDir, "Steckbriefe_ohne");
-                            final File tmpBasisDir = new File(tmpBaseDir, "GAF_Basis");
-                            final File tmpLawaDir = new File(tmpBaseDir, "GAF_LAWA");
-                            final File tmpWithoutDir = new File(tmpBaseDir, "GAF_ohne");
-                            final Map<String, Boolean> fileNames = new HashMap<String, Boolean>();
-
-                            if (GafExportDialog.getInstance().isShapeSelected()) {
-                                tmpShapeDir.mkdirs();
-                            }
-
-                            // prepare filenames map
-                            prepareFileNames(fileNames, features, tmpReportBasisDir, tmpReportLawaDir);
-
-                            final Map<String, Map<Double, List<DefaultFeatureServiceFeature>>> gafMap =
-                                new HashMap<String, Map<Double, List<DefaultFeatureServiceFeature>>>();
-
-                            for (final FeatureServiceFeature feature : features) {
-                                final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
-
-                                if (Thread.interrupted()) {
-                                    return false;
-                                }
-
-                                // prepare gaf file export
-                                if (GafExportDialog.getInstance().isGafSelected()) {
-                                    final Integer qpNr = (Integer)feature.getProperty("qp_nr");
-                                    List<DefaultFeatureServiceFeature> ppFeatures = null;
-
-                                    // collect gaf profiles
-                                    if (GafExportDialog.getInstance().isBasisSelected()) {
-                                        if (feature.getProperty("ba_cd") != null) {
-                                            final String fileName = GafProf.getBasicGafFileName(cidsFeature);
-                                            final File basisFile = new File(tmpBasisDir, fileName);
-                                            if (ppFeatures == null) {
-                                                ppFeatures = getAllPPFeature(qpNr);
-                                            }
-                                            Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
-                                                    basisFile.getAbsolutePath());
-                                            final Double station = GafProf.getFeatureStation(cidsFeature);
-
-                                            if (profilesMap == null) {
-                                                profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
-                                                gafMap.put(basisFile.getAbsolutePath(), profilesMap);
-                                            }
-
-                                            profilesMap.put(station, ppFeatures);
-                                        }
-                                    }
-
-                                    if (Thread.interrupted()) {
-                                        return false;
-                                    }
-
-                                    if (GafExportDialog.getInstance().isLawaSelected()) {
-                                        if (feature.getProperty("la_cd") != null) {
-                                            final String fileName = GafProf.getLawaGafFileName(cidsFeature);
-                                            final File lawaFile = new File(tmpLawaDir, fileName);
-                                            if (ppFeatures == null) {
-                                                ppFeatures = getAllPPFeature(qpNr);
-                                            }
-                                            Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
-                                                    lawaFile.getAbsolutePath());
-                                            final Double station = GafProf.getFeatureStation(cidsFeature);
-
-                                            if (profilesMap == null) {
-                                                profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
-                                                gafMap.put(lawaFile.getAbsolutePath(), profilesMap);
-                                            }
-
-                                            profilesMap.put(station, ppFeatures);
-                                        }
-                                    }
-
-                                    if (Thread.interrupted()) {
-                                        return false;
-                                    }
-
-                                    if (GafExportDialog.getInstance().isWithoutSelected()) {
-                                        if (feature.getProperty("ba_cd") == null) {
-                                            final String fileName = "gaf_ohne.gaf";
-                                            final File withoutFile = new File(tmpWithoutDir, fileName);
-                                            if (ppFeatures == null) {
-                                                ppFeatures = getAllPPFeature(qpNr);
-                                            }
-                                            Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
-                                                    withoutFile.getAbsolutePath());
-                                            final Double station = GafProf.getFeatureStation(cidsFeature);
-
-                                            if (profilesMap == null) {
-                                                profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
-                                                gafMap.put(withoutFile.getAbsolutePath(), profilesMap);
-                                            }
-
-                                            profilesMap.put(station, ppFeatures);
-                                        }
-                                    }
-                                }
-
-                                if (Thread.interrupted()) {
-                                    return false;
-                                }
-
-                                // create reports
-                                if (GafExportDialog.getInstance().isReportSelected()) {
-                                    if (GafExportDialog.getInstance().isBasisSelected()) {
-                                        if (feature.getProperty("ba_cd") != null) {
-                                            String fileName = GafProf.getBasicReportFileName(cidsFeature);
-                                            File basisFile = new File(tmpReportBasisDir, fileName);
-                                            fileName = ReportAction.toValidFileName(
-                                                    fileNames,
-                                                    basisFile.getAbsolutePath(),
-                                                    feature);
-                                            basisFile = new File(fileName);
-                                            tmpReportBasisDir.mkdirs();
-
-                                            ReportAction.createReport(cidsFeature, basisFile);
-                                        }
-                                    }
-                                    if (GafExportDialog.getInstance().isLawaSelected()) {
-                                        if (feature.getProperty("la_cd") != null) {
-                                            String fileName = GafProf.getLawaReportFileName(cidsFeature);
-                                            File lawaFile = new File(tmpReportLawaDir, fileName);
-                                            fileName = ReportAction.toValidFileName(
-                                                    fileNames,
-                                                    lawaFile.getAbsolutePath(),
-                                                    feature);
-                                            lawaFile = new File(fileName);
-                                            tmpReportLawaDir.mkdirs();
-
-                                            ReportAction.createReport(cidsFeature, lawaFile);
-                                        }
-                                    }
-                                    if (GafExportDialog.getInstance().isWithoutSelected()) {
-                                        if (feature.getProperty("ba_cd") == null) {
-                                            final String nr = String.valueOf(feature.getProperty("qp_nr"));
-                                            String fileName = "gaf_ohne___" + nr + ".pdf";
-                                            File withoutFile = new File(tmpReportWithoutDir, fileName);
-                                            fileName = ReportAction.toValidFileName(
-                                                    fileNames,
-                                                    withoutFile.getAbsolutePath(),
-                                                    feature);
-                                            withoutFile = new File(fileName);
-                                            tmpReportWithoutDir.mkdirs();
-
-                                            ReportAction.createReport(cidsFeature, withoutFile);
-                                        }
-                                    }
-                                }
-                                wd.setText(NbBundle.getMessage(
-                                        ReportAction.class,
-                                        "ExportAction.actionPerformed.progress",
-                                        ++i,
-                                        features.size()));
-                                wd.setProgress(wd.getProgress() + 1);
-                            }
-
-                            if (GafExportDialog.getInstance().isGafSelected()) {
-                                // create gaf files
-                                for (final String gafFileName : gafMap.keySet()) {
-                                    final Map<Double, List<DefaultFeatureServiceFeature>> gafProfiles = gafMap.get(
-                                            gafFileName);
-
-                                    final GafReader reader = new GafReader(gafProfiles);
-                                    // write gaf file
-                                    File destFile = new File(gafFileName);
-                                    destFile.getParentFile().mkdirs();
-                                    BufferedWriter br = new BufferedWriter(new FileWriter(destFile));
-                                    br.write(reader.createGafFile());
-                                    br.close();
-
-                                    // write bk catalogue files, if required
-                                    final String bkCatalogueContent = reader.createCustomBkCatalogueFile();
-
-                                    if (bkCatalogueContent != null) {
-                                        destFile = new File(gafFileName.substring(0, gafFileName.length() - 4)
-                                                        + "_bk.csv");
-                                        destFile.getParentFile().mkdirs();
-                                        br = new BufferedWriter(new FileWriter(destFile));
-                                        br.write(bkCatalogueContent);
-                                        br.close();
-                                    }
-
-                                    // write rk catalogue file, if required
-                                    final String rkCatalogueContent = reader.createCustomRkCatalogueFile();
-                                    if (rkCatalogueContent != null) {
-                                        destFile = new File(gafFileName.substring(0, gafFileName.length() - 4)
-                                                        + "_rk.csv");
-                                        if (destFile.exists()) {
-                                            System.out.println("gibt es schon");
-                                        }
-                                        destFile.getParentFile().mkdirs();
-                                        br = new BufferedWriter(new FileWriter(destFile));
-                                        br.write(rkCatalogueContent);
-                                        br.close();
-                                    }
-                                }
-                            }
-
-                            if (Thread.interrupted()) {
-                                return false;
-                            }
-
-                            // create shapes
-                            if (GafExportDialog.getInstance().isShapeSelected()) {
-                                wd.setText(NbBundle.getMessage(
-                                        ReportAction.class,
-                                        "ExportAction.actionPerformed.createShape",
-                                        ++i,
-                                        features.size()));
-                                // create qp prj and meta document
-                                File shapeFile = new File(tmpShapeDir, "qp");
-                                createShapeAndMetaDoc(features, shapeFile.getAbsolutePath(), true);
-
-                                // create qp_gaf_p prj and meta document
-                                final TreeSet<Integer> qpNrSet = new TreeSet<Integer>();
-
-                                for (final FeatureServiceFeature feature : features) {
-                                    qpNrSet.add((Integer)feature.getProperty("qp_nr"));
-                                }
-
-                                CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                                            AppBroker.DOMAIN_NAME,
-                                            "dlm25w.qp_gaf_p"));
-                                layer.initAndWait();
-                                String qpNrQuery = null;
-
-                                for (final Object qpNr : qpNrSet) {
-                                    if (qpNrQuery != null) {
-                                        qpNrQuery += " or qp_nr = " + qpNr.toString();
-                                    } else {
-                                        qpNrQuery = "qp_nr = " + qpNr.toString();
-                                    }
-                                }
-
-                                List<FeatureServiceFeature> serviceFeatures = layer.getFeatureFactory()
-                                            .createFeatures(
-                                                qpNrQuery,
-                                                null,
-                                                null,
-                                                0,
-                                                0,
-                                                null);
-                                shapeFile = new File(tmpShapeDir, "qp_gaf_p");
-                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath(), true);
-
-                                // create qp_gaf_l prj and meta document
-                                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                                            AppBroker.DOMAIN_NAME,
-                                            "dlm25w.qp_gaf_l"));
-                                layer.initAndWait();
-
-                                serviceFeatures = layer.getFeatureFactory()
-                                            .createFeatures(
-                                                    qpNrQuery,
-                                                    null,
-                                                    null,
-                                                    0,
-                                                    0,
-                                                    null);
-
-                                shapeFile = new File(tmpShapeDir, "qp_gaf_l");
-                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath(), true);
-
-                                // create qp_gaf_l_pr_pf prj and meta document
-                                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                                            AppBroker.DOMAIN_NAME,
-                                            "dlm25w.qp_gaf_l_pr_pf"));
-                                layer.initAndWait();
-
-                                serviceFeatures = layer.getFeatureFactory()
-                                            .createFeatures(
-                                                    qpNrQuery,
-                                                    null,
-                                                    null,
-                                                    0,
-                                                    0,
-                                                    null);
-
-                                shapeFile = new File(tmpShapeDir, "qp_gaf_l_pr_pf");
-                                createShapeAndMetaDoc(serviceFeatures, shapeFile.getAbsolutePath(), true);
-
-                                // create k_qp_gaf_kz prj and meta document
-                                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                                            AppBroker.DOMAIN_NAME,
-                                            "dlm25w.k_qp_gaf_kz"));
-                                layer.initAndWait();
-                                serviceFeatures = layer.getFeatureFactory()
-                                            .createFeatures(layer.getQuery(),
-                                                    null,
-                                                    null,
-                                                    0,
-                                                    0,
-                                                    null);
-
-                                shapeFile = new File(tmpShapeDir, "k_qp_gaf_kz");
-                                createDBF(serviceFeatures, shapeFile.getAbsolutePath());
-
-                                // create k_qp_gaf_rk prj and meta document
-                                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                                            AppBroker.DOMAIN_NAME,
-                                            "dlm25w.k_qp_gaf_rk"));
-                                layer.initAndWait();
-                                serviceFeatures = layer.getFeatureFactory()
-                                            .createFeatures(layer.getQuery(),
-                                                    null,
-                                                    null,
-                                                    0,
-                                                    0,
-                                                    null);
-
-                                shapeFile = new File(tmpShapeDir, "k_qp_gaf_rk");
-                                createDBF(serviceFeatures, shapeFile.getAbsolutePath());
-
-                                // create k_qp_gaf_bk prj and meta document
-                                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                                            AppBroker.DOMAIN_NAME,
-                                            "dlm25w.k_qp_gaf_bk"));
-                                layer.initAndWait();
-                                serviceFeatures = layer.getFeatureFactory()
-                                            .createFeatures(layer.getQuery(),
-                                                    null,
-                                                    null,
-                                                    0,
-                                                    0,
-                                                    null);
-
-                                shapeFile = new File(tmpShapeDir, "k_qp_gaf_bk");
-                                createDBF(serviceFeatures, shapeFile.getAbsolutePath());
-                            }
-
-                            if (Thread.interrupted()) {
-                                return false;
-                            }
-                            wd.setText(NbBundle.getMessage(
-                                    ReportAction.class,
-                                    "ExportAction.actionPerformed.createZip",
-                                    ++i,
-                                    features.size()));
-                            final ZipOutputStream zipStream = new ZipOutputStream(new FileOutputStream(zipFile));
-                            zipDirectory(tmpBaseDir, zipStream, "");
-                            zipStream.close();
-
-                            return true;
-                        }
-
-                        @Override
-                        protected void done() {
-                            try {
-                                get();
-                            } catch (Exception e) {
-                                LOG.error("Error while exporting gaf profiles.", e);
-                            } finally {
-                                if (tmpBaseDir.exists()) {
-                                    deleteDirectory(tmpBaseDir);
-                                }
-                            }
-                        }
-                    };
-
-                wdt.start();
+                    DownloadManager.instance()
+                            .add(new QpUplDownload(webDavClient, f.getAbsolutePath(), "Download Profil", features));
+                }
             }
+        } catch (Exception ex) {
+            LOG.error("Error while creating qp_upl export", ex);
         }
     }
+
+//    @Override
+//    public void actionPerformed(final ActionEvent e) {
+//        if (ppLayer == null) {
+//            ppLayer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+//                        AppBroker.DOMAIN_NAME,
+//                        "dlm25w.qp_gaf_pp"));
+//        }
+//        StaticSwingTools.showDialog(GafExportDialog.getInstance());
+//
+//        if (!GafExportDialog.getInstance().isCancelled()) {
+//            final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
+//                    AppBroker.GAF_PROF_MC_NAME);
+//
+//            if (!features.isEmpty()) {
+//                final File zipFile = new File(GafExportDialog.getInstance().getZipFile());
+//                final File tmpBaseDir = createTmpDirectory(zipFile.getParentFile());
+//
+//                final WaitingDialogThread<Boolean> wdt = new WaitingDialogThread<Boolean>(
+//                        StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
+//                        true,
+//                        NbBundle.getMessage(ReportAction.class, "ExportAction.actionPerformed.waitingDialog"),
+//                        null,
+//                        100,
+//                        true) {
+//
+//                        @Override
+//                        protected Boolean doInBackground() throws Exception {
+//                            wd.setMax(features.size());
+//                            int i = 0;
+//                            wd.setText(NbBundle.getMessage(
+//                                    ReportAction.class,
+//                                    "ExportAction.actionPerformed.progress",
+//                                    i,
+//                                    features.size()));
+//
+//                            final File tmpShapeDir = new File(tmpBaseDir, "Shapes");
+//                            final File tmpReportBasisDir = new File(tmpBaseDir, "Steckbriefe_Basis");
+//                            final File tmpReportLawaDir = new File(tmpBaseDir, "Steckbriefe_LAWA");
+//                            final File tmpReportWithoutDir = new File(tmpBaseDir, "Steckbriefe_ohne");
+//                            final File tmpBasisDir = new File(tmpBaseDir, "GAF_Basis");
+//                            final File tmpLawaDir = new File(tmpBaseDir, "GAF_LAWA");
+//                            final File tmpWithoutDir = new File(tmpBaseDir, "GAF_ohne");
+//                            final Map<String, Boolean> fileNames = new HashMap<String, Boolean>();
+//
+//                            if (GafExportDialog.getInstance().isShapeSelected()) {
+//                                tmpShapeDir.mkdirs();
+//                            }
+//
+//                            // prepare filenames map
+//                            prepareFileNames(fileNames, features, tmpReportBasisDir, tmpReportLawaDir);
+//
+//                            final Map<String, Map<Double, List<DefaultFeatureServiceFeature>>> gafMap =
+//                                new HashMap<String, Map<Double, List<DefaultFeatureServiceFeature>>>();
+//
+//                            for (final FeatureServiceFeature feature : features) {
+//                                final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
+//
+//                                if (Thread.interrupted()) {
+//                                    return false;
+//                                }
+//
+//                                // prepare gaf file export
+//                                if (GafExportDialog.getInstance().isGafSelected()) {
+//                                    final Integer qpNr = (Integer)feature.getProperty("qp_nr");
+//                                    List<DefaultFeatureServiceFeature> ppFeatures = null;
+//
+//                                    // collect gaf profiles
+//                                    if (GafExportDialog.getInstance().isBasisSelected()) {
+//                                        if (feature.getProperty("ba_cd") != null) {
+//                                            final String fileName = GafProf.getBasicGafFileName(cidsFeature);
+//                                            final File basisFile = new File(tmpBasisDir, fileName);
+//                                            if (ppFeatures == null) {
+//                                                ppFeatures = getAllPPFeature(qpNr);
+//                                            }
+//                                            Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
+//                                                    basisFile.getAbsolutePath());
+//                                            final Double station = GafProf.getFeatureStation(cidsFeature);
+//
+//                                            if (profilesMap == null) {
+//                                                profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
+//                                                gafMap.put(basisFile.getAbsolutePath(), profilesMap);
+//                                            }
+//
+//                                            profilesMap.put(station, ppFeatures);
+//                                        }
+//                                    }
+//
+//                                    if (Thread.interrupted()) {
+//                                        return false;
+//                                    }
+//
+//                                    if (GafExportDialog.getInstance().isLawaSelected()) {
+//                                        if (feature.getProperty("la_cd") != null) {
+//                                            final String fileName = GafProf.getLawaGafFileName(cidsFeature);
+//                                            final File lawaFile = new File(tmpLawaDir, fileName);
+//                                            if (ppFeatures == null) {
+//                                                ppFeatures = getAllPPFeature(qpNr);
+//                                            }
+//                                            Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
+//                                                    lawaFile.getAbsolutePath());
+//                                            final Double station = GafProf.getFeatureStation(cidsFeature);
+//
+//                                            if (profilesMap == null) {
+//                                                profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
+//                                                gafMap.put(lawaFile.getAbsolutePath(), profilesMap);
+//                                            }
+//
+//                                            profilesMap.put(station, ppFeatures);
+//                                        }
+//                                    }
+//
+//                                    if (Thread.interrupted()) {
+//                                        return false;
+//                                    }
+//
+//                                    if (GafExportDialog.getInstance().isWithoutSelected()) {
+//                                        if (feature.getProperty("ba_cd") == null) {
+//                                            final String fileName = "gaf_ohne.gaf";
+//                                            final File withoutFile = new File(tmpWithoutDir, fileName);
+//                                            if (ppFeatures == null) {
+//                                                ppFeatures = getAllPPFeature(qpNr);
+//                                            }
+//                                            Map<Double, List<DefaultFeatureServiceFeature>> profilesMap = gafMap.get(
+//                                                    withoutFile.getAbsolutePath());
+//                                            final Double station = GafProf.getFeatureStation(cidsFeature);
+//
+//                                            if (profilesMap == null) {
+//                                                profilesMap = new HashMap<Double, List<DefaultFeatureServiceFeature>>();
+//                                                gafMap.put(withoutFile.getAbsolutePath(), profilesMap);
+//                                            }
+//
+//                                            profilesMap.put(station, ppFeatures);
+//                                        }
+//                                    }
+//                                }
+//
+//                                if (Thread.interrupted()) {
+//                                    return false;
+//                                }
+//
+//                                // create reports
+//                                if (GafExportDialog.getInstance().isReportSelected()) {
+//                                    if (GafExportDialog.getInstance().isBasisSelected()) {
+//                                        if (feature.getProperty("ba_cd") != null) {
+//                                            String fileName = GafProf.getBasicReportFileName(cidsFeature);
+//                                            File basisFile = new File(tmpReportBasisDir, fileName);
+//                                            fileName = ReportAction.toValidFileName(
+//                                                    fileNames,
+//                                                    basisFile.getAbsolutePath(),
+//                                                    feature);
+//                                            basisFile = new File(fileName);
+//                                            tmpReportBasisDir.mkdirs();
+//
+//                                            ReportAction.createReport(cidsFeature, basisFile);
+//                                        }
+//                                    }
+//                                    if (GafExportDialog.getInstance().isLawaSelected()) {
+//                                        if (feature.getProperty("la_cd") != null) {
+//                                            String fileName = GafProf.getLawaReportFileName(cidsFeature);
+//                                            File lawaFile = new File(tmpReportLawaDir, fileName);
+//                                            fileName = ReportAction.toValidFileName(
+//                                                    fileNames,
+//                                                    lawaFile.getAbsolutePath(),
+//                                                    feature);
+//                                            lawaFile = new File(fileName);
+//                                            tmpReportLawaDir.mkdirs();
+//
+//                                            ReportAction.createReport(cidsFeature, lawaFile);
+//                                        }
+//                                    }
+//                                    if (GafExportDialog.getInstance().isWithoutSelected()) {
+//                                        if (feature.getProperty("ba_cd") == null) {
+//                                            final String nr = String.valueOf(feature.getProperty("qp_nr"));
+//                                            String fileName = "gaf_ohne___" + nr + ".pdf";
+//                                            File withoutFile = new File(tmpReportWithoutDir, fileName);
+//                                            fileName = ReportAction.toValidFileName(
+//                                                    fileNames,
+//                                                    withoutFile.getAbsolutePath(),
+//                                                    feature);
+//                                            withoutFile = new File(fileName);
+//                                            tmpReportWithoutDir.mkdirs();
+//
+//                                            ReportAction.createReport(cidsFeature, withoutFile);
+//                                        }
+//                                    }
+//                                }
+//                                wd.setText(NbBundle.getMessage(
+//                                        ReportAction.class,
+//                                        "ExportAction.actionPerformed.progress",
+//                                        ++i,
+//                                        features.size()));
+//                                wd.setProgress(wd.getProgress() + 1);
+//                            }
+//
+//                            if (GafExportDialog.getInstance().isGafSelected()) {
+//                                // create gaf files
+//                                for (final String gafFileName : gafMap.keySet()) {
+//                                    final Map<Double, List<DefaultFeatureServiceFeature>> gafProfiles = gafMap.get(
+//                                            gafFileName);
+//
+//                                    final GafReader reader = new GafReader(gafProfiles);
+//                                    // write gaf file
+//                                    File destFile = new File(gafFileName);
+//                                    destFile.getParentFile().mkdirs();
+//                                    BufferedWriter br = new BufferedWriter(new FileWriter(destFile));
+//                                    br.write(reader.createGafFile());
+//                                    br.close();
+//
+//                                    // write bk catalogue files, if required
+//                                    final String bkCatalogueContent = reader.createCustomBkCatalogueFile();
+//
+//                                    if (bkCatalogueContent != null) {
+//                                        destFile = new File(gafFileName.substring(0, gafFileName.length() - 4)
+//                                                        + "_bk.csv");
+//                                        destFile.getParentFile().mkdirs();
+//                                        br = new BufferedWriter(new FileWriter(destFile));
+//                                        br.write(bkCatalogueContent);
+//                                        br.close();
+//                                    }
+//
+//                                    // write rk catalogue file, if required
+//                                    final String rkCatalogueContent = reader.createCustomRkCatalogueFile();
+//                                    if (rkCatalogueContent != null) {
+//                                        destFile = new File(gafFileName.substring(0, gafFileName.length() - 4)
+//                                                        + "_rk.csv");
+//                                        if (destFile.exists()) {
+//                                            System.out.println("gibt es schon");
+//                                        }
+//                                        destFile.getParentFile().mkdirs();
+//                                        br = new BufferedWriter(new FileWriter(destFile));
+//                                        br.write(rkCatalogueContent);
+//                                        br.close();
+//                                    }
+//                                }
+//                            }
+//
+//                            if (Thread.interrupted()) {
+//                                return false;
+//                            }
+//
+//                            // create shapes
+//                            if (GafExportDialog.getInstance().isShapeSelected()) {
+//                                wd.setText(NbBundle.getMessage(
+//                                        ReportAction.class,
+//                                        "ExportAction.actionPerformed.createShape",
+//                                        ++i,
+//                                        features.size()));
+//                                // create qp prj and meta document
+//                                File shapeFile = new File(tmpShapeDir, "qp");
+//                                createShapeAndMetaDoc(features, shapeFile.getAbsolutePath(), true);
+//
+//                                // create k_qp_gaf_kz prj and meta document
+//                                CidsLayer layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+//                                            AppBroker.DOMAIN_NAME,
+//                                            "dlm25w.k_qp_gaf_kz"));
+//                                layer.initAndWait();
+//                                List<FeatureServiceFeature> serviceFeatures = layer.getFeatureFactory()
+//                                            .createFeatures(layer.getQuery(),
+//                                                null,
+//                                                null,
+//                                                0,
+//                                                0,
+//                                                null);
+//
+//                                shapeFile = new File(tmpShapeDir, "k_qp_gaf_kz");
+//                                createDBF(serviceFeatures, shapeFile.getAbsolutePath());
+//
+//                                // create k_qp_gaf_rk prj and meta document
+//                                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+//                                            AppBroker.DOMAIN_NAME,
+//                                            "dlm25w.k_qp_gaf_rk"));
+//                                layer.initAndWait();
+//                                serviceFeatures = layer.getFeatureFactory()
+//                                            .createFeatures(layer.getQuery(),
+//                                                    null,
+//                                                    null,
+//                                                    0,
+//                                                    0,
+//                                                    null);
+//
+//                                shapeFile = new File(tmpShapeDir, "k_qp_gaf_rk");
+//                                createDBF(serviceFeatures, shapeFile.getAbsolutePath());
+//
+//                                // create k_qp_gaf_bk prj and meta document
+//                                layer = new CidsLayer(ClassCacheMultiple.getMetaClass(
+//                                            AppBroker.DOMAIN_NAME,
+//                                            "dlm25w.k_qp_gaf_bk"));
+//                                layer.initAndWait();
+//                                serviceFeatures = layer.getFeatureFactory()
+//                                            .createFeatures(layer.getQuery(),
+//                                                    null,
+//                                                    null,
+//                                                    0,
+//                                                    0,
+//                                                    null);
+//
+//                                shapeFile = new File(tmpShapeDir, "k_qp_gaf_bk");
+//                                createDBF(serviceFeatures, shapeFile.getAbsolutePath());
+//                            }
+//
+//                            if (Thread.interrupted()) {
+//                                return false;
+//                            }
+//                            wd.setText(NbBundle.getMessage(
+//                                    ReportAction.class,
+//                                    "ExportAction.actionPerformed.createZip",
+//                                    ++i,
+//                                    features.size()));
+//                            final ZipOutputStream zipStream = new ZipOutputStream(new FileOutputStream(zipFile));
+//                            zipDirectory(tmpBaseDir, zipStream, "");
+//                            zipStream.close();
+//
+//                            return true;
+//                        }
+//
+//                        @Override
+//                        protected void done() {
+//                            try {
+//                                get();
+//                            } catch (Exception e) {
+//                                LOG.error("Error while exporting gaf profiles.", e);
+//                            } finally {
+//                                if (tmpBaseDir.exists()) {
+//                                    deleteDirectory(tmpBaseDir);
+//                                }
+//                            }
+//                        }
+//                    };
+//
+//                wdt.start();
+//            }
+//        }
+//    }
 
     /**
      * DOCUMENT ME!
