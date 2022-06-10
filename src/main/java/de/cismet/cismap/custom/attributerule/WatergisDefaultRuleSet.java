@@ -168,7 +168,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
         //~ Enum constants -----------------------------------------------------
 
-        OK, NULL, WRONG_DATA_TYPE, OUT_OF_SIZE, SIZE_CORRECTION, WRONG_RANGE, WBBL_NOT_ACCESSIBLE, NOT_BINARY
+        OK, NULL, WRONG_DATA_TYPE, OUT_OF_SIZE, SIZE_CORRECTION, WRONG_RANGE, WBBL_NOT_ACCESSIBLE, NOT_BINARY,
+        NOT_IN_VALUE_TABLE
     }
 
     //~ Instance fields --------------------------------------------------------
@@ -569,6 +570,19 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      * @return  DOCUMENT ME!
      */
     protected CidsLayerFeatureFilter createCidsLayerFeatureFilter(final String propertyName) {
+        return createCidsLayerFeatureFilter(propertyName, false);
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   propertyName  DOCUMENT ME!
+     * @param   justNotNull   DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected CidsLayerFeatureFilter createCidsLayerFeatureFilter(final String propertyName,
+            final boolean justNotNull) {
         return new CidsLayerFeatureFilter() {
 
                 @Override
@@ -577,7 +591,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                         return true;
                     }
 
-                    return (bean.getProperty(propertyName) != null) && (Boolean)bean.getProperty(propertyName);
+                    return (bean.getProperty(propertyName) != null)
+                                && (justNotNull || (Boolean)bean.getProperty(propertyName));
                 }
             };
     }
@@ -1723,6 +1738,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             } else if (result.getValidationResult() == Validation.WBBL_NOT_ACCESSIBLE) {
                 showMessage("Wert nicht zulässig, weil Wasserbuchblatt nicht existiert", column);
                 return oldValue;
+            } else if (result.getValidationResult() == Validation.NOT_IN_VALUE_TABLE) {
+                showMessage("Der Wert ist nicht zulässig. Zulässig sind:\n" + toList(result.getAllowedValues()),
+                    column);
+                return oldValue;
             }
         }
         return newValue;
@@ -1805,6 +1824,10 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     return new ErrorDetails(feature, attribute);
                 } else if (result.getValidationResult() == Validation.WBBL_NOT_ACCESSIBLE) {
                     showMessage("Wert nicht zulässig, weil Wasserbuchblatt nicht existiert", attribute);
+                    return new ErrorDetails(feature, attribute);
+                } else if (result.getValidationResult() == Validation.NOT_IN_VALUE_TABLE) {
+                    showMessage("Der Wert ist nicht zulässig. Zulässig sind:\n" + toList(result.getAllowedValues()),
+                        attribute);
                     return new ErrorDetails(feature, attribute);
                 }
             }
@@ -1924,6 +1947,29 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         return null;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   values  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private String toList(final String[] values) {
+        StringBuilder sb = null;
+
+        if (values != null) {
+            for (final String val : values) {
+                if (sb == null) {
+                    sb = new StringBuilder(val);
+                } else {
+                    sb.append(", ").append(val);
+                }
+            }
+        }
+
+        return ((sb != null) ? sb.toString() : "");
     }
 
     /**
@@ -2532,6 +2578,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         //~ Instance fields ----------------------------------------------------
 
         private final int maxLength;
+        private String[] allowedValues = null;
 
         //~ Constructors -------------------------------------------------------
 
@@ -2556,6 +2603,23 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         public Varchar(final int maxLength, final boolean notNull, final boolean editable) {
             super(notNull, false, editable, null, null);
             this.maxLength = maxLength;
+        }
+
+        /**
+         * Creates a new Varchar object.
+         *
+         * @param  maxLength      DOCUMENT ME!
+         * @param  notNull        DOCUMENT ME!
+         * @param  editable       DOCUMENT ME!
+         * @param  allowedValues  DOCUMENT ME!
+         */
+        public Varchar(final int maxLength,
+                final boolean notNull,
+                final boolean editable,
+                final String[] allowedValues) {
+            super(notNull, false, editable, null, null);
+            this.maxLength = maxLength;
+            this.allowedValues = allowedValues;
         }
 
         /**
@@ -2595,7 +2659,20 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 if (value instanceof String) {
                     final String stringValue = (String)value;
 
-                    if (stringValue.length() > maxLength) {
+                    if (allowedValues != null) {
+                        boolean valueFound = false;
+
+                        for (final String val : allowedValues) {
+                            if (val.equals(value)) {
+                                valueFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!valueFound) {
+                            result = new ValidationResult(Validation.NOT_IN_VALUE_TABLE, allowedValues);
+                        }
+                    } else if (stringValue.length() > maxLength) {
                         result = new ValidationResult(
                                 Validation.SIZE_CORRECTION,
                                 true,
@@ -3151,6 +3228,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         private final Validation validationResult;
         private final boolean valueChanged;
         private final Object changedValue;
+        private String[] allowedValues = null;
 
         //~ Constructors -------------------------------------------------------
 
@@ -3161,6 +3239,19 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
          */
         public ValidationResult(final Validation validationResult) {
             this(validationResult, false, null);
+        }
+
+        /**
+         * Creates a new ValidationResult object.
+         *
+         * @param  validationResult  DOCUMENT ME!
+         * @param  allowedValues     valueChanged DOCUMENT ME!
+         */
+        public ValidationResult(final Validation validationResult, final String[] allowedValues) {
+            this.validationResult = validationResult;
+            this.allowedValues = allowedValues;
+            this.valueChanged = false;
+            this.changedValue = null;
         }
 
         /**
@@ -3179,6 +3270,15 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the allowedValues
+         */
+        public String[] getAllowedValues() {
+            return allowedValues;
+        }
 
         /**
          * DOCUMENT ME!

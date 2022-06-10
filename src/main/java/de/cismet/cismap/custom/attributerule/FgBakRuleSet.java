@@ -197,6 +197,8 @@ public class FgBakRuleSet extends WatergisDefaultRuleSet {
                                 return false;
                             }
                             return bean.getProperty("owner").equals(userName);
+//                                    || bean.getProperty("ww_gr")
+//                                        .equals(4000);
                         }
                     };
             } else {
