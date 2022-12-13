@@ -41,7 +41,8 @@ import de.cismet.watergis.download.FakeFileDownload;
 import de.cismet.watergis.gui.WatergisApp;
 import de.cismet.watergis.gui.dialog.GafCheckDialog;
 
-import de.cismet.watergis.utils.GafReader;
+import de.cismet.watergis.profile.ProfileReader;
+import de.cismet.watergis.profile.ProfileReaderFactory;
 
 /**
  * DOCUMENT ME!
@@ -96,7 +97,7 @@ public class CheckAction extends AbstractAction {
                         final List<String[]> checkResult = new ArrayList<String[]>();
                         final File f = new File(GafCheckDialog.getInstance().getGafFile());
 
-                        final GafReader reader = new GafReader(f);
+                        final ProfileReader reader = ProfileReaderFactory.getReader(f);
                         final String rkFile = GafCheckDialog.getInstance().getRkFile();
                         final String bkFile = GafCheckDialog.getInstance().getBkFile();
 
@@ -110,9 +111,9 @@ public class CheckAction extends AbstractAction {
 
                         checkResult.add(reader.checkFile());
 
-                        if (checkResult.get(0).length == 0) {
-                            checkResult.add(reader.checkFileForHints());
-                        }
+//                        if (checkResult.get(0).length == 0) {
+//                            checkResult.add(reader.checkFileForHints());
+//                        }
 
                         return checkResult.toArray(new String[checkResult.size()][]);
                     }

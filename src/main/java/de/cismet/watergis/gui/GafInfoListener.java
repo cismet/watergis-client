@@ -229,7 +229,7 @@ public class GafInfoListener extends PBasicInputEventHandler {
 
                     if (cFeature.getLayerProperties().getFeatureService() instanceof CidsLayer) {
                         if (((CidsLayer)cFeature.getLayerProperties().getFeatureService()).getMetaClass().getName()
-                                    .equalsIgnoreCase("qp")) {
+                                    .equalsIgnoreCase("qp_npl")) {
                             cursorIsVisible = true;
                             gafFeature = cFeature;
                             break;

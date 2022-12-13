@@ -75,6 +75,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -122,13 +123,18 @@ import de.cismet.watergis.gui.actions.gaf.CheckAction;
 import de.cismet.watergis.gui.dialog.GafImportDialog;
 import de.cismet.watergis.gui.dialog.PhotoOptionsDialog;
 
+import de.cismet.watergis.profile.AbstractImportDialog;
+import de.cismet.watergis.profile.GafReader;
+import de.cismet.watergis.profile.ProfileLine;
+import de.cismet.watergis.profile.ProfileReader;
+import de.cismet.watergis.profile.ProfileReaderFactory;
+
 import de.cismet.watergis.utils.CidsBeanUtils;
 import de.cismet.watergis.utils.ContributorWrapper;
 import de.cismet.watergis.utils.ConversionUtils;
 import de.cismet.watergis.utils.CustomGafCatalogueReader;
 import de.cismet.watergis.utils.CustomJrViewer;
 import de.cismet.watergis.utils.FeatureServiceHelper;
-import de.cismet.watergis.utils.GafReader;
 
 import static de.cismet.watergis.gui.panels.Photo.selectedFeature;
 
@@ -1014,10 +1020,6 @@ public class GafProf extends javax.swing.JPanel {
                 AttributeTableFactory.getInstance().switchProcessingMode(services.get(0));
             }
         }
-
-        addLayerToTree("qp_gaf_p");
-        addLayerToTree("qp_gaf_l");
-        addLayerToTree("qp_gaf_l_pr_pf");
     }
 
     /**
@@ -1650,7 +1652,8 @@ public class GafProf extends javax.swing.JPanel {
             while (it.hasNext()) {
                 final File f = it.next();
 
-                if (!f.getName().toLowerCase().endsWith(".gaf")) {
+                if (!f.getName().toLowerCase().endsWith(".gaf") && !f.getName().toLowerCase().endsWith(".csv")
+                            && !f.getName().toLowerCase().endsWith(".txt")) {
                     possibleCatalogueFiles.add(f);
                     it.remove();
                 }
@@ -1658,9 +1661,21 @@ public class GafProf extends javax.swing.JPanel {
 
             for (final File gafFile : profs) {
                 final String userName = SessionManager.getSession().getUser().getName();
-                final GafReader reader = new GafReader(gafFile);
+                final ProfileReader reader = ProfileReaderFactory.getReader(gafFile);
                 boolean hasBkcat = false;
                 boolean hasRkcat = false;
+
+                final AbstractImportDialog dialog = reader.getImportDialog(StaticSwingTools.getParentFrame(
+                            GafProf.this));
+
+                if (dialog != null) {
+                    dialog.setAlwaysOnTop(true);
+                    StaticSwingTools.showDialog(dialog);
+
+                    if (dialog.isCancelled()) {
+                        continue;
+                    }
+                }
 
                 // add custom catalogues
                 for (final File catalogue : possibleCatalogueFiles) {
@@ -1716,16 +1731,16 @@ public class GafProf extends javax.swing.JPanel {
                 // check the gaf file
                 final String[] errors = reader.checkFile();
 
-                if (errors.length > 0) {
+                if ((errors != null) && (errors.length > 0)) {
                     CheckAction.handleErrors(errors, gafFile);
                     return null;
                 }
 
-                final String[] hints = reader.checkFileForHints();
-
-                if (hints.length > 0) {
-                    CheckAction.handleHints(hints, gafFile);
-                }
+//                final String[] hints = reader.checkFileForHints();
+//
+//                if ((hints != null) && (hints.length > 0)) {
+//                    CheckAction.handleHints(hints, gafFile);
+//                }
 
                 if (!dhhn92Check) {
                     StaticSwingTools.showDialog(GafImportDialog.getInstance());
@@ -1798,7 +1813,7 @@ public class GafProf extends javax.swing.JPanel {
                         ruleSet.beforeSave(feature);
                     }
 
-                    for (final String[] line : reader.getProfileContent(profile)) {
+                    for (final ProfileLine line : reader.getProfileContent(profile)) {
                         final CidsBean ppBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.qp_gaf_pp");
                         final CidsBean geom = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
                         final GeometryFactory gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),

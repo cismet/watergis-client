@@ -468,7 +468,7 @@ public class KatasterGemeindeReport {
                 toNullIfZero(
                     (getLengthGewAll(gem) - getLengthGeschlAbschn(gem) - getLengthSeeAbschn(gem))
                             * 100
-                            / (getLengthOffeneAbschn(gem) + getLengthGeschlAbschn(gem))));
+                            / (getLengthGewAll(gem))));
             feature.put(
                 "offene_l",
                 toNullIfZero(getLengthGewAll(gem) - getLengthGeschlAbschn(gem) - getLengthSeeAbschn(gem)));
@@ -2654,7 +2654,7 @@ public class KatasterGemeindeReport {
 
         for (final GmdPartObj tmp : gemList) {
             if ((gewId < 0) || (tmp.getId() == gewId)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     ++count;
                 }
             }
@@ -2700,7 +2700,7 @@ public class KatasterGemeindeReport {
 
         for (final GmdPartObj tmp : gemList) {
             if ((gewId < 0) || (tmp.getId() == gewId)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     length += tmp.getLength();
                 }
             }
@@ -2794,7 +2794,7 @@ public class KatasterGemeindeReport {
 
         for (final GmdPartObj tmp : gemList) {
             if ((tmp.getId() == gewId) && tmp.isInGewPart(gewId, from, till)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     ++count;
                 }
             }
@@ -2819,7 +2819,7 @@ public class KatasterGemeindeReport {
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getId() == gewId) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     length += tmp.getLengthInGewPart(gewId, from, till);
                 }
             }
@@ -2892,7 +2892,7 @@ public class KatasterGemeindeReport {
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     ++count;
                 }
             }
@@ -2915,7 +2915,7 @@ public class KatasterGemeindeReport {
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     length += tmp.getLength();
                 }
             }
@@ -2985,7 +2985,7 @@ public class KatasterGemeindeReport {
             final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                    if (tmp.getArt().equals("p")) {
+                    if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                         ++count;
                     }
                 }
@@ -3010,7 +3010,7 @@ public class KatasterGemeindeReport {
             final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                    if (tmp.getArt().equals("p")) {
+                    if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                         length += tmp.getLength();
                     }
                 }
@@ -3084,7 +3084,7 @@ public class KatasterGemeindeReport {
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     ++count;
                 }
             }
@@ -3108,7 +3108,7 @@ public class KatasterGemeindeReport {
 
         for (final GmdPartObj tmp : gemList) {
             if (tmp.getOwner().equals(owner)) {
-                if (tmp.getArt().equals("p") && (tmp.getWidmung() == wdm)) {
+                if ((tmp.getArt().equals("p") || tmp.getArt().equals("o")) && (tmp.getWidmung() == wdm)) {
                     length += tmp.getLength();
                 }
             }
@@ -3179,7 +3179,7 @@ public class KatasterGemeindeReport {
             final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner)) {
-                    if (tmp.getArt().equals("p")) {
+                    if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                         ++count;
                     }
                 }
@@ -3203,7 +3203,7 @@ public class KatasterGemeindeReport {
             final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
             for (final GmdPartObj tmp : gemList) {
                 if (tmp.getOwner().equals(owner)) {
-                    if (tmp.getArt().equals("p")) {
+                    if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                         length += tmp.getLength();
                     }
                 }

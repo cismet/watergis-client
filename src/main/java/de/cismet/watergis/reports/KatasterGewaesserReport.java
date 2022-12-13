@@ -1842,7 +1842,7 @@ public class KatasterGewaesserReport {
 
         for (final KatasterGewObj tmp : parts) {
             if ((tmp.getId() == gewId) && tmp.isInGewPart(gewId, from, till)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     ++count;
                 }
             }
@@ -1865,7 +1865,7 @@ public class KatasterGewaesserReport {
 
         for (final KatasterGewObj tmp : parts) {
             if (tmp.getId() == gewId) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     length += tmp.getLengthInGewPart(gewId, from, till);
                 }
             }
@@ -1932,7 +1932,7 @@ public class KatasterGewaesserReport {
 
         for (final KatasterGewObj tmp : parts) {
             if (tmp.getOwner().equals(owner)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     ++count;
                 }
             }
@@ -1953,7 +1953,7 @@ public class KatasterGewaesserReport {
 
         for (final KatasterGewObj tmp : parts) {
             if (tmp.getOwner().equals(owner)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     length += tmp.getLength();
                 }
             }
@@ -2017,7 +2017,7 @@ public class KatasterGewaesserReport {
 
         for (final KatasterGewObj tmp : parts) {
             if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     ++count;
                 }
             }
@@ -2039,7 +2039,7 @@ public class KatasterGewaesserReport {
 
         for (final KatasterGewObj tmp : parts) {
             if (tmp.getOwner().equals(owner) && (tmp.getWidmung() == wdm)) {
-                if (tmp.getArt().equals("p")) {
+                if (tmp.getArt().equals("p") || tmp.getArt().equals("o")) {
                     length += tmp.getLength();
                 }
             }

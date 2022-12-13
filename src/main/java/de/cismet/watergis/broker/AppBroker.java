@@ -127,6 +127,8 @@ public class AppBroker implements Configurable {
     public static final String MEASURE_MODE = "MEASURE_MODE";
     public static final String FOTO_MC_NAME = "foto";
     public static final String GAF_PROF_MC_NAME = "qp";
+    public static final String QP_UPL_MC_NAME = "qp_upl";
+    public static final String QP_NPL_MC_NAME = "qp_npl";
     private static ConfigurationManager configManager;
     public static final String DOMAIN_NAME = "DLM25W";
     public static final String DOMAIN_NAME_WRRL = "WRRL_DB_MV";

@@ -40,6 +40,8 @@ import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 
+import de.cismet.commons.concurrency.CismetConcurrency;
+
 import de.cismet.tools.CismetThreadPool;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -48,7 +50,9 @@ import de.cismet.watergis.gui.dialog.GafOptionsDialog;
 import de.cismet.watergis.gui.panels.GafProfEditor;
 import de.cismet.watergis.gui.panels.PhotoEditor;
 
-import de.cismet.watergis.utils.GafReader;
+import de.cismet.watergis.profile.GafReader;
+import de.cismet.watergis.profile.WPROFReader;
+
 import de.cismet.watergis.utils.RendererTools;
 
 /**
@@ -64,7 +68,7 @@ public class GafInfoPanel extends javax.swing.JPanel {
     private static final Logger LOG = Logger.getLogger(GafInfoPanel.class);
     private static final CidsLayer ppLayer = new CidsLayer(ClassCacheMultiple.getMetaClass(
                 AppBroker.DOMAIN_NAME,
-                "dlm25w.qp_gaf_pp"));
+                "dlm25w.qp_pkte"));
     private static final int IMAGE_HEIGHT = 200;
     private static final int IMAGE_WIDTH = 400;
 
@@ -107,7 +111,7 @@ public class GafInfoPanel extends javax.swing.JPanel {
                             currentResizeWorker.cancel(true);
                         }
                         currentResizeWorker = new ImageResizeWorker();
-                        CismetThreadPool.execute(currentResizeWorker);
+                        CismetConcurrency.getInstance("qp").getDefaultExecutor().execute(currentResizeWorker);
                     }
                 });
         timer.setRepeats(false);
@@ -316,7 +320,7 @@ public class GafInfoPanel extends javax.swing.JPanel {
                 }
             }
             if (!cacheHit) {
-                CismetThreadPool.execute(new LoadImageWorker(qpNr));
+                CismetConcurrency.getInstance("qp").getDefaultExecutor().execute(new LoadImageWorker(qpNr));
             }
         }
     }
@@ -442,7 +446,7 @@ public class GafInfoPanel extends javax.swing.JPanel {
         @Override
         protected ImageIcon doInBackground() throws Exception {
             if ((gafFeatures != null) && (gafFeatures.size() > 0)) {
-                final GafReader reader = new GafReader(gafFeatures);
+                final WPROFReader reader = new WPROFReader(gafFeatures);
 
                 final BufferedImage image = (BufferedImage)reader.createImage(
                         reader.getProfiles().toArray(new Double[1])[0],

@@ -86,9 +86,11 @@ import de.cismet.tools.CismetThreadPool;
 
 import de.cismet.watergis.broker.AppBroker;
 
+import de.cismet.watergis.profile.GafReader;
+import de.cismet.watergis.profile.WPROFReader;
+
 import de.cismet.watergis.utils.CidsBeanUtils;
 import de.cismet.watergis.utils.ConversionUtils;
-import de.cismet.watergis.utils.GafReader;
 import de.cismet.watergis.utils.RendererTools;
 
 /**
@@ -121,8 +123,8 @@ public class GafProfEditor extends javax.swing.JPanel implements DisposableCidsB
 
     //~ Instance fields --------------------------------------------------------
 
-    private MetaClass L_ST_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 148);
-    private MetaClass FREIGABE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 189);
+    private MetaClass L_ST_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_l_st");
+    private MetaClass FREIGABE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_freigabe");
 
     private CidsBean cidsBean;
     private CidsLayerFeature feature;

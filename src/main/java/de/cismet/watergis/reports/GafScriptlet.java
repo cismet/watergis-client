@@ -40,7 +40,7 @@ import de.cismet.cismap.commons.retrieval.RetrievalListener;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.utils.GafReader;
+import de.cismet.watergis.profile.GafReader;
 
 /**
  * DOCUMENT ME!

@@ -37,14 +37,14 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
     {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("fsk", new Varchar(20, true));
-        typeMap.put("flst", new Varchar(10, true));
-        typeMap.put("fl_nr", new Numeric(3, 0, true));
-        typeMap.put("gmk_nr", new Numeric(6, 0, true));
-        typeMap.put("gmk_name", new Varchar(50, true));
-        typeMap.put("gmd_nr", new Numeric(8, 0, true));
-        typeMap.put("gmd_name", new Varchar(50, true));
-        typeMap.put("wbv", new Numeric(2, 0, true));
-        typeMap.put("flst_fl", new Numeric(16, 4, true));
+        typeMap.put("flst", new Varchar(10, false));
+        typeMap.put("fl_nr", new Numeric(3, 0, false));
+        typeMap.put("gmk_nr", new Numeric(6, 0, false));
+        typeMap.put("gmk_name", new Varchar(50, false));
+        typeMap.put("gmd_nr", new Numeric(8, 0, false));
+        typeMap.put("gmd_name", new Varchar(50, false));
+        typeMap.put("wbv", new Numeric(2, 0, false));
+        typeMap.put("flst_fl", new Numeric(16, 4, false));
         typeMap.put("flst_g_an", new Numeric(5, 2, false, false));
         typeMap.put("flst_g_fl", new Numeric(16, 4, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
