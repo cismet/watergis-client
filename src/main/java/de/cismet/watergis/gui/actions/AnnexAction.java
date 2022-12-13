@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
 
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.MappingComponent;
@@ -138,6 +139,22 @@ public class AnnexAction extends ReleaseAction {
                                 }
                                 cidsBean.setProperty("ww_gr", newWwGr);
                                 cidsFeature.setProperty("ww_gr", newWwGr.getProperty("ww_gr"));
+
+                                final DefaultCidsLayerBindableReferenceCombo combo = cidsFeature.getCatalogueCombo(
+                                        "ww_gr");
+
+                                if (combo != null) {
+                                    for (int i = 0; i < combo.getItemCount(); ++i) {
+                                        final Object o = combo.getItemAt(i);
+
+                                        if (o instanceof CidsLayerFeature) {
+                                            if (((CidsLayerFeature)o).getId() == newWwGr.getPrimaryKeyValue()) {
+                                                combo.setSelectedIndex(i);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
 
                                 if ((cidsBean.getProperty("ba_cd") == null)
                                             || !((String)cidsBean.getProperty("ba_cd")).startsWith(

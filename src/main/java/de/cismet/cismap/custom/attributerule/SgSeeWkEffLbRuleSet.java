@@ -42,7 +42,8 @@ public class SgSeeWkEffLbRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("wk_nr", new Catalogue("k_wk_sg", true, true, new Varchar(10, false, false)));
+        typeMap.put("wk_nr", new Catalogue("k_wk_sg", true, true, new Varchar(50, false, false)));
+        typeMap.put("wk_fedfue", new Catalogue("k_wk_sg", false, false, new Varchar(2, false, false)));
         typeMap.put("distanz", new Numeric(10, 2, true, false));
         typeMap.put("winkel", new Numeric(5, 1, true, true));
         typeMap.put("typ", new Varchar(1, true, true));
@@ -55,7 +56,8 @@ public class SgSeeWkEffLbRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("distanz") && !columnName.equals("id");
+                    && !columnName.equals("geom") && !columnName.equals("distanz") && !columnName.equals("id")
+                    && !columnName.equals("wk_fedfue");
     }
 
     @Override

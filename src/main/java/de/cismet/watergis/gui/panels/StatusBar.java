@@ -406,10 +406,10 @@ public class StatusBar extends javax.swing.JPanel implements StatusListener,
      */
     private void showMeasuring(final Feature f) {
         final Geometry geom = f.getGeometry();
-        double area = geom.getArea();
-        double length = geom.getLength();
+        double area = ((geom != null) ? geom.getArea() : 0);
+        double length = ((geom != null) ? geom.getLength() : 0);
 
-        if (geom.getArea() == 0) {
+        if ((geom != null) && (geom.getArea() == 0)) {
             final int segments = geom.getNumGeometries() * (geom.getNumPoints() - 1);
             double lastSegmentLength = 0;
 

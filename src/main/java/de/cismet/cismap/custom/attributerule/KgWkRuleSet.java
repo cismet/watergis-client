@@ -47,14 +47,16 @@ public class KgWkRuleSet extends WatergisDefaultRuleSet {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(KgWkRuleSet.class);
-    private static final String URL_TEMPLATE = "https://fis-wasser-mv.de/charts/steckbriefe/cw/cw_wk.php?kg=%1s";
+    private static final String URL_TEMPLATE =
+        "https://fis-wasser-mv.de/charts/steckbriefe/cw/cw_wk.php?schema=reporting_bp3&kg=%1s";
 
     //~ Instance initializers --------------------------------------------------
 
     {
         typeMap.put("geom", new Geom(true, false));
 //        typeMap.put("wk_nr", new Varchar(10, true, true));
-        typeMap.put("wk_nr", new Catalogue("k_wk_kg", true, true, new Varchar(10, false, false)));
+        typeMap.put("wk_nr", new Catalogue("k_wk_kg", true, true, new Varchar(50, false, false)));
+        typeMap.put("wk_fedfue", new Catalogue("k_wk_kg", false, false, new Varchar(2, false, false)));
         typeMap.put("kkm_ort", new Varchar(30, false, true));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -66,7 +68,8 @@ public class KgWkRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("flaeche") && !columnName.equals("geom") && !columnName.equals("id");
+                    && !columnName.equals("flaeche") && !columnName.equals("geom") && !columnName.equals("id")
+                    && !columnName.equals("wk_fedfue");
     }
 
     @Override

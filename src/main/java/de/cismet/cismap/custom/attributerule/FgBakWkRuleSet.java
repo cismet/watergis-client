@@ -62,7 +62,14 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
 
     private static final Logger LOG = Logger.getLogger(FgBakWkRuleSet.class);
 
-    private static final String URL_TEMPLATE = "https://fis-wasser-mv.de/charts/steckbriefe/rw/rw_wk.php?fg=%1s";
+    private static final String URL_TEMPLATE =
+        "https://fis-wasser-mv.de/charts/steckbriefe/rw/rw_wk.php?schema=reporting_bp3&fg=%1s";
+    private static final String URL_TEMPLATE_BB =
+        "https://mluk.brandenburg.de/w/Steckbriefe/WRRL2021/RWBODY/DERW_%1s.pdf";
+    private static final String URL_TEMPLATE_NS =
+        "https://geoportal.bafg.de/birt_viewer/frameset?__report=RW_WKSB_21P1.rptdesign&param_wasserkoerper=DERW_DENI_%1s&agreeToDisclaimer=true";
+    private static final String URL_TEMPLATE_SH =
+        "https://geoportal.bafg.de/birt_viewer/frameset?__report=RW_WKSB_21P1.rptdesign&param_wasserkoerper=DERW_DESH_%1s&agreeToDisclaimer=true";
 
     //~ Instance initializers --------------------------------------------------
 
@@ -72,6 +79,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("bak_st_von", new Numeric(10, 2, false, true));
         typeMap.put("bak_st_bis", new Numeric(10, 2, false, true));
         typeMap.put("wk_nr", new Catalogue("k_wk_fg", true, true, new Varchar(50, false, false)));
+        typeMap.put("wk_fedfue", new Catalogue("k_wk_fg", false, false, new Varchar(2, false, false)));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("laenge_wk", new Numeric(10, 2, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -84,7 +92,8 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("laenge") && !columnName.equals("geom")
-                    && !columnName.equals("ba_cd") && !columnName.equals("id") && !columnName.equals("laenge_wk");
+                    && !columnName.equals("ba_cd") && !columnName.equals("id") && !columnName.equals("laenge_wk")
+                    && !columnName.equals("wk_fedfue");
     }
 
     @Override
@@ -204,8 +213,21 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
             final int clickCount) {
         if (columnName.equals("wk_nr")) {
             if ((value instanceof String) && (clickCount == 1)) {
+                String urlTemplate = URL_TEMPLATE;
+                final String ff = (String)feature.getProperty("federfuehrung");
+
+                if (ff != null) {
+                    if (ff.equals("Brandenburg")) {
+                        urlTemplate = URL_TEMPLATE_BB;
+                    } else if (ff.equals("Schleswig-Holstein")) {
+                        urlTemplate = URL_TEMPLATE_SH;
+                    } else if (ff.equals("Niedersachsen")) {
+                        urlTemplate = URL_TEMPLATE_NS;
+                    }
+                }
+
                 try {
-                    final URL u = new URL(String.format(URL_TEMPLATE, value.toString()));
+                    final URL u = new URL(String.format(urlTemplate, value.toString()));
 
                     try {
                         de.cismet.tools.BrowserLauncher.openURL(u.toString());

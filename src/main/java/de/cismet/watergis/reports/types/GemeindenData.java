@@ -516,7 +516,7 @@ public class GemeindenData {
                         (Double)f.get(1),
                         (Double)f.get(1)
                                 - (Double)f.get(0),
-                        (Integer)f.get(5)));
+                        (Integer)f.get(4)));
             }
         }
 

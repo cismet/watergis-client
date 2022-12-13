@@ -169,6 +169,7 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
+import de.cismet.cismap.commons.featureservice.WFSCapabilitiesTreeCellRenderer;
 import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
@@ -561,6 +562,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniGafInfo;
     private javax.swing.JMenuItem mniGafOptions;
     private javax.swing.JMenuItem mniGafUpload;
+    private javax.swing.JMenuItem mniGafUpload1;
     private javax.swing.JMenuItem mniGemeinde;
     private javax.swing.JMenuItem mniGemeinde1;
     private javax.swing.JMenuItem mniGemeinde2;
@@ -781,6 +783,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         AppBroker.setConfigManager(configManager);
         UIManager.put("Table.selectionBackground", new Color(195, 212, 232));
         UIManager.put("Tree.selectionBackground", new Color(195, 212, 232));
+        UIManager.put("Cismap.featureSelectionForeground", new Color(255, 0, 0));
         initCismap();
         configManager.addConfigurable(OptionsClient.getInstance());
         configManager.configure(OptionsClient.getInstance());
@@ -902,6 +905,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         mappingComponent.addCustomInputListener("REMOVE_MULTIPOLYGON", new DeleteFeatureListener(mappingComponent));
         mappingComponent.addCustomInputListener("CHANGE_MULTIPOLYGON", new PolygonChangeListener(mappingComponent));
+        AppBroker.getInstance().switchMapMode(mappingComponent.getInteractionMode());
+
         final String interactionMode = CismapBroker.getInstance().getMappingComponent().getHandleInteractionMode();
 
         if (interactionMode.equals(MappingComponent.MOVE_HANDLE)) {
@@ -940,6 +945,18 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             }
         }
 
+        mniGafUpload.setVisible(false);
+        mniCheck.setVisible(false);
+        mniGafUpload1.setVisible(false);
+        boolean checkForQP = false;
+        try {
+            checkForQP = SessionManager.getProxy()
+                        .getConfigAttr(SessionManager.getSession().getUser(), "qpAllowed", connectionContext) != null;
+            checkForQP = true;
+            mniGafUpload1.setVisible(checkForQP);
+        } catch (ConnectionException ex) {
+            LOG.error("Cannot check for qp permission", ex);
+        }
         checkForCreatedObjects();
     }
 
@@ -1144,6 +1161,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 //        mappingComponent.setVisualizeSnappingRectEnabled(true);
         mappingComponent.setSnappingRectSize(80);
         CismapBroker.getInstance().setMappingComponent(mappingComponent);
+        mappingComponent.setCrossHairColor(new Color(255, 0, 0, 255));
+        mappingComponent.setCrossHairThickness(4);
+        WFSCapabilitiesTreeCellRenderer.showTitle = true;
         PointReferencingDialog.setMIN_X(33000000d);
         PointReferencingDialog.setMAX_X(33999999d);
         PointReferencingDialog.setMIN_Y(5600000d);
@@ -2593,6 +2613,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniDeletePhoto = new javax.swing.JMenuItem();
         mniPhotoOptions = new javax.swing.JMenuItem();
         menProfiles = new javax.swing.JMenu();
+        mniGafUpload1 = new javax.swing.JMenuItem();
         mniCheck = new javax.swing.JMenuItem();
         mniGafUpload = new javax.swing.JMenuItem();
         mniGafInfo = new javax.swing.JMenuItem();
@@ -3171,9 +3192,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdSnappingMode.setFocusable(false);
         cmdSnappingMode.setHideActionText(true);
         cmdSnappingMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdSnappingMode.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdSnappingMode.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdSnappingMode.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdSnappingMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(cmdSnappingMode);
 
@@ -3280,9 +3298,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdGeometryOpMode.setFocusable(false);
         cmdGeometryOpMode.setHideActionText(true);
         cmdGeometryOpMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdGeometryOpMode.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdGeometryOpMode.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdGeometryOpMode.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdGeometryOpMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(cmdGeometryOpMode);
 
@@ -3435,9 +3450,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdDrawingMode.setFocusable(false);
         cmdDrawingMode.setHideActionText(true);
         cmdDrawingMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdDrawingMode.setMaximumSize(new java.awt.Dimension(26, 26));
-        cmdDrawingMode.setMinimumSize(new java.awt.Dimension(26, 26));
-        cmdDrawingMode.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdDrawingMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(cmdDrawingMode);
 
@@ -4018,11 +4030,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             menProfiles,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menProfiles.text")); // NOI18N
 
+        mniGafUpload1.setAction(uploadActionGaf);
+        mniGafUpload1.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniGafUpload1.toolTipText",
+                new Object[] {})); // NOI18N
+        menProfiles.add(mniGafUpload1);
+
         mniCheck.setAction(checkAction1);
         mniCheck.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniCheck.toolTipText",
                 new Object[] {})); // NOI18N
+        mniCheck.setEnabled(false);
         menProfiles.add(mniCheck);
 
         mniGafUpload.setAction(uploadActionGaf);
@@ -4030,6 +4050,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 WatergisApp.class,
                 "WatergisApp.mniGafUpload.toolTipText",
                 new Object[] {})); // NOI18N
+        mniGafUpload.setEnabled(false);
         menProfiles.add(mniGafUpload);
 
         mniGafInfo.setAction(gafInfoAction);
@@ -5151,7 +5172,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     final boolean enableAnnex = releaseAction.containsAnyRelevantFeature(selectedFeatures, false);
                     final boolean enableRelease = releaseAction.containsAnyRelevantFeature(selectedFeatures, true);
                     final boolean photoSelected = containsAnyRelevantFeature(selectedFeatures, "foto");
-                    final boolean profileSelected = containsAnyRelevantFeature(selectedFeatures, "qp");
+                    final boolean profileSelected = containsAnyRelevantFeature(selectedFeatures, "qp_upl");
                     final boolean drawsSelected = !RemoveDrawingModeAction.getSelectedDrawings().isEmpty();
                     boolean oneEditableFeature = false;
                     boolean selectedFeatueIsPolygon = false;
@@ -5259,7 +5280,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                                 mniDeletePhoto.setEnabled(photoSelected);
                                 mniPrintPhoto.setEnabled(photoSelected);
 
-                                mniReportGaf.setEnabled(profileSelected);
+//                                mniReportGaf.setEnabled(profileSelected);
                                 mniExportGaf.setEnabled(profileSelected);
                                 mniDeleteGaf.setEnabled(profileSelected);
                                 mniPrintQp.setEnabled(profileSelected);

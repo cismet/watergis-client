@@ -129,6 +129,11 @@ public class FgBaDuvRuleSet extends WatergisDefaultRuleSet {
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
         adjustFisGDateAndFisGUser(feature);
+        feature.setProperty("ba_st_von", 0.0);
+
+        if (feature.getGeometry() != null) {
+            feature.setProperty("ba_st_bis", feature.getGeometry().getLength());
+        }
     }
 
     @Override

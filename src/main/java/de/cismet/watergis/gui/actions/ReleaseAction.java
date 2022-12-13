@@ -32,6 +32,7 @@ import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
 
 import de.cismet.cismap.commons.features.DefaultFeatureCollection;
 import de.cismet.cismap.commons.features.Feature;
@@ -139,8 +140,25 @@ public class ReleaseAction extends AbstractAction {
                                     services.add(cidsFeature.getLayerProperties().getFeatureService());
                                 }
                                 final CidsBean cidsBean = cidsFeature.getBean();
-                                cidsBean.setProperty("ww_gr", AppBroker.getInstance().getNiemandWwGr());
-                                cidsFeature.setProperty("ww_gr", AppBroker.getInstance().getNiemandWwGr());
+                                final CidsBean newWwGr = AppBroker.getInstance().getNiemandWwGr();
+                                cidsBean.setProperty("ww_gr", newWwGr);
+                                cidsFeature.setProperty("ww_gr", newWwGr);
+
+                                final DefaultCidsLayerBindableReferenceCombo combo = cidsFeature.getCatalogueCombo(
+                                        "ww_gr");
+
+                                if (combo != null) {
+                                    for (int i = 0; i < combo.getItemCount(); ++i) {
+                                        final Object o = combo.getItemAt(i);
+
+                                        if (o instanceof CidsLayerFeature) {
+                                            if (((CidsLayerFeature)o).getId() == newWwGr.getPrimaryKeyValue()) {
+                                                combo.setSelectedIndex(i);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
 
                                 if ((cidsBean.getProperty("ba_cd") == null)
                                             || !((String)cidsBean.getProperty("ba_cd")).startsWith(

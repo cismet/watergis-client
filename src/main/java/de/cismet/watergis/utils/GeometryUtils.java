@@ -48,7 +48,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import de.cismet.cids.custom.watergis.server.search.Buffer;
 import de.cismet.cids.custom.watergis.server.search.MakeValid;
 
 import de.cismet.cids.server.search.CidsServerSearch;
