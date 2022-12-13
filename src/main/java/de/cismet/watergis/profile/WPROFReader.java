@@ -12,17 +12,20 @@
  */
 package de.cismet.watergis.profile;
 
+import Sirius.navigator.connection.SessionManager;
+
+import Sirius.server.middleware.types.MetaClass;
+import Sirius.server.middleware.types.MetaObject;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
-import com.vividsolutions.jts.linearref.LengthLocationMap;
 import com.vividsolutions.jts.linearref.LinearLocation;
 import com.vividsolutions.jts.linearref.LocationIndexedLine;
 
 import org.apache.log4j.Logger;
-
-import org.openide.util.Exceptions;
 
 import java.awt.Frame;
 
@@ -37,13 +40,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.swing.JDialog;
+import de.cismet.cids.dynamics.CidsBean;
+
+import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 
-import de.cismet.watergis.utils.CustomGafCatalogueReader;
+import de.cismet.connectioncontext.AbstractConnectionContext;
+import de.cismet.connectioncontext.ConnectionContext;
+
+import de.cismet.watergis.broker.AppBroker;
 
 /**
  * DOCUMENT ME!
@@ -56,6 +64,17 @@ public class WPROFReader extends AbstractProfileReader {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(WPROFReader.class);
+    private static final ConnectionContext CC = ConnectionContext.create(
+            AbstractConnectionContext.Category.OTHER,
+            "WPROFReader");
+    private static final MetaClass ROUTE_MC = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "dlm25w.fg_bak",
+            CC);
+    private static final MetaClass GEOM_MC = ClassCacheMultiple.getMetaClass(
+            AppBroker.DOMAIN_NAME,
+            "geom",
+            CC);
 
     //~ Instance fields --------------------------------------------------------
 
@@ -68,6 +87,8 @@ public class WPROFReader extends AbstractProfileReader {
     private CidsLayerFeature freigabe = null;
     private CidsLayerFeature lawaRoute = null;
     private double artificialStationId = -1.0;
+    private MetaObject[] routes = null;
+    private boolean duplicateSepAllowed = true;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -90,6 +111,24 @@ public class WPROFReader extends AbstractProfileReader {
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the duplicateSepAllowed
+     */
+    public boolean isDuplicateSepAllowed() {
+        return duplicateSepAllowed;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  duplicateSepAllowed  the duplicateSepAllowed to set
+     */
+    public void setDuplicateSepAllowed(final boolean duplicateSepAllowed) {
+        this.duplicateSepAllowed = duplicateSepAllowed;
+    }
 
     /**
      * DOCUMENT ME!
@@ -241,21 +280,22 @@ public class WPROFReader extends AbstractProfileReader {
 
     @Override
     public QpCheckResult checkFileForHints() {
-        final QpCheckResult result = new QpCheckResult();
-        final int correct = 0;
-        int incorrect = 0;
         int qPNumber = 0;
-
         if ((content == null) || content.isEmpty()) {
             readFile();
         }
+        profiles.clear();
+        final QpCheckResult result = checkData();
 
-        if (!fieldMap.containsKey(GAF_FIELDS.Y) && fieldMap.containsKey(GAF_FIELDS.STATION)) {
+        if ((result.getErrors() != null) && !result.getErrors().isEmpty()) {
+            return result;
+        }
+        profiles.clear();
+
+        if (fieldMap.containsKey(GAF_FIELDS.STATION) && fieldMap.containsKey(GAF_FIELDS.HW)
+                    && fieldMap.containsKey(GAF_FIELDS.RW)) {
             // Punktwolke 2
-            setCalc(true);
-
             final List<ProfileLine> parts = new ArrayList<>();
-            setCalc(true);
             final Double lastY = null;
             Coordinate lastPoint = null;
             Double lastStat = null;
@@ -267,6 +307,10 @@ public class WPROFReader extends AbstractProfileReader {
                 final Double currentY = ((lastPoint == null) ? 0.0 : lastPoint.distance(currentPoint));
                 final Double currentStat = line.getFieldAsDouble(GAF_FIELDS.STATION);
 
+                if (currentY == 0.0) {
+                    lastPoint = currentPoint;
+                }
+
                 line.setField(GAF_FIELDS.Y, currentY);
 
                 if ((lastStat != null) && !lastStat.equals(currentStat)) {
@@ -274,51 +318,53 @@ public class WPROFReader extends AbstractProfileReader {
                     ++qPNumber;
                     currentProfile = new ArrayList<>();
                     line.setField(GAF_FIELDS.Y, 0.0);
+                    lastPoint = currentPoint;
                 }
 
                 currentProfile.add(line);
-                lastPoint = currentPoint;
+//                lastPoint = currentPoint;
                 lastStat = currentStat;
             }
             profiles.put(lastStat, currentProfile);
             ++qPNumber;
-        } else if (!fieldMap.containsKey(GAF_FIELDS.STATION)) {
+        } else if (!fieldMap.containsKey(GAF_FIELDS.STATION) && fieldMap.containsKey(GAF_FIELDS.HW)
+                    && fieldMap.containsKey(GAF_FIELDS.RW)) {
             // Punktwolke 2
             ArrayList<ProfileLine> currentProfile = new ArrayList<>();
 
-            if (!fieldMap.containsKey(GAF_FIELDS.Y)) {
-                setCalc(true);
-                final List<ProfileLine> parts = new ArrayList<>();
-                Double lastY = null;
-                Coordinate lastPoint = null;
+            final List<ProfileLine> parts = new ArrayList<>();
+            Double lastY = null;
+            Coordinate lastPoint = null;
 
-                for (final ProfileLine line : content) {
-                    final Coordinate currentPoint = new Coordinate(line.getFieldAsDouble(GAF_FIELDS.RW),
-                            line.getFieldAsDouble(GAF_FIELDS.HW));
-                    final Double currentY = ((lastPoint == null) ? 0.0 : lastPoint.distance(currentPoint));
+            for (final ProfileLine line : content) {
+                final Coordinate currentPoint = new Coordinate(line.getFieldAsDouble(GAF_FIELDS.RW),
+                        line.getFieldAsDouble(GAF_FIELDS.HW));
+                final Double currentY = ((lastPoint == null) ? 0.0 : lastPoint.distance(currentPoint));
 
-                    line.setField(GAF_FIELDS.Y, currentY);
+                line.setField(GAF_FIELDS.Y, currentY);
 
-                    if ((lastY != null) && (lastY > currentY)) {
-                        profiles.put(--artificialStationId, currentProfile);
-                        ++qPNumber;
-                        currentProfile = new ArrayList<>();
-                        line.setField(GAF_FIELDS.Y, 0.0);
-                        lastY = 0.0;
-                        lastPoint = currentPoint;
-                    } else if (lastY == null) {
-                        lastY = currentY;
-                        lastPoint = currentPoint;
-                    } else {
-                        lastY = currentY;
-                    }
-
-                    currentProfile.add(line);
+                if ((lastY != null) && (lastY > currentY)) {
+                    calculateStation(currentProfile);
+                    profiles.put(--artificialStationId, currentProfile);
+                    ++qPNumber;
+                    currentProfile = new ArrayList<>();
+                    line.setField(GAF_FIELDS.Y, 0.0);
+                    lastY = 0.0;
+                    lastPoint = currentPoint;
+                } else if (lastY == null) {
+                    lastY = currentY;
+                    lastPoint = currentPoint;
+                } else {
+                    lastY = currentY;
                 }
-                ++qPNumber;
-                profiles.put(--artificialStationId, currentProfile);
+
+                currentProfile.add(line);
             }
-        } else if (!fieldMap.containsKey(GAF_FIELDS.HW) && !fieldMap.containsKey(GAF_FIELDS.RW)) {
+            ++qPNumber;
+            profiles.put(--artificialStationId, currentProfile);
+            routes = null;
+        } else if (fieldMap.containsKey(GAF_FIELDS.STATION)) {
+            // RW/HW are not given, so they will be calculated. If RW/HW is given, y will be calculated
             // Punktwolke 1
             final List<ProfileLine> parts = new ArrayList<>();
             setCalc(true);
@@ -351,6 +397,19 @@ public class WPROFReader extends AbstractProfileReader {
             ++qPNumber;
         }
 
+        return checkData();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private QpCheckResult checkData() {
+        final QpCheckResult result = new QpCheckResult();
+        int profCount = 0;
+        int incorrect = 0;
+
         String currentStat = null;
         boolean errorInCurrentQp = false;
         int lineNumber = (hasHeaderField() ? 2 : 1);
@@ -363,12 +422,12 @@ public class WPROFReader extends AbstractProfileReader {
                 line.setBezug(lageBezug);
 
                 if ((currentStat == null) || !currentStat.equals(line.getField(GAF_FIELDS.STATION))) {
+                    ++profCount;
                     if (addProfile && !currentProfile.isEmpty()) {
                         profiles.put(currentProfile.get(0).getFieldAsDouble(GAF_FIELDS.STATION), currentProfile);
                     }
                     currentProfile = new ArrayList<>();
                     currentProfile.add(line);
-                    ++qPNumber;
                 } else {
                     currentProfile.add(line);
                 }
@@ -380,11 +439,11 @@ public class WPROFReader extends AbstractProfileReader {
                     errorInCurrentQp = false;
                 }
 
-                final String rw = line.getField(GAF_FIELDS.RW).replace(',', '.');
-                final String hw = line.getField(GAF_FIELDS.HW).replace(',', '.');
-                currentStat = line.getField(GAF_FIELDS.STATION);
-
                 try {
+                    currentStat = line.getField(GAF_FIELDS.STATION);
+                    final String rw = line.getField(GAF_FIELDS.RW).replace(',', '.');
+                    final String hw = line.getField(GAF_FIELDS.HW).replace(',', '.');
+
                     final Double rwD = Double.parseDouble(rw);
                     final Double hwD = Double.parseDouble(hw);
 
@@ -397,7 +456,7 @@ public class WPROFReader extends AbstractProfileReader {
                         ++incorrect;
                         errorInCurrentQp = true;
                     }
-                } catch (NumberFormatException e) {
+                } catch (Throwable e) {
                     final QpCheckResult.ErrorResult error = new QpCheckResult.ErrorResult();
                     error.setErrorText("Der Datensatz mit der ID " + line.getField(GAF_FIELDS.ID)
                                 + " hat eine ungültige Position");
@@ -415,7 +474,7 @@ public class WPROFReader extends AbstractProfileReader {
         }
 
         result.setIncorrect(incorrect);
-        result.setCorrect(qPNumber - incorrect);
+        result.setCorrect(profCount - incorrect);
 
         return result;
     }
@@ -446,9 +505,85 @@ public class WPROFReader extends AbstractProfileReader {
 //        final double pointPosition = lineLLM.getLength(pointLL);
     }
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  parts  DOCUMENT ME!
+     */
+    private void calculateStation(final List<ProfileLine> parts) {
+        try {
+            final Coordinate[] c = new Coordinate[parts.size()];
+
+            for (int i = 0; i < parts.size(); ++i) {
+                c[i] = new Coordinate(parts.get(i).getFieldAsDouble(GAF_FIELDS.RW),
+                        parts.get(i).getFieldAsDouble(GAF_FIELDS.HW));
+            }
+            final GeometryFactory gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), 0);
+            final Geometry line = gf.createLineString(c);
+
+            MetaObject[] metaObjects = routes;
+            int index = intersects(metaObjects, line);
+
+            if ((metaObjects == null) || (index == -1)) {
+                String query = "select " + GEOM_MC.getID() + ", geom." + GEOM_MC.getPrimaryKey() + " from "
+                            + ROUTE_MC.getTableName();
+                query += " fg join " + GEOM_MC.getTableName()
+                            + " geom on (fg.geom = geom.id) where st_intersects(geom.geo_field, '" + line.toText()
+                            + "') "
+                            + " order by abs(0.5 - ST_LineLocatePoint('" + line.toText()
+                            + "', st_geometryN(st_intersection('"
+                            + line.toText() + "', geom.geo_field)), 1)";
+
+                metaObjects = SessionManager.getProxy().getMetaObjectByQuery(query, 0, CC);
+                routes = metaObjects;
+                index = 0;
+            }
+
+            if ((metaObjects != null) && (metaObjects.length > 0)) {
+                final MetaObject routeGeom = metaObjects[index];
+                final Geometry g = (Geometry)routeGeom.getBean().getProperty("geo_field");
+                final LocationIndexedLine lineLIL = new LocationIndexedLine(g);
+                final LinearLocation loc = lineLIL.indexOf(line.intersection(g).getCoordinate());
+                final double pos = loc.getSegmentFraction() * g.getLength();
+
+                for (final ProfileLine part : parts) {
+                    part.setField(GAF_FIELDS.STATION, pos);
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Cannot retrieve route", e);
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   metaObjects  DOCUMENT ME!
+     * @param   line         DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private int intersects(final MetaObject[] metaObjects, final Geometry line) {
+        if ((metaObjects != null) && (metaObjects.length > 0)) {
+            for (int i = 0; i < metaObjects.length; ++i) {
+                final CidsBean geometry = metaObjects[i].getBean();
+
+                if (geometry.getProperty("geo_field") != null) {
+                    final Geometry route = (Geometry)geometry.getProperty("geo_field");
+
+                    if (route.intersects(line)) {
+                        return i;
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
     @Override
     public AbstractImportDialog getImportDialog(final Frame parent) {
-        return new CsvWprofImportDialog(parent, true, getColumnProposal(), readExampleData(), this);
+        return new CsvWprofImportDialog(parent, true, getColumnProposal(), this);
     }
 
     /**
@@ -460,8 +595,6 @@ public class WPROFReader extends AbstractProfileReader {
     public void setHeader(final Map<ProfileReader.GAF_FIELDS, Integer> fieldMap, final boolean headerField) {
         this.fieldMap = fieldMap;
         this.headerField = headerField;
-
-        readFile();
     }
 
     /**
@@ -523,7 +656,14 @@ public class WPROFReader extends AbstractProfileReader {
                 }
 
                 while ((line = reader.readLine()) != null) {
-                    content.add(new ProfileLine(fieldMap, line.split("\t")));
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+                    if (!duplicateSepAllowed) {
+                        content.add(new ProfileLine(fieldMap, line.split("\\s")));
+                    } else {
+                        content.add(new ProfileLine(fieldMap, line.split("\\s+")));
+                    }
                 }
 
                 if (fieldMap.size() == 3) {
@@ -539,6 +679,9 @@ public class WPROFReader extends AbstractProfileReader {
                     }
                 }
             }
+            for (final ProfileLine line : content) {
+                line.setBezug(lageBezug);
+            }
         }
     }
 
@@ -547,7 +690,7 @@ public class WPROFReader extends AbstractProfileReader {
      *
      * @return  DOCUMENT ME!
      */
-    private String[][] readExampleData() {
+    public String[][] readExampleData() {
         final List<String[]> data = new ArrayList<String[]>();
 
         if ((csvFile != null) && csvFile.exists()) {
@@ -560,7 +703,14 @@ public class WPROFReader extends AbstractProfileReader {
                 final int rows = 0;
 
                 while ((line = reader.readLine()) != null) {
-                    data.add(line.split("\t"));
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+                    if (!duplicateSepAllowed) {
+                        data.add(line.split("\\s"));
+                    } else {
+                        data.add(line.split("\\s+"));
+                    }
                 }
             } catch (IOException e) {
                 LOG.error("Error while reading the header line", e);

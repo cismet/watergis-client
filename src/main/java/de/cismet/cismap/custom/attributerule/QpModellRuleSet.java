@@ -59,33 +59,36 @@ public class QpModellRuleSet extends WatergisDefaultRuleSet {
     //~ Instance initializers --------------------------------------------------
 
     {
+        minLaLength = 10.0;
+        maxLaLength = 999999.0;
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("la_cd", new Numeric(15, 0, true, false));
         typeMap.put("la_st_von", new Numeric(10, 2, false, false));
         typeMap.put("la_st_bis", new Numeric(10, 2, false, false));
         typeMap.put("la_cd_k", new Numeric(15, 0, false, false));
         typeMap.put("la_gn", new Varchar(75, true, false));
-        typeMap.put("m_traeger", new Catalogue("k_traeger", false, true, new Varchar(2, false, false)));
+        typeMap.put("m_traeger", new Catalogue("k_m_traeger", false, true, new Varchar(2, false, false)));
+        typeMap.put("obj_nr", new Numeric(20, 0, false, true));
         typeMap.put("abschnitt", new Varchar(100, true, false));
         typeMap.put("jahr", new Varchar(20, false, false));
         typeMap.put("m_plan", new Varchar(250, false, false));
         typeMap.put("m_ergeb", new Varchar(250, false, false));
-        typeMap.put("m_kosten", new Numeric(10, 2, false, false, 0, 9999));
+        typeMap.put("m_kosten", new Numeric(4, 0, false, false, 1, 9999));
         typeMap.put("suchraum", new Varchar(250, false, true));
-        typeMap.put("prio", new Varchar(10, false, true, ALLOWED_PRIO_VALUES));
-        typeMap.put("m_obsolet", new Varchar(1, false, false, ALLOWED_BOOL_VALUES));
+        typeMap.put("prio", new Catalogue("k_prio", false, true, new Varchar(10, false, false)));
+        typeMap.put("m_obsolet", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
         typeMap.put("m_software", new Varchar(20, false, true));
-        typeMap.put("m_exist", new Varchar(20, false, true));
-        typeMap.put("m_dim", new Varchar(20, false, true, ALLOWED_M_DIM_VALUES));
-        typeMap.put("m_time", new Varchar(20, false, true, ALLOWED_M_TIME_VALUES));
-        typeMap.put("flood_area", new Varchar(1, false, false, ALLOWED_BOOL_VALUES));
-        typeMap.put("m_hw_hq10", new Varchar(1, false, false, ALLOWED_BOOL_VALUES));
-        typeMap.put("m_hw_hq100", new Varchar(1, false, false, ALLOWED_BOOL_VALUES));
-        typeMap.put("m_hw_hq200", new Varchar(1, false, false, ALLOWED_BOOL_VALUES));
-        typeMap.put("m_mnq", new Varchar(1, false, false, ALLOWED_BOOL_VALUES));
-        typeMap.put("m_mq", new Varchar(1, false, false, ALLOWED_BOOL_VALUES));
-        typeMap.put("m_q330", new Varchar(1, false, false, ALLOWED_BOOL_VALUES));
-        typeMap.put("m_mhq", new Varchar(1, false, false, ALLOWED_BOOL_VALUES));
+        typeMap.put("m_exist", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
+        typeMap.put("m_dim", new Catalogue("k_m_dim", false, true, new Varchar(20, false, false)));
+        typeMap.put("m_time", new Catalogue("k_m_time", false, true, new Varchar(20, false, false)));
+        typeMap.put("flood_area", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
+        typeMap.put("m_hw_hq10", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
+        typeMap.put("m_hw_hq100", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
+        typeMap.put("m_hw_hq200", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
+        typeMap.put("m_mnq", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
+        typeMap.put("m_mq", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
+        typeMap.put("m_q330", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
+        typeMap.put("m_mhq", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -120,21 +123,110 @@ public class QpModellRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
+//        if (columnName.equals("m_traeger")) {
+//            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("praefix", true);
+//            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+//                    new FeatureServiceAttribute(
+//                        "m_traeger",
+//                        String.valueOf(Types.VARCHAR),
+//                        true),
+//                    filter);
+//            editor.setNullable(true);
+//
+//            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+//
+//                    @Override
+//                    protected String toString(final CidsLayerFeature bean) {
+//                        return (String)bean.getProperty("praefix");
+//                    }
+//                });
+//
+//            return editor;
+//        }
         if (columnName.equals("m_traeger")) {
-            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("praefix", true);
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         "m_traeger",
                         String.valueOf(Types.VARCHAR),
-                        true),
-                    filter);
+                        true));
             editor.setNullable(true);
 
             editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
 
                     @Override
                     protected String toString(final CidsLayerFeature bean) {
-                        return (String)bean.getProperty("praefix");
+                        return (String)bean.getProperty("traeger");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("prio")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        "prio",
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return (String)bean.getProperty("prio");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("m_dim")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        "m_dim",
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return (String)bean.getProperty("dim");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("m_time")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        "m_time",
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return (String)bean.getProperty("time");
+                    }
+                });
+
+            return editor;
+        } else if (columnName.equals("m_obsolet") || columnName.equals("flood_area") || columnName.equals("m_hw_hq10")
+                    || columnName.equals("m_hw_hq100") || columnName.equals("m_hw_hq200")
+                    || columnName.equals("m_mnq") || columnName.equals("m_mq") || columnName.equals("m_q330")
+                    || columnName.equals("m_mhq") || columnName.equals("m_exist")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        columnName,
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return (String)bean.getProperty("geschehen");
                     }
                 });
 

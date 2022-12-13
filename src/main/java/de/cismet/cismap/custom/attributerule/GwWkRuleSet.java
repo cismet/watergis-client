@@ -50,7 +50,8 @@ public class GwWkRuleSet extends WatergisDefaultRuleSet {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final String URL_TEMPLATE = "https://fis-wasser-mv.de/charts/steckbriefe/gw/gw_wk.php?gw=%1s";
+    private static final String URL_TEMPLATE =
+        "https://fis-wasser-mv.de/charts/steckbriefe/gw/gw_wk.php?schema=reporting_bp3&gw=%1s";
 
     //~ Instance fields --------------------------------------------------------
 
@@ -61,6 +62,7 @@ public class GwWkRuleSet extends WatergisDefaultRuleSet {
     {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("wk_nr", new Catalogue("k_wk_gw", true, true, new Varchar(50, false, false)));
+        typeMap.put("wk_fedfue", new Catalogue("k_wk_gw", false, false, new Varchar(2, false, false)));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
@@ -71,7 +73,7 @@ public class GwWkRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("flaeche") && !columnName.equals("geom");
+                    && !columnName.equals("flaeche") && !columnName.equals("geom") && !columnName.equals("wk_fedfue");
     }
 
     @Override

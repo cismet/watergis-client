@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import org.deegree.model.crs.UnknownCRSException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
@@ -54,8 +55,20 @@ public class ProfileLine {
      * @param  data      DOCUMENT ME!
      */
     public ProfileLine(final Map<ProfileReader.GAF_FIELDS, Integer> fieldMap, final String[] data) {
-        this.data = data;
-        this.fieldMap = fieldMap;
+        if (fieldMap.size() < data.length) {
+            this.data = new String[fieldMap.size()];
+            this.fieldMap = new HashMap<>();
+            int i = 0;
+
+            for (final ProfileReader.GAF_FIELDS field : fieldMap.keySet()) {
+                final int index = i++;
+                this.fieldMap.put(field, index);
+                this.data[index] = data[fieldMap.get(field)];
+            }
+        } else {
+            this.data = data;
+            this.fieldMap = new HashMap<ProfileReader.GAF_FIELDS, Integer>(fieldMap);
+        }
 
         final Integer statIndex = this.fieldMap.get(ProfileReader.GAF_FIELDS.STATION);
 
@@ -84,7 +97,7 @@ public class ProfileLine {
         try {
             if ((this.bezug != bezug)
                         && !((this.bezug == null) && (bezug != null) && bezug.getProperty("l_bezug").equals(5650))) {
-                final CrsTransformer transformer = new CrsTransformer(getEPSG(bezug));
+                final CrsTransformer transformer = new CrsTransformer("EPSG:5650");
                 final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), 0);
                 final String rw = getField(ProfileReader.GAF_FIELDS.RW).replace(',', '.');
                 final String hw = getField(ProfileReader.GAF_FIELDS.HW).replace(',', '.');
@@ -95,7 +108,7 @@ public class ProfileLine {
                         final Double hwD = Double.parseDouble(hw);
 
                         final Geometry point = factory.createPoint(new Coordinate(rwD, hwD));
-                        final Geometry transformedPoint = transformer.fastTransformGeometry(point, getEPSG(this.bezug));
+                        final Geometry transformedPoint = transformer.fastTransformGeometry(point, getEPSG(bezug));
 
                         setField(ProfileReader.GAF_FIELDS.RW, transformedPoint.getCoordinate().x);
                         setField(ProfileReader.GAF_FIELDS.HW, transformedPoint.getCoordinate().y);
@@ -155,6 +168,10 @@ public class ProfileLine {
 
         if (index == null) {
             return null;
+        }
+
+        if (index >= data.length) {
+            return 0.0;
         }
 
         try {

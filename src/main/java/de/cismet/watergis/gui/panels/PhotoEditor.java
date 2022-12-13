@@ -135,9 +135,9 @@ public class PhotoEditor extends javax.swing.JPanel implements DisposableCidsBea
 
     //~ Instance fields --------------------------------------------------------
 
-    private MetaClass L_ST_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 148);
-    private MetaClass L_RL_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 113);
-    private MetaClass FREIGABE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 189);
+    private MetaClass L_ST_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_l_st");
+    private MetaClass L_RL_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_l_rl");
+    private MetaClass FREIGABE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_freigabe");
     private CidsBean cidsBean;
     private CidsLayerFeature feature;
     private String webDavDirectory;

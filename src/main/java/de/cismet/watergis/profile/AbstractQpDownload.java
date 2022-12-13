@@ -7,7 +7,6 @@
 ****************************************************/
 package de.cismet.watergis.profile;
 
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -26,7 +25,6 @@ import de.cismet.commons.security.WebDavClient;
 import de.cismet.tools.gui.downloadmanager.AbstractCancellableDownload;
 
 import de.cismet.watergis.broker.AppBroker;
-
 
 import de.cismet.watergis.utils.JumpShapeWriter;
 

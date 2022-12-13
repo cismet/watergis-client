@@ -17,14 +17,18 @@ import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
 
+import java.io.File;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
@@ -32,16 +36,16 @@ import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
+import de.cismet.cismap.commons.gui.attributetable.DateCellEditor;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.attributetable.FormattedTextCellEditor;
 
 import de.cismet.commons.security.WebDavClient;
-import de.cismet.commons.security.WebDavHelper;
 
 import de.cismet.netutil.ProxyHandler;
 
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
-import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -51,7 +55,6 @@ import de.cismet.watergis.profile.QpUplDownload;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
-import java.io.File;
 
 /**
  * DOCUMENT ME!
@@ -64,7 +67,7 @@ public class QpUplRuleSet extends WatergisDefaultRuleSet {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final org.apache.log4j.Logger LOG = Logger.getLogger(QpUplRuleSet.class);
-    private static final String[] ALLOWED_CALC_VALUES = { "calc" };
+    private static final String[] ALLOWED_CALC_VALUES = { "calc", "-" };
 
     //~ Instance initializers --------------------------------------------------
 
@@ -74,11 +77,12 @@ public class QpUplRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("l_bezug", new Catalogue("k_l_bezug", false, true, new Numeric(5, 0, false, false)));
         typeMap.put("h_bezug", new Catalogue("k_h_bezug", false, true, new Numeric(5, 0, false, false)));
         typeMap.put("l_calc", new Varchar(4, false, false, ALLOWED_CALC_VALUES));
+        typeMap.put("upl_nr", new Numeric(20, 0, false, false));
         typeMap.put("upl_name", new Varchar(50, true, false));
         typeMap.put("upl_datum", new Varchar(10, true, false));
         typeMap.put("upl_zeit", new Varchar(8, true, false));
         typeMap.put("aufn_name", new Varchar(50, false, false));
-        typeMap.put("aufn_datum", new Varchar(10, false, false));
+        typeMap.put("aufn_datum", new DateType(false, true));
         typeMap.put("aufn_zeit", new Varchar(8, false, false));
         typeMap.put("freigabe", new Catalogue("k_freigabe", false, true, new Varchar(10, false, false)));
         typeMap.put("titel", new Varchar(250, false, false));
@@ -94,7 +98,8 @@ public class QpUplRuleSet extends WatergisDefaultRuleSet {
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("id") && !columnName.equals("upl_name") && !columnName.equals("upl_datum")
-                    && !columnName.equals("upl_zeit") && !columnName.equals("upl_nr");
+                    && !columnName.equals("upl_zeit") && !columnName.equals("upl_nr") && !columnName.equals("l_bezug")
+                    && !columnName.equals("h_bezug") && !columnName.equals("l_calc");
     }
 
     @Override
@@ -116,6 +121,12 @@ public class QpUplRuleSet extends WatergisDefaultRuleSet {
         return super.afterEdit(feature, column, row, oldValue, newValue);
     }
 
+    @Override
+    public void afterSave(final TableModel model) {
+        reloadService("qp_npl");
+        reloadService("qp_pkte");
+    }
+
     /**
      * DOCUMENT ME!
      *
@@ -132,7 +143,7 @@ public class QpUplRuleSet extends WatergisDefaultRuleSet {
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("upl_nr")) {
-            return new LinkTableCellRenderer();
+            return new LinkTableCellRenderer(JLabel.RIGHT);
         } else {
             return super.getCellRenderer(columnName);
         }
@@ -164,11 +175,25 @@ public class QpUplRuleSet extends WatergisDefaultRuleSet {
                         true),
                     filter);
         } else if (columnName.equals("l_st")) {
+            final CidsLayerFeatureFilter filter = new CidsLayerFeatureFilter() {
+
+                    @Override
+                    public boolean accept(final CidsLayerFeature bean) {
+                        if (bean == null) {
+                            return true;
+                        }
+
+                        return (bean.getProperty("qp") != null)
+                                    && (Boolean)bean.getProperty("qp");
+                    }
+                };
+
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         "l_st",
                         String.valueOf(Types.VARCHAR),
-                        true));
+                        true),
+                    filter);
             editor.setNullable(false);
 
             editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
@@ -215,11 +240,25 @@ public class QpUplRuleSet extends WatergisDefaultRuleSet {
 
             return editor;
         } else if (columnName.equals("freigabe")) {
+            final CidsLayerFeatureFilter filter = new CidsLayerFeatureFilter() {
+
+                    @Override
+                    public boolean accept(final CidsLayerFeature bean) {
+                        if (bean == null) {
+                            return true;
+                        }
+
+                        return (bean.getProperty("qp") != null)
+                                    && (Boolean)bean.getProperty("qp");
+                    }
+                };
+
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
                         "freigabe",
                         String.valueOf(Types.VARCHAR),
-                        true));
+                        true),
+                    filter);
             editor.setNullable(false);
 
             editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
@@ -231,6 +270,10 @@ public class QpUplRuleSet extends WatergisDefaultRuleSet {
                 });
 
             return editor;
+        } else if (columnName.equals("aufn_datum")) {
+            return new DateCellEditor();
+        } else if (columnName.equals("aufn_zeit")) {
+            return new FormattedTextCellEditor(new TimeFormatter());
         } else {
             return null;
         }

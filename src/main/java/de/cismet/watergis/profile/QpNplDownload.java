@@ -1,3 +1,10 @@
+/***************************************************
+*
+* cismet GmbH, Saarbruecken, Germany
+*
+*              ... and it just works.
+*
+****************************************************/
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -5,25 +12,31 @@
  */
 package de.cismet.watergis.profile;
 
-import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.commons.security.WebDavClient;
-import de.cismet.tools.gui.downloadmanager.AbstractCancellableDownload;
-import de.cismet.watergis.gui.panels.Photo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+
 import java.util.List;
 
+import de.cismet.cismap.commons.features.FeatureServiceFeature;
+
+import de.cismet.commons.security.WebDavClient;
+
+import de.cismet.tools.gui.downloadmanager.AbstractCancellableDownload;
+
+import de.cismet.watergis.gui.panels.Photo;
+
 /**
+ * DOCUMENT ME!
  *
- * @author therter
+ * @author   therter
+ * @version  $Revision$, $Date$
  */
 public class QpNplDownload extends AbstractQpDownload {
+
     //~ Static fields/initializers ---------------------------------------------
 
     private static final int MAX_BUFFER_SIZE = 1024;
-
-    //~ Instance fields --------------------------------------------------------
 
     //~ Constructors -----------------------------------------------------------
 
@@ -102,8 +115,8 @@ public class QpNplDownload extends AbstractQpDownload {
         }
 
         try {
-            final File shapeFile = new File(this.directory, "qp_upl");
-            createShapeAndMetaDoc(features, this.directory + "qp_upl", true);
+            final File shapeFile = new File(this.directory, "qp_npl");
+            createShapeAndMetaDoc(features, this.directory + "qp_npl", true);
         } catch (Exception ex) {
             error(ex);
         }
@@ -113,5 +126,4 @@ public class QpNplDownload extends AbstractQpDownload {
             stateChanged();
         }
     }
-    
 }

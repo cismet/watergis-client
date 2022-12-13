@@ -121,10 +121,11 @@ public class ExportAction extends AbstractAction {
             final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
                     AppBroker.QP_UPL_MC_NAME);
 
-            if (features == null || features.isEmpty()) {
-                List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(AppBroker.QP_UPL_MC_NAME);
+            if ((features == null) || features.isEmpty()) {
+                final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                        AppBroker.QP_UPL_MC_NAME);
 
-                if (services != null && !services.isEmpty()) {
+                if ((services != null) && !services.isEmpty()) {
                     FeatureServiceHelper.getFeatures(services.get(0), false);
                 }
             } else {

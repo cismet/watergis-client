@@ -39,8 +39,12 @@ import java.math.RoundingMode;
 import java.sql.Date;
 import java.sql.Timestamp;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.Format;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -79,8 +83,10 @@ import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.StationCreationCheck;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
+import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTableExtendedRuleSet;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
 
@@ -108,6 +114,7 @@ import de.cismet.watergis.check.CrossedLinesCheck;
 
 import de.cismet.watergis.gui.dialog.DbUserDialog;
 
+import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
@@ -175,6 +182,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     //~ Instance fields --------------------------------------------------------
 
     protected Double minLaLength = null;
+    protected Double maxLaLength = null;
     protected Double minBaLength = null;
     protected Double maxBaLength = null;
     protected Double maxConfirmationlessLength = null;
@@ -1470,7 +1478,11 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         if (type != null) {
-            if (type instanceof Numeric) {
+            if ((type instanceof Numeric)
+                        || ((type instanceof Catalogue) && (((Catalogue)type).getDataType() instanceof Numeric))) {
+                final Numeric numType = ((type instanceof Numeric) ? (Numeric)type
+                                                                   : (Numeric)((Catalogue)type).getDataType());
+
                 return new DefaultTableCellRenderer() {
 
                         DecimalFormat format = new DecimalFormat();
@@ -1478,8 +1490,8 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
                         {
                             format.setGroupingUsed(false);
-                            format.setMaximumFractionDigits(((Numeric)type).getScale());
-                            format.setMinimumFractionDigits(((Numeric)type).getScale());
+                            format.setMaximumFractionDigits((numType).getScale());
+                            format.setMinimumFractionDigits((numType).getScale());
                             formatWithOutdecimals.setGroupingUsed(false);
                             formatWithOutdecimals.setMaximumFractionDigits(0);
                         }
@@ -1505,7 +1517,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                                 }
                             }
 
-                            if ((val != null) && ((Numeric)type).isShowDecimalsOnlyIfExists()) {
+                            if ((val != null) && (numType).isShowDecimalsOnlyIfExists()) {
                                 try {
                                     final double doubleVal = format.parse(val.toString()).doubleValue();
                                     final long longVal = (long)doubleVal;
@@ -1889,7 +1901,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     if (Math.abs(till - from) < minBaLength) {
                         showMessage("Die Länge des Objektes darf nicht kleiner "
                                     + minBaLength
-                                    + " sein",
+                                    + " m sein",
                             "ba_st_bis");
                         return new ErrorDetails(feature, "ba_st_bis");
                     }
@@ -1903,7 +1915,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     if (Math.abs(till - from) > maxBaLength) {
                         showMessage("Die Länge des Objektes darf nicht größer "
                                     + maxBaLength
-                                    + " sein",
+                                    + " m sein",
                             "ba_st_bis");
                         return new ErrorDetails(feature, "ba_st_bis");
                     }
@@ -1937,10 +1949,25 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     if (Math.abs(till - from) < minLaLength) {
                         showMessage("Die Länge des Objektes darf nicht kleiner "
                                     + minLaLength
-                                    + " sein",
-                            "ba_st_bis");
+                                    + " m sein",
+                            "la_st_bis");
 
-                        return new ErrorDetails(feature, "ba_st_bis");
+                        return new ErrorDetails(feature, "la_st_bis");
+                    }
+                }
+            }
+            if (maxLaLength != null) {
+                final Double from = (Double)feature.getProperty("la_st_von");
+                final Double till = (Double)feature.getProperty("la_st_bis");
+
+                if ((from != null) && (till != null)) {
+                    if (Math.abs(till - from) > maxLaLength) {
+                        showMessage("Die Länge des Objektes darf nicht größer"
+                                    + maxLaLength
+                                    + " m sein",
+                            "la_st_bis");
+
+                        return new ErrorDetails(feature, "la_st_bis");
                     }
                 }
             }
@@ -1970,6 +1997,30 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         }
 
         return ((sb != null) ? sb.toString() : "");
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  name  DOCUMENT ME!
+     */
+    protected void reloadService(final String name) {
+        final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                name);
+
+        for (final AbstractFeatureService featureService : services) {
+            featureService.retrieve(true);
+        }
+
+        if ((services != null) && !services.isEmpty()) {
+            final AttributeTable tablePf = AppBroker.getInstance()
+                        .getWatergisApp()
+                        .getAttributeTableByFeatureService(services.get(0));
+
+            if (tablePf != null) {
+                tablePf.reload();
+            }
+        }
     }
 
     /**
@@ -3494,6 +3545,46 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             hash = (29 * hash) + this.id;
             hash = (29 * hash) + Objects.hashCode(this.field);
             return hash;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    public static class TimeFormatter extends Format {
+
+        //~ Instance fields ----------------------------------------------------
+
+        DateFormat formatterFull = new SimpleDateFormat("HH:mm:ss");
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public StringBuffer format(final Object obj, final StringBuffer toAppendTo, final FieldPosition pos) {
+            if (obj == null) {
+                return null;
+            }
+            final StringBuffer sb = formatterFull.format(obj, toAppendTo, pos);
+
+            return sb;
+        }
+
+        @Override
+        public Object parseObject(final String source, final ParsePosition pos) {
+            if (source.equals("")) {
+                pos.setIndex(1);
+                return null;
+            }
+            Object o = formatterFull.parseObject(source, pos);
+
+            if (o == null) {
+                o = formatter.parseObject(source, pos);
+            }
+
+            return o;
         }
     }
 }

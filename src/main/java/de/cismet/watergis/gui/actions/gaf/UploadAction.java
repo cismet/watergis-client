@@ -99,7 +99,7 @@ public class UploadAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        UploadQpDialog.getInstance().setSize(195, 650);
+        UploadQpDialog.getInstance().setSize(195, 675);
         StaticSwingTools.showDialog(UploadQpDialog.getInstance());
 
 //        if (!UploadQpDialog.getInstance().isCancelled()) {

@@ -11,26 +11,44 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import de.cismet.cismap.cidslayer.CidsLayerFeature;
 import org.apache.log4j.Logger;
 
+import org.deegree.datatypes.Types;
+
+import java.io.File;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JLabel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+
+import de.cismet.cismap.cidslayer.CidsLayerFeature;
+import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
+import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+
 import de.cismet.commons.security.WebDavClient;
+
 import de.cismet.netutil.ProxyHandler;
+
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 import de.cismet.tools.gui.downloadmanager.DownloadManagerDialog;
+
 import de.cismet.watergis.broker.AppBroker;
+
 import de.cismet.watergis.gui.panels.Photo;
+
 import de.cismet.watergis.profile.QpNplDownload;
+
+import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * DOCUMENT ME!
@@ -58,7 +76,7 @@ public class QpNplRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("re", new Numeric(11, 2, false, false));
         typeMap.put("ho", new Numeric(10, 2, false, false));
         typeMap.put("qp_nr", new Numeric(20, 0, false, false));
-        typeMap.put("qp_hist", new Varchar(1, true, false));
+        typeMap.put("qp_hist", new Catalogue("k_hist", false, true, new Varchar(1, false, false)));
         typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
         typeMap.put("l_bezug", new Catalogue("k_l_bezug", false, true, new Numeric(5, 0, false, false)));
         typeMap.put("h_bezug", new Catalogue("k_h_bezug", false, true, new Numeric(5, 0, false, false)));
@@ -83,15 +101,39 @@ public class QpNplRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return false;
+        return columnName.equalsIgnoreCase("bemerkung") || columnName.equalsIgnoreCase("qp_hist");
     }
 
     @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         if (columnName.equals("qp_nr")) {
-            return new LinkTableCellRenderer();
+            return new LinkTableCellRenderer(JLabel.RIGHT);
         } else {
             return super.getCellRenderer(columnName);
+        }
+    }
+
+    @Override
+    public TableCellEditor getCellEditor(final String columnName) {
+        if (columnName.equals("qp_hist")) {
+            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
+                    new FeatureServiceAttribute(
+                        "qp_hist",
+                        String.valueOf(Types.VARCHAR),
+                        true));
+            editor.setNullable(true);
+
+            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
+
+                    @Override
+                    protected String toString(final CidsLayerFeature bean) {
+                        return (String)bean.getProperty("hist");
+                    }
+                });
+
+            return editor;
+        } else {
+            return super.getCellEditor(columnName);
         }
     }
 
@@ -101,10 +143,15 @@ public class QpNplRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
+    public void afterSave(final TableModel model) {
+        reloadService("qp_pkte");
+    }
+
+    @Override
     public FeatureCreator getFeatureCreator() {
         return null;
     }
-    
+
     @Override
     public void mouseClicked(final FeatureServiceFeature feature,
             final String columnName,
@@ -138,16 +185,19 @@ public class QpNplRuleSet extends WatergisDefaultRuleSet {
     @Override
     public void exportFeatures() {
         try {
-            final List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
+            List<FeatureServiceFeature> features = FeatureServiceHelper.getSelectedCidsLayerFeatures(
                     AppBroker.QP_NPL_MC_NAME);
 
-            if (features == null || features.isEmpty()) {
-                List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(AppBroker.QP_UPL_MC_NAME);
+            if ((features == null) || features.isEmpty()) {
+                final List<AbstractFeatureService> services = FeatureServiceHelper.getCidsLayerServicesFromTree(
+                        AppBroker.QP_NPL_MC_NAME);
 
-                if (services != null && !services.isEmpty()) {
-                    FeatureServiceHelper.getFeatures(services.get(0), false);
+                if ((services != null) && !services.isEmpty()) {
+                    features = FeatureServiceHelper.getFeatures(services.get(0), false);
                 }
-            } else {
+            }
+
+            if ((features == null) || features.isEmpty()) {
                 LOG.warn("No qp_npl objects found to create qp_npl export");
             }
 

@@ -14,8 +14,8 @@ package de.cismet.watergis.profile;
 
 import Sirius.server.middleware.types.MetaClass;
 
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -28,19 +28,13 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
-import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
-
-import de.cismet.tools.gui.StaticSwingTools;
 
 import de.cismet.watergis.broker.AppBroker;
 
@@ -57,7 +51,7 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
     private static final String[][] ALL_ALLOWED_TYPE_COMBINATIONS;
 
     static {
-        ALL_ALLOWED_TYPE_COMBINATIONS = new String[8][];
+        ALL_ALLOWED_TYPE_COMBINATIONS = new String[2][];
         ALL_ALLOWED_TYPE_COMBINATIONS[0] = new String[] {
                 ProfileReader.GAF_FIELDS.STATION.name(),
                 ProfileReader.GAF_FIELDS.Y.name(),
@@ -68,72 +62,20 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
                 ProfileReader.GAF_FIELDS.HW.name(),
                 ProfileReader.GAF_FIELDS.RW.name()
             };
-        ALL_ALLOWED_TYPE_COMBINATIONS[2] = new String[] {
-                ProfileReader.GAF_FIELDS.STATION.name(),
-                ProfileReader.GAF_FIELDS.Y.name(),
-                ProfileReader.GAF_FIELDS.Z.name(),
-                ProfileReader.GAF_FIELDS.HW.name(),
-                ProfileReader.GAF_FIELDS.RW.name()
-            };
-        ALL_ALLOWED_TYPE_COMBINATIONS[3] = new String[] {
-                ProfileReader.GAF_FIELDS.STATION.name(),
-                ProfileReader.GAF_FIELDS.Y.name(),
-                ProfileReader.GAF_FIELDS.Z.name(),
-                ProfileReader.GAF_FIELDS.HW.name(),
-                ProfileReader.GAF_FIELDS.RW.name(),
-                ProfileReader.GAF_FIELDS.HYK.name()
-            };
-        ALL_ALLOWED_TYPE_COMBINATIONS[4] = new String[] {
-                ProfileReader.GAF_FIELDS.STATION.name(),
-                ProfileReader.GAF_FIELDS.Y.name(),
-                ProfileReader.GAF_FIELDS.Z.name(),
-                ProfileReader.GAF_FIELDS.RK.name(),
-                ProfileReader.GAF_FIELDS.HW.name(),
-                ProfileReader.GAF_FIELDS.RW.name()
-            };
-        ALL_ALLOWED_TYPE_COMBINATIONS[5] = new String[] {
-                ProfileReader.GAF_FIELDS.STATION.name(),
-                ProfileReader.GAF_FIELDS.ID.name(),
-                ProfileReader.GAF_FIELDS.Y.name(),
-                ProfileReader.GAF_FIELDS.Z.name(),
-                ProfileReader.GAF_FIELDS.KZ.name(),
-                ProfileReader.GAF_FIELDS.RK.name(),
-                ProfileReader.GAF_FIELDS.HW.name(),
-                ProfileReader.GAF_FIELDS.RW.name()
-            };
-        ALL_ALLOWED_TYPE_COMBINATIONS[6] = new String[] {
-                ProfileReader.GAF_FIELDS.STATION.name(),
-                ProfileReader.GAF_FIELDS.ID.name(),
-                ProfileReader.GAF_FIELDS.Y.name(),
-                ProfileReader.GAF_FIELDS.Z.name(),
-                ProfileReader.GAF_FIELDS.KZ.name(),
-                ProfileReader.GAF_FIELDS.RK.name(),
-                ProfileReader.GAF_FIELDS.BK.name(),
-                ProfileReader.GAF_FIELDS.HW.name(),
-                ProfileReader.GAF_FIELDS.RW.name()
-            };
-        ALL_ALLOWED_TYPE_COMBINATIONS[7] = new String[] {
-                ProfileReader.GAF_FIELDS.STATION.name(),
-                ProfileReader.GAF_FIELDS.ID.name(),
-                ProfileReader.GAF_FIELDS.Y.name(),
-                ProfileReader.GAF_FIELDS.Z.name(),
-                ProfileReader.GAF_FIELDS.KZ.name(),
-                ProfileReader.GAF_FIELDS.RK.name(),
-                ProfileReader.GAF_FIELDS.BK.name(),
-                ProfileReader.GAF_FIELDS.HW.name(),
-                ProfileReader.GAF_FIELDS.RW.name(),
-                ProfileReader.GAF_FIELDS.HYK.name()
-            };
     }
 
     //~ Instance fields --------------------------------------------------------
 
-    private MetaClass LAWA_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 16);
+    private MetaClass LAWA_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
 
     private DefaultComboBoxModel<String>[] models;
-    private String[][] exampleData;
+//    private String[][] exampleData;
     private boolean cancelled = false;
+    private boolean routeRequired = false;
     private final WPROFReader parentReader;
+    private String[] columnProposal = null;
+    private boolean initInProgress = false;
+    private List<JPanel> previewPanels = new ArrayList<>();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butCancel;
@@ -141,10 +83,13 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
     private javax.swing.JButton butOk1;
     private javax.swing.JComboBox cbRoute;
     private javax.swing.JCheckBox chkHeader;
+    private javax.swing.JCheckBox chkSeparator;
     private javax.swing.JDialog diaRoute;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panColumns;
     private javax.swing.JPanel panControl;
+    private javax.swing.JPanel panData;
     // End of variables declaration//GEN-END:variables
 
     //~ Constructors -----------------------------------------------------------
@@ -155,41 +100,17 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
      * @param  parent          DOCUMENT ME!
      * @param  modal           DOCUMENT ME!
      * @param  columnProposal  DOCUMENT ME!
-     * @param  exampleData     DOCUMENT ME!
      * @param  parentReader    DOCUMENT ME!
      */
     public CsvWprofImportDialog(final java.awt.Frame parent,
             final boolean modal,
             final String[] columnProposal,
-            final String[][] exampleData,
             final WPROFReader parentReader) {
         super(parent, modal);
         setTitle("Importiere Profildaten");
         initComponents();
-        cbRoute.setRenderer(new DefaultListCellRenderer() {
-
-                @Override
-                public Component getListCellRendererComponent(final JList list,
-                        final Object value,
-                        final int index,
-                        final boolean isSelected,
-                        final boolean cellHasFocus) {
-                    final Component c = super.getListCellRendererComponent(
-                            list,
-                            value,
-                            index,
-                            isSelected,
-                            cellHasFocus);
-
-                    if ((c instanceof JLabel) && (value instanceof CidsLayerFeature)) {
-                        ((JLabel)c).setText(String.valueOf(((CidsLayerFeature)value).getProperty("la_cd")));
-                    }
-
-                    return c;
-                }
-            });
         this.parentReader = parentReader;
-        init(columnProposal, exampleData);
+        init(columnProposal, true);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -198,15 +119,21 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
      * DOCUMENT ME!
      *
      * @param  columnProposal  DOCUMENT ME!
-     * @param  exampleData     DOCUMENT ME!
+     * @param  init            DOCUMENT ME!
      */
-    private void init(final String[] columnProposal, final String[][] exampleData) {
+    private void init(final String[] columnProposal, final boolean init) {
         models = new DefaultComboBoxModel[columnProposal.length];
+        this.columnProposal = columnProposal;
+        final String[][] exampleData = parentReader.readExampleData();
 
-        for (int i = 0; i < columnProposal.length; ++i) {
-            if (columnProposal[i] != null) {
-                chkHeader.setSelected(true);
-                break;
+        if (init) {
+            for (int i = 0; i < columnProposal.length; ++i) {
+                if (columnProposal[i] != null) {
+                    initInProgress = true;
+                    chkHeader.setSelected(true);
+                    initInProgress = false;
+                    break;
+                }
             }
         }
 
@@ -226,11 +153,13 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
             panColumns.add(cbColumn);
         }
 
-        for (int row = 0; (row < 5) && (row < exampleData.length); ++row) {
+        for (int row = 0; (row < 15) && (row < exampleData.length); ++row) {
             final JPanel panRow = new JPanel();
 
             for (int i = 0; (i < columnProposal.length) && (i < exampleData[row].length); ++i) {
-                final JLabel labData = new JLabel(exampleData[row][i]);
+                final JLabel labData = new JLabel(exampleData[row][i].substring(
+                            0,
+                            Math.min(exampleData[row][i].length(), 12)));
 
                 labData.setToolTipText(exampleData[row][i]);
                 labData.setPreferredSize(new Dimension(120, 22));
@@ -238,14 +167,16 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
                 labData.setMaximumSize(new Dimension(120, 22));
                 panRow.add(labData);
             }
+            int emptyCols = 0;
 
-            if (exampleData[row].length < columnProposal.length) {
+            while ((exampleData[row].length + emptyCols) < columnProposal.length) {
                 final JLabel labData = new JLabel("<html>&nbsp;<html>");
 
                 labData.setPreferredSize(new Dimension(120, 22));
                 labData.setMinimumSize(new Dimension(120, 22));
                 labData.setMaximumSize(new Dimension(120, 22));
                 panRow.add(labData);
+                ++emptyCols;
             }
 
             panRow.setOpaque(false);
@@ -255,14 +186,25 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
             gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
             gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
             gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-            getContentPane().add(panRow, gridBagConstraints);
+            previewPanels.add(panRow);
+            panData.add(panRow, gridBagConstraints);
+//            getContentPane().add(panRow, gridBagConstraints);
         }
 
         adjustComboboxes(0);
 
         final int width = columnProposal.length * 130;
 
-        setSize(width, 350);
+        setSize(((width < 720) ? 720 : width), 351);
+        EventQueue.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    setSize(((width < 720) ? 720 : width), 350);
+                    getContentPane().repaint();
+                    getContentPane().doLayout();
+                }
+            });
 
         if (models.length < 3) {
             // todo: Meldung an Nutzer
@@ -313,8 +255,6 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
             allowedTypes.add(ProfileReader.GAF_FIELDS.Z.name());
             allowedTypes.add(ProfileReader.GAF_FIELDS.Y.name());
             allowedTypes.add(ProfileReader.GAF_FIELDS.STATION.name());
-            allowedTypes.add(ProfileReader.GAF_FIELDS.HW.name());
-            allowedTypes.add(ProfileReader.GAF_FIELDS.RW.name());
         }
 
         allowedTypes.add(ProfileReader.GAF_FIELDS.HYK.name());
@@ -322,6 +262,8 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
         allowedTypes.add(ProfileReader.GAF_FIELDS.RK.name());
         allowedTypes.add(ProfileReader.GAF_FIELDS.BK.name());
         allowedTypes.add(ProfileReader.GAF_FIELDS.KZ.name());
+        allowedTypes.add(ProfileReader.GAF_FIELDS.HW.name());
+        allowedTypes.add(ProfileReader.GAF_FIELDS.RW.name());
 
         final List<String> list = new ArrayList<>(allowedTypes.descendingSet());
         Collections.reverse(list);
@@ -336,7 +278,7 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
      */
     private void adjustComboboxes(final int index) {
         final TreeSet<String> usedValues = new TreeSet<>();
-        boolean allBoxesFilled = true;
+        final boolean allBoxesFilled = true;
         final String selectedValue = (String)models[index].getSelectedItem();
 
         usedValues.add(selectedValue);
@@ -347,20 +289,13 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
 
                 if (!value.equals("") && usedValues.contains(value)) {
                     models[i].setSelectedItem("");
-                    allBoxesFilled = false;
-                } else if (models[i].getIndexOf(value) < 0) {
-                    models[i].setSelectedItem("");
-                    allBoxesFilled = false;
-                } else if (value.equals("")) {
-                    allBoxesFilled = false;
+                } else if (!value.equals("") && !usedValues.contains(value)) {
+                    usedValues.add(value);
                 }
-
-                usedValues.add(value);
             }
         }
 
-        butOk.setEnabled(allBoxesFilled && !models[index].getSelectedItem().equals("")
-                    && hasAllowedCombination(usedValues));
+        butOk.setEnabled(hasAllowedCombination(usedValues));
     }
 
     /**
@@ -372,7 +307,7 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
      */
     private boolean hasAllowedCombination(final TreeSet<String> usedValues) {
         for (final String[] combination : ALL_ALLOWED_TYPE_COMBINATIONS) {
-            if (usedValues.size() == combination.length) {
+            if (usedValues.size() >= combination.length) {
                 boolean combFullfilled = true;
 
                 for (final String val : combination) {
@@ -405,10 +340,13 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
         jLabel2 = new javax.swing.JLabel();
         cbRoute = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(LAWA_MC, true);
         panColumns = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        panData = new javax.swing.JPanel();
         panControl = new javax.swing.JPanel();
         butOk = new javax.swing.JButton();
         butCancel = new javax.swing.JButton();
         chkHeader = new javax.swing.JCheckBox();
+        chkSeparator = new javax.swing.JCheckBox();
 
         diaRoute.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         diaRoute.setTitle(org.openide.util.NbBundle.getMessage(
@@ -478,11 +416,25 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
         panColumns.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 5);
         getContentPane().add(panColumns, gridBagConstraints);
+
+        panData.setLayout(new java.awt.GridBagLayout());
+        jScrollPane1.setViewportView(panData);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 5);
+        getContentPane().add(jScrollPane1, gridBagConstraints);
 
         panControl.setLayout(new java.awt.GridBagLayout());
 
@@ -522,7 +474,7 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
         gridBagConstraints.weightx = 1.0;
@@ -535,19 +487,66 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
                 CsvWprofImportDialog.class,
                 "CsvWprofImportDialog.chkHeader.text",
                 new Object[] {})); // NOI18N
+        chkHeader.addItemListener(new java.awt.event.ItemListener() {
+
+                @Override
+                public void itemStateChanged(final java.awt.event.ItemEvent evt) {
+                    chkHeaderItemStateChanged(evt);
+                }
+            });
+        chkHeader.addChangeListener(new javax.swing.event.ChangeListener() {
+
+                @Override
+                public void stateChanged(final javax.swing.event.ChangeEvent evt) {
+                    chkHeaderStateChanged(evt);
+                }
+            });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 12, 10);
         panControl.add(chkHeader, gridBagConstraints);
+
+        chkSeparator.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            chkSeparator,
+            org.openide.util.NbBundle.getMessage(
+                CsvWprofImportDialog.class,
+                "CsvWprofImportDialog.chkSeparator.text",
+                new Object[] {})); // NOI18N
+        chkSeparator.setToolTipText(org.openide.util.NbBundle.getMessage(
+                CsvWprofImportDialog.class,
+                "CsvWprofImportDialog.chkSeparator.toolTipText",
+                new Object[] {})); // NOI18N
+        chkSeparator.addItemListener(new java.awt.event.ItemListener() {
+
+                @Override
+                public void itemStateChanged(final java.awt.event.ItemEvent evt) {
+                    chkSeparatorItemStateChanged(evt);
+                }
+            });
+        chkSeparator.addChangeListener(new javax.swing.event.ChangeListener() {
+
+                @Override
+                public void stateChanged(final javax.swing.event.ChangeEvent evt) {
+                    chkSeparatorStateChanged(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 12, 10);
+        panControl.add(chkSeparator, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 20;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
         getContentPane().add(panControl, gridBagConstraints);
 
@@ -561,20 +560,22 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
      */
     private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         cancelled = false;
+        routeRequired = false;
 
         final Map<ProfileReader.GAF_FIELDS, Integer> fieldMap = new HashMap<>();
 
         for (int i = 0; i < models.length; ++i) {
             final String selectedValue = (String)models[i].getSelectedItem();
 
-            fieldMap.put(ProfileReader.GAF_FIELDS.valueOf(selectedValue), i);
+            if (!selectedValue.equals("")) {
+                fieldMap.put(ProfileReader.GAF_FIELDS.valueOf(selectedValue), i);
+            }
         }
 
         parentReader.setHeader(fieldMap, chkHeader.isSelected());
 
-        if (!fieldMap.containsKey(ProfileReader.GAF_FIELDS.RW)) {
-            diaRoute.setSize(300, 150);
-            StaticSwingTools.centerWindowOnScreen(diaRoute);
+        if (!fieldMap.containsKey(ProfileReader.GAF_FIELDS.RW) || !fieldMap.containsKey(ProfileReader.GAF_FIELDS.HW)) {
+            routeRequired = true;
         }
 
         setVisible(false);
@@ -587,6 +588,7 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
      */
     private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         cancelled = true;
+        routeRequired = false;
         setVisible(false);
     }                                                                             //GEN-LAST:event_butCancelActionPerformed
 
@@ -610,9 +612,69 @@ public class CsvWprofImportDialog extends AbstractImportDialog {
     private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
     }                                                                           //GEN-LAST:event_cbRouteActionPerformed
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void chkHeaderStateChanged(final javax.swing.event.ChangeEvent evt) { //GEN-FIRST:event_chkHeaderStateChanged
+    }                                                                             //GEN-LAST:event_chkHeaderStateChanged
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void chkHeaderItemStateChanged(final java.awt.event.ItemEvent evt) { //GEN-FIRST:event_chkHeaderItemStateChanged
+        if (!initInProgress) {
+            panColumns.removeAll();
+
+            for (final JPanel p : previewPanels) {
+                panData.remove(p);
+//                getContentPane().remove(p);
+            }
+            previewPanels.clear();
+            init(columnProposal, false);
+        }
+    } //GEN-LAST:event_chkHeaderItemStateChanged
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void chkSeparatorItemStateChanged(final java.awt.event.ItemEvent evt) { //GEN-FIRST:event_chkSeparatorItemStateChanged
+        parentReader.setDuplicateSepAllowed(chkSeparator.isSelected());
+
+        if (!initInProgress) {
+            panColumns.removeAll();
+
+            for (final JPanel p : previewPanels) {
+                panData.remove(p);
+                getContentPane().remove(p);
+            }
+            previewPanels.clear();
+            init(columnProposal, false);
+        }
+    } //GEN-LAST:event_chkSeparatorItemStateChanged
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void chkSeparatorStateChanged(final javax.swing.event.ChangeEvent evt) { //GEN-FIRST:event_chkSeparatorStateChanged
+        // TODO add your handling code here:
+    } //GEN-LAST:event_chkSeparatorStateChanged
+
     @Override
     public boolean isCancelled() {
         return cancelled;
+    }
+
+    @Override
+    public boolean isRouteRequired() {
+        return routeRequired;
     }
 
     //~ Inner Classes ----------------------------------------------------------

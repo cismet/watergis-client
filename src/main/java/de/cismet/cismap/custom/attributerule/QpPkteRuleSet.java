@@ -51,7 +51,7 @@ public class QpPkteRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("hw", new Numeric(10, 2, false, false));
         typeMap.put("rw", new Numeric(11, 2, false, false));
         typeMap.put("hyk", new Varchar(10, true, false));
-        typeMap.put("bemerkung", new Varchar(250, true, false));
+        typeMap.put("bemerkung", new Varchar(250, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
@@ -60,7 +60,7 @@ public class QpPkteRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return false;
+        return columnName.equalsIgnoreCase("bemerkung");
     }
 
     @Override

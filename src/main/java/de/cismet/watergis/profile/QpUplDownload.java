@@ -48,8 +48,6 @@ public class QpUplDownload extends AbstractQpDownload {
 
     private static final int MAX_BUFFER_SIZE = 1024;
 
-    //~ Instance fields --------------------------------------------------------
-
     //~ Constructors -----------------------------------------------------------
 
     /**
@@ -128,7 +126,7 @@ public class QpUplDownload extends AbstractQpDownload {
 
         try {
             final File shapeFile = new File(this.directory, "qp_upl");
-            createShapeAndMetaDoc(features, this.directory + "qp_upl", true);
+            createDbfAndMetaDoc(features, this.directory + "qp_upl", true);
         } catch (Exception ex) {
             error(ex);
         }

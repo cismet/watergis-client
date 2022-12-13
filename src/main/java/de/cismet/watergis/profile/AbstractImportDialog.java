@@ -61,6 +61,13 @@ public abstract class AbstractImportDialog extends javax.swing.JDialog {
      */
     public abstract boolean isCancelled();
 
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public abstract boolean isRouteRequired();
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }

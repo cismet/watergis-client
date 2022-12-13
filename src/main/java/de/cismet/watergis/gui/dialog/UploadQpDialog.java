@@ -20,15 +20,21 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.apache.log4j.Logger;
 
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import org.jdesktop.swingx.autocomplete.ObjectToStringConverter;
+
 import org.openide.util.NbBundle;
 
 import java.awt.Component;
+import java.awt.EventQueue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+
+import java.text.Format;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +46,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -61,6 +69,9 @@ import de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo;
 
 import de.cismet.cismap.commons.featureservice.AbstractFeatureService;
 import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
+
+import de.cismet.cismap.custom.attributerule.MessageDialog;
+import de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet;
 
 import de.cismet.commons.security.WebDavClient;
 import de.cismet.commons.security.WebDavHelper;
@@ -86,6 +97,7 @@ import de.cismet.watergis.profile.ProfileLine;
 import de.cismet.watergis.profile.ProfileReader;
 import de.cismet.watergis.profile.ProfileReaderFactory;
 import de.cismet.watergis.profile.QpCheckResult;
+import de.cismet.watergis.profile.WPROFReader;
 
 import de.cismet.watergis.utils.CidsBeanUtils;
 import de.cismet.watergis.utils.FeatureServiceHelper;
@@ -124,12 +136,14 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
     //~ Instance fields --------------------------------------------------------
 
+    private MetaClass LAWA_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
+    private final Format formatter = new WatergisDefaultRuleSet.TimeFormatter();
     private boolean cancelled = false;
     private String lastPath = DownloadManager.instance().getDestinationDirectory().toString();
-    private MetaClass LAGESTATUS_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 148);
-    private MetaClass LAGE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 335);
-    private MetaClass HOEHE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 336);
-    private MetaClass FREIGABE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, 189);
+    private MetaClass LAGESTATUS_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_l_st");
+    private MetaClass LAGE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_l_bezug");
+    private MetaClass HOEHE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_h_bezug");
+    private MetaClass FREIGABE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_freigabe");
     private MetaClass QP_PKTE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.qp_pkte");
     private ConnectionContext cc = ConnectionContext.create(
             AbstractConnectionContext.Category.ACTION,
@@ -144,14 +158,19 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private javax.swing.JButton butColumns;
     private javax.swing.JButton butGafFile;
     private javax.swing.JButton butOk;
-    private javax.swing.JButton butRkFile;
+    private javax.swing.JButton butOk1;
+    private javax.swing.JButton butRoute;
+    private javax.swing.JButton butUploadFiles;
     private javax.swing.JComboBox cbFreigabe;
     private javax.swing.JComboBox cbHoehe;
     private javax.swing.JComboBox cbLage;
     private javax.swing.JComboBox cbLageStatus;
+    private javax.swing.JComboBox cbRoute;
+    private javax.swing.JDialog diaRoute;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -164,6 +183,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -171,14 +191,19 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private org.jdesktop.swingx.JXDatePicker jxDate;
+    private javax.swing.JLabel labCheck;
+    private javax.swing.JLabel labCol;
+    private javax.swing.JLabel labRoute;
+    private javax.swing.JLabel lblRoute;
+    private javax.swing.JList<String> liFiles;
     private javax.swing.JTextField txtBemerkung;
     private javax.swing.JTextField txtBeschreibung;
     private javax.swing.JTextField txtGafFile;
-    private javax.swing.JTextField txtRkFile;
     private javax.swing.JTextField txtTime;
     private javax.swing.JTextField txtTitle;
     private javax.swing.JTextField txtUsr;
@@ -195,6 +220,39 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private UploadQpDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        AutoCompleteDecorator.decorate(cbRoute, new ObjectToStringConverter() {
+
+                @Override
+                public String getPreferredStringForItem(final Object item) {
+                    if (item instanceof CidsLayerFeature) {
+                        return String.valueOf(((CidsLayerFeature)item).getProperty("la_cd"));
+                    } else {
+                        return String.valueOf(item);
+                    }
+                }
+            });
+        cbRoute.setRenderer(new DefaultListCellRenderer() {
+
+                @Override
+                public Component getListCellRendererComponent(final JList list,
+                        final Object value,
+                        final int index,
+                        final boolean isSelected,
+                        final boolean cellHasFocus) {
+                    final Component c = super.getListCellRendererComponent(
+                            list,
+                            value,
+                            index,
+                            isSelected,
+                            cellHasFocus);
+
+                    if ((c instanceof JLabel) && (value instanceof CidsLayerFeature)) {
+                        ((JLabel)c).setText(String.valueOf(((CidsLayerFeature)value).getProperty("la_cd")));
+                    }
+
+                    return c;
+                }
+            });
         cbFreigabe.setRenderer(new DefaultListCellRenderer() {
 
                 @Override
@@ -296,7 +354,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
             });
 
         setFilter();
-        setSize(195, 650);
+        setSize(195, 700);
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -324,28 +382,46 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
     @Override
     public void setVisible(final boolean b) {
-        butColumns.setEnabled(false);
-        butOk.setEnabled(false);
-        butCheck.setEnabled(false);
-        txtBemerkung.setText("");
-        txtBeschreibung.setText("");
-        jxDate.setDate(new Date());
-        txtGafFile.setText("");
-        txtRkFile.setText("");
-        txtTime.setText("");
-        txtTitle.setText("");
-        txtUsr.setText("");
-        cbFreigabe.setSelectedItem(null);
-        cbHoehe.setSelectedItem(null);
-        cbLage.setSelectedItem(null);
-        cbLageStatus.setSelectedItem(null);
-        reader = null;
-        checkPerformed = false;
-
         if (b) {
+            butColumns.setEnabled(false);
+            butOk.setEnabled(false);
+            butCheck.setEnabled(false);
+            txtBemerkung.setText("");
+            txtBeschreibung.setText("");
+//            jxDate.setDate(new Date());
+            txtGafFile.setText("");
+            liFiles.setModel(new DefaultListModel<String>());
+            txtTime.setText("");
+            txtTitle.setText("");
+            txtUsr.setText("");
+            cbFreigabe.setSelectedItem(null);
+            cbLageStatus.setSelectedItem(null);
+
+            final InitComboboxThread thread = new InitComboboxThread("InitComboThread");
+            thread.start();
             cancelled = true;
+            resetDialog();
         }
+
         super.setVisible(b);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void resetDialog() {
+        checkPerformed = false;
+        reader = null;
+        lblRoute.setText("");
+        butRoute.setEnabled(false);
+        labRoute.setIcon(new javax.swing.ImageIcon(
+                getClass().getResource("/de/cismet/watergis/res/icons22/ok.png")));
+
+        labCol.setIcon(new javax.swing.ImageIcon(
+                getClass().getResource("/de/cismet/watergis/res/icons22/stop.png")));
+
+        labCheck.setIcon(new javax.swing.ImageIcon(
+                getClass().getResource("/de/cismet/watergis/res/icons22/stop.png")));
     }
 
     /**
@@ -366,6 +442,10 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        diaRoute = new javax.swing.JDialog();
+        butOk1 = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        cbRoute = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(LAWA_MC, true);
         jPanel1 = new javax.swing.JPanel();
         butOk = new javax.swing.JButton();
         butCancel = new javax.swing.JButton();
@@ -376,30 +456,37 @@ public class UploadQpDialog extends javax.swing.JDialog {
                 new java.awt.Dimension(200, 0),
                 new java.awt.Dimension(200, 32767));
         jPanel4 = new javax.swing.JPanel();
-        txtRkFile = new javax.swing.JTextField();
-        butRkFile = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        liFiles = new javax.swing.JList<>();
+        butUploadFiles = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         butColumns = new javax.swing.JButton();
+        labCol = new javax.swing.JLabel();
+        jPanel13 = new javax.swing.JPanel();
+        butRoute = new javax.swing.JButton();
+        labRoute = new javax.swing.JLabel();
+        lblRoute = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
-        cbLage = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(LAGE_MC, true);
+        cbLage = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(LAGE_MC, false);
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        cbHoehe = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(HOEHE_MC, true);
+        cbHoehe = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(HOEHE_MC, false);
         jSeparator1 = new javax.swing.JSeparator();
         jPanel7 = new javax.swing.JPanel();
         butCheck = new javax.swing.JButton();
+        labCheck = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jPanel8 = new javax.swing.JPanel();
-        cbLageStatus = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(LAGESTATUS_MC, true);
+        cbLageStatus = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(LAGESTATUS_MC, false);
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        cbFreigabe = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(FREIGABE_MC, true);
+        cbFreigabe = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(FREIGABE_MC, false);
         jPanel9 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         txtUsr = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        txtTime = new javax.swing.JTextField();
+        txtTime = new JFormattedTextField(formatter);
         jxDate = new org.jdesktop.swingx.JXDatePicker();
         jPanel10 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -411,6 +498,68 @@ public class UploadQpDialog extends javax.swing.JDialog {
         jLabel10 = new javax.swing.JLabel();
         txtBemerkung = new javax.swing.JTextField();
         jSeparator3 = new javax.swing.JSeparator();
+
+        diaRoute.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        diaRoute.setTitle(org.openide.util.NbBundle.getMessage(
+                UploadQpDialog.class,
+                "UploadQpDialog.diaRoute.title",
+                new Object[] {})); // NOI18N
+        diaRoute.setAlwaysOnTop(true);
+        diaRoute.setModal(true);
+        diaRoute.getContentPane().setLayout(new java.awt.GridBagLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butOk1,
+            org.openide.util.NbBundle.getMessage(
+                UploadQpDialog.class,
+                "UploadQpDialog.butOk1.text",
+                new Object[] {})); // NOI18N
+        butOk1.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butOk1ActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 5);
+        diaRoute.getContentPane().add(butOk1, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            jLabel11,
+            org.openide.util.NbBundle.getMessage(
+                UploadQpDialog.class,
+                "UploadQpDialog.jLabel11.text",
+                new Object[] {})); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        diaRoute.getContentPane().add(jLabel11, gridBagConstraints);
+
+        cbRoute.setMinimumSize(new java.awt.Dimension(200, 27));
+        cbRoute.setPreferredSize(new java.awt.Dimension(200, 27));
+        cbRoute.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    cbRouteActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 10, 10, 10);
+        diaRoute.getContentPane().add(cbRoute, gridBagConstraints);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.title", new Object[] {})); // NOI18N
@@ -497,6 +646,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
                 UploadQpDialog.class,
                 "UploadQpDialog.butGafFile.text_1",
                 new Object[] {})); // NOI18N
+        butGafFile.setMaximumSize(new java.awt.Dimension(146, 29));
+        butGafFile.setMinimumSize(new java.awt.Dimension(146, 29));
         butGafFile.setPreferredSize(new java.awt.Dimension(146, 29));
         butGafFile.addActionListener(new java.awt.event.ActionListener() {
 
@@ -524,42 +675,57 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         getContentPane().add(filler1, gridBagConstraints);
 
+        jPanel4.setPreferredSize(new java.awt.Dimension(252, 100));
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        txtRkFile.setEditable(false);
-        txtRkFile.setText(org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.txtRkFile.text",
-                new Object[] {})); // NOI18N
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(66, 75));
+
+        liFiles.setModel(new javax.swing.AbstractListModel<String>() {
+
+                String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+
+                @Override
+                public int getSize() {
+                    return strings.length;
+                }
+                @Override
+                public String getElementAt(final int i) {
+                    return strings[i];
+                }
+            });
+        jScrollPane1.setViewportView(liFiles);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        jPanel4.add(txtRkFile, gridBagConstraints);
+        jPanel4.add(jScrollPane1, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
-            butRkFile,
+            butUploadFiles,
             org.openide.util.NbBundle.getMessage(
                 UploadQpDialog.class,
-                "UploadQpDialog.butRkFile.text",
+                "UploadQpDialog.butUploadFiles.text",
                 new Object[] {})); // NOI18N
-        butRkFile.setPreferredSize(new java.awt.Dimension(146, 29));
-        butRkFile.addActionListener(new java.awt.event.ActionListener() {
+        butUploadFiles.setMaximumSize(new java.awt.Dimension(146, 29));
+        butUploadFiles.setMinimumSize(new java.awt.Dimension(146, 29));
+        butUploadFiles.setPreferredSize(new java.awt.Dimension(146, 29));
+        butUploadFiles.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
                 public void actionPerformed(final java.awt.event.ActionEvent evt) {
-                    butRkFileActionPerformed(evt);
+                    butUploadFilesActionPerformed(evt);
                 }
             });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        jPanel4.add(butRkFile, gridBagConstraints);
+        jPanel4.add(butUploadFiles, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -576,6 +742,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
                 UploadQpDialog.class,
                 "UploadQpDialog.butColumns.text",
                 new Object[] {})); // NOI18N
+        butColumns.setMinimumSize(new java.awt.Dimension(146, 29));
         butColumns.setPreferredSize(new java.awt.Dimension(146, 29));
         butColumns.addActionListener(new java.awt.event.ActionListener() {
 
@@ -588,8 +755,20 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 140);
         jPanel5.add(butColumns, gridBagConstraints);
+
+        labCol.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/stop.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labCol,
+            org.openide.util.NbBundle.getMessage(
+                UploadQpDialog.class,
+                "UploadQpDialog.labCol.text",
+                new Object[] {}));                                                                                     // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        jPanel5.add(labCol, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -597,6 +776,58 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel5, gridBagConstraints);
+
+        jPanel13.setLayout(new java.awt.GridBagLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butRoute,
+            org.openide.util.NbBundle.getMessage(
+                UploadQpDialog.class,
+                "UploadQpDialog.butRoute.text",
+                new Object[] {})); // NOI18N
+        butRoute.setEnabled(false);
+        butRoute.setMinimumSize(new java.awt.Dimension(146, 29));
+        butRoute.setPreferredSize(new java.awt.Dimension(146, 29));
+        butRoute.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butRouteActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        jPanel13.add(butRoute, gridBagConstraints);
+
+        labRoute.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/ok.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labRoute,
+            org.openide.util.NbBundle.getMessage(
+                UploadQpDialog.class,
+                "UploadQpDialog.labRoute.text",
+                new Object[] {}));                                                                                     // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        jPanel13.add(labRoute, gridBagConstraints);
+
+        lblRoute.setMaximumSize(new java.awt.Dimension(130, 20));
+        lblRoute.setMinimumSize(new java.awt.Dimension(130, 20));
+        lblRoute.setPreferredSize(new java.awt.Dimension(130, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 0;
+        jPanel13.add(lblRoute, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        getContentPane().add(jPanel13, gridBagConstraints);
 
         jPanel6.setLayout(new java.awt.GridBagLayout());
 
@@ -668,13 +899,13 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel6, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
@@ -689,6 +920,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
                 UploadQpDialog.class,
                 "UploadQpDialog.butCheck.text",
                 new Object[] {})); // NOI18N
+        butCheck.setMinimumSize(new java.awt.Dimension(146, 29));
         butCheck.setPreferredSize(new java.awt.Dimension(146, 29));
         butCheck.addActionListener(new java.awt.event.ActionListener() {
 
@@ -704,15 +936,27 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         jPanel7.add(butCheck, gridBagConstraints);
 
+        labCheck.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/stop.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labCheck,
+            org.openide.util.NbBundle.getMessage(
+                UploadQpDialog.class,
+                "UploadQpDialog.labCheck.text",
+                new Object[] {}));                                                                                       // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        jPanel7.add(labCheck, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel7, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.gridwidth = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
@@ -789,7 +1033,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 11;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel8, gridBagConstraints);
@@ -866,6 +1110,10 @@ public class UploadQpDialog extends javax.swing.JDialog {
                 UploadQpDialog.class,
                 "UploadQpDialog.txtTime.text",
                 new Object[] {})); // NOI18N
+        txtTime.setToolTipText(org.openide.util.NbBundle.getMessage(
+                UploadQpDialog.class,
+                "UploadQpDialog.txtTime.toolTipText",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 0;
@@ -882,7 +1130,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 13;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel9, gridBagConstraints);
@@ -933,7 +1181,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridy = 14;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel10, gridBagConstraints);
@@ -984,7 +1232,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
+        gridBagConstraints.gridy = 15;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel11, gridBagConstraints);
@@ -1035,13 +1283,13 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 14;
+        gridBagConstraints.gridy = 16;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(jPanel12, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 15;
+        gridBagConstraints.gridy = 17;
         gridBagConstraints.gridwidth = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
@@ -1121,35 +1369,45 @@ public class UploadQpDialog extends javax.swing.JDialog {
                                             pktDataParam);
                     }
 
-                    if ((txtRkFile.getText() != null) && !txtRkFile.getText().isEmpty()) {
-                        final String fileName = "qp-" + String.valueOf(qpUplBean.getProperty("upl_nr")) + ".zip";
-                        final String filePrefix = "qp/";
-                        final String[] files = txtRkFile.getText().split(":");
-                        final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                        final ZipOutputStream zout = new ZipOutputStream(bout);
-                        for (final String f : files) {
-                            final ZipEntry entry = new ZipEntry(f.substring(f.lastIndexOf("/") + 1));
-                            // entry.set
-                            zout.putNextEntry(entry);
+                    final String fileName = "qp-" + String.valueOf(qpUplBean.getProperty("upl_nr")) + ".zip";
+                    final String filePrefix = "qp/";
+                    final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                    final ZipOutputStream zout = new ZipOutputStream(bout);
+                    final List<String> files = new ArrayList<>();
 
-                            final FileInputStream fis = new FileInputStream(f);
-                            final byte[] tmp = new byte[256];
-                            int count;
+                    files.add(txtGafFile.getText());
 
-                            while ((count = fis.read(tmp)) != -1) {
-                                zout.write(tmp, 0, count);
-                            }
+                    if ((liFiles.getModel() != null) && (liFiles.getModel().getSize() > 0)) {
+                        for (int i = 0; i < liFiles.getModel().getSize(); ++i) {
+                            files.add(liFiles.getModel().getElementAt(i));
                         }
-                        final InputStream is = new ByteArrayInputStream(bout.toByteArray());
-                        WebDavHelper.createFolder(WEB_DAV_DIRECTORY + filePrefix, webDavClient);
-                        WebDavHelper.uploadFileToWebDAV(
-                            fileName,
-                            is,
-                            WEB_DAV_DIRECTORY
-                                    + filePrefix,
-                            webDavClient,
-                            UploadQpDialog.this);
                     }
+
+                    for (final String f : files) {
+                        final ZipEntry entry = new ZipEntry(f.substring(f.lastIndexOf("/") + 1));
+                        // entry.set
+                        zout.putNextEntry(entry);
+
+                        final FileInputStream fis = new FileInputStream(f);
+                        final byte[] tmp = new byte[256];
+                        int count;
+
+                        while ((count = fis.read(tmp)) != -1) {
+                            zout.write(tmp, 0, count);
+                        }
+                        zout.closeEntry();
+                    }
+                    zout.close();
+                    final InputStream is = new ByteArrayInputStream(bout.toByteArray());
+                    WebDavHelper.createFolder(WEB_DAV_DIRECTORY + filePrefix, webDavClient);
+                    WebDavHelper.uploadFileToWebDAV(
+                        fileName,
+                        is,
+                        WEB_DAV_DIRECTORY
+                                + filePrefix,
+                        webDavClient,
+                        UploadQpDialog.this);
+
                     return null;
                 }
 
@@ -1241,20 +1499,18 @@ public class UploadQpDialog extends javax.swing.JDialog {
         final Object[] pktObject = new Object[14];
         final Double stat = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.STATION);
 
-        pktObject[0] = AppBroker.getInstance().getOwnWwGr().getPrimaryKeyValue();
-        pktObject[1] = qNpl.getProperty("qp_nr");
-        pktObject[2] = qpUpl.getProperty("upl_nr");
-        pktObject[3] = qpUpl.getProperty("l_calc");
-        pktObject[4] = line.getField(ProfileReader.GAF_FIELDS.ID);
-        pktObject[5] = (((stat != null) && (stat >= 0.0)) ? stat : null);
-        pktObject[6] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.Y);
-        pktObject[7] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.Z);
-        pktObject[8] = line.getField(ProfileReader.GAF_FIELDS.KZ);
-        pktObject[9] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.RK);
-        pktObject[10] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.BK);
-        pktObject[11] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.HW);
-        pktObject[12] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.RW);
-        pktObject[13] = line.getField(ProfileReader.GAF_FIELDS.HYK);
+        pktObject[0] = qpUpl.getPrimaryKeyValue();
+        pktObject[1] = qNpl.getPrimaryKeyValue();
+        pktObject[2] = line.getField(ProfileReader.GAF_FIELDS.ID);
+        pktObject[3] = (((stat != null) && (stat >= 0.0)) ? stat : null);
+        pktObject[4] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.Y);
+        pktObject[5] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.Z);
+        pktObject[6] = line.getField(ProfileReader.GAF_FIELDS.KZ);
+        pktObject[7] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.RK);
+        pktObject[8] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.BK);
+        pktObject[9] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.HW);
+        pktObject[10] = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.RW);
+        pktObject[11] = line.getField(ProfileReader.GAF_FIELDS.HYK);
 
         return pktObject;
 //        qpPkt.setProperty("ww_gr", AppBroker.getInstance().getOwnWwGr());
@@ -1286,15 +1542,17 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private CidsBean createQpUplObject() throws Exception {
         final CidsBean newQpUplBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.qp_upl");
         final GregorianCalendar now = new GregorianCalendar();
+        final java.sql.Date aufnDate = ((jxDate.getDate() == null) ? null
+                                                                   : new java.sql.Date(jxDate.getDate().getTime()));
 
         newQpUplBean.setProperty("ww_gr", AppBroker.getInstance().getOwnWwGr());
         newQpUplBean.setProperty("l_st", ((CidsLayerFeature)cbLageStatus.getSelectedItem()).getBean());
         newQpUplBean.setProperty("l_bezug", ((CidsLayerFeature)cbLage.getSelectedItem()).getBean());
         newQpUplBean.setProperty("h_bezug", ((CidsLayerFeature)cbHoehe.getSelectedItem()).getBean());
-        newQpUplBean.setProperty("l_calc", (reader.isCalc() ? "x" : "-"));
+        newQpUplBean.setProperty("l_calc", (reader.isCalc() ? "calc" : "-"));
         newQpUplBean.setProperty("upl_name", SessionManager.getSession().getUser().getName());
         newQpUplBean.setProperty("aufn_name", txtUsr.getText());
-        newQpUplBean.setProperty("aufn_datum", jxDate.getDate());
+        newQpUplBean.setProperty("aufn_datum", aufnDate);
         newQpUplBean.setProperty("aufn_zeit", txtTime.getText());
         newQpUplBean.setProperty("freigabe", ((CidsLayerFeature)cbFreigabe.getSelectedItem()).getBean());
         newQpUplBean.setProperty("titel", txtTitle.getText());
@@ -1321,24 +1579,13 @@ public class UploadQpDialog extends javax.swing.JDialog {
         final CidsBean newQpNplBean = CidsBeanUtils.createNewCidsBeanFromTableName("dlm25w.qp_npl");
         final CidsBean geomBean = CidsBeanUtils.createNewCidsBeanFromTableName("geom");
         geomBean.setProperty("geo_field", npl);
-        final GregorianCalendar now = new GregorianCalendar();
         final Double stat = line.getFieldAsDouble(ProfileReader.GAF_FIELDS.STATION);
 
         newQpNplBean.setProperty("ww_gr", AppBroker.getInstance().getOwnWwGr());
         newQpNplBean.setProperty("geom", geomBean);
         newQpNplBean.setProperty("stat", (((stat != null) && (stat >= 0.0)) ? stat : null));
         newQpNplBean.setProperty("l_st", ((CidsLayerFeature)cbLageStatus.getSelectedItem()).getBean());
-        newQpNplBean.setProperty("l_bezug", ((CidsLayerFeature)cbLage.getSelectedItem()).getBean());
-        newQpNplBean.setProperty("h_bezug", ((CidsLayerFeature)cbHoehe.getSelectedItem()).getBean());
-        newQpNplBean.setProperty("l_calc", (reader.isCalc() ? "x" : "-"));
-        newQpNplBean.setProperty("upl_nr", upl.getProperty("upl_nr"));
-        newQpNplBean.setProperty("upl_name", SessionManager.getSession().getUser().getName());
-        newQpNplBean.setProperty("aufn_name", txtUsr.getText());
-        newQpNplBean.setProperty("aufn_datum", new java.sql.Date(jxDate.getDate().getTime()));
-        newQpNplBean.setProperty("aufn_zeit", txtTime.getText());
-        newQpNplBean.setProperty("freigabe", ((CidsLayerFeature)cbFreigabe.getSelectedItem()).getBean());
-        newQpNplBean.setProperty("titel", txtTitle.getText());
-        newQpNplBean.setProperty("beschreib", txtBeschreibung.getText());
+        newQpNplBean.setProperty("qp_upl", upl);
         newQpNplBean.setProperty("bemerkung", txtBemerkung.getText());
         newQpNplBean.setProperty("fis_g_user", SessionManager.getSession().getUser().getName());
 
@@ -1364,6 +1611,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
             if ((txtGafFile.getText() != null) && !txtGafFile.getText().isEmpty()) {
                 butColumns.setEnabled(true);
             }
+
+            resetDialog();
         }
     } //GEN-LAST:event_butGafFileActionPerformed
 
@@ -1372,7 +1621,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butRkFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butRkFileActionPerformed
+    private void butUploadFilesActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butUploadFilesActionPerformed
         JFileChooser fc;
 
         try {
@@ -1402,14 +1651,18 @@ public class UploadQpDialog extends javax.swing.JDialog {
         final int state = fc.showOpenDialog(AppBroker.getInstance().getComponent(ComponentName.MAIN));
 
         if (state == JFileChooser.APPROVE_OPTION) {
-            final File file = fc.getSelectedFile();
+            final File[] files = fc.getSelectedFiles();
+            final DefaultListModel<String> model = new DefaultListModel<>();
 
-            lastPath = file.getParent();
-            txtRkFile.setText(file.getAbsolutePath());
+            for (final File file : files) {
+                lastPath = file.getParent();
+                model.addElement(file.getAbsolutePath());
+            }
+            liFiles.setModel(model);
         } else {
-            txtRkFile.setText("");
+            liFiles.setModel(new DefaultListModel<String>());
         }
-    } //GEN-LAST:event_butRkFileActionPerformed
+    } //GEN-LAST:event_butUploadFilesActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -1426,10 +1679,24 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
             if (dialog.isCancelled()) {
                 reader = null;
+                labCol.setIcon(new javax.swing.ImageIcon(
+                        getClass().getResource("/de/cismet/watergis/res/icons22/stop.png")));
                 return;
             } else {
                 butCheck.setEnabled((cbHoehe.getSelectedItem() != null) && (cbLage.getSelectedItem() != null)
                             && (reader != null));
+                labCol.setIcon(new javax.swing.ImageIcon(
+                        getClass().getResource("/de/cismet/watergis/res/icons22/ok.png")));
+
+                if (dialog.isRouteRequired()) {
+                    butRoute.setEnabled(true);
+                    labRoute.setIcon(new javax.swing.ImageIcon(
+                            getClass().getResource("/de/cismet/watergis/res/icons22/stop.png")));
+                } else {
+                    butRoute.setEnabled(false);
+                    labRoute.setIcon(new javax.swing.ImageIcon(
+                            getClass().getResource("/de/cismet/watergis/res/icons22/ok.png")));
+                }
             }
         }
     } //GEN-LAST:event_butColumnsActionPerformed
@@ -1485,9 +1752,28 @@ public class UploadQpDialog extends javax.swing.JDialog {
                 NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.butCheckActionPerformed.message", res),
                 NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.butCheckActionPerformed.title"),
                 JOptionPane.INFORMATION_MESSAGE);
-        }
 
-        checkPerformed = true;
+            if (result.getCorrect() == 0) {
+                final String title = "Import-Info";
+                final String text = "Die Datei enhält keine gültigen QP - ein Upload ist nicht möglich";
+                final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(), true, text, title);
+                d.setSize(500, 80);
+                StaticSwingTools.showDialog(d);
+            } else if (result.getIncorrect() > 0) {
+                final String title = "Import-Info";
+                final String text = "Beim Upload werden nur die gültigen QP berücksichtigt!";
+                final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(), true, text, title);
+                d.setSize(500, 80);
+                StaticSwingTools.showDialog(d);
+            }
+
+            if (result.getCorrect() > 0) {
+                checkPerformed = true;
+                labCheck.setIcon(new javax.swing.ImageIcon(
+                        getClass().getResource("/de/cismet/watergis/res/icons22/ok.png")));
+            }
+        }
+        checkUploadButton();
     } //GEN-LAST:event_butCheckActionPerformed
 
     /**
@@ -1583,6 +1869,41 @@ public class UploadQpDialog extends javax.swing.JDialog {
     /**
      * DOCUMENT ME!
      *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void butRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butRouteActionPerformed
+        diaRoute.setSize(300, 150);
+        diaRoute.setAlwaysOnTop(true);
+        StaticSwingTools.centerWindowOnScreen(diaRoute);
+    }                                                                            //GEN-LAST:event_butRouteActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void butOk1ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOk1ActionPerformed
+        if ((cbRoute.getSelectedItem() != null) && (reader instanceof WPROFReader)) {
+            final CidsLayerFeature routeFeature = (CidsLayerFeature)cbRoute.getSelectedItem();
+            ((WPROFReader)reader).setRoute(routeFeature);
+            diaRoute.setVisible(false);
+            labRoute.setIcon(new javax.swing.ImageIcon(
+                    getClass().getResource("/de/cismet/watergis/res/icons22/ok.png")));
+            lblRoute.setText(String.valueOf(routeFeature.getProperty("la_cd")));
+        }
+    }                                                                          //GEN-LAST:event_butOk1ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void cbRouteActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbRouteActionPerformed
+    }                                                                           //GEN-LAST:event_cbRouteActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
      * @return  DOCUMENT ME!
      */
     static synchronized int getNewId() {
@@ -1597,13 +1918,34 @@ public class UploadQpDialog extends javax.swing.JDialog {
      * @return  DOCUMENT ME!
      */
     private String listToString(final List<QpCheckResult.ErrorResult> list) {
-        if ((list == null) || list.isEmpty()) {
-            return "";
+        List<QpCheckResult.ErrorResult> errors = null;
+        final int size = ((list != null) ? list.size() : 0);
+        boolean errorCut = false;
+        final int MAX_SIZE = 20;
+
+        if (size > MAX_SIZE) {
+            errors = new ArrayList<>();
+
+            for (int i = 0; i < MAX_SIZE; ++i) {
+                errors.add(list.get(i));
+            }
+
+            errorCut = true;
+        } else if (list != null) {
+            errors = new ArrayList<>(list);
+        }
+
+        if ((errors == null) || errors.isEmpty()) {
+            return "keine";
         } else {
             final StringBuilder sb = new StringBuilder();
 
-            for (final QpCheckResult.ErrorResult error : list) {
+            for (final QpCheckResult.ErrorResult error : errors) {
                 sb.append("Zeile ").append(error.getLine()).append(": ").append(error.getErrorText()).append("\n");
+            }
+
+            if (errorCut) {
+                sb.append("... weitere Fehler in ").append(size - MAX_SIZE).append(" Zeilen\n");
             }
 
             return sb.toString();
@@ -1616,9 +1958,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private void checkUploadButton() {
         final boolean active = (cbFreigabe.getSelectedItem() != null) && (cbHoehe.getSelectedItem() != null)
                     && (cbLage.getSelectedItem() != null) && (cbLageStatus.getSelectedItem() != null)
-                    && !txtBemerkung.getText().isEmpty() && !txtBeschreibung.getText().isEmpty()
-                    && !txtTitle.getText().isEmpty() && !txtUsr.getText().isEmpty() && (reader != null)
-                    && checkPerformed;
+                    && (reader != null) && checkPerformed
+                    && labRoute.getIcon().toString().endsWith("ok.png");
 
         butOk.setEnabled(active);
     }
@@ -1635,23 +1976,6 @@ public class UploadQpDialog extends javax.swing.JDialog {
     /**
      * DOCUMENT ME!
      *
-     * @return  DOCUMENT ME!
-     */
-    public String getRkFile() {
-        if (!txtRkFile.getText().equals("")) {
-            final File catFile = new File(txtRkFile.getText());
-
-            if (catFile.exists()) {
-                return txtRkFile.getText();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
      * @return  the cancelled
      */
     public boolean isCancelled() {
@@ -1659,6 +1983,54 @@ public class UploadQpDialog extends javax.swing.JDialog {
     }
 
     //~ Inner Classes ----------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    private final class InitComboboxThread extends Thread {
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new InitComboboxThread object.
+         *
+         * @param  name  DOCUMENT ME!
+         */
+        public InitComboboxThread(final String name) {
+            super(name);
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public void run() {
+            boolean done = false;
+
+            do {
+                if ((cbHoehe.getModel().getSize() > 1) && (cbLage.getModel().getSize() > 1)
+                            && (cbLageStatus.getModel().getSize() > 1)) {
+                    EventQueue.invokeLater(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                cbHoehe.setSelectedIndex(0);
+                                cbLage.setSelectedIndex(0);
+                                cbLageStatus.setSelectedIndex(cbLageStatus.getModel().getSize() - 1);
+                            }
+                        });
+                    done = true;
+                }
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    // nothing to do
+                }
+            } while (!done);
+        }
+    }
 
     /**
      * DOCUMENT ME!

@@ -250,7 +250,13 @@ public abstract class AbstractProfileReader implements ProfileReader {
      */
     @Override
     public LineString getNpLine(final Double profile) {
-        return getLineBetween(profile, "PA", "PE");
+        LineString ls = getLineBetween(profile, "PA", "PE");
+
+        if (ls == null) {
+            ls = getLineBetween(profile, null, null);
+        }
+
+        return ls;
     }
 
     /**
@@ -358,7 +364,8 @@ public abstract class AbstractProfileReader implements ProfileReader {
 
         for (final ProfileLine line : profContent) {
             try {
-                if ((line.getField(GAF_FIELDS.KZ) == null) || line.getField(GAF_FIELDS.KZ).equalsIgnoreCase(kzStart)) {
+                if ((line.getField(GAF_FIELDS.KZ) == null) || (kzStart == null)
+                            || line.getField(GAF_FIELDS.KZ).equalsIgnoreCase(kzStart)) {
                     started = true;
                 }
                 if (started) {
@@ -367,7 +374,8 @@ public abstract class AbstractProfileReader implements ProfileReader {
                     final Coordinate coord = new Coordinate(re, ho);
                     coordinateList.add(coord);
                 }
-                if ((line.getField(GAF_FIELDS.KZ) != null) && line.getField(GAF_FIELDS.KZ).equalsIgnoreCase(kzEnd)) {
+                if ((kzEnd != null) && (line.getField(GAF_FIELDS.KZ) != null)
+                            && line.getField(GAF_FIELDS.KZ).equalsIgnoreCase(kzEnd)) {
                     started = false;
                 }
             } catch (NumberFormatException e) {
@@ -375,7 +383,7 @@ public abstract class AbstractProfileReader implements ProfileReader {
             }
         }
 
-        if (!coordinateList.isEmpty()) {
+        if (!coordinateList.isEmpty() && (coordinateList.size() > 1)) {
             return factory.createLineString(coordinateList.toArray(new Coordinate[coordinateList.size()]));
         } else {
             return null;
