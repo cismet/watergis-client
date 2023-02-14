@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import de.cismet.cids.custom.watergis.server.search.RouteEnvelopes;
@@ -102,86 +103,102 @@ public class KatasterGewaesserReportAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        try {
-            StaticSwingTools.showDialog(KatasterGewaesserReportDialog.getInstance());
+        final int result = JOptionPane.showOptionDialog(AppBroker.getInstance().getWatergisApp(),
+                NbBundle.getMessage(
+                    KatasterGewaesserReportAction.class,
+                    "KatasterGewaesserReportAction.actionPerformed.message"),
+                NbBundle.getMessage(
+                    KatasterGewaesserReportAction.class,
+                    "KatasterGewaesserReportAction.actionPerformed.title"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                new Object[] { "Weiter zur Statistik", "Abbrechen" },
+                null);
 
-            if (!KatasterGewaesserReportDialog.getInstance().isCancelled()) {
-                final WaitingDialogThread<File> wdt = new WaitingDialogThread<File>(
-                        StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
-                        true,
-                        // NbBundle.getMessage(SonstigeCheckAction.class,
-                        // "SonstigeCheckAction.actionPerformed().dialog"),
-                        "erstelle Auswertung",
-                        null,
-                        100,
-                        true) {
+        if (result == JOptionPane.YES_OPTION) {
+            try {
+                StaticSwingTools.showDialog(KatasterGewaesserReportDialog.getInstance());
 
-                        @Override
-                        protected File doInBackground() throws Exception {
-                            final List<Integer> baCdList = new ArrayList<Integer>();
+                if (!KatasterGewaesserReportDialog.getInstance().isCancelled()) {
+                    final WaitingDialogThread<File> wdt = new WaitingDialogThread<File>(
+                            StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
+                            true,
+                            // NbBundle.getMessage(SonstigeCheckAction.class,
+                            // "SonstigeCheckAction.actionPerformed().dialog"),
+                            "erstelle Auswertung",
+                            null,
+                            100,
+                            true) {
 
-                            if (KatasterGewaesserReportDialog.getInstance().isSelectionGew()) {
-                                for (final FeatureServiceFeature feature
-                                            : KatasterGewaesserReportDialog.getInstance().getSelectedGew()) {
-                                    baCdList.add((Integer)feature.getProperty("id"));
-                                }
-                            } else {
-                                if (AppBroker.getInstance().isGu()) {
-                                    CidsServerSearch search;
-                                    final String praefixGroup = ((AppBroker.getInstance().getOwnWwGr() != null)
-                                            ? (String)AppBroker.getInstance().getOwnWwGr().getProperty("praefixgroup")
-                                            : null);
+                            @Override
+                            protected File doInBackground() throws Exception {
+                                final List<Integer> baCdList = new ArrayList<Integer>();
 
-                                    if (praefixGroup != null) {
-                                        search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
-                                                        + AppBroker.getInstance().getOwner()
-                                                        + "' or dlm25wPk_ww_gr1.praefixgroup = '" + praefixGroup + "'");
-                                    } else {
-                                        search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
-                                                        + AppBroker.getInstance().getOwner() + "'");
+                                if (KatasterGewaesserReportDialog.getInstance().isSelectionGew()) {
+                                    for (final FeatureServiceFeature feature
+                                                : KatasterGewaesserReportDialog.getInstance().getSelectedGew()) {
+                                        baCdList.add((Integer)feature.getProperty("id"));
                                     }
+                                } else {
+                                    if (AppBroker.getInstance().isGu()) {
+                                        CidsServerSearch search;
+                                        final String praefixGroup = ((AppBroker.getInstance().getOwnWwGr() != null)
+                                                ? (String)AppBroker.getInstance().getOwnWwGr().getProperty(
+                                                    "praefixgroup") : null);
 
-                                    final User user = SessionManager.getSession().getUser();
-                                    final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
-                                                .getProxy().customServerSearch(user, search);
+                                        if (praefixGroup != null) {
+                                            search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
+                                                            + AppBroker.getInstance().getOwner()
+                                                            + "' or dlm25wPk_ww_gr1.praefixgroup = '" + praefixGroup
+                                                            + "'");
+                                        } else {
+                                            search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
+                                                            + AppBroker.getInstance().getOwner() + "'");
+                                        }
 
-                                    if ((attributes != null) && !attributes.isEmpty()) {
-                                        for (final ArrayList f : attributes) {
-                                            baCdList.add((Integer)f.get(2));
+                                        final User user = SessionManager.getSession().getUser();
+                                        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
+                                                    .getProxy().customServerSearch(user, search);
+
+                                        if ((attributes != null) && !attributes.isEmpty()) {
+                                            for (final ArrayList f : attributes) {
+                                                baCdList.add((Integer)f.get(2));
+                                            }
                                         }
                                     }
                                 }
+
+                                final KatasterGewaesserReport gr = new KatasterGewaesserReport();
+                                int[] gew = new int[baCdList.size()];
+
+                                if (baCdList.isEmpty()) {
+                                    gew = null;
+                                } else {
+                                    for (int i = 0; i < baCdList.size(); ++i) {
+                                        gew[i] = baCdList.get(i);
+                                    }
+                                }
+
+                                return gr.createGewaesserReport(gew, wd);
                             }
 
-                            final KatasterGewaesserReport gr = new KatasterGewaesserReport();
-                            int[] gew = new int[baCdList.size()];
-
-                            if (baCdList.isEmpty()) {
-                                gew = null;
-                            } else {
-                                for (int i = 0; i < baCdList.size(); ++i) {
-                                    gew[i] = baCdList.get(i);
+                            @Override
+                            protected void done() {
+                                try {
+                                    DownloadManager.instance()
+                                            .add(new FakeFileDownload(get(), "Statistik: Kataster->Gewässer"));
+                                } catch (Exception e) {
+                                    LOG.error("Error while performing the Kataster Gewaesser report.", e);
                                 }
                             }
+                        };
 
-                            return gr.createGewaesserReport(gew, wd);
-                        }
-
-                        @Override
-                        protected void done() {
-                            try {
-                                DownloadManager.instance()
-                                        .add(new FakeFileDownload(get(), "Statistik: Kataster->Gewässer"));
-                            } catch (Exception e) {
-                                LOG.error("Error while performing the Kataster Gewaesser report.", e);
-                            }
-                        }
-                    };
-
-                wdt.start();
+                    wdt.start();
+                }
+            } catch (Exception ex) {
+                LOG.error("Error while creating gemeinden report", ex);
             }
-        } catch (Exception ex) {
-            LOG.error("Error while creating gemeinden report", ex);
         }
     }
 }

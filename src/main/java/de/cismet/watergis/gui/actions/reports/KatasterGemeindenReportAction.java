@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import de.cismet.cids.custom.watergis.server.search.AllGemeinden;
@@ -102,45 +103,80 @@ public class KatasterGemeindenReportAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        try {
-            StaticSwingTools.showDialog(KatasterGemeindeReportDialog.getInstance());
+        final int result = JOptionPane.showOptionDialog(AppBroker.getInstance().getWatergisApp(),
+                NbBundle.getMessage(
+                    KatasterGewaesserReportAction.class,
+                    "KatasterGemeindenReportAction.actionPerformed.message"),
+                NbBundle.getMessage(
+                    KatasterGewaesserReportAction.class,
+                    "KatasterGemeindenReportAction.actionPerformed.title"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                new Object[] { "Weiter zur Statistik", "Abbrechen" },
+                null);
 
-            if (!KatasterGemeindeReportDialog.getInstance().isCancelled()) {
-                final WaitingDialogThread<File> wdt = new WaitingDialogThread<File>(
-                        StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
-                        true,
-                        // NbBundle.getMessage(SonstigeCheckAction.class,
-                        // "SonstigeCheckAction.actionPerformed().dialog"),
-                        "erstelle Auswertung                ",
-                        null,
-                        100,
-                        true) {
+        if (result == JOptionPane.YES_OPTION) {
+            try {
+                StaticSwingTools.showDialog(KatasterGemeindeReportDialog.getInstance());
 
-                        @Override
-                        protected File doInBackground() throws Exception {
-                            final List<Integer> baCdList = new ArrayList<Integer>();
-                            final List<Integer> gmdList = new ArrayList<Integer>();
+                if (!KatasterGemeindeReportDialog.getInstance().isCancelled()) {
+                    final WaitingDialogThread<File> wdt = new WaitingDialogThread<File>(
+                            StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
+                            true,
+                            // NbBundle.getMessage(SonstigeCheckAction.class,
+                            // "SonstigeCheckAction.actionPerformed().dialog"),
+                            "erstelle Auswertung                ",
+                            null,
+                            100,
+                            true) {
 
-                            if (KatasterGemeindeReportDialog.getInstance().isSelectionGew()) {
-                                for (final FeatureServiceFeature feature
-                                            : KatasterGemeindeReportDialog.getInstance().getSelectedGew()) {
-                                    baCdList.add((Integer)feature.getProperty("id"));
-                                }
-                            } else {
-                                if (AppBroker.getInstance().isGu()) {
-                                    CidsServerSearch search;
-                                    final String praefixGroup = ((AppBroker.getInstance().getOwnWwGr() != null)
-                                            ? (String)AppBroker.getInstance().getOwnWwGr().getProperty("praefixgroup")
-                                            : null);
+                            @Override
+                            protected File doInBackground() throws Exception {
+                                final List<Integer> baCdList = new ArrayList<Integer>();
+                                final List<Integer> gmdList = new ArrayList<Integer>();
 
-                                    if (praefixGroup != null) {
-                                        search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
-                                                        + AppBroker.getInstance().getOwner()
-                                                        + "' or dlm25wPk_ww_gr1.praefixgroup = '" + praefixGroup + "'");
-                                    } else {
-                                        search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
-                                                        + AppBroker.getInstance().getOwner() + "'");
+                                if (KatasterGemeindeReportDialog.getInstance().isSelectionGew()) {
+                                    for (final FeatureServiceFeature feature
+                                                : KatasterGemeindeReportDialog.getInstance().getSelectedGew()) {
+                                        baCdList.add((Integer)feature.getProperty("id"));
                                     }
+                                } else {
+                                    if (AppBroker.getInstance().isGu()) {
+                                        CidsServerSearch search;
+                                        final String praefixGroup = ((AppBroker.getInstance().getOwnWwGr() != null)
+                                                ? (String)AppBroker.getInstance().getOwnWwGr().getProperty(
+                                                    "praefixgroup") : null);
+
+                                        if (praefixGroup != null) {
+                                            search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
+                                                            + AppBroker.getInstance().getOwner()
+                                                            + "' or dlm25wPk_ww_gr1.praefixgroup = '" + praefixGroup
+                                                            + "'");
+                                        } else {
+                                            search = new RouteEnvelopes(" dlm25wPk_ww_gr1.owner = '"
+                                                            + AppBroker.getInstance().getOwner() + "'");
+                                        }
+
+                                        final User user = SessionManager.getSession().getUser();
+                                        final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
+                                                    .getProxy().customServerSearch(user, search);
+
+                                        if ((attributes != null) && !attributes.isEmpty()) {
+                                            for (final ArrayList f : attributes) {
+                                                baCdList.add((Integer)f.get(2));
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (KatasterGemeindeReportDialog.getInstance().isSelectionGmd()) {
+                                    for (final FeatureServiceFeature feature
+                                                : KatasterGemeindeReportDialog.getInstance().getSelectedGmd()) {
+                                        gmdList.add((Integer)feature.getProperty("gmd_nr"));
+                                    }
+                                } else {
+                                    final CidsServerSearch search = new AllGemeinden(baCdList);
 
                                     final User user = SessionManager.getSession().getUser();
                                     final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
@@ -148,69 +184,50 @@ public class KatasterGemeindenReportAction extends AbstractAction {
 
                                     if ((attributes != null) && !attributes.isEmpty()) {
                                         for (final ArrayList f : attributes) {
-                                            baCdList.add((Integer)f.get(2));
+                                            gmdList.add((Integer)f.get(0));
                                         }
                                     }
                                 }
-                            }
 
-                            if (KatasterGemeindeReportDialog.getInstance().isSelectionGmd()) {
-                                for (final FeatureServiceFeature feature
-                                            : KatasterGemeindeReportDialog.getInstance().getSelectedGmd()) {
-                                    gmdList.add((Integer)feature.getProperty("gmd_nr"));
+                                final KatasterGemeindeReport gr = new KatasterGemeindeReport();
+                                final int[] gmd = new int[gmdList.size()];
+                                int[] gew = new int[baCdList.size()];
+
+                                for (int i = 0; i < gmdList.size(); ++i) {
+                                    gmd[i] = gmdList.get(i);
                                 }
-                            } else {
-                                final CidsServerSearch search = new AllGemeinden(baCdList);
 
-                                final User user = SessionManager.getSession().getUser();
-                                final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager
-                                            .getProxy().customServerSearch(user, search);
-
-                                if ((attributes != null) && !attributes.isEmpty()) {
-                                    for (final ArrayList f : attributes) {
-                                        gmdList.add((Integer)f.get(0));
+                                if (baCdList.isEmpty()) {
+                                    gew = null;
+                                } else {
+                                    for (int i = 0; i < baCdList.size(); ++i) {
+                                        gew[i] = baCdList.get(i);
                                     }
                                 }
+
+                                return gr.createGemeindeReport(gmd, gew, wd);
                             }
 
-                            final KatasterGemeindeReport gr = new KatasterGemeindeReport();
-                            final int[] gmd = new int[gmdList.size()];
-                            int[] gew = new int[baCdList.size()];
+                            @Override
+                            protected void done() {
+                                try {
+                                    final File file = get();
 
-                            for (int i = 0; i < gmdList.size(); ++i) {
-                                gmd[i] = gmdList.get(i);
-                            }
-
-                            if (baCdList.isEmpty()) {
-                                gew = null;
-                            } else {
-                                for (int i = 0; i < baCdList.size(); ++i) {
-                                    gew[i] = baCdList.get(i);
+                                    if (file != null) {
+                                        DownloadManager.instance()
+                                                .add(new FakeFileDownload(file, "Statistik: Kataster->Gemeinden"));
+                                    }
+                                } catch (Exception e) {
+                                    LOG.error("Error while performing the gemeinden report.", e);
                                 }
                             }
+                        };
 
-                            return gr.createGemeindeReport(gmd, gew, wd);
-                        }
-
-                        @Override
-                        protected void done() {
-                            try {
-                                final File file = get();
-
-                                if (file != null) {
-                                    DownloadManager.instance()
-                                            .add(new FakeFileDownload(file, "Statistik: Kataster->Gemeinden"));
-                                }
-                            } catch (Exception e) {
-                                LOG.error("Error while performing the gemeinden report.", e);
-                            }
-                        }
-                    };
-
-                wdt.start();
+                    wdt.start();
+                }
+            } catch (Exception ex) {
+                LOG.error("Error while creating gemeinden report", ex);
             }
-        } catch (Exception ex) {
-            LOG.error("Error while creating gemeinden report", ex);
         }
     }
 }
