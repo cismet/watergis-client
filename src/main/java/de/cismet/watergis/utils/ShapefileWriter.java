@@ -616,6 +616,20 @@ public class ShapefileWriter implements JUMPWriter {
                         numericType.getScale()); // LDB: previously 16
                 fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                 f++;
+            } else if ((columnType == AttributeType.OBJECT) && isBigDecimal(featureCollection, t)) {
+                final int[] places = determinePrecision(featureCollection, t);
+                final int precision = places[0];
+                final int scale = places[1];
+
+                final int lengthOfDecimalCharacter = (int)Math.signum((double)scale);
+                fields[f] = new DbfFieldDef(
+                        columnName.toUpperCase(),
+                        'N',
+                        precision
+                                + lengthOfDecimalCharacter,
+                        scale); // LDB: previously 16
+                fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+                f++;
             } else if (columnType == AttributeType.STRING) {
                 int maxlength;
 
@@ -761,6 +775,62 @@ public class ShapefileWriter implements JUMPWriter {
         }
 
         dbf.close();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   featureCollection  DOCUMENT ME!
+     * @param   index              DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private boolean isBigDecimal(final FeatureCollection featureCollection, final int index) {
+        for (final Object o : featureCollection.getFeatures()) {
+            if (o instanceof Feature) {
+                final Feature f = (Feature)o;
+                final Object attr = f.getAttribute(index);
+
+                if ((attr != null) && !(attr instanceof BigDecimal)) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   featureCollection  DOCUMENT ME!
+     * @param   index              DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private int[] determinePrecision(final FeatureCollection featureCollection, final int index) {
+        int p = 1;
+        int s = 0;
+
+        for (final Object o : featureCollection.getFeatures()) {
+            if (o instanceof Feature) {
+                final Feature f = (Feature)o;
+                final Object attr = f.getAttribute(index);
+
+                if (attr instanceof BigDecimal) {
+                    if (((BigDecimal)attr).precision() > p) {
+                        p = ((BigDecimal)attr).precision();
+                    }
+                    if (((BigDecimal)attr).scale() > s) {
+                        s = ((BigDecimal)attr).scale();
+                    }
+                }
+            }
+        }
+
+        return new int[] { p, s };
     }
 
     /**
