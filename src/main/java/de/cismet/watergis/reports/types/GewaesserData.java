@@ -281,6 +281,27 @@ public class GewaesserData {
      *
      * @param   table  DOCUMENT ME!
      * @param   gew    DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    public double getLength(final AllLineObjects.Table table, final int gew) {
+        final List<LineObjectData> lines = lineMap.get(table);
+        double length = 0;
+
+        if (lines != null) {
+            for (final LineObjectData lineObj : lines) {
+                length += lineObj.getLengthInGewPart(gew);
+            }
+        }
+
+        return length;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   table  DOCUMENT ME!
+     * @param   gew    DOCUMENT ME!
      * @param   from   DOCUMENT ME!
      * @param   till   DOCUMENT ME!
      *
@@ -783,6 +804,21 @@ public class GewaesserData {
                         0.0,
                         Math.min(Math.max(this.from, this.to), Math.max(from, till))
                                 - Math.max(Math.min(this.from, this.to), Math.min(from, till)));
+            } else {
+                return 0;
+            }
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param   gew  DOCUMENT ME!
+         *
+         * @return  DOCUMENT ME!
+         */
+        public double getLengthInGewPart(final int gew) {
+            if (gew == gewId) {
+                return Math.abs(this.to - this.from);
             } else {
                 return 0;
             }

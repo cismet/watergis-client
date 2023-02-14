@@ -530,7 +530,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.MergeAction mergeAction;
     private de.cismet.watergis.gui.actions.geoprocessing.MergeGeoprocessingAction mergeGeoprocessingAction;
     private javax.swing.JMenuItem mniBuffer;
-    private javax.swing.JMenuItem mniCheck;
     private javax.swing.JMenuItem mniCheckAusbau;
     private javax.swing.JMenuItem mniCheckBasisRoutes;
     private javax.swing.JMenuItem mniCheckBauwerke;
@@ -562,7 +561,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniGafInfo;
     private javax.swing.JMenuItem mniGafOptions;
     private javax.swing.JMenuItem mniGafUpload;
-    private javax.swing.JMenuItem mniGafUpload1;
     private javax.swing.JMenuItem mniGemeinde;
     private javax.swing.JMenuItem mniGemeinde1;
     private javax.swing.JMenuItem mniGemeinde2;
@@ -946,17 +944,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         }
 
         mniGafUpload.setVisible(false);
-        mniCheck.setVisible(false);
-        mniGafUpload1.setVisible(false);
         boolean checkForQP = false;
         try {
             checkForQP = SessionManager.getProxy()
                         .getConfigAttr(SessionManager.getSession().getUser(), "qpAllowed", connectionContext) != null;
-            checkForQP = true;
-            mniGafUpload1.setVisible(checkForQP);
         } catch (ConnectionException ex) {
             LOG.error("Cannot check for qp permission", ex);
         }
+        mniGafUpload.setEnabled(checkForQP);
+        mniGafUpload.setVisible(checkForQP);
         checkForCreatedObjects();
     }
 
@@ -2613,8 +2609,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniDeletePhoto = new javax.swing.JMenuItem();
         mniPhotoOptions = new javax.swing.JMenuItem();
         menProfiles = new javax.swing.JMenu();
-        mniGafUpload1 = new javax.swing.JMenuItem();
-        mniCheck = new javax.swing.JMenuItem();
         mniGafUpload = new javax.swing.JMenuItem();
         mniGafInfo = new javax.swing.JMenuItem();
         mniReportGaf = new javax.swing.JMenuItem();
@@ -4030,21 +4024,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             menProfiles,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menProfiles.text")); // NOI18N
 
-        mniGafUpload1.setAction(uploadActionGaf);
-        mniGafUpload1.setToolTipText(org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.mniGafUpload1.toolTipText",
-                new Object[] {})); // NOI18N
-        menProfiles.add(mniGafUpload1);
-
-        mniCheck.setAction(checkAction1);
-        mniCheck.setToolTipText(org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.mniCheck.toolTipText",
-                new Object[] {})); // NOI18N
-        mniCheck.setEnabled(false);
-        menProfiles.add(mniCheck);
-
         mniGafUpload.setAction(uploadActionGaf);
         mniGafUpload.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
@@ -5447,7 +5426,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     ThemeLayerWidget.class,
                     "ThemeLayerWidget.ExportMenuItem.pmenuItem.text"),
                 NODE
-                        | FEATURE_SERVICE);
+                        | FEATURE_SERVICE
+                        | GEOMETRY
+                        | FEATURE_SELECTED
+                        | NO_FEATURE_SELECTED
+                        | NO_GEOMETRY);
             newSection = true;
         }
 
@@ -5738,7 +5721,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     MetaDocumentMenuItem.class,
                     "WatergisApp.MetaDocumentMenuItem.MetaDocumentMenuItem().title"),
                 NODE
-                        | FEATURE_SERVICE);
+                        | FEATURE_SERVICE
+                        | GEOMETRY
+                        | FEATURE_SELECTED
+                        | NO_FEATURE_SELECTED
+                        | NO_GEOMETRY);
 //            newSection = true;
         }
 
@@ -5806,7 +5793,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             super(NbBundle.getMessage(
                     MetaDocumentMenuItem.class,
                     "WatergisApp.ExportOptionsMenuItem.ExportOptionsMenuItem().title"),
-                ROOT);
+                ROOT
+                        | GEOMETRY
+                        | FEATURE_SELECTED
+                        | NO_FEATURE_SELECTED
+                        | NO_GEOMETRY);
             newSection = true;
         }
 
@@ -5845,7 +5836,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     CopyMenuItem.class,
                     "WatergisApp.CopyMenuItem.CopyMenuItem().title"),
                 NODE
-                        | FEATURE_SERVICE);
+                        | FEATURE_SERVICE
+                        | GEOMETRY
+                        | FEATURE_SELECTED
+                        | NO_FEATURE_SELECTED
+                        | NO_GEOMETRY,
+                NODE
+                        | FEATURE_SERVICE
+                        | GEOMETRY
+                        | FEATURE_SELECTED
+                        | NO_GEOMETRY);
 //            newSection = true;
         }
 
@@ -5875,23 +5875,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         public boolean isVisible(final int mask) {
             return ((visibility & mask) == mask) && ((mask & FEATURE_SERVICE) != 0);
         }
-
-        @Override
-        public boolean isSelectable(final int mask) {
-            final boolean selectable = super.isSelectable(mask);
-
-            if (selectable) {
-                final TreePath[] paths = pTopicTree.getSelectionPath();
-
-                if ((paths.length == 1) && (paths[0].getLastPathComponent() instanceof AbstractFeatureService)) {
-                    final AbstractFeatureService service = (AbstractFeatureService)paths[0].getLastPathComponent();
-
-                    return !SelectionManager.getInstance().getSelectedFeatures(service).isEmpty();
-                }
-            }
-
-            return false;
-        }
     }
 
     /**
@@ -5911,7 +5894,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     PasteMenuItem.class,
                     "WatergisApp.PasteMenuItem.PasteMenuItem().title"),
                 NODE
-                        | FEATURE_SERVICE);
+                        | FEATURE_SERVICE
+                        | GEOMETRY
+                        | FEATURE_SELECTED
+                        | NO_FEATURE_SELECTED
+                        | NO_GEOMETRY);
 //            newSection = true;
         }
 
@@ -5975,7 +5962,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     DeleteMenuItem.class,
                     "WatergisApp.DeleteMenuItem.DeleteMenuItem().title"),
                 NODE
-                        | FEATURE_SERVICE);
+                        | FEATURE_SERVICE
+                        | GEOMETRY
+                        | FEATURE_SELECTED
+                        | NO_FEATURE_SELECTED
+                        | NO_GEOMETRY);
 //            newSection = true;
         }
 

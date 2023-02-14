@@ -335,11 +335,11 @@ public class KatasterGewaesserReport {
             feature.put("code", getBaCd(gew));
             feature.put("gewName", getGewName(gew));
             feature.put("gewLaenge", toNullIfZero(getLengthGew(gew)));
+            final double lengthSee = getLengthLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew);
             feature.put(
                 "offene_a",
                 toNullIfZero(
-                    (getLengthGew(gew) - getLengthGeschlAbschn(gew)
-                                - getLengthLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew))
+                    (getLengthGew(gew) - getLengthGeschlAbschn(gew) - lengthSee)
                             * 100.0
                             / (getLengthOffeneAbschn(gew) + getLengthGeschlAbschn(gew))));
             feature.put(
@@ -347,8 +347,10 @@ public class KatasterGewaesserReport {
                 toNullIfZero(
                     getLengthGew(gew)
                             - getLengthGeschlAbschn(gew)
-                            - getLengthLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew)));
-            feature.put("see_a", toNullIfZero(getCountLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew)));
+                            - lengthSee));
+            feature.put(
+                "see_a",
+                toNullIfZero(lengthSee * 100 / (getLengthOffeneAbschn(gew) + getLengthGeschlAbschn(gew))));
             feature.put("see_l", toNullIfZero(getLengthLineObjects(GewaesserData.LineFromPolygonTable.sg_see, gew)));
             feature.put(
                 "geschl_a",
@@ -1361,7 +1363,9 @@ public class KatasterGewaesserReport {
 //                kumFeature.put(key, sum);
 //            } else
             if ((Arrays.binarySearch(exceptionalNumberFields, key) < 0)) {
-                if (isGeschDouble && (key.equals("geschl_a") || key.equals("offene_a") || key.equals("prof_a"))) {
+                if (isGeschDouble
+                            && (key.equals("geschl_a") || key.equals("offene_a") || key.equals("prof_a")
+                                || key.equals("see_a"))) {
                     // will be calculated later
                 } else {
                     double sum = 0.0;
@@ -1416,10 +1420,12 @@ public class KatasterGewaesserReport {
 
             kumFeature.put("offene_a", toNullIfZero(offene * 100.0 / (offene + geschl + see)));
             kumFeature.put("geschl_a", toNullIfZero(geschl * 100.0 / (offene + geschl + see)));
+            kumFeature.put("see_a", toNullIfZero(see * 100.0 / (offene + geschl + see)));
+
             if (offene == 0.0) {
                 kumFeature.put("prof_a", 0.0);
             } else {
-                kumFeature.put("prof_a", toNullIfZero(prof * 100.0 / (offene)));
+                kumFeature.put("prof_a", toNullIfZero(prof * 100.0 / (offene + see)));
             }
         }
 
@@ -2143,11 +2149,13 @@ public class KatasterGewaesserReport {
     private double getLengthLineObjects(final AllLineObjects.Table table, final int gewId) {
         double length = 0;
 
-        for (final KatasterGewObj tmp : parts) {
-            if ((gewId < 0) || (gewId == tmp.getId())) {
-                length += gd.getLength(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
-            }
-        }
+        length += gd.getLength(table, gewId);
+
+//        for (final KatasterGewObj tmp : parts) {
+//            if ((gewId < 0) || (gewId == tmp.getId())) {
+//                length += gd.getLength(table, tmp.getId(), tmp.getFrom(), tmp.getTill());
+//            }
+//        }
 
         return length;
     }
