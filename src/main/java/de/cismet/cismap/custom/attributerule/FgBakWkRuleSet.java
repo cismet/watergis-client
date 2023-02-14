@@ -80,6 +80,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("bak_st_bis", new Numeric(10, 2, false, true));
         typeMap.put("wk_nr", new Catalogue("k_wk_fg", true, true, new Varchar(50, false, false)));
         typeMap.put("wk_fedfue", new Catalogue("k_wk_fg", false, false, new Varchar(2, false, false)));
+        typeMap.put("wk_ordnung", new Numeric(1, 0, false, false));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("laenge_wk", new Numeric(10, 2, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
