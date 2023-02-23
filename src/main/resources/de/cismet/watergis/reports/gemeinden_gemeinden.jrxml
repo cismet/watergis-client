@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="3302" pageHeight="595" orientation="Landscape" columnWidth="3262" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.4641000000000008"/>
-	<property name="ireport.x" value="527"/>
+	<property name="ireport.x" value="596"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -64,7 +64,7 @@
 	<field name="gew_l" class="java.lang.Double"/>
 	<field name="offene_a" class="java.lang.Double"/>
 	<field name="offene_l" class="java.lang.Double"/>
-	<field name="see_a" class="java.lang.Integer"/>
+	<field name="see_a" class="java.lang.Double"/>
 	<field name="see_l" class="java.lang.Double"/>
 	<field name="geschl_a" class="java.lang.Double"/>
 	<field name="geschl_l" class="java.lang.Double"/>
@@ -200,8 +200,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[offene
-Abschnitte]]></text>
+				<text><![CDATA[offen (ohne Seen)]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="476" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="3a6a75b8-a41a-4b7a-a352-e51691e89002"/>
@@ -225,7 +224,7 @@ Abschnitte]]></text>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10" isBold="false" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[Anzahl]]></text>
+				<text><![CDATA[Anteil]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="615" y="56" width="49" height="14" backcolor="#D8D8D8" uuid="4fe534bc-ee51-4f8f-943c-4c19668e265d"/>
@@ -241,8 +240,7 @@ Abschnitte]]></text>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[Abschnitte in Seen
-(lt. GU)]]></text>
+				<text><![CDATA[offen (Seen)]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="664" y="56" width="45" height="14" backcolor="#D8D8D8" uuid="bf837177-6318-48f8-aa88-18e8647729f0"/>
@@ -2047,7 +2045,7 @@ leitungen]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{offene_l}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement style="detail_style" stretchType="RelativeToBandHeight" x="570" y="0" width="45" height="14" isPrintWhenDetailOverflows="true" uuid="1138e8c3-20ba-4c55-838a-2f7b30ca4427"/>
 				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
