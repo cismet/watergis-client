@@ -185,6 +185,7 @@ import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerEvent;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerListener;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerMenuItem;
 import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
+import de.cismet.cismap.commons.gui.layerwidget.ZoomToFeaturesWorker;
 import de.cismet.cismap.commons.gui.options.CapabilityWidgetOptionsPanel;
 import de.cismet.cismap.commons.gui.overviewwidget.OverviewComponent;
 import de.cismet.cismap.commons.gui.piccolo.PFeature;
@@ -812,6 +813,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             mniCheckLawa.setEnabled(false);
             mniCheckLawaConnection.setEnabled(false);
             mniCreateDbUser.setEnabled(false);
+            mniSb.setEnabled(false);
+            mniFl.setEnabled(false);
+            mniGewaesserRep2.setEnabled(false);
+            mniGemeinde2.setEnabled(false);
+            mniSb2.setEnabled(false);
+            mniFl2.setEnabled(false);
+            mniGewaesserRep3.setEnabled(false);
+            mniGemeinde1.setEnabled(false);
+            mniSb1.setEnabled(false);
+            mniFl1.setEnabled(false);
         }
 
         if (!AppBroker.getInstance().isAdminUser() && !AppBroker.getInstance().isGu()) {
@@ -954,6 +965,17 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGafUpload.setEnabled(checkForQP);
         mniGafUpload.setVisible(checkForQP);
         checkForCreatedObjects();
+        Double scaleForPoint = 500.0;
+
+        try {
+            scaleForPoint = Double.valueOf(SessionManager.getProxy().getConfigAttr(
+                        SessionManager.getSession().getUser(),
+                        "zoomScaleForPointFeature",
+                        connectionContext));
+        } catch (Exception ex) {
+            LOG.warn("zoomScaleForPointFeature is not set or not valid. 500 will be assumed", ex);
+        }
+        ZoomToFeaturesWorker.setScaleForPoint(500.0);
     }
 
     //~ Methods ----------------------------------------------------------------

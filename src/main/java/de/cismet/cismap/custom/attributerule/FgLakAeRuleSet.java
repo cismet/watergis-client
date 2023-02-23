@@ -145,7 +145,7 @@ public class FgLakAeRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_lak");
-        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
+        final OnOwnRouteStationStartOrEndCheck check = new OnOwnRouteStationStartOrEndCheck();
 
         final StationLineCreator creator = new StationLineCreator(
                 "lak_st",

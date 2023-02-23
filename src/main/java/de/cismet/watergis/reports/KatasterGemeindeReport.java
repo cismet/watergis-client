@@ -463,23 +463,26 @@ public class KatasterGemeindeReport {
             feature.put("nummer", gem);
             feature.put("gew_a", toNullIfZero(getLengthGewAll(gem) * 100 / getLengthGewAll()));
             feature.put("gew_l", toNullIfZero(getLengthGewAll(gem)));
+            final double lengthSee = getLengthSeeAbschn(gem);
             feature.put(
                 "offene_a",
                 toNullIfZero(
-                    (getLengthGewAll(gem) - getLengthGeschlAbschn(gem) - getLengthSeeAbschn(gem))
+                    (getLengthGewAll(gem) - getLengthGeschlAbschn(gem) - lengthSee)
                             * 100
                             / (getLengthGewAll(gem))));
             feature.put(
                 "offene_l",
-                toNullIfZero(getLengthGewAll(gem) - getLengthGeschlAbschn(gem) - getLengthSeeAbschn(gem)));
-            feature.put("see_a", toNullIfZero(getCountSeeAbschn(gem)));
-            feature.put("see_l", toNullIfZero(getLengthSeeAbschn(gem)));
+                toNullIfZero(getLengthGewAll(gem) - getLengthGeschlAbschn(gem) - lengthSee));
+            feature.put(
+                "see_a",
+                toNullIfZero(lengthSee * 100 / (getLengthGewAll(gem))));
+            feature.put("see_l", toNullIfZero(lengthSee));
             feature.put(
                 "geschl_a",
                 toNullIfZero(
                     getLengthGeschlAbschn(gem)
                             * 100
-                            / (getLengthOffeneAbschn(gem) + getLengthGeschlAbschn(gem))));
+                            / (getLengthGewAll(gem))));
             feature.put("geschl_l", toNullIfZero(getLengthGeschlAbschn(gem)));
             feature.put(
                 "wschutz_a",
@@ -505,7 +508,8 @@ public class KatasterGemeindeReport {
                 toNullIfZero(
                     percentage(
                         getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_prof, gem),
-                        getLengthOffeneAbschn(gem))));
+                        getLengthGewAll(gem)
+                                - getLengthGeschlAbschn(gem))));
             feature.put("prof_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_prof, gem)));
             feature.put("sbef_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_sbef, gem)));
             feature.put("sbef_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_sbef, gem)));
@@ -2038,11 +2042,12 @@ public class KatasterGemeindeReport {
             }
 
             kumFeature.put("offene_a", toNullIfZero(offene * 100.0 / (offene + geschl + see)));
+            kumFeature.put("see_a", toNullIfZero(see * 100.0 / (offene + geschl + see)));
             kumFeature.put("geschl_a", toNullIfZero(geschl * 100.0 / (offene + geschl + see)));
             if (offene == 0.0) {
                 kumFeature.put("prof_a", 0.0);
             } else {
-                kumFeature.put("prof_a", toNullIfZero(prof * 100.0 / (offene)));
+                kumFeature.put("prof_a", toNullIfZero(prof * 100.0 / (offene + see)));
             }
         }
 

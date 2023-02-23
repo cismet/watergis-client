@@ -1115,7 +1115,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @param  text  DOCUMENT ME!
      */
-    protected void showMessage(final String text) {
+    protected static void showMessage(final String text) {
         final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(), true, text);
         d.setSize(500, 80);
         StaticSwingTools.showDialog(d);
@@ -3429,6 +3429,34 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
+    protected static class OnOwnRouteStationStartOrEndCheck extends OnOwnRouteStationCheck {
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public boolean isStationValid(final CidsBean route, final double start, final double end) {
+            final Geometry routeGeom = (Geometry)route.getProperty("geom.geo_field");
+
+            if (routeGeom == null) {
+                return false;
+            }
+            final boolean result = (start == 0.0) || (Math.abs(end - routeGeom.getLength()) < 0.01);
+
+            if (!result) {
+                WatergisDefaultRuleSet.showMessage(NbBundle.getMessage(
+                        OnOwnRouteStationStartOrEndCheck.class,
+                        "WatergisDefaultRuleSet.OnOwnRouteStationStartOrEndCheck.isStationValid().false"));
+            }
+
+            return result;
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
     protected static class OnOtherRouteStationCheck implements StationCreationCheck {
 
         //~ Methods ------------------------------------------------------------
@@ -3462,6 +3490,11 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             }
 
             return false;
+        }
+
+        @Override
+        public boolean isStationValid(final CidsBean feature, final double start, final double end) {
+            return true;
         }
 
         /**
