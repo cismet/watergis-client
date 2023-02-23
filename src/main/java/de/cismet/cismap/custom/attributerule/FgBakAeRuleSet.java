@@ -148,7 +148,7 @@ public class FgBakAeRuleSet extends WatergisDefaultRuleSet {
     @Override
     public FeatureCreator getFeatureCreator() {
         final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_bak");
-        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
+        final OnOwnRouteStationStartOrEndCheck check = new OnOwnRouteStationStartOrEndCheck();
 
         final StationLineCreator creator = new StationLineCreator(
                 "bak_st",
