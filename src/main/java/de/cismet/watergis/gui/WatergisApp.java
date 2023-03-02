@@ -815,11 +815,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             mniCreateDbUser.setEnabled(false);
             mniSb.setEnabled(false);
             mniFl.setEnabled(false);
+            mniGewaesserRep1.setEnabled(false);
             mniGewaesserRep2.setEnabled(false);
             mniGemeinde2.setEnabled(false);
             mniSb2.setEnabled(false);
             mniFl2.setEnabled(false);
-            mniGewaesserRep3.setEnabled(false);
             mniGemeinde1.setEnabled(false);
             mniSb1.setEnabled(false);
             mniFl1.setEnabled(false);
@@ -5566,7 +5566,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     }
                     String query = null;
 
-                    if (hasArrayValue(attributeNames, "ww_gr")) {
+                    if (hasArrayValue(attributeNames, "ww_gr") && (afs instanceof CidsLayer)) {
                         if (AppBroker.getInstance().isGu()) {
                             query = "dlm25wPk_ww_gr1.wdm = '" + AppBroker.getInstance().getOwner() + "'";
                         }
