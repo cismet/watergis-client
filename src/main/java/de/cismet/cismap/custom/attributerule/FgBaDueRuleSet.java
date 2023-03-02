@@ -161,7 +161,7 @@ public class FgBaDueRuleSet extends WatergisDefaultRuleSet {
         if (column.equals("ho_d_iauf") && !checkRange(column, newValue, 0, 15, 0, 30, true, false, true)) {
             return oldValue;
         }
-        if (column.equals("br_tr_o_li") && !checkRangeBetweenOrEqual(column, newValue, 0.05, 4, 0.025, 6, true)) {
+        if (column.equals("br_tr_o_li") && !checkRangeBetweenOrEqual(column, newValue, 0.05, 5, 0.025, 10, true)) {
             return oldValue;
         }
 
@@ -172,12 +172,12 @@ public class FgBaDueRuleSet extends WatergisDefaultRuleSet {
                         newValue = Math.round(((Number)newValue).doubleValue());
                     }
                 }
-                if (!checkRangeBetweenOrEqual("br_dm_li", newValue, 50, 4000, 25, 6000, true)) {
+                if (!checkRangeBetweenOrEqual("br_dm_li", newValue, 50, 5000, 25, 10000, true)) {
                     return oldValue;
                 }
             }
             if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
-                if (!checkRangeBetweenOrEqual("br_dm_li", newValue, 0.05, 4, 0.025, 6, true)) {
+                if (!checkRangeBetweenOrEqual("br_dm_li", newValue, 0.05, 5, 0.025, 10, true)) {
                     return oldValue;
                 }
             }
@@ -190,12 +190,12 @@ public class FgBaDueRuleSet extends WatergisDefaultRuleSet {
                         newValue = Math.round(((Number)newValue).doubleValue());
                     }
                 }
-                if (!checkRangeBetweenOrEqual("ho_li", newValue, 50, 4000, 25, 6000, true)) {
+                if (!checkRangeBetweenOrEqual("ho_li", newValue, 50, 5000, 25, 10000, true)) {
                     return oldValue;
                 }
             }
             if (feature.getProperty("profil").equals("re") || feature.getProperty("profil").equals("tr")) {
-                if (!checkRangeBetweenOrEqual("ho_li", newValue, 0.05, 4, 0.025, 6, true)) {
+                if (!checkRangeBetweenOrEqual("ho_li", newValue, 0.05, 5, 0.025, 10, true)) {
                     return oldValue;
                 }
             }

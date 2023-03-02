@@ -139,6 +139,7 @@ public class KatasterGewaesserReportDialog extends javax.swing.JDialog {
     private KatasterGewaesserReportDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        txtFile.setText(DownloadManager.instance().getDestinationDirectory().getPath());
 
         if (!modal) {
             // is not required, if the dialog is modal
@@ -519,7 +520,6 @@ public class KatasterGewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         jPanel2.add(ckbSbef, gridBagConstraints);
 
-        ckbLeis.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbLeis,
             org.openide.util.NbBundle.getMessage(
@@ -733,7 +733,6 @@ public class KatasterGewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
         jPanel2.add(ckbScha, gridBagConstraints);
 
-        ckbTech.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbTech,
             org.openide.util.NbBundle.getMessage(
@@ -871,7 +870,6 @@ public class KatasterGewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
         jPanel2.add(jLabel11, gridBagConstraints);
 
-        ckbDok.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbDok,
             org.openide.util.NbBundle.getMessage(
@@ -889,7 +887,6 @@ public class KatasterGewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         jPanel2.add(ckbDok, gridBagConstraints);
 
-        ckbProj.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbProj,
             org.openide.util.NbBundle.getMessage(

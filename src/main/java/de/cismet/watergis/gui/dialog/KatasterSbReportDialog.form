@@ -93,7 +93,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbWsg">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbWsg.text_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -309,7 +308,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbLeis">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbLeis.text_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -355,7 +353,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbSchutzgebiete">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbSchutzgebiete.text_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -477,7 +474,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbAus">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbAus.text_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -511,7 +507,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbDeich">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbDeich.text_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -555,7 +550,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbTech">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbTech.text_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -577,7 +571,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbPegel">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbPegel.text_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -687,7 +680,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbBen">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbBen.text_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -721,7 +713,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbDok">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbDok.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -743,7 +734,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbProj">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbProj.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>
@@ -765,7 +755,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="ckbFoto">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="de/cismet/watergis/gui/dialog/Bundle.properties" key="KatasterSbReportDialog.ckbFoto.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;, {arguments})"/>
             </Property>

@@ -2051,6 +2051,11 @@ public class KatasterGemeindeReport {
             }
         }
 
+        kumFeature.put("wschutz_a", null);
+        kumFeature.put("ueber_a", null);
+        kumFeature.put("gmd_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, null)));
+        kumFeature.put("gb_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_gb, null)));
+
         return kumFeature;
     }
 
@@ -3980,7 +3985,7 @@ public class KatasterGemeindeReport {
             final List<GmdPartObj> gemList = gemPartMap.get(gemNr);
 
             for (final GmdPartObj tmp : gemList) {
-                if (tmp.getOwner().equals(owner)) {
+                if ((owner == null) || tmp.getOwner().equals(owner)) {
                     set.addAll(gemData.getIds(table, tmp.getId(), tmp.getFrom(), tmp.getTill()));
                 }
             }
