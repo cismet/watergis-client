@@ -132,6 +132,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
     private GewaesserReportDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        txtFile.setText(DownloadManager.instance().getDestinationDirectory().getPath());
 
         if (!isGu) {
             ckbAnll.setEnabled(false);

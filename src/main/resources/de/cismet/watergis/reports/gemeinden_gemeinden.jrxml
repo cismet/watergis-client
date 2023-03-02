@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Standgewässer" pageWidth="3302" pageHeight="595" orientation="Landscape" columnWidth="3262" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6283ab9-3ec2-40b0-9063-7ae6b4ace177">
 	<property name="ireport.zoom" value="1.4641000000000008"/>
-	<property name="ireport.x" value="596"/>
+	<property name="ireport.x" value="1958"/>
 	<property name="ireport.y" value="0"/>
 	<import value="de.cismet.cids.dynamics.CidsBean"/>
 	<import value="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -268,8 +268,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[geschlossene
-Abschnitte]]></text>
+				<text><![CDATA[geschlossen]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="column_header_style" mode="Opaque" x="758" y="28" width="94" height="28" backcolor="#BFBFBF" uuid="0babe4df-b69b-43db-8a96-492e0e09617c">
@@ -633,7 +632,7 @@ Benutzungen]]></text>
 					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Sohl-
-befestigung]]></text>
+befestigungen]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement mode="Opaque" x="1456" y="0" width="94" height="14" backcolor="#FDFD00" uuid="d0626d4c-2a00-4e87-b6a3-d52894389d21">

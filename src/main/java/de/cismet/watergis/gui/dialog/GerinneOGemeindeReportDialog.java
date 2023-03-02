@@ -104,6 +104,7 @@ public class GerinneOGemeindeReportDialog extends javax.swing.JDialog {
     private GerinneOGemeindeReportDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        txtFile.setText(DownloadManager.instance().getDestinationDirectory().getPath());
 
         if (!modal) {
             // is not required, if the dialog is modal
