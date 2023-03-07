@@ -624,7 +624,8 @@ public class KatasterGemeindeReport {
                     "prof_a",
                     percentage(
                         getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gem, gew),
-                        getLengthOffeneAbschn(gem, gew)));
+                        getLengthGew(gem, gew)
+                                - getLengthGeschlAbschn(gem, gew)));
                 feature.put("prof_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gem, gew));
                 feature.put("sbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, gem, gew));
                 feature.put("sbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, gem, gew));
@@ -806,7 +807,8 @@ public class KatasterGemeindeReport {
                             gew.getId(),
                             gew.getFrom(),
                             gew.getTill()),
-                        getLengthOffeneAbschn(gem, gew.getId(), gew.getFrom(), gew.getTill())));
+                        gew.getLength()
+                                - getLengthGeschlAbschn(gem, gew.getId(), gew.getFrom(), gew.getTill())));
                 feature.put(
                     "prof_l",
                     getLengthLineObjects(
@@ -1158,7 +1160,8 @@ public class KatasterGemeindeReport {
                     "prof_a",
                     percentage(
                         getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gem, guName),
-                        getLengthOffeneAbschn(gem, guName)));
+                        getLengthGew(gem, guName)
+                                - getLengthGeschlAbschn(gem, guName)));
                 feature.put("prof_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, gem, guName));
                 feature.put("sbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, gem, guName));
                 feature.put("sbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, gem, guName));
@@ -1319,7 +1322,8 @@ public class KatasterGemeindeReport {
                                 AllLineObjects.Table.fg_ba_prof,
                                 gem,
                                 wdm),
-                            getLengthOffeneAbschn(gem, guName, wdm)));
+                            getLengthGew(gem, wdm)
+                                    - getLengthGeschlAbschn(gem, wdm)));
                     feature.put(
                         "prof_l",
                         getLengthLineObjects(
@@ -1543,80 +1547,101 @@ public class KatasterGemeindeReport {
      * @throws  Exception  DOCUMENT ME!
      */
     private FeatureDataSource getGuTable() throws Exception {
-        final List<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> features = new ArrayList<>();
 
         sheetNames.add("GU");
-        final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> featureListKum = new ArrayList<>();
         for (final String guName : getGu()) {
-            final Map<String, Object> feature = new HashMap<String, Object>();
+            final Map<String, Object> feature = new HashMap<>();
             feature.put("anzahlGu", getCountGu());
             feature.put("group", 1);
             feature.put("gu", getGuId(guName));
             feature.put("guName", guName);
             feature.put("gewAnzahl", getCountGew(guName));
             feature.put("gewLaenge", getLengthGew(guName));
-            feature.put("offene_a", getCountOffeneAbschn(guName));
-            feature.put("offene_l", getLengthOffeneAbschn(guName));
-            feature.put("see_a", getCountLineObjects(GemeindenData.LineFromPolygonTable.sg_see, guName));
-            feature.put("see_l", getLengthLineObjects(GemeindenData.LineFromPolygonTable.sg_see, guName));
-            feature.put("geschl_a", getCountGeschlAbschn(guName));
-            feature.put("geschl_l", getLengthGeschlAbschn(guName));
+            final double lengthSee = getLengthLineObjects(GemeindenData.LineFromPolygonTable.sg_see, guName);
+
+            feature.put(
+                "offene_a",
+                toNullIfZero(
+                    (getLengthGew(guName) - getLengthGeschlAbschn(guName) - lengthSee)
+                            * 100
+                            / (getLengthGew(guName))));
+            feature.put(
+                "offene_l",
+                toNullIfZero(getLengthGew(guName) - getLengthGeschlAbschn(guName) - lengthSee));
+            feature.put(
+                "see_a",
+                toNullIfZero(lengthSee * 100 / (getLengthGew(guName))));
+            feature.put("see_l", toNullIfZero(lengthSee));
+
+            feature.put(
+                "geschl_a",
+                toNullIfZero(
+                    getLengthGeschlAbschn(guName)
+                            * 100
+                            / (getLengthGew(guName))));
+            feature.put("geschl_l", toNullIfZero(getLengthGeschlAbschn(guName)));
             feature.put(
                 "wschutz_a",
-                getCountLineObjects(GemeindenData.LineFromPolygonTable.wr_sg_wsg, guName));
+                toNullIfZero(getCountLineObjects(GemeindenData.LineFromPolygonTable.wr_sg_wsg, guName)));
             feature.put(
                 "wschutz_l",
-                getLengthLineObjects(GemeindenData.LineFromPolygonTable.wr_sg_wsg, guName));
-            feature.put("ueber_a", getCountLineObjects(GemeindenData.LineFromPolygonTable.wr_sg_uesg, guName));
+                toNullIfZero(getLengthLineObjects(GemeindenData.LineFromPolygonTable.wr_sg_wsg, guName)));
+            feature.put(
+                "ueber_a",
+                toNullIfZero(getCountLineObjects(GemeindenData.LineFromPolygonTable.wr_sg_uesg, guName)));
             feature.put(
                 "ueber_l",
-                getLengthLineObjects(GemeindenData.LineFromPolygonTable.wr_sg_uesg, guName));
-            feature.put("ben_a", getCountPointObjects(AllPunktObjects.Table.wr_wbu_ben, guName));
-            feature.put("aus_a", getCountPointObjects(AllPunktObjects.Table.wr_wbu_aus, guName));
-            feature.put("pegel_a", getCountPointObjects(AllPunktObjects.Table.mn_ow_pegel, guName));
-            feature.put("gb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_gb, guName));
-            feature.put("gb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, guName));
-            feature.put("sb_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sb, guName));
-            feature.put("sb_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, guName));
+                toNullIfZero(getLengthLineObjects(GemeindenData.LineFromPolygonTable.wr_sg_uesg, guName)));
+            feature.put("ben_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.wr_wbu_ben, guName)));
+            feature.put("aus_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.wr_wbu_aus, guName)));
+            feature.put("pegel_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.mn_ow_pegel, guName)));
+            feature.put("gb_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_gb, guName)));
+            feature.put("gb_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_gb, guName)));
+            feature.put("sb_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_sb, guName)));
+            feature.put("sb_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_sb, guName)));
             feature.put(
                 "prof_a",
-                percentage(
-                    getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName),
-                    getLengthOffeneAbschn(guName)));
-            feature.put("prof_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName));
-            feature.put("sbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, guName));
-            feature.put("sbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, guName));
-            feature.put("ubef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_ubef, guName));
-            feature.put("ubef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_ubef, guName));
-            feature.put("bbef_a", getCountLineObjects(AllLineObjects.Table.fg_ba_bbef, guName));
-            feature.put("bbef_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_bbef, guName));
-            feature.put("rl_a", getCountLineObjects(AllLineObjects.Table.fg_ba_rl, guName));
-            feature.put("rl_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_rl, guName));
-            feature.put("d_a", getCountLineObjects(AllLineObjects.Table.fg_ba_d, guName));
-            feature.put("d_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_d, guName));
-            feature.put("due_a", getCountLineObjects(AllLineObjects.Table.fg_ba_due, guName));
-            feature.put("due_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_due, guName));
-            feature.put("scha_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_scha, guName));
-            feature.put("wehr_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_wehr, guName));
-            feature.put("schw_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_schw, guName));
-            feature.put("foto_a", getCountPointObjects(AllPunktObjects.Table.foto, guName));
-            feature.put("anlp_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_anlp, guName));
-            feature.put("anll_a", getCountLineObjects(AllLineObjects.Table.fg_ba_anll, guName));
-            feature.put("anll_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, guName));
-            feature.put("kr_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, guName));
-            feature.put("ea_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, guName));
-            feature.put("deich_a", getCountLineObjects(AllLineObjects.Table.fg_ba_deich, guName));
-            feature.put("deich_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, guName));
-            feature.put("ughz_a", getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, guName));
-            feature.put("ughz_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_ughz, guName));
-            feature.put("leis_a", getCountLineObjects(AllLineObjects.Table.fg_ba_leis, guName));
-            feature.put("leis_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_leis, guName));
-            feature.put("tech_a", getCountLineObjects(AllLineObjects.Table.fg_ba_tech, guName));
-            feature.put("tech_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_tech, guName));
-            feature.put("dok_a", getCountLineObjects(AllLineObjects.Table.fg_ba_doku, guName));
-            feature.put("dok_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_doku, guName));
-            feature.put("proj_a", getCountLineObjects(AllLineObjects.Table.fg_ba_proj, guName));
-            feature.put("proj_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_proj, guName));
+                toNullIfZero(
+                    percentage(
+                        getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName),
+                        getLengthGew(guName)
+                                - getLengthGeschlAbschn(guName))));
+            feature.put("prof_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName)));
+            feature.put("sbef_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_sbef, guName)));
+            feature.put("sbef_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_sbef, guName)));
+            feature.put("ubef_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_ubef, guName)));
+            feature.put("ubef_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_ubef, guName)));
+            feature.put("bbef_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_bbef, guName)));
+            feature.put("bbef_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_bbef, guName)));
+            feature.put("rl_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_rl, guName)));
+            feature.put("rl_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_rl, guName)));
+            feature.put("d_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_d, guName)));
+            feature.put("d_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_d, guName)));
+            feature.put("due_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_due, guName)));
+            feature.put("due_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_due, guName)));
+            feature.put("scha_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_scha, guName)));
+            feature.put("wehr_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_wehr, guName)));
+            feature.put("schw_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_schw, guName)));
+            feature.put("foto_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.foto, guName)));
+            feature.put("anlp_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_anlp, guName)));
+            feature.put("anll_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_anll, guName)));
+            feature.put("anll_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, guName)));
+            feature.put("kr_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, guName)));
+            feature.put("ea_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, guName)));
+            feature.put("deich_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_deich, guName)));
+            feature.put("deich_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, guName)));
+            feature.put("ughz_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, guName)));
+            feature.put("ughz_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_ughz, guName)));
+            feature.put("leis_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_leis, guName)));
+            feature.put("leis_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_leis, guName)));
+            feature.put("tech_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_tech, guName)));
+            feature.put("tech_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_tech, guName)));
+            feature.put("dok_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_doku, guName)));
+            feature.put("dok_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_doku, guName)));
+            feature.put("proj_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_proj, guName)));
+            feature.put("proj_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_proj, guName)));
 
             features.add(feature);
             featureListKum.add(feature);
@@ -1650,299 +1675,308 @@ public class KatasterGemeindeReport {
                 feature.put("widmung", String.valueOf(wdm));
                 feature.put("gew_a", getCountGew(guName, wdm));
                 feature.put("gew_l", getLengthGew(guName, wdm));
-                feature.put("offene_a", getCountOffeneAbschn(guName, wdm));
-                feature.put("offene_l", getLengthOffeneAbschn(guName, wdm));
+                final double lengthSee = getLengthLineObjects(GemeindenData.LineFromPolygonTable.sg_see, guName, wdm);
+
+                feature.put(
+                    "offene_a",
+                    toNullIfZero(
+                        (getLengthGew(guName, wdm) - getLengthGeschlAbschn(guName, wdm) - lengthSee)
+                                * 100
+                                / (getLengthGew(guName, wdm))));
+                feature.put(
+                    "offene_l",
+                    toNullIfZero(getLengthGew(guName, wdm) - getLengthGeschlAbschn(guName, wdm) - lengthSee));
                 feature.put(
                     "see_a",
-                    getCountLineObjects(
-                        GemeindenData.LineFromPolygonTable.sg_see,
-                        guName,
-                        wdm));
+                    toNullIfZero(lengthSee * 100 / (getLengthGew(guName, wdm))));
+                feature.put("see_l", toNullIfZero(lengthSee));
+
                 feature.put(
-                    "see_l",
-                    getLengthLineObjects(
-                        GemeindenData.LineFromPolygonTable.sg_see,
-                        guName,
-                        wdm));
-                feature.put("geschl_a", getCountGeschlAbschn(guName, wdm));
-                feature.put("geschl_l", getLengthGeschlAbschn(guName, wdm));
+                    "geschl_a",
+                    toNullIfZero(
+                        getLengthGeschlAbschn(guName, wdm)
+                                * 100
+                                / (getLengthGew(guName, wdm))));
+                feature.put("geschl_l", toNullIfZero(getLengthGeschlAbschn(guName, wdm)));
                 feature.put(
                     "wschutz_a",
-                    getCountLineObjects(
-                        GemeindenData.LineFromPolygonTable.wr_sg_wsg,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            GemeindenData.LineFromPolygonTable.wr_sg_wsg,
+                            guName,
+                            wdm)));
                 feature.put(
                     "wschutz_l",
-                    getLengthLineObjects(
-                        GemeindenData.LineFromPolygonTable.wr_sg_wsg,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            GemeindenData.LineFromPolygonTable.wr_sg_wsg,
+                            guName,
+                            wdm)));
                 feature.put(
                     "ueber_a",
-                    getCountLineObjects(
-                        GemeindenData.LineFromPolygonTable.wr_sg_uesg,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            GemeindenData.LineFromPolygonTable.wr_sg_uesg,
+                            guName,
+                            wdm)));
                 feature.put(
                     "ueber_l",
-                    getLengthLineObjects(
-                        GemeindenData.LineFromPolygonTable.wr_sg_uesg,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            GemeindenData.LineFromPolygonTable.wr_sg_uesg,
+                            guName,
+                            wdm)));
                 feature.put(
                     "ben_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.wr_wbu_ben,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(
+                            AllPunktObjects.Table.wr_wbu_ben,
+                            guName,
+                            wdm)));
                 feature.put(
                     "aus_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.wr_wbu_aus,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(
+                            AllPunktObjects.Table.wr_wbu_aus,
+                            guName,
+                            wdm)));
                 feature.put(
                     "pegel_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.mn_ow_pegel,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(
+                            AllPunktObjects.Table.mn_ow_pegel,
+                            guName,
+                            wdm)));
                 feature.put(
                     "gb_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_gb,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_gb,
+                            guName,
+                            wdm)));
                 feature.put(
                     "gb_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_gb,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_gb,
+                            guName,
+                            wdm)));
                 feature.put(
                     "sb_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_sb,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_sb,
+                            guName,
+                            wdm)));
                 feature.put(
                     "sb_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_sb,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_sb,
+                            guName,
+                            wdm)));
                 feature.put(
                     "prof_a",
-                    percentage(
-                        getLengthLineObjects(
-                            AllLineObjects.Table.fg_ba_prof,
-                            guName,
-                            wdm),
-                        getLengthOffeneAbschn(guName, wdm)));
+                    toNullIfZero(
+                        percentage(
+                            getLengthLineObjects(
+                                AllLineObjects.Table.fg_ba_prof,
+                                guName,
+                                wdm),
+                            getLengthGew(guName, wdm)
+                                    - getLengthGeschlAbschn(guName, wdm))));
                 feature.put(
                     "prof_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_prof,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_prof,
+                            guName,
+                            wdm)));
                 feature.put(
                     "sbef_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_sbef,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_sbef,
+                            guName,
+                            wdm)));
                 feature.put(
                     "sbef_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_sbef,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_sbef,
+                            guName,
+                            wdm)));
                 feature.put(
                     "ubef_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_ubef,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_ubef,
+                            guName,
+                            wdm)));
                 feature.put(
                     "ubef_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_ubef,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_ubef,
+                            guName,
+                            wdm)));
                 feature.put(
                     "bbef_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_bbef,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_bbef,
+                            guName,
+                            wdm)));
                 feature.put(
                     "bbef_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_bbef,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_bbef,
+                            guName,
+                            wdm)));
                 feature.put(
                     "rl_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_rl,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_rl,
+                            guName,
+                            wdm)));
                 feature.put(
                     "rl_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_rl,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_rl,
+                            guName,
+                            wdm)));
                 feature.put(
                     "d_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_d,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_d,
+                            guName,
+                            wdm)));
                 feature.put(
                     "d_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_d,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_d,
+                            guName,
+                            wdm)));
                 feature.put(
                     "due_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_due,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_due,
+                            guName,
+                            wdm)));
                 feature.put(
                     "due_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_due,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_due,
+                            guName,
+                            wdm)));
                 feature.put(
                     "scha_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.fg_ba_scha,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(
+                            AllPunktObjects.Table.fg_ba_scha,
+                            guName,
+                            wdm)));
                 feature.put(
                     "wehr_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.fg_ba_wehr,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(
+                            AllPunktObjects.Table.fg_ba_wehr,
+                            guName,
+                            wdm)));
                 feature.put(
                     "schw_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.fg_ba_schw,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(
+                            AllPunktObjects.Table.fg_ba_schw,
+                            guName,
+                            wdm)));
                 feature.put(
                     "foto_a",
-                    getCountPointObjects(AllPunktObjects.Table.foto,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(AllPunktObjects.Table.foto,
+                            guName,
+                            wdm)));
                 feature.put(
                     "anlp_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.fg_ba_anlp,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(
+                            AllPunktObjects.Table.fg_ba_anlp,
+                            guName,
+                            wdm)));
                 feature.put(
                     "anll_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_anll,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_anll,
+                            guName,
+                            wdm)));
                 feature.put(
                     "anll_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_anll,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_anll,
+                            guName,
+                            wdm)));
                 feature.put(
                     "kr_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.fg_ba_kr,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(
+                            AllPunktObjects.Table.fg_ba_kr,
+                            guName,
+                            wdm)));
                 feature.put(
                     "ea_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.fg_ba_ea,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountPointObjects(
+                            AllPunktObjects.Table.fg_ba_ea,
+                            guName,
+                            wdm)));
                 feature.put(
                     "deich_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_deich,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_deich,
+                            guName,
+                            wdm)));
                 feature.put(
                     "deich_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_deich,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_deich,
+                            guName,
+                            wdm)));
                 feature.put(
                     "ughz_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_ughz,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_ughz,
+                            guName,
+                            wdm)));
                 feature.put(
                     "ughz_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_ughz,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_ughz,
+                            guName,
+                            wdm)));
                 feature.put(
                     "leis_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_leis,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_leis,
+                            guName,
+                            wdm)));
                 feature.put(
                     "leis_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_leis,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_leis,
+                            guName,
+                            wdm)));
                 feature.put(
                     "tech_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_tech,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_tech,
+                            guName,
+                            wdm)));
                 feature.put(
                     "tech_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_tech,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_tech,
+                            guName,
+                            wdm)));
                 feature.put(
                     "dok_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_doku,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_doku,
+                            guName,
+                            wdm)));
                 feature.put(
                     "dok_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_doku,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_doku,
+                            guName,
+                            wdm)));
                 feature.put(
                     "proj_a",
-                    getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_proj,
-                        guName,
-                        wdm));
+                    toNullIfZero(getCountLineObjects(
+                            AllLineObjects.Table.fg_ba_proj,
+                            guName,
+                            wdm)));
                 feature.put(
                     "proj_l",
-                    getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_proj,
-                        guName,
-                        wdm));
+                    toNullIfZero(getLengthLineObjects(
+                            AllLineObjects.Table.fg_ba_proj,
+                            guName,
+                            wdm)));
 
                 features.add(feature);
                 featureListKum.add(feature);
@@ -2053,8 +2087,21 @@ public class KatasterGemeindeReport {
 
         kumFeature.put("wschutz_a", null);
         kumFeature.put("ueber_a", null);
-        kumFeature.put("gmd_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_gmd, null)));
+        kumFeature.put("sb_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_sb, null)));
         kumFeature.put("gb_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_gb, null)));
+        kumFeature.put("sbef_a", null);
+        kumFeature.put("ubef_a", null);
+        kumFeature.put("bbef_a", null);
+        kumFeature.put("rl_a", null);
+        kumFeature.put("d_a", null);
+        kumFeature.put("due_a", null);
+        kumFeature.put("anll_a", null);
+        kumFeature.put("deich_a", null);
+        kumFeature.put("ughz_a", null);
+        kumFeature.put("leis_a", null);
+        kumFeature.put("tech_a", null);
+        kumFeature.put("dok_a", null);
+        kumFeature.put("proj_a", null);
 
         return kumFeature;
     }
