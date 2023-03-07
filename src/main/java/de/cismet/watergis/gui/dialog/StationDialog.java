@@ -26,6 +26,8 @@ import com.vividsolutions.jts.linearref.LengthIndexedLine;
 
 import org.apache.log4j.Logger;
 
+import org.deegree.datatypes.Types;
+
 import org.openide.util.NbBundle;
 
 import java.awt.Component;
@@ -78,6 +80,95 @@ public class StationDialog extends javax.swing.JDialog {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(StationDialog.class);
+    private static final String SLD =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sld:StyledLayerDescriptor xmlns:sld=\"http://www.opengis.net/sld\" xmlns:xslutil=\"de.latlon.deejump.plugin.style.XSLUtility\" xmlns:java=\"java\" xmlns:deegreewfs=\"http://www.deegree.org/wfs\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns=\"http://www.opengis.net/sld\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\" xmlns:oj=\"http://cismet.de\" oj:dummy=\"\">\n"
+                + "  <sld:NamedLayer>\n"
+                + "    <sld:Name>$LAYER_NAME$</sld:Name>\n"
+                + "    <sld:UserStyle>\n"
+                + "      <sld:Name>$LAYER_NAME$</sld:Name>\n"
+                + "      <sld:Title>$LAYER_NAME$</sld:Title>\n"
+                + "      <sld:IsDefault>1</sld:IsDefault>\n"
+                + "      <sld:FeatureTypeStyle>\n"
+                + "        <sld:Name>$LAYER_NAME$</sld:Name>\n"
+                + "        <sld:Rule>\n"
+                + "          <sld:Name>basicPointStyle</sld:Name>\n"
+                + "          <sld:PointSymbolizer>\n"
+                + "            <sld:Geometry>\n"
+                + "              <ogc:PropertyName>geom</ogc:PropertyName>\n"
+                + "            </sld:Geometry>\n"
+                + "            <sld:Graphic>\n"
+                + "              <sld:Mark>\n"
+                + "                <sld:Fill>\n"
+                + "                  <sld:CssParameter name=\"fill\">#ff0033</sld:CssParameter>\n"
+                + "                  <sld:CssParameter name=\"fill-opacity\">1.0</sld:CssParameter>\n"
+                + "                </sld:Fill>\n"
+                + "                <sld:Stroke>\n"
+                + "                  <sld:CssParameter name=\"stroke\">#b20023</sld:CssParameter>\n"
+                + "                  <sld:CssParameter name=\"stroke-opacity\">1.0</sld:CssParameter>\n"
+                + "                  <sld:CssParameter name=\"stroke-width\">1</sld:CssParameter>\n"
+                + "                </sld:Stroke>\n"
+                + "              </sld:Mark>\n"
+                + "            </sld:Graphic>\n"
+                + "          </sld:PointSymbolizer>\n"
+                + "        </sld:Rule>\n"
+                + "        <sld:Rule>\n"
+                + "          <sld:Name>pointStyle</sld:Name>\n"
+                + "          <sld:PointSymbolizer>\n"
+                + "            <sld:Geometry>\n"
+                + "              <ogc:PropertyName>geom</ogc:PropertyName>\n"
+                + "            </sld:Geometry>\n"
+                + "            <sld:Graphic>\n"
+                + "              <sld:Mark>\n"
+                + "                <sld:WellKnownName>square</sld:WellKnownName>\n"
+                + "                <sld:Fill>\n"
+                + "                  <sld:CssParameter name=\"fill\">#ff0033</sld:CssParameter>\n"
+                + "                  <sld:CssParameter name=\"fill-opacity\">1.0</sld:CssParameter>\n"
+                + "                </sld:Fill>\n"
+                + "                <sld:Stroke>\n"
+                + "                  <sld:CssParameter name=\"stroke\">#b20023</sld:CssParameter>\n"
+                + "                  <sld:CssParameter name=\"stroke-opacity\">1.0</sld:CssParameter>\n"
+                + "                  <sld:CssParameter name=\"stroke-width\">1</sld:CssParameter>\n"
+                + "                </sld:Stroke>\n"
+                + "              </sld:Mark>\n"
+                + "              <sld:Size>8</sld:Size>\n"
+                + "            </sld:Graphic>\n"
+                + "          </sld:PointSymbolizer>\n"
+                + "        </sld:Rule>\n"
+                + "        <sld:Rule>\n"
+                + "          <sld:Name>labelStyle</sld:Name>\n"
+                + "          <sld:TextSymbolizer>\n"
+                + "            <sld:Geometry>\n"
+                + "              <ogc:PropertyName>geom</ogc:PropertyName>\n"
+                + "            </sld:Geometry>\n"
+                + "            <sld:Label>\n"
+                + "              <ogc:PropertyName>stat_c</ogc:PropertyName>\n"
+                + "            </sld:Label>\n"
+                + "            <sld:Font>\n"
+                + "              <sld:CssParameter name=\"font-family\">Dialog</sld:CssParameter>\n"
+                + "              <sld:CssParameter name=\"font-style\">normal</sld:CssParameter>\n"
+                + "              <sld:CssParameter name=\"font-size\">12.0</sld:CssParameter>\n"
+                + "              <sld:CssParameter name=\"font-color\">#ff0000</sld:CssParameter>\n"
+                + "            </sld:Font>\n"
+                + "            <sld:LabelPlacement>\n"
+                + "              <sld:PointPlacement>\n"
+                + "                <sld:Displacement>\n"
+                + "                  <sld:DisplacementX>0</sld:DisplacementX>\n"
+                + "                  <sld:DisplacementY>0</sld:DisplacementY>\n"
+                + "                </sld:Displacement>\n"
+                + "              </sld:PointPlacement>\n"
+                + "            </sld:LabelPlacement>\n"
+                + "            <sld:Fill>\n"
+                + "              <sld:CssParameter name=\"fill\">#ff0000</sld:CssParameter>\n"
+                + "              <sld:CssParameter name=\"fill-opacity\">1</sld:CssParameter>\n"
+                + "            </sld:Fill>\n"
+                + "            <VendorOption xmlns=\"\" name=\"verticalAlignment\" alignment=\"DEFAULT\"/>\n"
+                + "            <VendorOption xmlns=\"\" name=\"horizontalPosition\" alignment=\"CENTER\"/>\n"
+                + "          </sld:TextSymbolizer>\n"
+                + "        </sld:Rule>\n"
+                + "      </sld:FeatureTypeStyle>\n"
+                + "    </sld:UserStyle>\n"
+                + "  </sld:NamedLayer>\n"
+                + "</sld:StyledLayerDescriptor>";
 
     //~ Instance fields --------------------------------------------------------
 
@@ -96,8 +187,10 @@ public class StationDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JLabel labSelected;
     private javax.swing.JLabel labTableAbstand;
+    private javax.swing.JLabel labTableAbstand1;
     private javax.swing.JLabel labTableName;
     private javax.swing.JLabel labTheme;
+    private javax.swing.JTextField txtAbst;
     private javax.swing.JTextField txtTable;
     // End of variables declaration//GEN-END:variables
 
@@ -140,7 +233,7 @@ public class StationDialog extends javax.swing.JDialog {
                             cellHasFocus);
                 }
             });
-        txtTable.setText("FG|Stationen|10");
+        txtTable.setText("Stationen|frei");
         CismapBroker.getInstance()
                 .getMappingComponent()
                 .getFeatureCollection()
@@ -288,6 +381,8 @@ public class StationDialog extends javax.swing.JDialog {
         labSelected = new javax.swing.JLabel();
         labTableAbstand = new javax.swing.JLabel();
         cbDistance = new javax.swing.JComboBox();
+        txtAbst = new javax.swing.JTextField();
+        labTableAbstand1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(StationDialog.class, "StationDialog.title", new Object[] {})); // NOI18N
@@ -319,6 +414,7 @@ public class StationDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
@@ -351,6 +447,7 @@ public class StationDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
@@ -409,7 +506,7 @@ public class StationDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(jPanel1, gridBagConstraints);
 
@@ -424,6 +521,7 @@ public class StationDialog extends javax.swing.JDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel4.add(ckbSelected, gridBagConstraints);
 
@@ -453,11 +551,11 @@ public class StationDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(15, 10, 10, 10);
         getContentPane().add(labTableAbstand, gridBagConstraints);
 
-        cbDistance.setMinimumSize(new java.awt.Dimension(200, 27));
-        cbDistance.setPreferredSize(new java.awt.Dimension(200, 27));
+        cbDistance.setMinimumSize(new java.awt.Dimension(100, 27));
+        cbDistance.setPreferredSize(new java.awt.Dimension(100, 27));
         cbDistance.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -474,6 +572,42 @@ public class StationDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(15, 10, 10, 10);
         getContentPane().add(cbDistance, gridBagConstraints);
 
+        txtAbst.setToolTipText(org.openide.util.NbBundle.getMessage(
+                StationDialog.class,
+                "StationDialog.txtAbst.toolTipText",
+                new Object[] {})); // NOI18N
+        txtAbst.setMinimumSize(new java.awt.Dimension(50, 27));
+        txtAbst.setPreferredSize(new java.awt.Dimension(50, 27));
+        txtAbst.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    txtAbstActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 10, 10, 10);
+        getContentPane().add(txtAbst, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            labTableAbstand1,
+            org.openide.util.NbBundle.getMessage(
+                StationDialog.class,
+                "StationDialog.labTableAbstand1.text",
+                new Object[] {})); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(15, 10, 10, 10);
+        getContentPane().add(labTableAbstand1, gridBagConstraints);
+
         pack();
     } // </editor-fold>//GEN-END:initComponents
 
@@ -482,16 +616,16 @@ public class StationDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }                                                                             //GEN-LAST:event_butCancelActionPerformed
+    }//GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         final String tableName = txtTable.getText();
         final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
@@ -528,6 +662,12 @@ public class StationDialog extends javax.swing.JDialog {
                         distance = (Integer)distanceObject;
                     }
 
+                    try {
+                        distance = Integer.parseInt(txtAbst.getText());
+                    } catch (NumberFormatException e) {
+                        // nothing to do. If the value is not parsable, the value from then combobox will be used.
+                    }
+
                     // initialise variables for the geo operation
                     final List<FeatureServiceFeature> resultedFeatures = new ArrayList<FeatureServiceFeature>();
                     if ((featureList == null) || (featureList.size() == 0)) {
@@ -548,12 +688,18 @@ public class StationDialog extends javax.swing.JDialog {
                     FeatureServiceAttribute attr = new FeatureServiceAttribute("id", "integer", false);
                     attributes.put("id", attr);
                     orderedAttributeNames.add("id");
-                    attr = new FeatureServiceAttribute("stat", "integer", false);
+                    attr = new FeatureServiceAttribute("stat", String.valueOf(Types.INTEGER), false);
                     orderedAttributeNames.add("stat");
                     attributes.put("stat", attr);
                     attr = new FeatureServiceAttribute("geom", "Geometry", false);
                     orderedAttributeNames.add("geom");
                     attributes.put("geom", attr);
+                    attr = new FeatureServiceAttribute("stat_km", String.valueOf(Types.DOUBLE), false);
+                    orderedAttributeNames.add("stat_km");
+                    attributes.put("stat_km", attr);
+                    attr = new FeatureServiceAttribute("stat_c", String.valueOf(Types.VARCHAR), false);
+                    orderedAttributeNames.add("stat_c");
+                    attributes.put("stat_c", attr);
                     newLayerProperties.getFeatureService().setFeatureServiceAttributes(attributes);
 
                     wd.setText(NbBundle.getMessage(
@@ -582,6 +728,8 @@ public class StationDialog extends javax.swing.JDialog {
                                 final JDBCFeature newFeature = (JDBCFeature)service.getFeatureFactory()
                                             .createNewFeature();
                                 newFeature.setProperty("stat", geomIndex);
+                                newFeature.setProperty("stat_km", geomIndex / 1000.0);
+                                newFeature.setProperty("stat_c", ((int)geomIndex / 1000) + "+" + (geomIndex % 1000));
                                 newFeature.setGeometry(factory.createPoint(coordinate));
                                 newFeature.saveChangesWithoutUpdateEnvelope();
                             } else {
@@ -589,6 +737,8 @@ public class StationDialog extends javax.swing.JDialog {
                                 newFeature.setLayerProperties(newLayerProperties);
                                 newFeature.setGeometry(factory.createPoint(coordinate));
                                 newFeature.setProperty("stat", geomIndex);
+                                newFeature.setProperty("stat_km", geomIndex / 1000.0);
+                                newFeature.setProperty("stat_c", ((int)geomIndex / 1000) + "+" + (geomIndex % 1000));
                                 resultedFeatures.add(newFeature);
                                 ++featuresCreated;
                             }
@@ -611,7 +761,8 @@ public class StationDialog extends javax.swing.JDialog {
 
                         // refresh the progress bar
                         if (progress < (10 + (count * 80 / featureList.size()))) {
-                            progress = 10 + (count * 80 / featureList.size());
+                            progress = 10
+                                        + (count * 80 / featureList.size());
                             wd.setProgress(progress);
                         }
                     }
@@ -640,6 +791,7 @@ public class StationDialog extends javax.swing.JDialog {
                         final H2FeatureService service = get();
 
                         if (service != null) {
+                            service.setSLDInputStream(SLD.replace("$LAYER_NAME$", tableName));
                             FeatureServiceHelper.addServiceLayerToTheTree(service);
                         }
                     } catch (Exception ex) {
@@ -661,7 +813,7 @@ public class StationDialog extends javax.swing.JDialog {
             this.setVisible(false);
             wdt.start();
         }
-    } //GEN-LAST:event_butOkActionPerformed
+    }//GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -690,7 +842,7 @@ public class StationDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         selectedThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -699,25 +851,34 @@ public class StationDialog extends javax.swing.JDialog {
                 selectedThemeFeatureCount,
                 labSelected);
         enabledOrNot();
-    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
+    }//GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbDistanceActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbDistanceActionPerformed
+    private void cbDistanceActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbDistanceActionPerformed
         // TODO add your handling code here:
-    } //GEN-LAST:event_cbDistanceActionPerformed
+    }//GEN-LAST:event_cbDistanceActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtTableActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_txtTableActionPerformed
-        txtTable.setText("FG|Stationen|" + String.valueOf(cbDistance.getSelectedItem()));
-    }                                                                            //GEN-LAST:event_txtTableActionPerformed
+    private void txtTableActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTableActionPerformed
+        txtTable.setText("Stationen|frei");
+    }//GEN-LAST:event_txtTableActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtAbstActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAbstActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAbstActionPerformed
 
     /**
      * refreshes the labSelectedFeatures label.
@@ -788,7 +949,8 @@ public class StationDialog extends javax.swing.JDialog {
      */
     private void enabledOrNot() {
         final boolean isServiceSelected = (cbTheme.getSelectedItem() instanceof AbstractFeatureService)
-                    && (txtTable.getText() != null) && !txtTable.getText().equals("");
+                    && (txtTable.getText() != null)
+                    && !txtTable.getText().equals("");
 
         butOk.setEnabled(isServiceSelected);
     }

@@ -400,6 +400,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JButton cmdDrawingOptions;
     private javax.swing.JButton cmdExportMap1;
     private javax.swing.JButton cmdExportMap2;
+    private javax.swing.JButton cmdFreeStat;
     private javax.swing.JButton cmdFullExtend;
     private javax.swing.JButton cmdGeoLink;
     private javax.swing.JButton cmdGeometryOpMode;
@@ -2493,6 +2494,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         tbtnMeasure = new MeasureButton();
         tbtnMeasureLineMode = new javax.swing.JToggleButton();
         cmdAddBookmark = new javax.swing.JButton();
+        cmdFreeStat = new javax.swing.JButton();
         cmdManageBookmarks = new javax.swing.JButton();
         tbtnPhotoInfoMode = new javax.swing.JToggleButton();
         tbtnProfileInfoMode = new javax.swing.JToggleButton();
@@ -3027,6 +3029,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdAddBookmark.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdAddBookmark.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdAddBookmark);
+
+        cmdFreeStat.setAction(stationAction1);
+        cmdFreeStat.setFocusable(false);
+        cmdFreeStat.setHideActionText(true);
+        cmdFreeStat.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdFreeStat.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdFreeStat);
 
         cmdManageBookmarks.setAction(showManageBookmarksDialogAction);
         cmdManageBookmarks.setFocusable(false);
@@ -3853,10 +3862,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGewaesser.setAction(gewaesserReportAction);
         org.openide.awt.Mnemonics.setLocalizedText(
             mniGewaesser,
-            org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.mniGewaesser.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniGewaesser.text", new Object[] {
+                }));               // NOI18N
         mniGewaesser.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniGewaesser.toolTipText",

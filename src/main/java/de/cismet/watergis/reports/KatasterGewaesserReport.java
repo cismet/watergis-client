@@ -1124,7 +1124,7 @@ public class KatasterGewaesserReport {
                     "prof_a",
                     toNullIfZero(
                         percentage(
-                            getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName),
+                            getLengthLineObjects(AllLineObjects.Table.fg_ba_prof, guName, wdm),
                             getLengthOffeneAbschn(guName, wdm))));
 //                feature.put(
 //                    "prof_a",
