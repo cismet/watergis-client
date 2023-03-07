@@ -67,12 +67,12 @@ public class StationAction extends AbstractGeoprocessingAction {
 
     @Override
     public final String getName() {
-        return "Stationierung";
+        return "Freie Stationierung";
     }
 
     @Override
     public final String getShortDescription() {
-        return "Stationierung";
+        return "Freie Stationierung";
     }
 
     @Override
