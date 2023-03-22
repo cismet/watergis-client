@@ -48,6 +48,7 @@ import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
 import de.cismet.cismap.commons.featureservice.factory.H2FeatureServiceFactory;
+import de.cismet.cismap.commons.gui.attributetable.AttributeTableFactory;
 import de.cismet.cismap.commons.gui.capabilitywidget.CapabilityWidget;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.gui.layerwidget.ZoomToLayerWorker;
@@ -342,10 +343,6 @@ public class FeatureServiceHelper {
                 }
             }
 
-            if (!service.isInitialized()) {
-                service.initAndWait();
-            }
-
             return service.getFeatureFactory().createFeatures(
                     service.getQuery(),
                     bb,
@@ -376,6 +373,49 @@ public class FeatureServiceHelper {
         }
 
         return result;
+    }
+
+    /**
+     * Provides all selected features of the given service.
+     *
+     * @param   featureService  service the service, the selected features should be returned for
+     *
+     * @return  all selected features of the given service
+     */
+    public static boolean isAllOrNoneFeaturesSelected(final AbstractFeatureService featureService) {
+        final List<FeatureServiceFeature> result = new ArrayList<FeatureServiceFeature>();
+        final List<Feature> selectedFeatures = SelectionManager.getInstance().getSelectedFeatures(featureService);
+
+        if ((selectedFeatures == null) || selectedFeatures.isEmpty()) {
+            return true;
+        }
+
+        try {
+            if (!featureService.isInitialized()) {
+                featureService.initAndWait();
+            }
+            final Geometry g = ZoomToLayerWorker.getServiceBounds(featureService);
+            XBoundingBox bb = null;
+
+            if (g != null) {
+                bb = new XBoundingBox(g);
+
+                try {
+                    final CrsTransformer transformer = new CrsTransformer(CismapBroker.getInstance().getSrs()
+                                    .getCode());
+                    bb = transformer.transformBoundingBox(bb);
+                } catch (Exception e) {
+                    LOG.error("Cannot transform CRS.", e);
+                }
+            }
+
+            final int featureCount = featureService.getFeatureFactory().getFeatureCount(featureService.getQuery(), bb);
+
+            return featureCount == selectedFeatures.size();
+        } catch (Exception e) {
+            LOG.error("Error while determine total feature count", e);
+            return false;
+        }
     }
 
     /**

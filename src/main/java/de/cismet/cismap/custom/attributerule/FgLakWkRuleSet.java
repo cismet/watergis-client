@@ -37,6 +37,7 @@ public class FgLakWkRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("lak_st_von", new Numeric(10, 2, false, false));
         typeMap.put("lak_st_bis", new Numeric(10, 2, false, false));
         typeMap.put("wk_nr", new Varchar(50, false, false));
+        typeMap.put("wk_fedfue", new Varchar(2, false, false));
         typeMap.put("wk_ordnung", new Numeric(1, 0, false, false));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("laenge_wk", new Numeric(10, 2, false, false));
@@ -78,7 +79,7 @@ public class FgLakWkRuleSet extends WatergisDefaultRuleSet {
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("laenge")) {
-            return -4;
+            return -5;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }

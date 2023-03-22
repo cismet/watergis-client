@@ -54,52 +54,58 @@ public class Alkis42000RuleSet extends WatergisDefaultRuleSet {
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
         adjustFisGDateAndFisGUser(feature);
+        final Geometry geom = ((Geometry)feature.getProperty("geom"));
+
+        if (geom != null) {
+            final Long flaeche = Math.round(geom.getArea());
+            feature.getProperties().put("flaeche", flaeche);
+        }
     }
 
     @Override
     public void afterSave(final TableModel model) {
     }
 
-    @Override
-    public String[] getAdditionalFieldNames() {
-        return new String[] { "flaeche" };
-    }
-
-    @Override
-    public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("flaeche")) {
-            return -1;
-        } else {
-            return super.getIndexOfAdditionalFieldName(name);
-        }
-    }
-
-    @Override
-    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Long value = null;
-
-        final Geometry geom = ((Geometry)feature.getProperty("geom"));
-
-        if (geom != null) {
-            value = Math.round(geom.getArea());
-        }
-
-        return value;
-    }
-
-    @Override
-    public String getAdditionalFieldFormula(final String propertyName) {
-        if (propertyName.equals("flaeche")) {
-            return "round(st_area(geom))";
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public Class getAdditionalFieldClass(final int index) {
-        return Long.class;
-    }
+//    @Override
+//    public String[] getAdditionalFieldNames() {
+//        return new String[] { "flaeche" };
+//    }
+//
+//    @Override
+//    public int getIndexOfAdditionalFieldName(final String name) {
+//        if (name.equals("flaeche")) {
+//            return -1;
+//        } else {
+//            return super.getIndexOfAdditionalFieldName(name);
+//        }
+//    }
+//
+//    @Override
+//    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
+//        Long value = null;
+//
+//        final Geometry geom = ((Geometry)feature.getProperty("geom"));
+//
+//        if (geom != null) {
+//            value = Math.round(geom.getArea());
+//        }
+//
+//        return value;
+//    }
+//
+//    @Override
+//    public String getAdditionalFieldFormula(final String propertyName) {
+//        if (propertyName.equals("flaeche")) {
+//            return "round(st_area(geom))";
+//        } else {
+//            return null;
+//        }
+//    }
+//
+//    @Override
+//    public Class getAdditionalFieldClass(final int index) {
+//        return Long.class;
+//    }
 
     @Override
     public FeatureCreator getFeatureCreator() {

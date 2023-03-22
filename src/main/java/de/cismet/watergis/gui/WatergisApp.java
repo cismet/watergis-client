@@ -2493,8 +2493,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         tbtnInfo = new javax.swing.JToggleButton();
         tbtnMeasure = new MeasureButton();
         tbtnMeasureLineMode = new javax.swing.JToggleButton();
-        cmdAddBookmark = new javax.swing.JButton();
         cmdFreeStat = new javax.swing.JButton();
+        cmdAddBookmark = new javax.swing.JButton();
         cmdManageBookmarks = new javax.swing.JButton();
         tbtnPhotoInfoMode = new javax.swing.JToggleButton();
         tbtnProfileInfoMode = new javax.swing.JToggleButton();
@@ -3020,6 +3020,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         tbtnMeasureLineMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(tbtnMeasureLineMode);
 
+        cmdFreeStat.setAction(stationAction1);
+        cmdFreeStat.setFocusable(false);
+        cmdFreeStat.setHideActionText(true);
+        cmdFreeStat.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cmdFreeStat.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tobDLM25W.add(cmdFreeStat);
+
         cmdAddBookmark.setAction(showCreateBookmarkDialogAction);
         cmdAddBookmark.setFocusable(false);
         cmdAddBookmark.setHideActionText(true);
@@ -3029,13 +3036,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdAddBookmark.setPreferredSize(new java.awt.Dimension(26, 26));
         cmdAddBookmark.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         tobDLM25W.add(cmdAddBookmark);
-
-        cmdFreeStat.setAction(stationAction1);
-        cmdFreeStat.setFocusable(false);
-        cmdFreeStat.setHideActionText(true);
-        cmdFreeStat.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cmdFreeStat.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tobDLM25W.add(cmdFreeStat);
 
         cmdManageBookmarks.setAction(showManageBookmarksDialogAction);
         cmdManageBookmarks.setFocusable(false);

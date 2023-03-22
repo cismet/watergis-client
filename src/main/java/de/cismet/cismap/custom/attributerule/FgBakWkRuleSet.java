@@ -215,7 +215,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
         if (columnName.equals("wk_nr")) {
             if ((value instanceof String) && (clickCount == 1)) {
                 String urlTemplate = URL_TEMPLATE;
-                final String ff = (String)feature.getProperty("federfuehrung");
+                final String ff = (String)feature.getProperty("wk_fedfue");
 
                 if (ff != null) {
                     if (ff.equals("Brandenburg")) {
