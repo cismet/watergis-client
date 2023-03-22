@@ -13,14 +13,13 @@ package de.cismet.watergis.server;
 
 import org.apache.log4j.Logger;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.AbstractHandler;
-import org.mortbay.jetty.handler.HandlerCollection;
-import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 
 import java.io.IOException;
 
@@ -66,7 +65,7 @@ public class GeoLinkServer {
                                 }
 
                                 final Server server = new Server();
-                                final Connector connector = new SelectChannelConnector();
+                                final ServerConnector connector = new ServerConnector(server);
                                 connector.setPort(AppBroker.getInstance().getWatergisApp().getHttpInterfacePort());
                                 server.setConnectors(new Connector[] { connector });
 
@@ -74,11 +73,11 @@ public class GeoLinkServer {
 
                                         @Override
                                         public void handle(final String target,
+                                                final Request rqst,
                                                 final HttpServletRequest request,
-                                                final HttpServletResponse response,
-                                                final int dispatch) throws IOException, ServletException {
-                                            final Request base_request = (request instanceof Request)
-                                                ? (Request)request : HttpConnection.getCurrentConnection().getRequest();
+                                                final HttpServletResponse response) throws IOException,
+                                            ServletException {
+                                            final Request base_request = rqst;
                                             base_request.setHandled(true);
                                             response.setContentType("text/html");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // NOI18N
                                             response.setStatus(HttpServletResponse.SC_ACCEPTED);
@@ -92,9 +91,10 @@ public class GeoLinkServer {
 
                                         @Override
                                         public void handle(final String target,
+                                                final Request rqst,
                                                 final HttpServletRequest request,
-                                                final HttpServletResponse response,
-                                                final int dispatch) throws IOException, ServletException {
+                                                final HttpServletResponse response) throws IOException,
+                                            ServletException {
                                             try {
                                                 if (request.getLocalAddr().equals(request.getRemoteAddr())) {
                                                     LOG.info("HttpInterface connected"); // NOI18N
