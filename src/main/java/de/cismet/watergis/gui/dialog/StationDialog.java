@@ -61,8 +61,11 @@ import de.cismet.cismap.commons.featureservice.LayerProperties;
 import de.cismet.cismap.commons.gui.layerwidget.ActiveLayerModel;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
+import de.cismet.cismap.custom.attributerule.MessageDialog;
+
 import de.cismet.connectioncontext.ConnectionContext;
 
+import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
@@ -578,6 +581,13 @@ public class StationDialog extends javax.swing.JDialog {
                 new Object[] {})); // NOI18N
         txtAbst.setMinimumSize(new java.awt.Dimension(50, 27));
         txtAbst.setPreferredSize(new java.awt.Dimension(50, 27));
+        txtAbst.addFocusListener(new java.awt.event.FocusAdapter() {
+
+                @Override
+                public void focusLost(final java.awt.event.FocusEvent evt) {
+                    txtAbstFocusLost(evt);
+                }
+            });
         txtAbst.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -616,204 +626,247 @@ public class StationDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butCancelActionPerformed
+    private void butCancelActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butCancelActionPerformed
         setVisible(false);
-    }//GEN-LAST:event_butCancelActionPerformed
+    }                                                                             //GEN-LAST:event_butCancelActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         final String tableName = txtTable.getText();
-        final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
-                        .getInstance().getWatergisApp(),
-                true,
-                "Erstelle Stationen                                       ",
-                null,
-                100,
-                true) {
 
-                @Override
-                protected H2FeatureService doInBackground() throws Exception {
-                    // retrieve Features
-                    final Object distanceObject = cbDistance.getSelectedItem();
-                    int distance = 10;
-                    int progress = 10;
-                    wd.setText(NbBundle.getMessage(
+        try {
+            if ((txtAbst.getText() != null) && !txtAbst.getText().equals("")) {
+                Integer.parseInt(txtAbst.getText());
+            }
+        } catch (NumberFormatException e) {
+            final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    true,
+                    "Bitte nur ganzzahlige Werte verwenden.");
+            d.setSize(500, 80);
+            StaticSwingTools.showDialog(d);
+            txtAbst.setText("");
+
+            return;
+        }
+
+        try {
+            final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
+                    service,
+                    ckbSelected.isSelected());
+
+            final List<FeatureServiceFeature> resultedFeatures = new ArrayList<>();
+            if ((featureList == null) || (featureList.isEmpty())) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Es wurden keine Objekte ausgewählt");
+                return;
+            } else if (!ckbSelected.isSelected() || FeatureServiceHelper.isAllOrNoneFeaturesSelected(service)) {
+                final int answ = JOptionPane.showConfirmDialog(AppBroker.getInstance().getWatergisApp(),
+                        NbBundle.getMessage(
                             StationDialog.class,
-                            "BufferDialog.butOkActionPerformed.doInBackground.retrieving"));
-                    wd.setMax(100);
-                    wd.setProgress(5);
-                    if (Thread.interrupted()) {
-                        return null;
-                    }
-                    final List<FeatureServiceFeature> featureList = FeatureServiceHelper.getFeatures(
-                            service,
-                            ckbSelected.isSelected());
-                    wd.setProgress(10);
-                    if (Thread.interrupted()) {
-                        return null;
-                    }
-
-                    if (distanceObject instanceof Integer) {
-                        distance = (Integer)distanceObject;
-                    }
-
-                    try {
-                        distance = Integer.parseInt(txtAbst.getText());
-                    } catch (NumberFormatException e) {
-                        // nothing to do. If the value is not parsable, the value from then combobox will be used.
-                    }
-
-                    // initialise variables for the geo operation
-                    final List<FeatureServiceFeature> resultedFeatures = new ArrayList<FeatureServiceFeature>();
-                    if ((featureList == null) || (featureList.size() == 0)) {
-                        JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                            "Es wurden keine Objekte ausgewählt");
-                        return null;
-                    }
-                    final LayerProperties serviceLayerProperties = featureList.get(0).getLayerProperties();
-                    final LayerProperties newLayerProperties = serviceLayerProperties.clone();
-                    int count = 0;
-
-                    newLayerProperties.setFeatureService((AbstractFeatureService)
-                        serviceLayerProperties.getFeatureService().clone());
-
-                    final List<String> orderedAttributeNames = new ArrayList();
-                    final Map<String, FeatureServiceAttribute> attributes =
-                        new HashMap<String, FeatureServiceAttribute>();
-                    FeatureServiceAttribute attr = new FeatureServiceAttribute("id", "integer", false);
-                    attributes.put("id", attr);
-                    orderedAttributeNames.add("id");
-                    attr = new FeatureServiceAttribute("stat", String.valueOf(Types.INTEGER), false);
-                    orderedAttributeNames.add("stat");
-                    attributes.put("stat", attr);
-                    attr = new FeatureServiceAttribute("geom", "Geometry", false);
-                    orderedAttributeNames.add("geom");
-                    attributes.put("geom", attr);
-                    attr = new FeatureServiceAttribute("stat_km", String.valueOf(Types.DOUBLE), false);
-                    orderedAttributeNames.add("stat_km");
-                    attributes.put("stat_km", attr);
-                    attr = new FeatureServiceAttribute("stat_c", String.valueOf(Types.VARCHAR), false);
-                    orderedAttributeNames.add("stat_c");
-                    attributes.put("stat_c", attr);
-                    newLayerProperties.getFeatureService().setFeatureServiceAttributes(attributes);
-
-                    wd.setText(NbBundle.getMessage(
+                            "StationDialog.butOkActionPerformed().allFeatures.message"),
+                        NbBundle.getMessage(
                             StationDialog.class,
-                            "BufferDialog.butOkActionPerformed.doInBackground.createFeatures"));
-                    final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
-                            CismapBroker.getInstance().getDefaultCrsAlias());
-                    H2FeatureService service = null;
-                    int featuresCreated = 0;
+                            "StationDialog.butOkActionPerformed().allFeatures.title"),
+                        JOptionPane.YES_NO_OPTION);
 
-                    // creates stations
-                    for (final FeatureServiceFeature f : featureList) {
-                        final Geometry geom = f.getGeometry();
-                        ++count;
+                if (answ == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }
 
-                        if (geom == null) {
-                            continue;
+            final WaitingDialogThread<H2FeatureService> wdt = new WaitingDialogThread<H2FeatureService>(AppBroker
+                            .getInstance().getWatergisApp(),
+                    true,
+                    "Erstelle Stationen                                       ",
+                    null,
+                    100,
+                    true) {
+
+                    @Override
+                    protected H2FeatureService doInBackground() throws Exception {
+                        // retrieve Features
+                        final Object distanceObject = cbDistance.getSelectedItem();
+                        int distance = 10;
+                        int progress = 10;
+                        wd.setText(NbBundle.getMessage(
+                                StationDialog.class,
+                                "BufferDialog.butOkActionPerformed.doInBackground.retrieving"));
+                        wd.setMax(100);
+                        wd.setProgress(5);
+                        if (Thread.interrupted()) {
+                            return null;
+                        }
+                        wd.setProgress(10);
+                        if (Thread.interrupted()) {
+                            return null;
                         }
 
-                        final LengthIndexedLine lil = new LengthIndexedLine(geom);
+                        if (distanceObject instanceof Integer) {
+                            distance = (Integer)distanceObject;
+                        }
 
-                        for (int geomIndex = 0; geomIndex < geom.getLength(); geomIndex = geomIndex + distance) {
-                            final Coordinate coordinate = lil.extractPoint(geomIndex);
+                        try {
+                            distance = Integer.parseInt(txtAbst.getText());
+                        } catch (NumberFormatException e) {
+                            // can never happen
+                        }
 
-                            if (service != null) {
-                                final JDBCFeature newFeature = (JDBCFeature)service.getFeatureFactory()
-                                            .createNewFeature();
-                                newFeature.setProperty("stat", geomIndex);
-                                newFeature.setProperty("stat_km", geomIndex / 1000.0);
-                                newFeature.setProperty("stat_c", ((int)geomIndex / 1000) + "+" + (geomIndex % 1000));
-                                newFeature.setGeometry(factory.createPoint(coordinate));
-                                newFeature.saveChangesWithoutUpdateEnvelope();
-                            } else {
-                                final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
-                                newFeature.setLayerProperties(newLayerProperties);
-                                newFeature.setGeometry(factory.createPoint(coordinate));
-                                newFeature.setProperty("stat", geomIndex);
-                                newFeature.setProperty("stat_km", geomIndex / 1000.0);
-                                newFeature.setProperty("stat_c", ((int)geomIndex / 1000) + "+" + (geomIndex % 1000));
-                                resultedFeatures.add(newFeature);
-                                ++featuresCreated;
+                        // initialise variables for the geo operation
+                        final LayerProperties serviceLayerProperties = featureList.get(0).getLayerProperties();
+                        final LayerProperties newLayerProperties = serviceLayerProperties.clone();
+                        int count = 0;
+
+                        newLayerProperties.setFeatureService((AbstractFeatureService)
+                            serviceLayerProperties.getFeatureService().clone());
+
+                        final List<String> orderedAttributeNames = new ArrayList();
+                        final Map<String, FeatureServiceAttribute> attributes = new HashMap<>();
+                        FeatureServiceAttribute attr = new FeatureServiceAttribute("id", "integer", false);
+                        attributes.put("id", attr);
+                        orderedAttributeNames.add("id");
+                        attr = new FeatureServiceAttribute("stat", String.valueOf(Types.INTEGER), false);
+                        orderedAttributeNames.add("stat");
+                        attributes.put("stat", attr);
+                        attr = new FeatureServiceAttribute("geom", "Geometry", false);
+                        orderedAttributeNames.add("geom");
+                        attributes.put("geom", attr);
+                        attr = new FeatureServiceAttribute("stat_km", String.valueOf(Types.DOUBLE), false);
+                        orderedAttributeNames.add("stat_km");
+                        attributes.put("stat_km", attr);
+                        attr = new FeatureServiceAttribute("stat_c", String.valueOf(Types.VARCHAR), false);
+                        orderedAttributeNames.add("stat_c");
+                        attributes.put("stat_c", attr);
+                        newLayerProperties.getFeatureService().setFeatureServiceAttributes(attributes);
+
+                        wd.setText(NbBundle.getMessage(
+                                StationDialog.class,
+                                "BufferDialog.butOkActionPerformed.doInBackground.createFeatures"));
+                        final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                                CismapBroker.getInstance().getDefaultCrsAlias());
+                        H2FeatureService service = null;
+                        int featuresCreated = 0;
+
+                        // creates stations
+                        for (final FeatureServiceFeature f : featureList) {
+                            final Geometry geom = f.getGeometry();
+                            ++count;
+
+                            if (geom == null) {
+                                continue;
+                            }
+
+                            final LengthIndexedLine lil = new LengthIndexedLine(geom);
+
+                            for (int geomIndex = 0; geomIndex < geom.getLength(); geomIndex = geomIndex + distance) {
+                                final Coordinate coordinate = lil.extractPoint(geomIndex);
+
+                                if (service != null) {
+                                    final JDBCFeature newFeature = (JDBCFeature)service.getFeatureFactory()
+                                                .createNewFeature();
+                                    newFeature.setProperty("stat", geomIndex);
+                                    newFeature.setProperty("stat_km", geomIndex / 1000.0);
+                                    newFeature.setProperty(
+                                        "stat_c",
+                                        ((int)geomIndex / 1000)
+                                                + "+"
+                                                + (geomIndex % 1000));
+                                    newFeature.setGeometry(factory.createPoint(coordinate));
+                                    newFeature.saveChangesWithoutUpdateEnvelope();
+                                } else {
+                                    final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
+                                    newFeature.setLayerProperties(newLayerProperties);
+                                    newFeature.setGeometry(factory.createPoint(coordinate));
+                                    newFeature.setProperty("stat", geomIndex);
+                                    newFeature.setProperty("stat_km", geomIndex / 1000.0);
+                                    newFeature.setProperty(
+                                        "stat_c",
+                                        ((int)geomIndex / 1000)
+                                                + "+"
+                                                + (geomIndex % 1000));
+                                    resultedFeatures.add(newFeature);
+                                    ++featuresCreated;
+                                }
+                            }
+
+                            if (Thread.interrupted()) {
+                                return null;
+                            }
+                            if (featuresCreated > 50000) {
+                                if (service == null) {
+                                    service = FeatureServiceHelper.createNewService(AppBroker.getInstance()
+                                                    .getWatergisApp(),
+                                            resultedFeatures,
+                                            tableName,
+                                            orderedAttributeNames);
+                                }
+
+                                featuresCreated = 0;
+                            }
+
+                            // refresh the progress bar
+                            if (progress < (10 + (count * 80 / featureList.size()))) {
+                                progress = 10
+                                            + (count * 80 / featureList.size());
+                                wd.setProgress(progress);
                             }
                         }
 
                         if (Thread.interrupted()) {
                             return null;
                         }
-                        if (featuresCreated > 50000) {
-                            if (service == null) {
-                                service = FeatureServiceHelper.createNewService(AppBroker.getInstance()
-                                                .getWatergisApp(),
-                                        resultedFeatures,
-                                        tableName,
-                                        orderedAttributeNames);
+
+                        if (service == null) {
+                            // create the service
+                            wd.setText(NbBundle.getMessage(
+                                    StationDialog.class,
+                                    "BufferDialog.butOkActionPerformed.doInBackground.creatingDatasource"));
+                            return FeatureServiceHelper.createNewService(AppBroker.getInstance().getWatergisApp(),
+                                    resultedFeatures,
+                                    tableName,
+                                    orderedAttributeNames);
+                        } else {
+                            return service;
+                        }
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            final H2FeatureService service = get();
+
+                            if (service != null) {
+                                service.setSLDInputStream(SLD.replace("$LAYER_NAME$", tableName));
+                                FeatureServiceHelper.addServiceLayerToTheTree(service);
                             }
-
-                            featuresCreated = 0;
-                        }
-
-                        // refresh the progress bar
-                        if (progress < (10 + (count * 80 / featureList.size()))) {
-                            progress = 10
-                                        + (count * 80 / featureList.size());
-                            wd.setProgress(progress);
+                        } catch (Exception ex) {
+                            LOG.error("Error while execute the buffer operation.", ex);
                         }
                     }
+                };
 
-                    if (Thread.interrupted()) {
-                        return null;
-                    }
-
-                    if (service == null) {
-                        // create the service
-                        wd.setText(NbBundle.getMessage(
-                                StationDialog.class,
-                                "BufferDialog.butOkActionPerformed.doInBackground.creatingDatasource"));
-                        return FeatureServiceHelper.createNewService(AppBroker.getInstance().getWatergisApp(),
-                                resultedFeatures,
-                                tableName,
-                                orderedAttributeNames);
-                    } else {
-                        return service;
-                    }
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        final H2FeatureService service = get();
-
-                        if (service != null) {
-                            service.setSLDInputStream(SLD.replace("$LAYER_NAME$", tableName));
-                            FeatureServiceHelper.addServiceLayerToTheTree(service);
-                        }
-                    } catch (Exception ex) {
-                        LOG.error("Error while execute the buffer operation.", ex);
-                    }
-                }
-            };
-
-        if (H2FeatureService.tableAlreadyExists(tableName)) {
-            JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
-                NbBundle.getMessage(
-                    StationDialog.class,
-                    "BufferDialog.butOkActionPerformed.tableAlreadyExists",
-                    tableName),
-                NbBundle.getMessage(StationDialog.class,
-                    "BufferDialog.butOkActionPerformed.tableAlreadyExists.title"),
-                JOptionPane.ERROR_MESSAGE);
-        } else {
-            this.setVisible(false);
-            wdt.start();
+            if (H2FeatureService.tableAlreadyExists(tableName)) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    NbBundle.getMessage(
+                        StationDialog.class,
+                        "BufferDialog.butOkActionPerformed.tableAlreadyExists",
+                        tableName),
+                    NbBundle.getMessage(
+                        StationDialog.class,
+                        "BufferDialog.butOkActionPerformed.tableAlreadyExists.title"),
+                    JOptionPane.ERROR_MESSAGE);
+            } else {
+                this.setVisible(false);
+                wdt.start();
+            }
+        } catch (Exception e) {
+            LOG.error("Error while execute the buffer operation.", e);
         }
-    }//GEN-LAST:event_butOkActionPerformed
+    } //GEN-LAST:event_butOkActionPerformed
 
     /**
      * DOCUMENT ME!
@@ -842,7 +895,7 @@ public class StationDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbThemeActionPerformed
+    private void cbThemeActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbThemeActionPerformed
         final AbstractFeatureService service = (AbstractFeatureService)cbTheme.getSelectedItem();
         selectedThemeFeatureCount = refreshSelectedFeatureCount(
                 false,
@@ -851,34 +904,54 @@ public class StationDialog extends javax.swing.JDialog {
                 selectedThemeFeatureCount,
                 labSelected);
         enabledOrNot();
-    }//GEN-LAST:event_cbThemeActionPerformed
+    }                                                                           //GEN-LAST:event_cbThemeActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void cbDistanceActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbDistanceActionPerformed
+    private void cbDistanceActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbDistanceActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cbDistanceActionPerformed
+    } //GEN-LAST:event_cbDistanceActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtTableActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTableActionPerformed
+    private void txtTableActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_txtTableActionPerformed
         txtTable.setText("Stationen|frei");
-    }//GEN-LAST:event_txtTableActionPerformed
+    }                                                                            //GEN-LAST:event_txtTableActionPerformed
 
     /**
      * DOCUMENT ME!
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtAbstActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAbstActionPerformed
+    private void txtAbstActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_txtAbstActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtAbstActionPerformed
+    } //GEN-LAST:event_txtAbstActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtAbstFocusLost(final java.awt.event.FocusEvent evt) { //GEN-FIRST:event_txtAbstFocusLost
+//        try {
+//            if (!txtAbst.getText().equals("")) {
+//                Integer.parseInt(txtAbst.getText());
+//            }
+//        } catch (NumberFormatException e) {
+//            final MessageDialog d = new MessageDialog(AppBroker.getInstance().getWatergisApp(),
+//                    true,
+//                    "Bitte nur ganzzahlige Werte verwenden.");
+//            d.setSize(500, 80);
+//            StaticSwingTools.showDialog(d);
+//            txtAbst.setText("");
+//        }
+    } //GEN-LAST:event_txtAbstFocusLost
 
     /**
      * refreshes the labSelectedFeatures label.

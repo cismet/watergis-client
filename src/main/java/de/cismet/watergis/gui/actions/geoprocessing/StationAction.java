@@ -83,6 +83,6 @@ public class StationAction extends AbstractGeoprocessingAction {
 
     @Override
     public int getSortOrder() {
-        return 50;
+        return 80;
     }
 }
