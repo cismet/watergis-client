@@ -11,8 +11,6 @@
  */
 package de.cismet.watergis.gui.panels;
 
-import org.mortbay.log.Log;
-
 import java.awt.BorderLayout;
 
 import java.beans.PropertyChangeEvent;
@@ -106,36 +104,36 @@ public class MapPanel extends javax.swing.JPanel implements FeatureCollectionLis
 
     @Override
     public void featuresAdded(final FeatureCollectionEvent fce) {
-        Log.info("MapPanel.featuresAdded(): Not supported yet.");
+        LOG.info("MapPanel.featuresAdded(): Not supported yet.");
     }
 
     @Override
     public void allFeaturesRemoved(final FeatureCollectionEvent fce) {
-        Log.info("MapPanel.allFeaturesRemoved(): Not supported yet.");
+        LOG.info("MapPanel.allFeaturesRemoved(): Not supported yet.");
     }
 
     @Override
     public void featuresRemoved(final FeatureCollectionEvent fce) {
-        Log.info("MapPanel.featuresRemoved(): Not supported yet.");
+        LOG.info("MapPanel.featuresRemoved(): Not supported yet.");
     }
 
     @Override
     public void featuresChanged(final FeatureCollectionEvent fce) {
-        Log.info("MapPanel.featuresChanged(): Not supported yet.");
+        LOG.info("MapPanel.featuresChanged(): Not supported yet.");
     }
 
     @Override
     public void featureSelectionChanged(final FeatureCollectionEvent fce) {
-        Log.info("MapPanel.featureSelectionChanged(): Not supported yet.");
+        LOG.info("MapPanel.featureSelectionChanged(): Not supported yet.");
     }
 
     @Override
     public void featureReconsiderationRequested(final FeatureCollectionEvent fce) {
-        Log.info("MapPanel.featureReconsiderationRequested(): Not supported yet.");
+        LOG.info("MapPanel.featureReconsiderationRequested(): Not supported yet.");
     }
 
     @Override
     public void featureCollectionChanged() {
-        Log.info("MapPanel.featureCollectionChanged(): Not supported yet.");
+        LOG.info("MapPanel.featureCollectionChanged(): Not supported yet.");
     }
 }
