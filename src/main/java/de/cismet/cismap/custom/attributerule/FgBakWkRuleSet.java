@@ -94,7 +94,7 @@ public class FgBakWkRuleSet extends WatergisDefaultRuleSet {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
                     && !columnName.equals("laenge") && !columnName.equals("geom")
                     && !columnName.equals("ba_cd") && !columnName.equals("id") && !columnName.equals("laenge_wk")
-                    && !columnName.equals("wk_fedfue");
+                    && !columnName.equals("wk_fedfue") && !columnName.equals("wk_ordnung");
     }
 
     @Override
