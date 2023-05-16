@@ -584,6 +584,57 @@ public class FeatureServiceHelper {
     }
 
     /**
+     * Creates a new service with the given name, that contains the given features.
+     *
+     * @param   c                            the parent is required to justify the probably required message dialog
+     * @param   features                     the features to add to te service
+     * @param   tableName                    the name of the new service
+     * @param   newFeatureServiceAttributes  DOCUMENT ME!
+     * @param   attributeOrder               the attribute order of the new service, or null, if the order does not care
+     *
+     * @return  the new service or null, iff the feature list is empty or null
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public static H2FeatureService createNewService(final Component c,
+            final List<FeatureServiceFeature> features,
+            final String tableName,
+            final List<FeatureServiceAttribute> newFeatureServiceAttributes,
+            final List<String> attributeOrder) throws Exception {
+        if ((features == null) || features.isEmpty()) {
+            if (c != null) {
+                JOptionPane.showMessageDialog(
+                    c,
+                    NbBundle.getMessage(
+                        FeatureServiceHelper.class,
+                        "FeatureServiceHelper.createNewService.noFeatures.message",
+                        tableName),
+                    NbBundle.getMessage(
+                        FeatureServiceHelper.class,
+                        "FeatureServiceHelper.createNewService.noFeatures.title"),
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+            return null;
+        } else {
+            final H2FeatureService internalService = new H2FeatureService(
+                    tableName,
+                    H2FeatureServiceFactory.DB_NAME,
+                    tableName,
+                    newFeatureServiceAttributes,
+                    null,
+                    features,
+                    attributeOrder,
+                    null);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("create the new data source");
+            }
+            internalService.initAndWait();
+
+            return internalService;
+        }
+    }
+
+    /**
      * Creates a new H2FeatureService.
      *
      * @param   attributes                the attributes of the features
