@@ -618,6 +618,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniShowProfiles;
     private javax.swing.JMenuItem mniShowTree;
     private javax.swing.JMenuItem mniStation;
+    private javax.swing.JMenuItem mniTechProf;
     private javax.swing.JMenuItem mniUnion;
     private javax.swing.JMenuItem mniUnselectAllDrawing;
     private javax.swing.JMenuItem mniUpload;
@@ -703,6 +704,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JToggleButton tbtnProfileInfoMode;
     private javax.swing.JToggleButton tbtnRemoveMode;
     private javax.swing.JToggleButton tbtnZoomMode;
+    private de.cismet.watergis.gui.actions.geoprocessing.TechProfAction techProfAction1;
     private javax.swing.JToolBar tobDLM25W;
     private de.cismet.watergis.gui.actions.geoprocessing.UnionGeoprocessingAction unionGeoprocessingAction;
     private de.cismet.watergis.gui.actions.selection.UnselectAllDrawingsAction unselectAllDrawingsAction;
@@ -965,6 +967,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         }
         mniGafUpload.setEnabled(checkForQP);
         mniGafUpload.setVisible(checkForQP);
+
+        final boolean checkForTechProf = AppBroker.getInstance().isAdminUser()
+                    || AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals("3100");
+        mniTechProf.setVisible(checkForTechProf);
+        mniTechProf.setEnabled(checkForTechProf);
         checkForCreatedObjects();
         Double scaleForPoint = 500.0;
 
@@ -2456,6 +2463,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         stationAction1 = new de.cismet.watergis.gui.actions.geoprocessing.StationAction();
         addThemeAction1 = new de.cismet.watergis.gui.actions.AddThemeAction();
         createViewsForUser1 = new de.cismet.watergis.gui.actions.CreateViewsForUser();
+        techProfAction1 = new de.cismet.watergis.gui.actions.geoprocessing.TechProfAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveSameFileProject = new javax.swing.JButton();
@@ -2579,6 +2587,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniPointInPolygon = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         mniStation = new javax.swing.JMenuItem();
+        mniTechProf = new javax.swing.JMenuItem();
         menChecks = new javax.swing.JMenu();
         menBasicChecks = new javax.swing.JMenu();
         mniCheckBasisRoutes = new javax.swing.JMenuItem();
@@ -3732,6 +3741,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 "WatergisApp.mniStation.toolTipText",
                 new Object[] {})); // NOI18N
         menGeoProcessing.add(mniStation);
+
+        mniTechProf.setAction(techProfAction1);
+        mniTechProf.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniTechProf.toolTipText",
+                new Object[] {})); // NOI18N
+        menGeoProcessing.add(mniTechProf);
 
         menTools.add(menGeoProcessing);
 

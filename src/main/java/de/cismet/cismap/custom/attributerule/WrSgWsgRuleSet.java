@@ -75,8 +75,8 @@ public class WrSgWsgRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("recht", new Link(250, false, true));
         typeMap.put("info", new Link(250, false, true));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
-        typeMap.put("uk", new Varchar(2, false, true));
-        typeMap.put("lk", new Varchar(2, false, true));
+        typeMap.put("uk", new Numeric(2, 0, false, true));
+        typeMap.put("lk", new Numeric(2, 0, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }

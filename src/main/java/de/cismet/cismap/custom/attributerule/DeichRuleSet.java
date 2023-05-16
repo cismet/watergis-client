@@ -48,21 +48,19 @@ import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.MIN_A
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class MnFgChmRuleSet extends WatergisDefaultRuleSet {
+public class DeichRuleSet extends WatergisDefaultRuleSet {
 
     //~ Instance initializers --------------------------------------------------
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("stalu", new Varchar(10, false, false));
-        typeMap.put("wk_k", new Varchar(30, false, false));
-        typeMap.put("messstelle", new Varchar(20, false, false));
-        typeMap.put("wk_k", new Varchar(100, false, false));
-        typeMap.put("lage", new Varchar(100, true, true));
-        typeMap.put("lawa_typ", new Numeric(3, 0, true, true));
-        typeMap.put("latest_y", new Numeric(4, 0, true, true));
-        typeMap.put("rw", new Numeric(11, 2, true, true));
-        typeMap.put("hw", new Numeric(10, 2, true, true));
+        typeMap.put("zuordnung", new Varchar(100, false, false));
+        typeMap.put("bez", new Varchar(100, false, false));
+        typeMap.put("anlagekat", new Varchar(50, false, false));
+        typeMap.put("baujahr", new Varchar(10, false, false));
+        typeMap.put("berme", new Varchar(50, true, true));
+        typeMap.put("bewuchs", new Varchar(50, true, true));
+        typeMap.put("deichnr", new Varchar(50, true, true));
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -70,7 +68,7 @@ public class MnFgChmRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("geom") && !columnName.equals("rw") && !columnName.equals("hw");
+                    && !columnName.equals("geom");
     }
 
     @Override
@@ -94,15 +92,13 @@ public class MnFgChmRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public String[] getAdditionalFieldNames() {
-        return new String[] { "rw", "hw" };
+        return new String[] { "laenge" };
     }
 
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
-        if (name.equals("rw")) {
-            return -3;
-        } else if (name.equals("hw")) {
-            return -3;
+        if (name.equals("laenge")) {
+            return -2;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
         }
@@ -110,25 +106,21 @@ public class MnFgChmRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
+        Double value = null;
+
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            if (propertyName.equals("rw")) {
-                return geom.getCoordinates()[0].getOrdinate(Coordinate.X);
-            } else if (propertyName.equals("hw")) {
-                return geom.getCoordinates()[0].getOrdinate(Coordinate.Y);
-            }
+            value = round(geom.getLength());
         }
 
-        return null;
+        return value;
     }
 
     @Override
     public String getAdditionalFieldFormula(final String propertyName) {
-        if (propertyName.equals("rw")) {
-            return "round(st_x(geom)::numeric, 2)";
-        } else if (propertyName.equals("hw")) {
-            return "round(st_y(geom)::numeric, 2)";
+        if (propertyName.equals("laenge")) {
+            return "round(st_length(geom)::numeric, 2)";
         } else {
             return null;
         }
@@ -141,7 +133,9 @@ public class MnFgChmRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        final PrimitiveGeometryCreator c = new PrimitiveGeometryCreator(CreateGeometryListenerInterface.POINT, false);
+        final PrimitiveGeometryCreator c = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.LINESTRING,
+                true);
 
         return c;
     }
