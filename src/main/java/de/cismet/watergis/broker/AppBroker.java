@@ -168,6 +168,7 @@ public class AppBroker implements Configurable {
     private ReportAction photoPrint;
     private de.cismet.watergis.gui.actions.gaf.ReportAction gafPrint;
     private FeatureCreator activeFeatureCreator = null;
+    private int problemFeatureGeometryIncrease = 0;
 
     //~ Constructors -----------------------------------------------------------
 
@@ -196,6 +197,24 @@ public class AppBroker implements Configurable {
     }
 
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  the problemFeatureGeometryIncrease
+     */
+    public int getProblemFeatureGeometryIncrease() {
+        return problemFeatureGeometryIncrease;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  problemFeatureGeometryIncrease  the problemFeatureGeometryIncrease to set
+     */
+    public void setProblemFeatureGeometryIncrease(final int problemFeatureGeometryIncrease) {
+        this.problemFeatureGeometryIncrease = problemFeatureGeometryIncrease;
+    }
 
     /**
      * DOCUMENT ME!
