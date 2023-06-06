@@ -529,6 +529,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenu menSteckbriefWasserkoerper;
     private javax.swing.JMenu menTools;
     private javax.swing.JMenu menWindow;
+    private javax.swing.JMenu menWsg;
     private de.cismet.watergis.gui.actions.MergeAction mergeAction;
     private de.cismet.watergis.gui.actions.geoprocessing.MergeGeoprocessingAction mergeGeoprocessingAction;
     private javax.swing.JMenuItem mniBuffer;
@@ -560,6 +561,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniFl;
     private javax.swing.JMenuItem mniFl1;
     private javax.swing.JMenuItem mniFl2;
+    private javax.swing.JMenuItem mniFlNu;
     private javax.swing.JMenuItem mniGafInfo;
     private javax.swing.JMenuItem mniGafOptions;
     private javax.swing.JMenuItem mniGafUpload;
@@ -590,6 +592,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniPrint;
     private javax.swing.JMenuItem mniPrintPhoto;
     private javax.swing.JMenuItem mniPrintQp;
+    private javax.swing.JMenuItem mniRechtsgrundlage;
     private javax.swing.JMenuItem mniRemoveDrawing;
     private javax.swing.JMenuItem mniRemoveSelection;
     private javax.swing.JMenuItem mniReportGaf;
@@ -649,6 +652,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.PresentationAction presentationAction;
     private de.cismet.watergis.gui.actions.map.PreviousExtendAction previousExtendAction;
     private de.cismet.watergis.gui.actions.PrintAction printAction;
+    private de.cismet.watergis.gui.actions.reports.RechtsgrundlageAction rechtsgrundlageAction1;
     private de.cismet.watergis.gui.actions.ReleaseAction releaseAction;
     private de.cismet.watergis.gui.actions.map.ReloadAction reloadAction1;
     private de.cismet.watergis.gui.actions.map.RemoveDrawingModeAction removeDrawingModeAction;
@@ -713,6 +717,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.checks.VerwaltungCheckAction verwaltungCheckAction;
     private de.cismet.watergis.gui.actions.WindowAction windowAction;
     private de.cismet.watergis.gui.actions.reports.WkFgReportAction wkFgReportAction;
+    private de.cismet.watergis.gui.actions.reports.WsgAction wsgAction1;
     private de.cismet.watergis.gui.actions.selection.ZoomAllDrawingsAction zoomAllDrawingsAction;
     private de.cismet.watergis.gui.actions.map.ZoomInAction zoomInAction;
     private de.cismet.watergis.gui.actions.map.ZoomModeAction zoomModeAction;
@@ -826,6 +831,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             mniGemeinde1.setEnabled(false);
             mniSb1.setEnabled(false);
             mniFl1.setEnabled(false);
+            menWsg.setVisible(false);
         }
 
         if (!AppBroker.getInstance().isAdminUser() && !AppBroker.getInstance().isGu()) {
@@ -984,6 +990,17 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             LOG.warn("zoomScaleForPointFeature is not set or not valid. 500 will be assumed", ex);
         }
         ZoomToFeaturesWorker.setScaleForPoint(500.0);
+
+        try {
+            final String zoomPercentage = SessionManager.getProxy()
+                        .getConfigAttr(SessionManager.getSession().getUser(), "pfbZoomFactor", connectionContext);
+
+            if (zoomPercentage != null) {
+                AppBroker.getInstance().setProblemFeatureGeometryIncrease(Integer.parseInt(zoomPercentage));
+            }
+        } catch (ConnectionException ex) {
+            LOG.error("Cannot check for qp permission", ex);
+        }
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -2464,6 +2481,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         addThemeAction1 = new de.cismet.watergis.gui.actions.AddThemeAction();
         createViewsForUser1 = new de.cismet.watergis.gui.actions.CreateViewsForUser();
         techProfAction1 = new de.cismet.watergis.gui.actions.geoprocessing.TechProfAction();
+        wsgAction1 = new de.cismet.watergis.gui.actions.reports.WsgAction();
+        rechtsgrundlageAction1 = new de.cismet.watergis.gui.actions.reports.RechtsgrundlageAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveSameFileProject = new javax.swing.JButton();
@@ -2634,6 +2653,9 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         menGewaesser3 = new javax.swing.JMenu();
         mniGewaesserRep3 = new javax.swing.JMenuItem();
         menSchablonen = new javax.swing.JMenu();
+        menWsg = new javax.swing.JMenu();
+        mniFlNu = new javax.swing.JMenuItem();
+        mniRechtsgrundlage = new javax.swing.JMenuItem();
         menPhoto = new javax.swing.JMenu();
         mniUpload = new javax.swing.JMenuItem();
         mniPhotoInfo = new javax.swing.JMenuItem();
@@ -3878,8 +3900,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGewaesser.setAction(gewaesserReportAction);
         org.openide.awt.Mnemonics.setLocalizedText(
             mniGewaesser,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniGewaesser.text", new Object[] {
-                }));               // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniGewaesser.text",
+                new Object[] {})); // NOI18N
         mniGewaesser.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniGewaesser.toolTipText",
@@ -4011,6 +4035,35 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             menSchablonen,
             org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menSchablonen.text")); // NOI18N
         menReport.add(menSchablonen);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            menWsg,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.menWsg.text")); // NOI18N
+
+        mniFlNu.setAction(wsgAction1);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            mniFlNu,
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniFlNu.text", new Object[] {})); // NOI18N
+        mniFlNu.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniFlNu.toolTipText",
+                new Object[] {}));                                                                                 // NOI18N
+        menWsg.add(mniFlNu);
+
+        mniRechtsgrundlage.setAction(rechtsgrundlageAction1);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            mniRechtsgrundlage,
+            org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniRechtsgrundlage.text",
+                new Object[] {})); // NOI18N
+        mniRechtsgrundlage.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniRechtsgrundlage.toolTipText",
+                new Object[] {})); // NOI18N
+        menWsg.add(mniRechtsgrundlage);
+
+        menReport.add(menWsg);
 
         jMenuBar1.add(menReport);
 
