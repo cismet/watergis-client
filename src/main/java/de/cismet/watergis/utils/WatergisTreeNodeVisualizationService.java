@@ -90,7 +90,18 @@ public class WatergisTreeNodeVisualizationService implements DefaultMetaTreeNode
             featureList.add(feature);
             visualisedFeatures.add(feature);
             AppBroker.getInstance().getMappingComponent().addFeaturesToMap(new Feature[] { feature });
-            AppBroker.getInstance().getMappingComponent().zoomToAFeatureCollection(featureList, false, false);
+
+            final List<Feature> featureToZoom = new ArrayList<Feature>();
+            final DefaultFeatureServiceFeature featureZoom = new DefaultFeatureServiceFeature();
+            final XBoundingBox box = new XBoundingBox(feature.getGeometry());
+
+            if (AppBroker.getInstance().getProblemFeatureGeometryIncrease() > 0) {
+                box.increase(AppBroker.getInstance().getProblemFeatureGeometryIncrease() * 100);
+            }
+            featureZoom.setGeometry(box.getGeometry());
+            featureToZoom.add(featureZoom);
+
+            AppBroker.getInstance().getMappingComponent().zoomToAFeatureCollection(featureToZoom, false, false);
             AppBroker.getInstance().getInfoWindowAction().showDialog();
             AppBroker.getInstance().getInfoWindowAction().addFeatureInfoPanelListener(this);
             AppBroker.getInstance().getInfoWindowAction().showAllFeature();
