@@ -34,6 +34,8 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
+import static javax.swing.Action.NAME;
+
 /**
  * An Action, which adopts a local configuration file, with the help of the ConfigurationManager. Notifies the
  * RecentlyOpenedFilesList, that a new file was loaded.
@@ -116,6 +118,16 @@ public class AdoptLocalConfigFileAction extends AbstractAction {
             });
 
         AppBroker.getInstance().getWatergisApp().setTitle("FIS Gewässer – Projekt: " + projectName);
+
+        final Thread t = new Thread("check layers") {
+
+                @Override
+                public void run() {
+                    AppBroker.getInstance().getWatergisApp().checkMapConfiguration(file);
+                }
+            };
+
+        t.start();
     }
 
     /**

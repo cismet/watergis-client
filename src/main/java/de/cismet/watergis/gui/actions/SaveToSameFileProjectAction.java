@@ -21,6 +21,7 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import de.cismet.tools.configuration.ConfigurationManager;
@@ -94,20 +95,17 @@ public class SaveToSameFileProjectAction extends AbstractAction {
         if (currentLayout != null) {
             file = new File(currentLayout);
         }
-//        else {
-//            file = StaticSwingTools.chooseFile(WatergisApp.getDIRECTORYPATH_WATERGIS(),
-//                    true,
-//                    new String[] { "xml" },
-//                    org.openide.util.NbBundle.getMessage(
-//                        SaveToSameFileProjectAction.class,
-//                        "SaveProjectAction.save.FileFilter.getDescription.return"),
-//                    AppBroker.getInstance().getComponent(ComponentName.MAIN));
-//        }
 
         if (file != null) {
             final ConfigurationManager configurationManager = AppBroker.getConfigManager();
             final String name = file.getAbsolutePath();
 
+            if (!file.canWrite()) {
+                JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
+                    "Änderungen in der zentralen Datenbank können nicht in das lokale Projekt übernommen werden (z.B. wegen fehlender Schreibrechte).",
+                    "Hinweis",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
             configurationManager.writeConfiguration(name);
             AppBroker.getInstance().getRecentlyOpenedFilesList().addFile(file);
 
