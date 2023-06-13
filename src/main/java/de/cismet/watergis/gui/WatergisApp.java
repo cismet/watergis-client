@@ -113,6 +113,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -120,11 +121,8 @@ import java.util.concurrent.Executor;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -141,7 +139,6 @@ import javax.swing.tree.TreePath;
 
 import de.cismet.cids.custom.watergis.server.search.CheckForCreatedObjectTable;
 import de.cismet.cids.custom.watergis.server.search.CleanupCreatedObjectTable;
-import de.cismet.cids.custom.watergis.server.search.ObjectEnvelopes;
 import de.cismet.cids.custom.watergis.server.search.RemoveOldLocks;
 import de.cismet.cids.custom.watergis.server.search.RemoveUnnusedRoute;
 import de.cismet.cids.custom.watergis.server.search.ValidLawaCodes;
@@ -192,12 +189,15 @@ import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SimpleMoveListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.actions.CustomAction;
+import de.cismet.cismap.commons.interaction.ActiveLayerListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.MapDnDListener;
+import de.cismet.cismap.commons.interaction.events.ActiveLayerEvent;
 import de.cismet.cismap.commons.interaction.events.MapDnDEvent;
 import de.cismet.cismap.commons.interaction.memento.MementoInterface;
 import de.cismet.cismap.commons.rasterservice.ImageFileMetaData;
 import de.cismet.cismap.commons.rasterservice.ImageFileUtils;
+import de.cismet.cismap.commons.rasterservice.MapService;
 import de.cismet.cismap.commons.tools.ExportCsvDownload;
 import de.cismet.cismap.commons.tools.ExportDbfDownload;
 import de.cismet.cismap.commons.tools.ExportDownload;
@@ -259,7 +259,6 @@ import de.cismet.watergis.gui.components.NewDrawingButton;
 import de.cismet.watergis.gui.components.ScaleJComboBox;
 import de.cismet.watergis.gui.components.SelectionButton;
 import de.cismet.watergis.gui.components.SnappingButton;
-import de.cismet.watergis.gui.dialog.ExportDialog;
 import de.cismet.watergis.gui.dialog.ThemeExportDialog;
 import de.cismet.watergis.gui.panels.GafProf;
 import de.cismet.watergis.gui.panels.InfoPanel;
@@ -1211,6 +1210,98 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         PointReferencingDialog.setMAX_X(33999999d);
         PointReferencingDialog.setMIN_Y(5600000d);
         PointReferencingDialog.setMAX_Y(6399999d);
+        EventQueue.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    final Thread t = new Thread("checkMapConfiguration") {
+
+                            @Override
+                            public void run() {
+                                checkMapConfiguration(null);
+                            }
+                        };
+
+                    t.start();
+                }
+            });
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  file  DOCUMENT ME!
+     */
+    public void checkMapConfiguration(final File file) {
+        final ActiveLayerModel model = (ActiveLayerModel)mappingComponent.getMappingModel();
+        final TreeMap<Integer, MapService> services = new TreeMap<>(model.getMapServices());
+        boolean layersChanged = false;
+
+        for (final Integer key : services.keySet()) {
+            final MapService service = services.get(key);
+
+            if (service instanceof CidsLayer) {
+                final CidsLayer layer = (CidsLayer)service;
+
+                if ((layer.getMetaClass() == null) || (layer.getMetaClass().getClassAttribute("cidsLayer") == null)) {
+                    layersChanged = true;
+                    EventQueue.invokeLater(new Thread("removeLayer") {
+
+                            @Override
+                            public void run() {
+                                model.removeLayer(layer);
+                            }
+                        });
+                } else {
+                    try {
+                        final CidsLayer serverLayer = new CidsLayer(layer.getMetaClass());
+                        serverLayer.initAndWait();
+                        final Map<String, FeatureServiceAttribute> attrMap = layer.getLayerProperties()
+                                    .getFeatureService()
+                                    .getFeatureServiceAttributes();
+                        final Map<String, FeatureServiceAttribute> serverAttrMap = serverLayer.getLayerProperties()
+                                    .getFeatureService()
+                                    .getFeatureServiceAttributes();
+
+                        for (final String attrKey : attrMap.keySet()) {
+                            final String type = attrMap.get(attrKey).getType();
+                            if ((serverAttrMap.get(attrKey) == null)
+                                        || ((serverAttrMap.get(attrKey) != null)
+                                            && !serverAttrMap.get(attrKey).getType().equals(type))) {
+                                // test if the attribute does not exist in the server or the type differs
+                                layersChanged = true;
+                                EventQueue.invokeLater(new Thread("switchLayer") {
+
+                                        @Override
+                                        public void run() {
+                                            if (!model.switchLayer(layer, serverLayer)) {
+                                                model.removeLayer(layer);
+                                                model.addLayer(serverLayer);
+                                            }
+                                        }
+                                    });
+                                break;
+                            }
+                        }
+                    } catch (Exception e) {
+                        // layer cannot be initialised
+                        layersChanged = true;
+                        EventQueue.invokeLater(new Thread("removeLayer") {
+
+                                @Override
+                                public void run() {
+                                    model.removeLayer(layer);
+                                }
+                            });
+                    }
+                }
+            }
+        }
+
+        if (layersChanged && (file != null)) {
+            LOG.info("rewrite configuration file");
+            saveToSameFileProjectAction1.actionPerformed(null);
+        }
     }
 
     /**
