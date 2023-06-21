@@ -202,7 +202,7 @@ public class DefaultWatergisH2AttributeTableRuleSet extends DefaultAttributeTabl
             final String tableName) {
         this.refInfos = refInfos;
         this.geometryType = geometryType;
-        isCheckTable = tableName.startsWith("Prüfungen->");
+        isCheckTable = tableName.startsWith("Prüfungen->") || tableName.startsWith("TechProf");
 
         if (attributes != null) {
             for (final FeatureServiceAttribute attribute : attributes) {
