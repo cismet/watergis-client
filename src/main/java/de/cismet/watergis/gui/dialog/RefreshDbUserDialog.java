@@ -70,11 +70,11 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class DbUserDialog extends javax.swing.JDialog {
+public class RefreshDbUserDialog extends javax.swing.JDialog {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final Logger LOG = Logger.getLogger(DbUserDialog.class);
+    private static final Logger LOG = Logger.getLogger(RefreshDbUserDialog.class);
     private static final ConnectionContext CONNECTION_CONTEXT = ConnectionContext.create(
             AbstractConnectionContext.Category.ACTION,
             "create db user");
@@ -87,18 +87,15 @@ public class DbUserDialog extends javax.swing.JDialog {
     private javax.swing.ButtonGroup bgBuffer;
     private javax.swing.JButton butCancel;
     private javax.swing.JButton butOk;
-    private javax.swing.JCheckBox cbOverride;
     private javax.swing.JComboBox cbUserGroup;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JLabel labTableName;
-    private javax.swing.JLabel labTableName1;
     private javax.swing.JLabel labTableName2;
     private javax.swing.JLabel labTheme;
     private javax.swing.JTextField txtDBSchema;
-    private javax.swing.JTextField txtDbPassword;
     private javax.swing.JTextField txtDbUser;
     // End of variables declaration//GEN-END:variables
 
@@ -110,7 +107,7 @@ public class DbUserDialog extends javax.swing.JDialog {
      * @param  parent  DOCUMENT ME!
      * @param  modal   DOCUMENT ME!
      */
-    public DbUserDialog(final java.awt.Frame parent, final boolean modal) {
+    public RefreshDbUserDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
 
@@ -135,24 +132,27 @@ public class DbUserDialog extends javax.swing.JDialog {
         cbUserGroup = new javax.swing.JComboBox();
         labTableName = new javax.swing.JLabel();
         txtDbUser = new javax.swing.JTextField();
-        txtDbPassword = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         butOk = new javax.swing.JButton();
         butCancel = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        labTableName1 = new javax.swing.JLabel();
         labTableName2 = new javax.swing.JLabel();
         txtDBSchema = new javax.swing.JTextField();
-        cbOverride = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle(org.openide.util.NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.title", new Object[] {})); // NOI18N
+        setTitle(org.openide.util.NbBundle.getMessage(
+                RefreshDbUserDialog.class,
+                "RefreshDbUserDialog.title",
+                new Object[] {})); // NOI18N
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labTheme,
-            org.openide.util.NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.labTheme.text", new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                RefreshDbUserDialog.class,
+                "RefreshDbUserDialog.labTheme.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -182,8 +182,8 @@ public class DbUserDialog extends javax.swing.JDialog {
         org.openide.awt.Mnemonics.setLocalizedText(
             labTableName,
             org.openide.util.NbBundle.getMessage(
-                DbUserDialog.class,
-                "DbUserDialog.labTableName.text",
+                RefreshDbUserDialog.class,
+                "RefreshDbUserDialog.labTableName.text",
                 new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -211,29 +211,14 @@ public class DbUserDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(txtDbUser, gridBagConstraints);
 
-        txtDbPassword.setMinimumSize(new java.awt.Dimension(200, 27));
-        txtDbPassword.setPreferredSize(new java.awt.Dimension(200, 27));
-        txtDbPassword.addKeyListener(new java.awt.event.KeyAdapter() {
-
-                @Override
-                public void keyTyped(final java.awt.event.KeyEvent evt) {
-                    txtDbPasswordKeyTyped(evt);
-                }
-            });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(txtDbPassword, gridBagConstraints);
-
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
             butOk,
-            org.openide.util.NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butOk.text", new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                RefreshDbUserDialog.class,
+                "RefreshDbUserDialog.butOk.text",
+                new Object[] {})); // NOI18N
         butOk.setMinimumSize(new java.awt.Dimension(80, 29));
         butOk.setPreferredSize(new java.awt.Dimension(150, 29));
         butOk.addActionListener(new java.awt.event.ActionListener() {
@@ -253,7 +238,10 @@ public class DbUserDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             butCancel,
-            org.openide.util.NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butCancel.text", new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                RefreshDbUserDialog.class,
+                "RefreshDbUserDialog.butCancel.text",
+                new Object[] {})); // NOI18N
         butCancel.setPreferredSize(new java.awt.Dimension(150, 29));
         butCancel.addActionListener(new java.awt.event.ActionListener() {
 
@@ -292,30 +280,17 @@ public class DbUserDialog extends javax.swing.JDialog {
         getContentPane().add(jPanel4, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
-            labTableName1,
-            org.openide.util.NbBundle.getMessage(
-                DbUserDialog.class,
-                "DbUserDialog.labTableName1.text",
-                new Object[] {})); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(labTableName1, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(
             labTableName2,
             org.openide.util.NbBundle.getMessage(
-                DbUserDialog.class,
-                "DbUserDialog.labTableName2.text",
+                RefreshDbUserDialog.class,
+                "RefreshDbUserDialog.labTableName2.text",
                 new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(labTableName2, gridBagConstraints);
 
@@ -332,23 +307,10 @@ public class DbUserDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         getContentPane().add(txtDBSchema, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(
-            cbOverride,
-            org.openide.util.NbBundle.getMessage(
-                DbUserDialog.class,
-                "DbUserDialog.cbOverride.text",
-                new Object[] {})); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(cbOverride, gridBagConstraints);
 
         pack();
     } // </editor-fold>//GEN-END:initComponents
@@ -370,32 +332,38 @@ public class DbUserDialog extends javax.swing.JDialog {
     private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         final String userGroup = (String)cbUserGroup.getSelectedItem();
         final String dbUser = txtDbUser.getText();
-        final String dbPassword = txtDbPassword.getText();
         final String schema = txtDBSchema.getText();
 
         if (!AppBroker.getInstance().isAdminUser()) {
             return;
         }
 
-        if (((dbUser == null) || dbUser.equals("")) || ((dbPassword == null) || dbPassword.equals(""))
-                    || ((schema == null) || schema.equals(""))) {
+        if (((dbUser == null) || dbUser.equals("")) || ((schema == null) || schema.equals(""))) {
             return;
         }
 
         if (ActionHelper.isInvalidSchemaName(schema)) {
             JOptionPane.showMessageDialog(
-                DbUserDialog.this,
-                NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butOkActionPerformed().invalidSchemaName.text"),
-                NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butOkActionPerformed().invalidSchemaName.title"),
+                RefreshDbUserDialog.this,
+                NbBundle.getMessage(
+                    RefreshDbUserDialog.class,
+                    "RefreshDbUserDialog.butOkActionPerformed().invalidSchemaName.text"),
+                NbBundle.getMessage(
+                    RefreshDbUserDialog.class,
+                    "RefreshDbUserDialog.butOkActionPerformed().invalidSchemaName.title"),
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (ActionHelper.isInvalidUserName(dbUser)) {
             JOptionPane.showMessageDialog(
-                DbUserDialog.this,
-                NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butOkActionPerformed().invalidUserName.text"),
-                NbBundle.getMessage(DbUserDialog.class, "DbUserDialog.butOkActionPerformed().invalidUserName.title"),
+                RefreshDbUserDialog.this,
+                NbBundle.getMessage(
+                    RefreshDbUserDialog.class,
+                    "RefreshDbUserDialog.butOkActionPerformed().invalidUserName.text"),
+                NbBundle.getMessage(
+                    RefreshDbUserDialog.class,
+                    "RefreshDbUserDialog.butOkActionPerformed().invalidUserName.title"),
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -403,7 +371,7 @@ public class DbUserDialog extends javax.swing.JDialog {
         final WaitingDialogThread<String> wdt = new WaitingDialogThread<String>(AppBroker.getInstance()
                         .getWatergisApp(),
                 true,
-                "Erstelle neues DB Profil                             ",
+                "Aktualisiere DB Profil                                 ",
                 null,
                 100,
                 true) {
@@ -436,7 +404,7 @@ public class DbUserDialog extends javax.swing.JDialog {
                                         ConnectionContext.createDummy(),
                                         paramUser);
 
-                    if ((!schemaExists && !userExists) || cbOverride.isSelected()) {
+                    if (schemaExists && userExists) {
                         final Connection connection = SessionManager.getConnection();
                         final ConnectionInfo connInfo = new ConnectionInfo();
 
@@ -459,31 +427,14 @@ public class DbUserDialog extends javax.swing.JDialog {
                                         CONNECTION_CONTEXT);
                         String errorMessage = null;
 
-                        if (schemaExists) {
-                            errorMessage = removeSchema(schema);
-
-                            if (errorMessage != null) {
-                                return errorMessage;
-                            }
-                        }
-
-                        if (userExists) {
-                            errorMessage = removeUser(dbUser);
-
-                            if (errorMessage != null) {
-                                return errorMessage;
-                            }
-                        }
-
-                        // create user
-                        errorMessage = createUser(dbUser, dbPassword);
+                        errorMessage = DbUserDialog.removeSchema(schema);
 
                         if (errorMessage != null) {
                             return errorMessage;
                         }
 
                         // create schema
-                        errorMessage = createSchema(schema, dbUser);
+                        errorMessage = DbUserDialog.createSchema(schema, dbUser);
 
                         if (errorMessage != null) {
                             return errorMessage;
@@ -512,64 +463,16 @@ public class DbUserDialog extends javax.swing.JDialog {
                                 continue;
                             }
 
-                            createView(clazz, schema, dbUser, session.getUser());
+                            DbUserDialog.createView(clazz, schema, dbUser, session.getUser());
                         }
                     } else {
                         return NbBundle.getMessage(
-                                DbUserDialog.class,
-                                "DbUserDialog.userOrSchemaAlreadyExists",
+                                RefreshDbUserDialog.class,
+                                "RefreshDbUserDialog.userOrSchemaAlreadyExists",
                                 new Object[] { schema });
                     }
 
                     return null;
-                }
-
-                private String createUser(final String user, final String password) throws ConnectionException {
-                    final ServerActionParameter paramDbUser = new ServerActionParameter(
-                            CreateUserAction.ParameterType.DB_USER.toString(),
-                            user);
-                    final ServerActionParameter paramDbPassword = new ServerActionParameter(
-                            CreateUserAction.ParameterType.DB_PASSWORD.toString(),
-                            password);
-                    final Boolean userCreated = (Boolean)SessionManager.getProxy()
-                                .executeTask(
-                                        CreateUserAction.TASK_NAME,
-                                        AppBroker.getInstance().getDomain(),
-                                        (Object)null,
-                                        ConnectionContext.createDummy(),
-                                        paramDbUser,
-                                        paramDbPassword);
-
-                    if (userCreated) {
-                        return null;
-                    } else {
-                        return NbBundle.getMessage(
-                                DbUserDialog.class,
-                                "DbUserDialog.createUser().failure",
-                                new Object[] { user });
-                    }
-                }
-
-                private String removeUser(final String user) throws ConnectionException {
-                    final ServerActionParameter paramDbUser = new ServerActionParameter(
-                            RemoveUserAction.ParameterType.DB_USER.toString(),
-                            user);
-                    final Boolean userRemoved = (Boolean)SessionManager.getProxy()
-                                .executeTask(
-                                        RemoveUserAction.TASK_NAME,
-                                        AppBroker.getInstance().getDomain(),
-                                        (Object)null,
-                                        ConnectionContext.createDummy(),
-                                        paramDbUser);
-
-                    if (userRemoved) {
-                        return null;
-                    } else {
-                        return NbBundle.getMessage(
-                                DbUserDialog.class,
-                                "DbUserDialog.removeUser().failure",
-                                new Object[] { user });
-                    }
                 }
 
                 @Override
@@ -580,20 +483,20 @@ public class DbUserDialog extends javax.swing.JDialog {
                         if (errorMessage != null) {
                             if (!errorMessage.equals("")) {
                                 JOptionPane.showMessageDialog(
-                                    DbUserDialog.this,
+                                    RefreshDbUserDialog.this,
                                     errorMessage,
-                                    "Fehler beim Erstellen des Schemas",
+                                    "Fehler beim Aktualisieren des Schemas",
                                     JOptionPane.ERROR_MESSAGE);
                             } else {
                                 JOptionPane.showMessageDialog(
-                                    DbUserDialog.this,
-                                    "Beim Erstellen des Schemas ist ein Fehler aufgetreten",
-                                    "Fehler beim Erstellen des Schemas",
+                                    RefreshDbUserDialog.this,
+                                    "Beim Aktualisieren des Schemas ist ein Fehler aufgetreten",
+                                    "Fehler beim Aktualisieren des Schemas",
                                     JOptionPane.ERROR_MESSAGE);
                             }
                         }
                     } catch (Exception ex) {
-                        LOG.error("Error while execute the create db user operation.", ex);
+                        LOG.error("Error while refresh a db schema.", ex);
                     }
                 }
             };
@@ -637,21 +540,6 @@ public class DbUserDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void txtDbPasswordKeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtDbPasswordKeyTyped
-        EventQueue.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    enabledOrNot();
-                }
-            });
-    } //GEN-LAST:event_txtDbPasswordKeyTyped
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
     private void txtDBSchemaKeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtDBSchemaKeyTyped
         enabledOrNot();
     }                                                                     //GEN-LAST:event_txtDBSchemaKeyTyped
@@ -662,8 +550,10 @@ public class DbUserDialog extends javax.swing.JDialog {
     private void setLayerModel() {
         final Object selectedObject = cbUserGroup.getSelectedItem();
         cbUserGroup.setModel(new DefaultComboBoxModel(
-                new String[] { NbBundle.getMessage(DbUserDialog.class,
-                        "DBUserDialog.setlayerModel.searchUser") }));
+                new String[] {
+                    NbBundle.getMessage(RefreshDbUserDialog.class,
+                        "RefreshDbUserDialog.setlayerModel.searchUser")
+                }));
 
         final Thread t = new Thread(new Runnable() {
 
@@ -699,155 +589,8 @@ public class DbUserDialog extends javax.swing.JDialog {
     private void enabledOrNot() {
         final boolean isUserSelected = (cbUserGroup.getSelectedItem() instanceof String);
         final boolean userGiven = (txtDbUser.getText() != null) && !txtDbUser.getText().equals("");
-        final boolean passwordGiven = (txtDbPassword.getText() != null) && !txtDbPassword.getText().equals("");
         final boolean schemaGiven = (txtDBSchema.getText() != null) && !txtDBSchema.getText().equals("");
 
-        butOk.setEnabled(isUserSelected && userGiven && passwordGiven && schemaGiven);
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   clazz   DOCUMENT ME!
-     * @param   schema  DOCUMENT ME!
-     * @param   dbUser  DOCUMENT ME!
-     * @param   user    DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     *
-     * @throws  ConnectionException  DOCUMENT ME!
-     */
-    public static String createView(final MetaClass clazz,
-            final String schema,
-            final String dbUser,
-            final User user) throws ConnectionException {
-        final List<ServerActionParameter> parameter = new ArrayList<ServerActionParameter>();
-
-        final ServerActionParameter paramClass = new ServerActionParameter(
-                CreateViewAction.ParameterType.CLASS.toString(),
-                clazz.getId());
-        final ServerActionParameter paramDbUser = new ServerActionParameter(
-                CreateViewAction.ParameterType.DB_USER.toString(),
-                dbUser);
-        final ServerActionParameter paramSchema = new ServerActionParameter(
-                CreateViewAction.ParameterType.SCHEMA.toString(),
-                schema);
-        final ServerActionParameter paramUser = new ServerActionParameter(
-                CreateViewAction.ParameterType.USER.toString(),
-                user);
-        parameter.add(paramClass);
-        parameter.add(paramDbUser);
-        parameter.add(paramSchema);
-        parameter.add(paramUser);
-        final CidsLayer layer = new CidsLayer(clazz);
-        final AttributeTableRuleSet ruleSet = layer.getLayerProperties().getAttributeTableRuleSet();
-
-        if ((ruleSet != null) && (ruleSet.getAdditionalFieldNames() != null)) {
-            final List<CreateViewAction.AdditionalField> additionalFields =
-                new ArrayList<CreateViewAction.AdditionalField>();
-
-            for (final String fieldName : ruleSet.getAdditionalFieldNames()) {
-                final String formula = layer.decorateQuery(ruleSet.getAdditionalFieldFormula(fieldName));
-
-                if (formula != null) {
-                    final CreateViewAction.AdditionalField field = new CreateViewAction.AdditionalField(
-                            fieldName,
-                            ruleSet.getIndexOfAdditionalFieldName(fieldName),
-                            formula);
-                    additionalFields.add(field);
-                }
-            }
-
-            if (additionalFields.size() > 0) {
-                parameter.add(new ServerActionParameter(
-                        CreateViewAction.ParameterType.ADDITIONAL_FIELDS.toString(),
-                        additionalFields.toArray(
-                            new CreateViewAction.AdditionalField[additionalFields.size()])));
-            }
-        }
-
-        final Boolean viewCreated = (Boolean)SessionManager.getProxy()
-                    .executeTask(
-                            CreateViewAction.TASK_NAME,
-                            AppBroker.getInstance().getDomain(),
-                            (Object)null,
-                            ConnectionContext.createDummy(),
-                            parameter.toArray(new ServerActionParameter[parameter.size()]));
-
-        if (viewCreated) {
-            return null;
-        } else {
-            return NbBundle.getMessage(
-                    DbUserDialog.class,
-                    "DbUserDialog.createView().failure",
-                    new Object[] { clazz.getTableName() });
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   schema  DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     *
-     * @throws  ConnectionException  DOCUMENT ME!
-     */
-    public static String removeSchema(final String schema) throws ConnectionException {
-        final ServerActionParameter paramSchema = new ServerActionParameter(
-                RemoveSchemaAction.ParameterType.SCHEMA.toString(),
-                schema);
-        final Boolean schemaRemoved = (Boolean)SessionManager.getProxy()
-                    .executeTask(
-                            RemoveSchemaAction.TASK_NAME,
-                            AppBroker.getInstance().getDomain(),
-                            (Object)null,
-                            ConnectionContext.createDummy(),
-                            paramSchema);
-
-        if (schemaRemoved) {
-            return null;
-        } else {
-            return NbBundle.getMessage(
-                    DbUserDialog.class,
-                    "DbUserDialog.removeSchema().failure",
-                    new Object[] { schema });
-        }
-    }
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param   schema  DOCUMENT ME!
-     * @param   user    DOCUMENT ME!
-     *
-     * @return  DOCUMENT ME!
-     *
-     * @throws  ConnectionException  DOCUMENT ME!
-     */
-    public static String createSchema(final String schema, final String user) throws ConnectionException {
-        final ServerActionParameter paramSchema = new ServerActionParameter(
-                CreateSchemaAction.ParameterType.SCHEMA.toString(),
-                schema);
-        final ServerActionParameter paramUser = new ServerActionParameter(
-                CreateSchemaAction.ParameterType.DB_USER.toString(),
-                user);
-        final Boolean createSchema = (Boolean)SessionManager.getProxy()
-                    .executeTask(
-                            CreateSchemaAction.TASK_NAME,
-                            AppBroker.getInstance().getDomain(),
-                            (Object)null,
-                            ConnectionContext.createDummy(),
-                            paramSchema,
-                            paramUser);
-
-        if (createSchema) {
-            return null;
-        } else {
-            return NbBundle.getMessage(
-                    DbUserDialog.class,
-                    "DbUserDialog.createSchema().failure",
-                    new Object[] { schema });
-        }
+        butOk.setEnabled(isUserSelected && userGiven && schemaGiven);
     }
 }
