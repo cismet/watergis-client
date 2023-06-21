@@ -300,6 +300,8 @@
     </Component>
     <Component class="de.cismet.watergis.gui.actions.reports.RechtsgrundlageAction" name="rechtsgrundlageAction1">
     </Component>
+    <Component class="de.cismet.watergis.gui.actions.RefreshViewsForUser" name="refreshViewsForUser1">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menFile">
@@ -813,6 +815,13 @@
                   <Properties>
                     <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
                       <ComponentRef name="createViewsForUser1"/>
+                    </Property>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="mniRefreshDbUser">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="refreshViewsForUser1"/>
                     </Property>
                   </Properties>
                 </MenuItem>

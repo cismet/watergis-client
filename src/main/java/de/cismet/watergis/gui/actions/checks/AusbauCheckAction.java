@@ -489,6 +489,22 @@ public class AusbauCheckAction extends AbstractCheckAction {
 
             return true;
         } else {
+            final int[] selectedIds = getIdsOfSelectedObjects("fg_ba");
+            final String message = ((selectedIds == null)
+                    ? "Es werden alle Routen geprüft"
+                    : ("Es werden die " + selectedIds.length + " selektierten Routen geprüft"));
+
+            final int ans = JOptionPane.showConfirmDialog(StaticSwingTools.getParentFrame(
+                        AppBroker.getInstance().getWatergisApp()),
+                    message,
+                    "Prüfung starten",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            if (ans == JOptionPane.CANCEL_OPTION) {
+                return false;
+            }
+
             final WaitingDialogThread<CheckResult> wdt = new WaitingDialogThread<CheckResult>(
                     StaticSwingTools.getParentFrame(AppBroker.getInstance().getWatergisApp()),
                     true,
