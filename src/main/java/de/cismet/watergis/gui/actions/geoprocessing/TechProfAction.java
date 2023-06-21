@@ -12,11 +12,16 @@
  */
 package de.cismet.watergis.gui.actions.geoprocessing;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.linearref.LinearLocation;
+import com.vividsolutions.jts.linearref.LocationIndexedLine;
+
 import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +70,7 @@ public class TechProfAction extends AbstractGeoprocessingAction {
 
     static {
         TECH_ATTR.add("id");
+        TECH_ATTR.add("geom");
         TECH_ATTR.add("ww_gr");
         TECH_ATTR.add("ba_cd");
         TECH_ATTR.add("ba_st_von");
@@ -113,6 +119,7 @@ public class TechProfAction extends AbstractGeoprocessingAction {
 
         ATTRIBUTE_ORDER.add("id");
         ATTRIBUTE_ORDER.add("ww_gr");
+        ATTRIBUTE_ORDER.add("geom");
         ATTRIBUTE_ORDER.add("ba_cd");
         ATTRIBUTE_ORDER.add("ba_st_von");
         ATTRIBUTE_ORDER.add("ba_st_bis");
@@ -286,6 +293,7 @@ public class TechProfAction extends AbstractGeoprocessingAction {
                                 final String baCd = (String)techFeature.getProperty("ba_cd");
                                 final double von = (Double)techFeature.getProperty("ba_st_von");
                                 final double bis = (Double)techFeature.getProperty("ba_st_bis");
+                                final List<Part> parts = new ArrayList<>();
 
                                 for (final FeatureServiceFeature profFeature : featureListProf) {
                                     final double vonProf = (Double)profFeature.getProperty("ba_st_von");
@@ -293,51 +301,58 @@ public class TechProfAction extends AbstractGeoprocessingAction {
 
                                     if (baCd.equals(profFeature.getProperty("ba_cd")) && (von <= bisProf)
                                                 && (bis >= vonProf)) {
-                                        final DefaultFeatureServiceFeature newFeature =
-                                            new DefaultFeatureServiceFeature();
-                                        newFeature.setProperty("id", profFeature.getProperty("id"));
-                                        newFeature.setProperty("ww_gr", profFeature.getProperty("ww_gr"));
-                                        newFeature.setProperty("ba_cd", profFeature.getProperty("ba_cd"));
-                                        newFeature.setProperty("ba_st_von", Math.max(von, vonProf));
-                                        newFeature.setProperty("ba_st_bis", Math.min(bis, bisProf));
-                                        newFeature.setProperty("l_st", techFeature.getProperty("l_st"));
+                                        if (Math.abs(Math.max(von, vonProf) - Math.min(bis, bisProf)) > 0.01) {
+                                            parts.add(new Part(Math.max(von, vonProf), Math.min(bis, bisProf)));
+                                            resultedFeatures.add(createNewFeature(
+                                                    profFeature,
+                                                    techFeature,
+                                                    von,
+                                                    bis,
+                                                    vonProf,
+                                                    bisProf,
+                                                    newLayerProperties));
+                                        }
+                                    }
+                                }
 
-                                        newFeature.setProperty("tech", techFeature.getProperty("tech"));
-                                        newFeature.setProperty("obj_nr", techFeature.getProperty("obj_nr"));
-                                        newFeature.setProperty("obj_nr_gu", techFeature.getProperty("obj_nr_gu"));
-                                        newFeature.setProperty("bemerkung", techFeature.getProperty("bemerkung"));
-                                        newFeature.setProperty("na_gu", techFeature.getProperty("na_gu"));
-                                        newFeature.setProperty("mahd_gu", techFeature.getProperty("mahd_gu"));
-                                        newFeature.setProperty("gu_gu", techFeature.getProperty("gu_gu"));
-                                        newFeature.setProperty("laenge", techFeature.getProperty("laenge"));
-                                        newFeature.setProperty("id2", profFeature.getProperty("id"));
-                                        newFeature.setProperty("ww_gr2", profFeature.getProperty("ww_gr"));
-                                        newFeature.setProperty("l_st2", profFeature.getProperty("l_st"));
-                                        newFeature.setProperty("profil", profFeature.getProperty("profil"));
-                                        newFeature.setProperty("obj_nr2", profFeature.getProperty("obj_nr"));
-                                        newFeature.setProperty("obj_nr_gu2", profFeature.getProperty("obj_nr_gu2"));
-                                        newFeature.setProperty("traeger", profFeature.getProperty("traeger"));
-                                        newFeature.setProperty("traeger_gu", profFeature.getProperty("traeger_gu"));
-                                        newFeature.setProperty("wbbl", profFeature.getProperty("wbbl"));
-                                        newFeature.setProperty("ausbaujahr", profFeature.getProperty("ausbaujahr"));
-                                        newFeature.setProperty("zust_kl", profFeature.getProperty("zust_kl"));
-                                        newFeature.setProperty("bemerkung2", profFeature.getProperty("bemerkung"));
-                                        newFeature.setProperty("br", profFeature.getProperty("br"));
-                                        newFeature.setProperty("ho_e", profFeature.getProperty("ho_e"));
-                                        newFeature.setProperty("ho_a", profFeature.getProperty("ho_a"));
-                                        newFeature.setProperty("gefaelle", profFeature.getProperty("gefaelle"));
-                                        newFeature.setProperty("bv_re", profFeature.getProperty("bv_re"));
-                                        newFeature.setProperty("bh_re", profFeature.getProperty("bh_re"));
-                                        newFeature.setProperty("bl_re", profFeature.getProperty("bl_re"));
-                                        newFeature.setProperty("bv_li", profFeature.getProperty("bv_li"));
-                                        newFeature.setProperty("bh_li", profFeature.getProperty("bh_li"));
-                                        newFeature.setProperty("bl_li", profFeature.getProperty("bl_li"));
-                                        newFeature.setProperty("mw", profFeature.getProperty("mw"));
-                                        newFeature.setProperty("laenge2", profFeature.getProperty("laenge"));
+                                Collections.sort(parts);
 
-                                        newFeature.setLayerProperties(newLayerProperties);
-                                        newFeature.setGeometry(profFeature.getGeometry());
-                                        resultedFeatures.add(newFeature);
+                                if (parts.isEmpty()) {
+                                    resultedFeatures.add(createNewFeature(
+                                            null,
+                                            techFeature,
+                                            von,
+                                            bis,
+                                            -1,
+                                            -1,
+                                            newLayerProperties));
+                                } else {
+                                    double currentStat = von;
+
+                                    for (final Part p : parts) {
+                                        if (currentStat < (p.getFrom() - 0.01)) {
+                                            resultedFeatures.add(createNewFeature(
+                                                    null,
+                                                    techFeature,
+                                                    currentStat,
+                                                    p.getFrom(),
+                                                    -1,
+                                                    -1,
+                                                    newLayerProperties));
+                                        }
+
+                                        currentStat = p.getTo();
+                                    }
+
+                                    if (currentStat < (bis - 0.01)) {
+                                        resultedFeatures.add(createNewFeature(
+                                                null,
+                                                techFeature,
+                                                currentStat,
+                                                bis,
+                                                -1,
+                                                -1,
+                                                newLayerProperties));
                                     }
                                 }
 
@@ -369,16 +384,169 @@ public class TechProfAction extends AbstractGeoprocessingAction {
                         protected void done() {
                             try {
                                 final H2FeatureService service = get();
+                                final H2FeatureService newService = new H2FeatureService(service.getName(),
+                                        service.getDatabasePath(),
+                                        service.getTableName(),
+                                        null);
 
                                 if (service != null) {
                                     AppBroker.getInstance()
                                             .getMappingComponent()
                                             .getMappingModel()
                                             .removeLayer(service);
-                                    FeatureServiceHelper.addServiceLayerToTheTree(service);
+                                    FeatureServiceHelper.addServiceLayerToTheTree(newService);
                                 }
                             } catch (Exception ex) {
                                 LOG.error("Error while execute the merge operation.", ex);
+                            }
+                        }
+
+                        private DefaultFeatureServiceFeature createNewFeature(final FeatureServiceFeature profFeature,
+                                final FeatureServiceFeature techFeature,
+                                final double von,
+                                final double bis,
+                                double vonProf,
+                                double bisProf,
+                                final LayerProperties newLayerProperties) {
+                            final DefaultFeatureServiceFeature newFeature = new DefaultFeatureServiceFeature();
+                            if (profFeature != null) {
+                                newFeature.setProperty("id2", profFeature.getProperty("id"));
+                                newFeature.setProperty("ww_gr2", profFeature.getProperty("ww_gr"));
+                                newFeature.setProperty("l_st2", profFeature.getProperty("l_st"));
+                                newFeature.setProperty("profil", profFeature.getProperty("profil"));
+                                newFeature.setProperty("obj_nr2", profFeature.getProperty("obj_nr"));
+                                newFeature.setProperty("obj_nr_gu2", profFeature.getProperty("obj_nr_gu2"));
+                                newFeature.setProperty("traeger", profFeature.getProperty("traeger"));
+                                newFeature.setProperty("traeger_gu", profFeature.getProperty("traeger_gu"));
+                                newFeature.setProperty("wbbl", profFeature.getProperty("wbbl"));
+                                newFeature.setProperty("ausbaujahr", profFeature.getProperty("ausbaujahr"));
+                                newFeature.setProperty("zust_kl", profFeature.getProperty("zust_kl"));
+                                newFeature.setProperty("bemerkung2", profFeature.getProperty("bemerkung"));
+                                newFeature.setProperty("br", profFeature.getProperty("br"));
+                                newFeature.setProperty("ho_e", profFeature.getProperty("ho_e"));
+                                newFeature.setProperty("ho_a", profFeature.getProperty("ho_a"));
+                                newFeature.setProperty("gefaelle", profFeature.getProperty("gefaelle"));
+                                newFeature.setProperty("bv_re", profFeature.getProperty("bv_re"));
+                                newFeature.setProperty("bh_re", profFeature.getProperty("bh_re"));
+                                newFeature.setProperty("bl_re", profFeature.getProperty("bl_re"));
+                                newFeature.setProperty("bv_li", profFeature.getProperty("bv_li"));
+                                newFeature.setProperty("bh_li", profFeature.getProperty("bh_li"));
+                                newFeature.setProperty("bl_li", profFeature.getProperty("bl_li"));
+                                newFeature.setProperty("mw", profFeature.getProperty("mw"));
+                                newFeature.setProperty("laenge2", profFeature.getProperty("laenge"));
+                            } else {
+                                vonProf = -1;
+                                bisProf = Double.MAX_VALUE;
+                            }
+                            newFeature.setProperty("id", techFeature.getProperty("id"));
+                            newFeature.setProperty("ww_gr", techFeature.getProperty("ww_gr"));
+                            newFeature.setProperty("ba_cd", techFeature.getProperty("ba_cd"));
+                            newFeature.setProperty("ba_st_von", Math.max(von, vonProf));
+                            newFeature.setProperty("ba_st_bis", Math.min(bis, bisProf));
+                            newFeature.setProperty("l_st", techFeature.getProperty("l_st"));
+
+                            newFeature.setProperty("tech", techFeature.getProperty("tech"));
+                            newFeature.setProperty("obj_nr", techFeature.getProperty("obj_nr"));
+                            newFeature.setProperty("obj_nr_gu", techFeature.getProperty("obj_nr_gu"));
+                            newFeature.setProperty("bemerkung", techFeature.getProperty("bemerkung"));
+                            newFeature.setProperty("na_gu", techFeature.getProperty("na_gu"));
+                            newFeature.setProperty("mahd_gu", techFeature.getProperty("mahd_gu"));
+                            newFeature.setProperty("gu_gu", techFeature.getProperty("gu_gu"));
+                            newFeature.setProperty("laenge", techFeature.getProperty("laenge"));
+
+                            newFeature.setLayerProperties(newLayerProperties);
+                            if ((Math.max(von, vonProf) == von) && (Math.min(bis, bisProf) == bis)) {
+                                newFeature.setGeometry(techFeature.getGeometry());
+                            } else if ((Math.max(von, vonProf) == vonProf)
+                                        && (Math.min(bis, bisProf) == bisProf)) {
+                                newFeature.setGeometry(profFeature.getGeometry());
+                            } else {
+                                Geometry g = null;
+                                final double realTechVon = (Double)techFeature.getProperty("ba_st_von");
+
+                                if (von != realTechVon) {
+                                    g = techFeature.getGeometry();
+                                    final double len = bis - von;
+                                    final LocationIndexedLine lineLIL = new LocationIndexedLine(g);
+                                    final LinearLocation startLoc = lineLIL.indexOf(lineLIL.extractPoint(
+                                                lineLIL.getStartIndex(),
+                                                von
+                                                        - realTechVon));
+                                    final LinearLocation endLoc = lineLIL.getEndIndex();
+                                    g = lineLIL.extractLine(startLoc, endLoc);
+                                } else if (Math.max(von, vonProf) == von) {
+                                    g = techFeature.getGeometry();
+                                } else if (Math.max(von, vonProf) == vonProf) {
+                                    g = profFeature.getGeometry();
+                                }
+
+                                final double len = Math.min(bis, bisProf) - Math.max(von, vonProf);
+                                final LocationIndexedLine lineLIL = new LocationIndexedLine(g);
+                                final LinearLocation startLoc = lineLIL.getStartIndex();
+                                final LinearLocation endLoc = lineLIL.indexOf(lineLIL.extractPoint(
+                                            startLoc,
+                                            len));
+
+                                newFeature.setGeometry(lineLIL.extractLine(startLoc, endLoc));
+                            }
+
+                            return newFeature;
+                        }
+
+                        class Part implements Comparable<Part> {
+
+                            private double from;
+                            private double to;
+
+                            public Part(final double from, final double to) {
+                                if (from > to) {
+                                    this.to = from;
+                                    this.from = to;
+                                } else {
+                                    this.from = from;
+                                    this.to = to;
+                                }
+                            }
+
+                            /**
+                             * DOCUMENT ME!
+                             *
+                             * @return  the from
+                             */
+                            public double getFrom() {
+                                return from;
+                            }
+
+                            /**
+                             * DOCUMENT ME!
+                             *
+                             * @param  from  the from to set
+                             */
+                            public void setFrom(final double from) {
+                                this.from = from;
+                            }
+
+                            /**
+                             * DOCUMENT ME!
+                             *
+                             * @return  the to
+                             */
+                            public double getTo() {
+                                return to;
+                            }
+
+                            /**
+                             * DOCUMENT ME!
+                             *
+                             * @param  to  the to to set
+                             */
+                            public void setTo(final double to) {
+                                this.to = to;
+                            }
+
+                            @Override
+                            public int compareTo(final Part o) {
+                                return new Double(getFrom()).compareTo(o.getFrom());
                             }
                         }
                     };
