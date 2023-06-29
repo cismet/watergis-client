@@ -977,7 +977,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGafUpload.setVisible(checkForQP);
 
         final boolean checkForTechProf = AppBroker.getInstance().isAdminUser()
-                    || AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals("3100");
+                    || AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals(3100);
         mniTechProf.setVisible(checkForTechProf);
         mniTechProf.setEnabled(checkForTechProf);
         checkForCreatedObjects();
@@ -3999,8 +3999,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGewaesser.setAction(gewaesserReportAction);
         org.openide.awt.Mnemonics.setLocalizedText(
             mniGewaesser,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniGewaesser.text", new Object[] {
-                }));               // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniGewaesser.text",
+                new Object[] {})); // NOI18N
         mniGewaesser.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniGewaesser.toolTipText",

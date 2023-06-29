@@ -140,7 +140,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private final Format formatter = new WatergisDefaultRuleSet.TimeFormatter();
     private boolean cancelled = false;
     private String lastPath = DownloadManager.instance().getDestinationDirectory().toString();
-    private MetaClass LAGESTATUS_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_l_st");
+    private MetaClass LAGESTATUS_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_hyk");
     private MetaClass LAGE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_l_bezug");
     private MetaClass HOEHE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_h_bezug");
     private MetaClass FREIGABE_MC = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_freigabe");
