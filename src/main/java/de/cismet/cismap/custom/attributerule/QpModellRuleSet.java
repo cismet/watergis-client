@@ -73,7 +73,7 @@ public class QpModellRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("jahr", new Varchar(20, false, false));
         typeMap.put("m_plan", new Varchar(250, false, false));
         typeMap.put("m_ergeb", new Varchar(250, false, false));
-        typeMap.put("m_kosten", new Numeric(4, 0, false, false, 1, 9999));
+        typeMap.put("m_kosten", new Numeric(6, 2, false, false, 1, 9999));
         typeMap.put("suchraum", new Varchar(250, false, true));
         typeMap.put("prio", new Catalogue("k_prio", false, true, new Varchar(10, false, false)));
         typeMap.put("m_obsolet", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
