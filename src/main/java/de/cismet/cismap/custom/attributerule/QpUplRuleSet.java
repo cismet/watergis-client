@@ -73,7 +73,7 @@ public class QpUplRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true, new Numeric(4, 0, false, false)));
-        typeMap.put("l_st", new Catalogue("k_l_st", false, true, new Varchar(10, false, false)));
+        typeMap.put("l_st", new Catalogue("k_hyk", false, true, new Varchar(10, false, false)));
         typeMap.put("l_bezug", new Catalogue("k_l_bezug", false, true, new Numeric(5, 0, false, false)));
         typeMap.put("h_bezug", new Catalogue("k_h_bezug", false, true, new Numeric(5, 0, false, false)));
         typeMap.put("l_calc", new Varchar(4, false, false, ALLOWED_CALC_VALUES));
