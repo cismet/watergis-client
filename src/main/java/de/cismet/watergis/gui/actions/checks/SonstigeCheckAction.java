@@ -70,9 +70,9 @@ public class SonstigeCheckAction extends AbstractCheckAction {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final MetaClass FG_BA_DEICH = ClassCacheMultiple.getMetaClass(
-            AppBroker.DOMAIN_NAME,
-            "dlm25w.fg_ba_deich");
+// private static final MetaClass FG_BA_DEICH = ClassCacheMultiple.getMetaClass(
+// AppBroker.DOMAIN_NAME,
+// "dlm25w.deich_ft");
     private static final MetaClass GU_WIWE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.gu_wiwe");
@@ -97,15 +97,15 @@ public class SonstigeCheckAction extends AbstractCheckAction {
     private static final MetaClass FG_BA_DUE = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.fg_ba_due");
-    private static String QUERY_DEICH_HOLE;
-    private static String QUERY_DEICH_ATTR;
+//    private static String QUERY_DEICH_HOLE;
+//    private static String QUERY_DEICH_ATTR;
     private static String QUERY_WIWE_HOLE;
     private static String QUERY_WIWE_ATTR;
     private static String QUERY_LEIS_ATTR;
     private static String QUERY_TECH_ATTR;
     private static String QUERY_FOTO_ATTR;
     private static String QUERY_UGHZ_ATTR;
-    private static String QUERY_DEICH_GESCHL;
+//    private static String QUERY_DEICH_GESCHL;
     private static final String CHECK_SONSTIGES_TECH_TECH__LUECKE = "Prüfungen->Sonstiges->Tech->Tech: Lücke";
     private static final String CHECK_SONSTIGES_TECH_TECH__UEBERLAPPUNG =
         "Prüfungen->Sonstiges->Tech->Tech: Überlappung";
@@ -133,7 +133,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
         "Prüfungen->Sonstiges->Deich->Deich: Attribute";
     private static final String CHECK_SONSTIGES_DEICH_DEICH__LUECKE = "Prüfungen->Sonstiges->Deich->Deich: Lücke";
     private static final int[] USED_CLASS_IDS = new int[] {
-            ((FG_BA_DEICH != null) ? FG_BA_DEICH.getId() : -1),
+//            ((FG_BA_DEICH != null) ? FG_BA_DEICH.getId() : -1),
             ((GU_WIWE != null) ? GU_WIWE.getId() : -1),
             ((FG_BA_UGHZ != null) ? FG_BA_UGHZ.getId() : -1),
             ((FG_BA_LEIS != null) ? FG_BA_LEIS.getId() : -1),
@@ -160,123 +160,106 @@ public class SonstigeCheckAction extends AbstractCheckAction {
             CHECK_SONSTIGES_LEIS_LEIS__ATTRIBUTE,
             CHECK_SONSTIGES_WIWE_WIWE__LUECKE,
             CHECK_SONSTIGES_WIWE_WIWE__ATTRIBUTE,
-            CHECK_SONSTIGES_DEICH_DEICH_KREUZT_OFFEN,
-            CHECK_SONSTIGES_DEICH_DEICH__ATTRIBUTE,
-            CHECK_SONSTIGES_DEICH_DEICH__LUECKE
+//            CHECK_SONSTIGES_DEICH_DEICH_KREUZT_OFFEN,
+//            CHECK_SONSTIGES_DEICH_DEICH__ATTRIBUTE,
+//            CHECK_SONSTIGES_DEICH_DEICH__LUECKE
 //            ,CHECK_SONSTIGES_DEICH_DEICH__UEBERLAPPUNG
         };
 
     static {
-        if ((GU_WIWE != null) && (FG_BA_UGHZ != null) && (FG_BA_LEIS != null) && (FG_BA_DEICH != null)
+        if ((GU_WIWE != null) && (FG_BA_UGHZ != null) && (FG_BA_LEIS != null) // && (FG_BA_DEICH != null)
                     && (FG_BA_TECH != null)) {
             final User user = SessionManager.getSession().getUser();
 
-            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_DEICH_HOLE = "select " + FG_BA_DEICH.getID() + ", d1." + FG_BA_DEICH.getPrimaryKey()
-                            + "	from (select d.id, g.geo_field geo from \n"
-                            + "	dlm25w.fg_ba_deich d\n"
-                            + "	join geom g on (d.geom = g.id)\n"
-                            + "	) as d1,\n"
-                            + "	(select d.id, g.geo_field geo from \n"
-                            + "	dlm25w.fg_ba_deich d\n"
-                            + "	join geom g on (d.geom = g.id)\n"
-                            + "	) as d2\n"
-                            + "where d1.id <> d2.id and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) > 0.001 and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) < 0.5;";
-            } else {
-                QUERY_DEICH_HOLE = "select " + FG_BA_DEICH.getID() + ", d1." + FG_BA_DEICH.getPrimaryKey()
-                            + "	from (select d.id, g.geo_field geo from \n"
-                            + "	dlm25w.fg_ba_deich d\n"
-                            + "	join geom g on (d.geom = g.id)\n"
-                            + " join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)"
-                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "' \n"
-                            + "	) as d1,\n"
-                            + "	(select d.id, g.geo_field geo from \n"
-                            + "	dlm25w.fg_ba_deich d\n"
-                            + "	join geom g on (d.geom = g.id)\n"
-                            + "	) as d2\n"
-                            + "where d1.id <> d2.id and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) > 0.001 and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) < 0.5;";
-            }
+//            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+//                QUERY_DEICH_HOLE = "select " + FG_BA_DEICH.getID() + ", d1." + FG_BA_DEICH.getPrimaryKey()
+//                            + "       from (select d.id, g.geo_field geo from \n"
+//                            + "       dlm25w.deich_ft d\n"
+//                            + "       join geom g on (d.geom = g.id)\n"
+//                            + "       ) as d1,\n"
+//                            + "       (select d.id, g.geo_field geo from \n"
+//                            + "       dlm25w.deich_ft d\n"
+//                            + "       join geom g on (d.geom = g.id)\n"
+//                            + "       ) as d2\n"
+//                            + "where d1.id <> d2.id and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) > 0.001 and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) < 0.5;";
+//            } else {
+//                QUERY_DEICH_HOLE = "select " + FG_BA_DEICH.getID() + ", d1." + FG_BA_DEICH.getPrimaryKey()
+//                            + "       from (select d.id, g.geo_field geo from \n"
+//                            + "       dlm25w.deich_ft d\n"
+//                            + "       join geom g on (d.geom = g.id)\n"
+//                            + " join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)"
+//                            + " where (%1$s is null or von.route = any(%1$s)) and gr.owner = '"
+//                            + user.getUserGroup().getName() + "' \n"
+//                            + "       ) as d1,\n"
+//                            + "       (select d.id, g.geo_field geo from \n"
+//                            + "       dlm25w.deich_ft d\n"
+//                            + "       join geom g on (d.geom = g.id)\n"
+//                            + "       ) as d2\n"
+//                            + "where d1.id <> d2.id and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) > 0.001 and st_distance(dlm25w.endpunkte(d1.geo), dlm25w.endpunkte(d2.geo)) < 0.5;";
+//            }
 
-            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_DEICH_ATTR = "select " + FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey()
-                            + "	from dlm25w.fg_ba_deich d\n"
-                            + "	left join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	left join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	left join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "	left join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)\n"
-                            + "	left join dlm25w.k_deich_l_fk fk on (d.l_fk = fk.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (deich is null or gr.ww_gr is null or ord is null or d.l_fk is null or obj_nr is null or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
-                            + "or (br_f is not null and (fk.l_fk = 'fd' and (br_f < 2 or br_f > 50)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_f < 2 or br_f > 100)))\n"
-                            + "or (br_k is not null and (fk.l_fk = 'fd' and (br_k < 0.5 or br_k > 10)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_k < 0.5 or br_k > 20)))\n"
-                            + "or (ho_k_f is not null and (fk.l_fk = 'fd' and (ho_k_f < 0.5 or ho_k_f > 15)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_f < 1 or ho_k_f > 15)))\n"
-                            + "or (ho_k_pn is not null and (fk.l_fk = 'fd' and (ho_k_pn < 2 or ho_k_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_pn < 1 or ho_k_pn > 20)))\n"
-                            + "or (ho_bhw_pn is not null and (fk.l_fk = 'fd' and (ho_bhw_pn < 2 or ho_bhw_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_bhw_pn < 0 or ho_bhw_pn > 20)))\n"
-                            + "or (bv_w is not null and (bv_w < 1 or bv_w > 15))\n"
-                            + "or (bv_b is not null and (bv_b < 1 or bv_b > 15))\n"
-                            + "or ((fk.l_fk = 'fd') and (l_rl is null))\n"
-                            + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (linie is not null))\n"
-                            + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (l_rl is not null))\n"
-                            + "or ((br_f is not null and br_k is not null) and br_f <= br_k)\n"
-                            + "or ((ho_k_f is not null and ho_k_pn is not null) and ho_k_pn <= ho_k_f)\n"
-                            + "or ((ho_k_pn is not null and ho_bhw_pn is not null) and ho_k_pn <= ho_bhw_pn)\n"
-                            + "or ((ho_bhw_pn is not null and ho_mw_pn is not null) and ho_bhw_pn <= ho_mw_pn)\n"
-                            // + "or (d.esw is not null and (d.esw < 0 or d.esw > 1)) "
-                            + "or ((ho_k_pn is not null and ho_mw_pn is not null) and ho_k_pn <= ho_mw_pn))";
-            } else {
-                QUERY_DEICH_ATTR = "select " + FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey()
-                            + "	from dlm25w.fg_ba_deich d\n"
-                            + "	left join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
-                            + "	left join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
-                            + "	left join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
-                            + "	left join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)\n"
-                            + "	left join dlm25w.k_deich_l_fk fk on (d.l_fk = fk.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (deich is null or gr.ww_gr is null or ord is null or d.l_fk is null or obj_nr is null or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
-                            + "or (br_f is not null and (fk.l_fk = 'fd' and (br_f < 2 or br_f > 50)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_f < 2 or br_f > 100)))\n"
-                            + "or (br_k is not null and (fk.l_fk = 'fd' and (br_k < 0.5 or br_k > 10)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_k < 0.5 or br_k > 20)))\n"
-                            + "or (ho_k_f is not null and (fk.l_fk = 'fd' and (ho_k_f < 0.5 or ho_k_f > 15)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_f < 1 or ho_k_f > 15)))\n"
-                            + "or (ho_k_pn is not null and (fk.l_fk = 'fd' and (ho_k_pn < 2 or ho_k_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_pn < 1 or ho_k_pn > 20)))\n"
-                            + "or (ho_bhw_pn is not null and (fk.l_fk = 'fd' and (ho_bhw_pn < 2 or ho_bhw_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_bhw_pn < 0 or ho_bhw_pn > 20)))\n"
-                            + "or (bv_w is not null and (bv_w < 1 or bv_w > 15))\n"
-                            + "or (bv_b is not null and (bv_b < 1 or bv_b > 15))\n"
-                            + "or ((fk.l_fk = 'fd') and (l_rl is null))\n"
-                            + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (linie is not null))\n"
-                            + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (l_rl is not null))\n"
-                            + "or ((br_f is not null and br_k is not null) and br_f <= br_k)\n"
-                            + "or ((ho_k_f is not null and ho_k_pn is not null) and ho_k_pn <= ho_k_f)\n"
-                            + "or ((ho_k_pn is not null and ho_bhw_pn is not null) and ho_k_pn <= ho_bhw_pn)\n"
-                            + "or ((ho_bhw_pn is not null and ho_mw_pn is not null) and ho_bhw_pn <= ho_mw_pn)\n"
-                            // + "or (d.esw is not null and (d.esw < 0 or d.esw > 1)) "
-                            + "or ((ho_k_pn is not null and ho_mw_pn is not null) and ho_k_pn <= ho_mw_pn)) and gr.owner = '"
-                            + user.getUserGroup().getName() + "'";
-            }
-            // the geo index should not be used to improve the performance if ((user == null) ||
-            // user.getUserGroup().getName().startsWith("lung") ||
-            // user.getUserGroup().getName().equalsIgnoreCase("administratoren")) { QUERY_DEICH_GESCHL = "select " +
-            // FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey() + "       from dlm25w.fg_ba_deich d\n" + "join
-            // geom g on (d.geom = g.id),\n" + "(select (dlm25w.fast_union(\n" + "'select geo_field from dlm25w.fg_ba_rl
-            // r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)\n" + "union\n" + "select
-            // geo_field from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom =
-            // g.id)\n" + "union\n" + "select geo_field from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st =
-            // l.id) join geom g on (l.geom = g.id)'\n" + ")) as geo_field) as geschl_gerinne\n" + "where
-            // _st_intersects(g.geo_field, geschl_gerinne.geo_field)"; } else { QUERY_DEICH_GESCHL = "select " +
-            // FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey() + "       from dlm25w.fg_ba_deich d\n" + "join
-            // geom g on (d.geom = g.id)\n" + "join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)," + "(select
-            // (dlm25w.fast_union(\n" + "'select geo_field from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st
-            // = l.id) join geom g on (l.geom = g.id)\n" + "union\n" + "select geo_field from dlm25w.fg_ba_d r join
-            // dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom = g.id)\n" + "union\n" + "select
-            // geo_field from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join geom g on (l.geom =
-            // g.id)'\n" + ")) as geo_field) as geschl_gerinne\n" + "where _st_intersects(g.geo_field,
-            // geschl_gerinne.geo_field) and gr.owner = '" + user.getUserGroup().getName() + "'"; }
-            if ((user == null)
-                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_DEICH_GESCHL = "select distinct " + FG_BA_DEICH.getID() + ", "
-                            + " unnest(dlm25w.determine_crossed_deich(null, %1$s)) as id";
-            } else {
-                QUERY_DEICH_GESCHL = "select distinct " + FG_BA_DEICH.getID() + ", "
-                            + " unnest(dlm25w.determine_crossed_deich('" + user.getUserGroup().getName()
-                            + "', %1$s)) as id";
-            }
+//            if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+//                QUERY_DEICH_ATTR = "select " + FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey()
+//                            + "       from dlm25w.deich_ft d\n"
+//                            + "       left join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
+//                            + "       left join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
+//                            + "       left join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
+//                            + "       left join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)\n"
+//                            + "       left join dlm25w.k_deich_l_fk fk on (d.l_fk = fk.id)\n"
+//                            + "where (%1$s is null or von.route = any(%1$s)) and (deich is null or gr.ww_gr is null or ord is null or d.l_fk is null or obj_nr is null or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
+//                            + "or (br_f is not null and (fk.l_fk = 'fd' and (br_f < 2 or br_f > 50)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_f < 2 or br_f > 100)))\n"
+//                            + "or (br_k is not null and (fk.l_fk = 'fd' and (br_k < 0.5 or br_k > 10)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_k < 0.5 or br_k > 20)))\n"
+//                            + "or (ho_k_f is not null and (fk.l_fk = 'fd' and (ho_k_f < 0.5 or ho_k_f > 15)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_f < 1 or ho_k_f > 15)))\n"
+//                            + "or (ho_k_pn is not null and (fk.l_fk = 'fd' and (ho_k_pn < 2 or ho_k_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_pn < 1 or ho_k_pn > 20)))\n"
+//                            + "or (ho_bhw_pn is not null and (fk.l_fk = 'fd' and (ho_bhw_pn < 2 or ho_bhw_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_bhw_pn < 0 or ho_bhw_pn > 20)))\n"
+//                            + "or (bv_w is not null and (bv_w < 1 or bv_w > 15))\n"
+//                            + "or (bv_b is not null and (bv_b < 1 or bv_b > 15))\n"
+//                            + "or ((fk.l_fk = 'fd') and (l_rl is null))\n"
+//                            + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (linie is not null))\n"
+//                            + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (l_rl is not null))\n"
+//                            + "or ((br_f is not null and br_k is not null) and br_f <= br_k)\n"
+//                            + "or ((ho_k_f is not null and ho_k_pn is not null) and ho_k_pn <= ho_k_f)\n"
+//                            + "or ((ho_k_pn is not null and ho_bhw_pn is not null) and ho_k_pn <= ho_bhw_pn)\n"
+//                            + "or ((ho_bhw_pn is not null and ho_mw_pn is not null) and ho_bhw_pn <= ho_mw_pn)\n"
+//                            // + "or (d.esw is not null and (d.esw < 0 or d.esw > 1)) "
+//                            + "or ((ho_k_pn is not null and ho_mw_pn is not null) and ho_k_pn <= ho_mw_pn))";
+//            } else {
+//                QUERY_DEICH_ATTR = "select " + FG_BA_DEICH.getID() + ", d." + FG_BA_DEICH.getPrimaryKey()
+//                            + "       from dlm25w.deich_ft d\n"
+//                            + "       left join dlm25w.fg_ba_linie linie on (d.ba_st = linie.id)\n"
+//                            + "       left join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
+//                            + "       left join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
+//                            + "       left join dlm25w.k_ww_gr gr on (d.ww_gr = gr.id)\n"
+//                            + "       left join dlm25w.k_deich_l_fk fk on (d.l_fk = fk.id)\n"
+//                            + "where (%1$s is null or von.route = any(%1$s)) and (deich is null or gr.ww_gr is null or ord is null or d.l_fk is null or obj_nr is null or (ausbaujahr is not null and (ausbaujahr < 1800 or ausbaujahr > date_part('year', now()) + 2))\n"
+//                            + "or (br_f is not null and (fk.l_fk = 'fd' and (br_f < 2 or br_f > 50)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_f < 2 or br_f > 100)))\n"
+//                            + "or (br_k is not null and (fk.l_fk = 'fd' and (br_k < 0.5 or br_k > 10)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (br_k < 0.5 or br_k > 20)))\n"
+//                            + "or (ho_k_f is not null and (fk.l_fk = 'fd' and (ho_k_f < 0.5 or ho_k_f > 15)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_f < 1 or ho_k_f > 15)))\n"
+//                            + "or (ho_k_pn is not null and (fk.l_fk = 'fd' and (ho_k_pn < 2 or ho_k_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_k_pn < 1 or ho_k_pn > 20)))\n"
+//                            + "or (ho_bhw_pn is not null and (fk.l_fk = 'fd' and (ho_bhw_pn < 2 or ho_bhw_pn > 25)) or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (ho_bhw_pn < 0 or ho_bhw_pn > 20)))\n"
+//                            + "or (bv_w is not null and (bv_w < 1 or bv_w > 15))\n"
+//                            + "or (bv_b is not null and (bv_b < 1 or bv_b > 15))\n"
+//                            + "or ((fk.l_fk = 'fd') and (l_rl is null))\n"
+//                            + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (linie is not null))\n"
+//                            + "or ((fk.l_fk = 'bd' or fk.l_fk = 'kd') and (l_rl is not null))\n"
+//                            + "or ((br_f is not null and br_k is not null) and br_f <= br_k)\n"
+//                            + "or ((ho_k_f is not null and ho_k_pn is not null) and ho_k_pn <= ho_k_f)\n"
+//                            + "or ((ho_k_pn is not null and ho_bhw_pn is not null) and ho_k_pn <= ho_bhw_pn)\n"
+//                            + "or ((ho_bhw_pn is not null and ho_mw_pn is not null) and ho_bhw_pn <= ho_mw_pn)\n"
+//                            // + "or (d.esw is not null and (d.esw < 0 or d.esw > 1)) "
+//                            + "or ((ho_k_pn is not null and ho_mw_pn is not null) and ho_k_pn <= ho_mw_pn)) and gr.owner = '"
+//                            + user.getUserGroup().getName() + "'";
+//            }
+
+//            if ((user == null)
+//                        || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
+//                QUERY_DEICH_GESCHL = "select distinct " + FG_BA_DEICH.getID() + ", "
+//                            + " unnest(dlm25w.determine_crossed_deich(null, %1$s)) as id";
+//            } else {
+//                QUERY_DEICH_GESCHL = "select distinct " + FG_BA_DEICH.getID() + ", "
+//                            + " unnest(dlm25w.determine_crossed_deich('" + user.getUserGroup().getName()
+//                            + "', %1$s)) as id";
+//            }
 
             if ((user == null)
                         || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
@@ -474,7 +457,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 17;
+        return 14;
     }
 
     @Override
@@ -537,17 +520,17 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                                         "SonstigeCheckAction.actionPerformed().result.text.withoutProblems",
                                         new Object[] {
                                             result.getBakCount(),
-                                            result.getAttributesDeichErrors(),
+//                                            result.getAttributesDeichErrors(),
                                             result.getAttributesWiweErrors(),
                                             result.getAttributesUghzErrors(),
                                             result.getAttributesFotoErrors(),
                                             result.getAttributesLeisErrors(),
                                             result.getAttributesTechErrors(),
-                                            result.getGapDeichErrors(),
+//                                            result.getGapDeichErrors(),
                                             result.getGapWiweErrors(),
                                             result.getGapTechErrors(),
                                             result.getOverlappedTechErrors(),
-                                            result.getGerinneDeichErrors(),
+//                                            result.getGerinneDeichErrors(),
                                             result.getGerinneWiweErrors(),
                                             result.getGerinneLeisErrors(),
                                             result.getOffGerinneTechErrors()
@@ -568,17 +551,17 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                                         "SonstigeCheckAction.actionPerformed().result.text",
                                         new Object[] {
                                             result.getBakCount(),
-                                            result.getAttributesDeichErrors(),
+//                                            result.getAttributesDeichErrors(),
                                             result.getAttributesWiweErrors(),
                                             result.getAttributesUghzErrors(),
                                             result.getAttributesFotoErrors(),
                                             result.getAttributesLeisErrors(),
                                             result.getAttributesTechErrors(),
-                                            result.getGapDeichErrors(),
+//                                            result.getGapDeichErrors(),
                                             result.getGapWiweErrors(),
                                             result.getGapTechErrors(),
                                             result.getOverlappedTechErrors(),
-                                            result.getGerinneDeichErrors(),
+//                                            result.getGerinneDeichErrors(),
                                             result.getGerinneWiweErrors(),
                                             result.getGerinneLeisErrors(),
                                             result.getOffGerinneTechErrors()
@@ -759,23 +742,23 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                 : "false");
 
         if (!isExport) {
-            result.setGapDeich(analyseByQuery(
-                    FG_BA_DEICH,
-                    String.format(QUERY_DEICH_HOLE, SQLFormatter.createSqlArrayString(selectedIds)),
-                    CHECK_SONSTIGES_DEICH_DEICH__LUECKE));
-            increaseProgress(wd, 1);
+//            result.setGapDeich(analyseByQuery(
+//                    FG_BA_DEICH,
+//                    String.format(QUERY_DEICH_HOLE, SQLFormatter.createSqlArrayString(selectedIds)),
+//                    CHECK_SONSTIGES_DEICH_DEICH__LUECKE));
+//            increaseProgress(wd, 1);
+//
+//            result.setAttributesDeich(analyseByQuery(
+//                    FG_BA_DEICH,
+//                    String.format(QUERY_DEICH_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
+//                    CHECK_SONSTIGES_DEICH_DEICH__ATTRIBUTE));
+//            increaseProgress(wd, 1);
 
-            result.setAttributesDeich(analyseByQuery(
-                    FG_BA_DEICH,
-                    String.format(QUERY_DEICH_ATTR, SQLFormatter.createSqlArrayString(selectedIds)),
-                    CHECK_SONSTIGES_DEICH_DEICH__ATTRIBUTE));
-            increaseProgress(wd, 1);
-
-            result.setGerinneDeich(analyseByQuery(
-                    FG_BA_DEICH,
-                    String.format(QUERY_DEICH_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
-                    CHECK_SONSTIGES_DEICH_DEICH_KREUZT_OFFEN));
-            increaseProgress(wd, 1);
+//            result.setGerinneDeich(analyseByQuery(
+//                    FG_BA_DEICH,
+//                    String.format(QUERY_DEICH_GESCHL, SQLFormatter.createSqlArrayString(selectedIds)),
+//                    CHECK_SONSTIGES_DEICH_DEICH_KREUZT_OFFEN));
+//            increaseProgress(wd, 1);
 
             result.setAttributesWiwe(analyseByQuery(
                     GU_WIWE,

@@ -104,7 +104,7 @@ public class KatasterFlaechenData {
         lineMap.put(AllLineObjects.Table.fg_ba_proj, createDataObjects(AllLineObjects.Table.fg_ba_proj, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_ubef, createDataObjects(AllLineObjects.Table.fg_ba_ubef, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_ughz, createDataObjects(AllLineObjects.Table.fg_ba_ughz, gew));
-        lineMap.put(AllLineObjects.Table.fg_ba_deich, createDataObjects(AllLineObjects.Table.fg_ba_deich, gew));
+        lineMap.put(AllLineObjects.Table.deich_ft, createDataObjects(AllLineObjects.Table.deich_ft, gew));
 
         pointMap.put(AllPunktObjects.Table.fg_ba_anlp, createPointDataObjects(AllPunktObjects.Table.fg_ba_anlp, gew));
         pointMap.put(AllPunktObjects.Table.wr_wbu_aus, createPointDataObjects(AllPunktObjects.Table.wr_wbu_aus, gew));

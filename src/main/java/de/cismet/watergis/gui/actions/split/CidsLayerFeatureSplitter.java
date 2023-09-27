@@ -254,7 +254,7 @@ public class CidsLayerFeatureSplitter implements FeatureSplitter {
         cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_anll"));
         cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_bbef"));
         cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_d"));
-        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_deich"));
+        cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.deich_ft"));
         cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_due"));
         cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_gbk_delta"));
         cat2Classes.add(ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba_leis"));
