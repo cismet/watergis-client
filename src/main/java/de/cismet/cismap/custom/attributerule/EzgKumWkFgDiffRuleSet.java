@@ -11,11 +11,7 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import com.vividsolutions.jts.geom.Geometry;
-
-import java.sql.Timestamp;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -32,14 +28,16 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class EzgMv3RuleSet extends WatergisDefaultRuleSet {
+public class EzgKumWkFgDiffRuleSet extends WatergisDefaultRuleSet {
 
     //~ Instance initializers --------------------------------------------------
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("gbk_lawa", new Numeric(15, 0, true, true));
-        typeMap.put("gbk_lawa_k", new Numeric(3, 0, true, true));
+        typeMap.put("eu_cd_rw", new Varchar(42, true, true));
+        typeMap.put("wk_nr", new Varchar(10, true, true));
+        typeMap.put("flaeche_diff", new Numeric(12, 0, false, false));
+        typeMap.put("anteil", new Numeric(6, 2, false, false));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
@@ -50,7 +48,9 @@ public class EzgMv3RuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("flaeche") && !columnName.equals("geom") && !columnName.equals("id");
+                    && !columnName.equals("flaeche") && !columnName.equals("geom")
+                    && (!columnName.equals("id")
+                        & !columnName.equals("anteil"));
     }
 
     @Override
@@ -74,12 +74,14 @@ public class EzgMv3RuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public String[] getAdditionalFieldNames() {
-        return new String[] { "flaeche" };
+        return new String[] { "flaeche", "anteil" };
     }
 
     @Override
     public int getIndexOfAdditionalFieldName(final String name) {
         if (name.equals("flaeche")) {
+            return -3;
+        } else if (name.equals("anteil")) {
             return -3;
         } else {
             return super.getIndexOfAdditionalFieldName(name);
@@ -87,30 +89,43 @@ public class EzgMv3RuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
-        Long value = null;
-
+    public Object getAdditionalFieldValue(final String propertyName, final FeatureServiceFeature feature) {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            value = Math.round(geom.getArea());
+            if (propertyName.equals("flaeche")) {
+                return Math.round(geom.getArea());
+            } else if (propertyName.equals("anteil")) {
+                final Integer diff = ((Integer)feature.getProperty("flaeche_diff"));
+                return Math.round((geom.getArea() * 100 / (diff + geom.getArea())) * 100) / 100.0;
+            }
         }
 
-        return value;
+        return null;
     }
 
     @Override
     public String getAdditionalFieldFormula(final String propertyName) {
-        if (propertyName.equals("flaeche")) {
-            return "round(st_area(geom))";
-        } else {
-            return null;
+        switch (propertyName) {
+            case "flaeche": {
+                return "round(st_area(geom))";
+            }
+            case "anteil": {
+                return "round( (st_area(geom) * 100 / (flaeche_diff + anteil) ) * 100) / 100.0";
+            }
+            default: {
+                return null;
+            }
         }
     }
 
     @Override
     public Class getAdditionalFieldClass(final int index) {
-        return Long.class;
+        if (index == 4) {
+            return Double.class;
+        } else {
+            return Long.class;
+        }
     }
 
     @Override

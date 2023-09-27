@@ -44,9 +44,9 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("gmd_nr", new Numeric(8, 0, false));
         typeMap.put("gmd_name", new Varchar(50, false));
         typeMap.put("wbv", new Numeric(2, 0, false));
-        typeMap.put("flst_fl", new Numeric(16, 4, false));
-        typeMap.put("flst_g_an", new Numeric(5, 2, false, false));
-        typeMap.put("flst_g_fl", new Numeric(16, 4, false, false));
+        typeMap.put("flst_fl", new Numeric(16, 0, false));
+        typeMap.put("flst_g_an", new Numeric(5, 1, false, false));
+        typeMap.put("flst_g_fl", new Numeric(16, 1, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
