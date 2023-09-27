@@ -11,11 +11,7 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import com.vividsolutions.jts.geom.Geometry;
-
-import java.sql.Timestamp;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -32,14 +28,13 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class EzgMvWbvRuleSet extends WatergisDefaultRuleSet {
+public class EzgKumGwkRuleSet extends WatergisDefaultRuleSet {
 
     //~ Instance initializers --------------------------------------------------
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("wbv", new Numeric(2, 0, true, true));
-        typeMap.put("name", new Varchar(50, true, true));
+        typeMap.put("gwk_lawa", new Numeric(15, 0, true, true));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));

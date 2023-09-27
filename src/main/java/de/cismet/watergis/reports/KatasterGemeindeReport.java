@@ -532,8 +532,8 @@ public class KatasterGemeindeReport {
             feature.put("anll_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_anll, gem)));
             feature.put("kr_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_kr, gem)));
             feature.put("ea_a", toNullIfZero(getCountPointObjectsAll(AllPunktObjects.Table.fg_ba_ea, gem)));
-            feature.put("deich_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_deich, gem)));
-            feature.put("deich_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_deich, gem)));
+            feature.put("deich_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.deich_ft, gem)));
+            feature.put("deich_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.deich_ft, gem)));
             feature.put("ughz_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_ughz, gem)));
             feature.put("ughz_l", toNullIfZero(getLengthLineObjectsAll(AllLineObjects.Table.fg_ba_ughz, gem)));
             feature.put("leis_a", toNullIfZero(getCountLineObjectsAll(AllLineObjects.Table.fg_ba_leis, gem)));
@@ -648,8 +648,8 @@ public class KatasterGemeindeReport {
                 feature.put("anll_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, gem, gew));
                 feature.put("kr_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, gem, gew));
                 feature.put("ea_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, gem, gew));
-                feature.put("deich_a", getCountLineObjects(AllLineObjects.Table.fg_ba_deich, gem, gew));
-                feature.put("deich_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, gem, gew));
+                feature.put("deich_a", getCountLineObjects(AllLineObjects.Table.deich_ft, gem, gew));
+                feature.put("deich_l", getLengthLineObjects(AllLineObjects.Table.deich_ft, gem, gew));
                 feature.put("ughz_a", getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, gem, gew));
                 feature.put("ughz_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_ughz, gem, gew));
                 feature.put("leis_a", getCountLineObjects(AllLineObjects.Table.fg_ba_leis, gem, gew));
@@ -972,7 +972,7 @@ public class KatasterGemeindeReport {
                 feature.put(
                     "deich_a",
                     getCountLineObjects(
-                        AllLineObjects.Table.fg_ba_deich,
+                        AllLineObjects.Table.deich_ft,
                         gem,
                         gew.getId(),
                         gew.getFrom(),
@@ -980,7 +980,7 @@ public class KatasterGemeindeReport {
                 feature.put(
                     "deich_l",
                     getLengthLineObjects(
-                        AllLineObjects.Table.fg_ba_deich,
+                        AllLineObjects.Table.deich_ft,
                         gem,
                         gew.getId(),
                         gew.getFrom(),
@@ -1184,8 +1184,8 @@ public class KatasterGemeindeReport {
                 feature.put("anll_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, gem, guName));
                 feature.put("kr_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, gem, guName));
                 feature.put("ea_a", getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, gem, guName));
-                feature.put("deich_a", getCountLineObjects(AllLineObjects.Table.fg_ba_deich, gem, guName));
-                feature.put("deich_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, gem, guName));
+                feature.put("deich_a", getCountLineObjects(AllLineObjects.Table.deich_ft, gem, guName));
+                feature.put("deich_l", getLengthLineObjects(AllLineObjects.Table.deich_ft, gem, guName));
                 feature.put("ughz_a", getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, gem, guName));
                 feature.put("ughz_l", getLengthLineObjects(AllLineObjects.Table.fg_ba_ughz, gem, guName));
                 feature.put("leis_a", getCountLineObjects(AllLineObjects.Table.fg_ba_leis, gem, guName));
@@ -1458,13 +1458,13 @@ public class KatasterGemeindeReport {
                     feature.put(
                         "deich_a",
                         getCountLineObjects(
-                            AllLineObjects.Table.fg_ba_deich,
+                            AllLineObjects.Table.deich_ft,
                             gem,
                             wdm));
                     feature.put(
                         "deich_l",
                         getLengthLineObjects(
-                            AllLineObjects.Table.fg_ba_deich,
+                            AllLineObjects.Table.deich_ft,
                             gem,
                             wdm));
                     feature.put(
@@ -1630,8 +1630,8 @@ public class KatasterGemeindeReport {
             feature.put("anll_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_anll, guName)));
             feature.put("kr_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, guName)));
             feature.put("ea_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, guName)));
-            feature.put("deich_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_deich, guName)));
-            feature.put("deich_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, guName)));
+            feature.put("deich_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.deich_ft, guName)));
+            feature.put("deich_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.deich_ft, guName)));
             feature.put("ughz_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, guName)));
             feature.put("ughz_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_ughz, guName)));
             feature.put("leis_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_leis, guName)));
@@ -1908,13 +1908,13 @@ public class KatasterGemeindeReport {
                 feature.put(
                     "deich_a",
                     toNullIfZero(getCountLineObjects(
-                            AllLineObjects.Table.fg_ba_deich,
+                            AllLineObjects.Table.deich_ft,
                             guName,
                             wdm)));
                 feature.put(
                     "deich_l",
                     toNullIfZero(getLengthLineObjects(
-                            AllLineObjects.Table.fg_ba_deich,
+                            AllLineObjects.Table.deich_ft,
                             guName,
                             wdm)));
                 feature.put(

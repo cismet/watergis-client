@@ -32,14 +32,14 @@ import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListener
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class EzgMvWbvJahrFsRuleSet extends WatergisDefaultRuleSet {
+public class EzgKumSgRuleSet extends WatergisDefaultRuleSet {
 
     //~ Instance initializers --------------------------------------------------
 
     {
         typeMap.put("geom", new Geom(true, false));
-        typeMap.put("wbv", new Numeric(2, 0, true, true));
-        typeMap.put("name", new Varchar(50, true, true));
+        typeMap.put("see_lawa", new Varchar(20, true, true));
+        typeMap.put("see_sp", new Varchar(8, true, true));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
@@ -87,7 +87,7 @@ public class EzgMvWbvJahrFsRuleSet extends WatergisDefaultRuleSet {
     }
 
     @Override
-    public Object getAdditionalFieldValue(final java.lang.String propertyName, final FeatureServiceFeature feature) {
+    public Object getAdditionalFieldValue(final String propertyName, final FeatureServiceFeature feature) {
         Long value = null;
 
         final Geometry geom = ((Geometry)feature.getProperty("geom"));

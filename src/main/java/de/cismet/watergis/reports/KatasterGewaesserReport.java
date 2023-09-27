@@ -409,8 +409,8 @@ public class KatasterGewaesserReport {
             feature.put("kr_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, gew)));
             feature.put("ea_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, gew)));
             feature.put("foto_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.foto, gew)));
-            feature.put("deich_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_deich, gew)));
-            feature.put("deich_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, gew)));
+            feature.put("deich_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.deich_ft, gew)));
+            feature.put("deich_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.deich_ft, gew)));
             feature.put("ughz_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, gew)));
             feature.put("ughz_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_ughz, gew)));
             feature.put("leis_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_leis, gew)));
@@ -747,14 +747,14 @@ public class KatasterGewaesserReport {
             feature.put(
                 "deich_a",
                 getCountLineObjects(
-                    AllLineObjects.Table.fg_ba_deich,
+                    AllLineObjects.Table.deich_ft,
                     gew.getId(),
                     gew.getFrom(),
                     gew.getTill()));
             feature.put(
                 "deich_l",
                 getLengthLineObjects(
-                    AllLineObjects.Table.fg_ba_deich,
+                    AllLineObjects.Table.deich_ft,
                     gew.getId(),
                     gew.getFrom(),
                     gew.getTill()));
@@ -963,8 +963,8 @@ public class KatasterGewaesserReport {
             feature.put("kr_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_kr, guName)));
             feature.put("ea_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.fg_ba_ea, guName)));
             feature.put("foto_a", toNullIfZero(getCountPointObjects(AllPunktObjects.Table.foto, guName)));
-            feature.put("deich_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_deich, guName)));
-            feature.put("deich_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_deich, guName)));
+            feature.put("deich_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.deich_ft, guName)));
+            feature.put("deich_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.deich_ft, guName)));
             feature.put("ughz_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_ughz, guName)));
             feature.put("ughz_l", toNullIfZero(getLengthLineObjects(AllLineObjects.Table.fg_ba_ughz, guName)));
             feature.put("leis_a", toNullIfZero(getCountLineObjects(AllLineObjects.Table.fg_ba_leis, guName)));
@@ -1266,13 +1266,13 @@ public class KatasterGewaesserReport {
                 feature.put(
                     "deich_a",
                     toNullIfZero(getCountLineObjects(
-                            AllLineObjects.Table.fg_ba_deich,
+                            AllLineObjects.Table.deich_ft,
                             guName,
                             wdm)));
                 feature.put(
                     "deich_l",
                     toNullIfZero(getLengthLineObjects(
-                            AllLineObjects.Table.fg_ba_deich,
+                            AllLineObjects.Table.deich_ft,
                             guName,
                             wdm)));
                 feature.put(

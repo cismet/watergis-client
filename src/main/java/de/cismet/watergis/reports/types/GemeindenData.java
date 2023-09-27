@@ -114,7 +114,7 @@ public class GemeindenData {
         lineMap.put(AllLineObjects.Table.fg_ba_tech, createDataObjects(AllLineObjects.Table.fg_ba_tech, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_ubef, createDataObjects(AllLineObjects.Table.fg_ba_ubef, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_ughz, createDataObjects(AllLineObjects.Table.fg_ba_ughz, gew));
-        lineMap.put(AllLineObjects.Table.fg_ba_deich, createDataObjects(AllLineObjects.Table.fg_ba_deich, gew));
+        lineMap.put(AllLineObjects.Table.deich_ft, createDataObjects(AllLineObjects.Table.deich_ft, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_doku, createDataObjects(AllLineObjects.Table.fg_ba_doku, gew));
         lineMap.put(AllLineObjects.Table.fg_ba_proj, createDataObjects(AllLineObjects.Table.fg_ba_proj, gew));
 

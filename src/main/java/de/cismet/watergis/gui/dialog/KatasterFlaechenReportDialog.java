@@ -159,6 +159,7 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
     private KatasterFlaechenReportDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+        ckbDeich.setVisible(false);
         txtFile.setText(DownloadManager.instance().getDestinationDirectory().getPath());
 
         if (!modal) {
@@ -1011,7 +1012,7 @@ public class KatasterFlaechenReportDialog extends javax.swing.JDialog {
         ckbProj.setPreferredSize(new java.awt.Dimension(260, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 25;
+        gridBagConstraints.gridy = 22;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);

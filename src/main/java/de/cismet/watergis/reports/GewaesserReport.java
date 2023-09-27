@@ -181,7 +181,7 @@ public class GewaesserReport {
             "dlm25w.fg_ba_proj");
     private static final MetaClass FG_BA_DEICH = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
-            "dlm25w.fg_ba_deich");
+            "dlm25w.deich_ft");
     private static final MetaClass FOTO = ClassCacheMultiple.getMetaClass(
             AppBroker.DOMAIN_NAME,
             "dlm25w.foto");

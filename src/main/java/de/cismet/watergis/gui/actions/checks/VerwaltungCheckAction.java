@@ -241,7 +241,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
             }
 
             if ((user == null) || user.getUserGroup().getName().equalsIgnoreCase("administratoren")) {
-                QUERY_EXP = "select distinct " + FG_BA_EXP.getID() + ", unnest(array_append(exp.id)) as id "
+                QUERY_EXP = "select distinct " + FG_BA_EXP.getID() + ", unnest(array_agg(exp.id)) as id "
                             + " from " + FG_BA_EXP.getTableName() + " exp\n"
                             + "join dlm25w.fg_ba_linie linie on (exp.ba_st = linie.id)\n"
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"
@@ -250,7 +250,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
                             + "group by ba.id, exp.ww_gr\n"
                             + "having count(*) > 1";
             } else {
-                QUERY_EXP = "select distinct " + FG_BA_EXP.getID() + ", unnest(array_append(exp.id)) as id "
+                QUERY_EXP = "select distinct " + FG_BA_EXP.getID() + ", unnest(array_agg(exp.id)) as id "
                             + " from " + FG_BA_EXP.getTableName() + " exp \n"
                             + "join dlm25w.fg_ba_linie linie on (exp.ba_st = linie.id)\n"
                             + "join dlm25w.fg_ba_punkt von on (linie.von = von.id)\n"

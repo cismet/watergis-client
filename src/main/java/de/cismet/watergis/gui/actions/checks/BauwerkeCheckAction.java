@@ -1392,7 +1392,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_kr kkr on (kr.kr = kkr.id)\n"
                             + "left join dlm25w.k_ww_gr gr on (gr.id = bak.ww_gr)\n"
                             + " where (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and koiu.l_oiu = 'i' and ( dlm25w.isgeschlossenesgerinne(st_buffer(g.geo_field, 0.01), ba.id)  or (dlm25w.isoffenesgerinne(st_buffer(g.geo_field, 0.01), ba.id) and dlm25w.isoffenesgerinne(\n"
-                            + "(select st_buffer(ST_Line_Interpolate_Point(geo_field, ST_LineLocatePoint(geo_field, g.geo_field)), 0.01) from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1), \n"
+                            + "(select st_buffer(ST_LineInterpolatePoint(geo_field, ST_LineLocatePoint(geo_field, g.geo_field)), 0.01) from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1), \n"
                             + "(select b.id from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1)) ) );";
             } else {
                 QUERY_KR_INVALID = "select distinct " + FG_BA_KR.getID() + ", kr." + FG_BA_KR.getPrimaryKey()
@@ -1407,7 +1407,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + " where  (gr.owner = '"
                             + user.getUserGroup().getName()
                             + "' or %2$s) and (%1$s is null or s.route = any(%1$s)) and kkr.kr = 'Gew' and koiu.l_oiu = 'i' and ( dlm25w.isgeschlossenesgerinne(st_buffer(g.geo_field, 0.01), ba.id)  or (dlm25w.isoffenesgerinne(st_buffer(g.geo_field, 0.01), ba.id) and dlm25w.isoffenesgerinne(\n"
-                            + "(select st_buffer(ST_Line_Interpolate_Point(geo_field, ST_LineLocatePoint(geo_field, g.geo_field)), 0.01) from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1), \n"
+                            + "(select st_buffer(ST_LineInterpolatePoint(geo_field, ST_LineLocatePoint(geo_field, g.geo_field)), 0.01) from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1), \n"
                             + "(select b.id from dlm25w.fg_ba b join geom on (b.geom = geom.id) where b.id != ba.id and st_intersects(geom.geo_field, st_buffer(g.geo_field, 3)) limit 1)) ) );";
             }
         }
