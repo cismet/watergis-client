@@ -43,7 +43,7 @@ public class VwAlkFlstRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("gmk_name", new Varchar(50, false));
         typeMap.put("gmd_nr", new Numeric(8, 0, false));
         typeMap.put("gmd_name", new Varchar(50, false));
-        typeMap.put("flst_fl", new Numeric(16, 4, false, false));
+        typeMap.put("flst_fl", new Numeric(16, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
