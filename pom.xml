@@ -79,7 +79,7 @@
             <dependency>
                 <groupId>de.cismet.cids</groupId>
                 <artifactId>cids-server</artifactId>
-                <version>8.0.1</version>
+                <version>8.4.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>de.cismet.watergis</groupId>
                 <artifactId>watergis-server</artifactId>
-                <version>8.0.5</version>
+                <version>8.0.6</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>

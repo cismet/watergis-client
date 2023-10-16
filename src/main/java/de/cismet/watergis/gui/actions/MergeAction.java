@@ -13,20 +13,24 @@ package de.cismet.watergis.gui.actions;
 
 import Sirius.navigator.connection.SessionManager;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 import org.apache.log4j.Logger;
 
 import org.openide.util.NbBundle;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -58,6 +62,8 @@ import de.cismet.watergis.gui.actions.merge.FeatureMerger;
 import de.cismet.watergis.gui.actions.merge.FeatureMergerFactory;
 import de.cismet.watergis.gui.actions.merge.MergeException;
 import de.cismet.watergis.gui.components.AttributeTableDialog;
+
+import de.cismet.watergis.utils.GeometryUtils;
 
 /**
  * DOCUMENT ME!
@@ -118,15 +124,30 @@ public class MergeAction extends AbstractAction {
                     @Override
                     protected Object doInBackground() throws Exception {
                         Feature resultedFeature = masterFeature;
-                        allValidFeatures.remove(masterFeature);
-                        Collections.sort(allValidFeatures, new DistanceComparator(masterFeature));
+                        final List<FeatureServiceFeature> sortedFeaturesWithoutMaster = sortAndAdjustFeaturesForMerge(
+                                masterFeature,
+                                allValidFeatures,
+                                0.01);
 
+                        if ((sortedFeaturesWithoutMaster != null)
+                                    && (sortedFeaturesWithoutMaster.size() < (allValidFeatures.size() - 1))) {
+                            JOptionPane.showMessageDialog(
+                                wd,
+                                NbBundle.getMessage(
+                                    MergeAction.class,
+                                    "MergeAction.actionPerformed.dataTypeChanged"),
+                                NbBundle.getMessage(
+                                    MergeAction.class,
+                                    "MergeAction.actionPerformed.dataTypeChanged.title"),
+                                JOptionPane.ERROR_MESSAGE);
+                            return null;
+                        }
                         final FeatureMerger merger = (new FeatureMergerFactory()).getFeatureMergerForFeature(
                                 resultedFeature);
                         final String geometryType = resultedFeature.getGeometry().getGeometryType();
 
                         try {
-                            for (final Feature f : allValidFeatures) {
+                            for (final Feature f : sortedFeaturesWithoutMaster) {
                                 resultedFeature = merger.merge(resultedFeature, f);
 
                                 if (resultedFeature == null) {
@@ -188,7 +209,7 @@ public class MergeAction extends AbstractAction {
                                         }
                                     }
 
-                                    for (final Feature f : allValidFeatures) {
+                                    for (final Feature f : sortedFeaturesWithoutMaster) {
                                         if (f instanceof ModifiableFeature) {
                                             final AttributeTable table = AppBroker.getInstance()
                                                         .getWatergisApp()
@@ -246,6 +267,114 @@ public class MergeAction extends AbstractAction {
                     }
                 };
             wdt.start();
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   masterFeature     DOCUMENT ME!
+     * @param   allValidFeatures  DOCUMENT ME!
+     * @param   tolerance         DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    private List<FeatureServiceFeature> sortAndAdjustFeaturesForMerge(final FeatureServiceFeature masterFeature,
+            final List<FeatureServiceFeature> allValidFeatures,
+            final double tolerance) {
+        final List<FeatureServiceFeature> featuresWithoutMaster = new ArrayList(allValidFeatures);
+        featuresWithoutMaster.remove(masterFeature);
+
+        if (masterFeature.getGeometry().getGeometryType().toUpperCase().contains("LINE")) {
+            final List<Coordinate> endpoints = new ArrayList();
+            final List<Coordinate> startpoints = new ArrayList();
+            final Map<FeatureServiceFeature, FeatureServiceFeature> successors = new HashMap<>();
+            final Map<FeatureServiceFeature, FeatureServiceFeature> predecessors = new HashMap<>();
+
+            for (int i = -1; i < featuresWithoutMaster.size(); ++i) {
+                final FeatureServiceFeature feature = ((i == -1) ? masterFeature : featuresWithoutMaster.get(i));
+                final Geometry currentLine = feature.getGeometry();
+                final Coordinate startpoint = currentLine.getCoordinates()[0];
+                Coordinate endpoint = currentLine.getCoordinates()[currentLine.getNumPoints() - 1];
+
+                if (endpoints.size() > 0) {
+                    for (int n = 0; n < endpoints.size(); ++n) {
+                        final double dist = endpoints.get(n).distance(startpoint);
+
+                        if (dist < tolerance) {
+                            // save successor and predecessor
+                            final FeatureServiceFeature successor = feature;
+                            final FeatureServiceFeature predecessor = ((n == 0) ? masterFeature
+                                                                                : featuresWithoutMaster.get(n - 1));
+                            successors.put(predecessor, successor);
+                            predecessors.put(successor, predecessor);
+
+                            if (dist != 0.0) {
+                                endpoints.set(n, startpoint);
+
+                                predecessor.setGeometry(GeometryUtils.setEndpointOfLine(
+                                        predecessor.getGeometry(),
+                                        startpoint));
+                                break;
+                            }
+                        }
+                    }
+                    for (int n = 0; n < startpoints.size(); ++n) {
+                        final double dist = startpoints.get(n).distance(endpoint);
+
+                        if (dist < tolerance) {
+                            // save successor and predecessor
+                            final FeatureServiceFeature successor = ((n == 0) ? masterFeature
+                                                                              : featuresWithoutMaster.get(n - 1));
+                            final FeatureServiceFeature predecessor = feature;
+                            successors.put(predecessor, successor);
+                            predecessors.put(successor, predecessor);
+
+                            if (dist != 0.0) {
+                                endpoint = startpoints.get(n);
+
+                                predecessor.setGeometry(GeometryUtils.setEndpointOfLine(
+                                        predecessor.getGeometry(),
+                                        startpoints.get(n)));
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                startpoints.add(startpoint);
+                endpoints.add(endpoint);
+            }
+            final List<FeatureServiceFeature> result = new ArrayList();
+            FeatureServiceFeature next = successors.get(masterFeature);
+            int n = 0;
+
+            while ((next != null) && (n <= allValidFeatures.size())) {
+                // use n to avoid a possible endless loop, if the result is a circle.
+                if (!result.contains(next)) {
+                    result.add(next);
+                }
+                next = successors.get(next);
+                ++n;
+            }
+
+            FeatureServiceFeature prev = predecessors.get(masterFeature);
+
+            n = 0;
+            while ((prev != null) && (n <= allValidFeatures.size())) {
+                if (!result.contains(prev)) {
+                    result.add(prev);
+                }
+                prev = predecessors.get(prev);
+            }
+
+            return result;
+        } else if (masterFeature.getGeometry().getGeometryType().toUpperCase().contains("POLYGON")) {
+            Collections.sort(featuresWithoutMaster, new DistanceComparator(masterFeature));
+
+            return featuresWithoutMaster;
+        } else {
+            return featuresWithoutMaster;
         }
     }
 
