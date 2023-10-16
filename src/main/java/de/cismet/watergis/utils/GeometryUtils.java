@@ -59,6 +59,8 @@ import de.cismet.cismap.commons.interaction.CismapBroker;
 
 import de.cismet.commons.concurrency.CismetExecutors;
 
+import de.cismet.math.geometry.StaticGeometryFunctions;
+
 /**
  * Contains some useful geometry processing operations.
  *
@@ -335,6 +337,54 @@ public class GeometryUtils {
                     new Polygon[pList.size()]));
 
         return polygonCollection.buffer(0);
+    }
+
+    /**
+     * Set the end point of the given line to the given coordinate. The old endpoint will be removed
+     *
+     * @param   line         a LineString or MultiLineString
+     * @param   newEndpoint  the new end point
+     *
+     * @return  a LineString or MultiLineString with the given endpoint.
+     *
+     * @throws  IllegalArgumentException  DOCUMENT ME!
+     */
+    public static Geometry setEndpointOfLine(final Geometry line, final Coordinate newEndpoint)
+            throws IllegalArgumentException {
+        final GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING),
+                line.getSRID());
+        final boolean isMulti = line.getGeometryType().toUpperCase().contains("MULTI");
+
+        if (!line.getGeometryType().toUpperCase().contains("LINE")) {
+            throw new IllegalArgumentException("geometry is not a line");
+        }
+
+        if (isMulti && (line.getNumGeometries() > 1)) {
+            final Geometry lastLine = line.getGeometryN(line.getNumGeometries() - 1);
+
+            final Coordinate[] c = new Coordinate[lastLine.getCoordinates().length];
+            System.arraycopy(lastLine.getCoordinates(), 0, c, 0, lastLine.getCoordinates().length - 1);
+            c[c.length - 1] = newEndpoint;
+            final LineString newLastLine = factory.createLineString(c);
+            final LineString[] lines = new LineString[line.getNumGeometries()];
+
+            for (int i = 0; i < (line.getNumGeometries() - 1); ++i) {
+                lines[i] = (LineString)line.getGeometryN(i);
+            }
+            lines[line.getNumGeometries() - 1] = newLastLine;
+
+            return factory.createMultiLineString(lines);
+        } else {
+            final Coordinate[] c = new Coordinate[line.getCoordinates().length];
+            System.arraycopy(line.getCoordinates(), 0, c, 0, line.getCoordinates().length - 1);
+            c[c.length - 1] = newEndpoint;
+
+            if (isMulti) {
+                return StaticGeometryFunctions.toMultiGeometry(factory.createLineString(c));
+            } else {
+                return factory.createLineString(c);
+            }
+        }
     }
 
     /**

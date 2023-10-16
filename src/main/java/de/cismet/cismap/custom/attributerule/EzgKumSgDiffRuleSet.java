@@ -96,7 +96,7 @@ public class EzgKumSgDiffRuleSet extends WatergisDefaultRuleSet {
             if (propertyName.equals("flaeche")) {
                 return Math.round(geom.getArea());
             } else if (propertyName.equals("anteil")) {
-                final Integer diff = ((Integer)feature.getProperty("flaeche_diff"));
+                final Double diff = ((Double)feature.getProperty("flaeche_diff"));
                 return Math.round((geom.getArea() * 100 / (diff + geom.getArea())) * 100) / 100.0;
             }
         }
