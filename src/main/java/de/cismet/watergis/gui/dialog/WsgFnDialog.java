@@ -20,6 +20,8 @@ import java.text.SimpleDateFormat;
 
 import java.util.Date;
 
+import javax.swing.JTextField;
+
 /**
  * DOCUMENT ME!
  *
@@ -31,22 +33,22 @@ public class WsgFnDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton butOk;
     private javax.swing.JLabel labAcker;
-    private javax.swing.JLabel labAckerFl;
-    private javax.swing.JLabel labAckerPr;
+    private javax.swing.JTextField labAckerFl;
+    private javax.swing.JTextField labAckerPr;
     private javax.swing.JLabel labAnteil;
     private javax.swing.JLabel labFl;
     private javax.swing.JLabel labFlNuWsg;
     private javax.swing.JLabel labFoot;
     private javax.swing.JLabel labGes;
-    private javax.swing.JLabel labGesWsgFl;
+    private javax.swing.JTextField labGesWsgFl;
     private javax.swing.JLabel labGruen;
-    private javax.swing.JLabel labGruenFl;
-    private javax.swing.JLabel labGruenPr;
+    private javax.swing.JTextField labGruenFl;
+    private javax.swing.JTextField labGruenPr;
     private javax.swing.JLabel labLand;
-    private javax.swing.JLabel labLandFl;
-    private javax.swing.JLabel labLandPr;
+    private javax.swing.JTextField labLandFl;
+    private javax.swing.JTextField labLandPr;
     private javax.swing.JLabel labWsgAnz;
-    private javax.swing.JLabel labWsgAnzVal;
+    private javax.swing.JTextField labWsgAnzVal;
     // End of variables declaration//GEN-END:variables
 
     //~ Constructors -----------------------------------------------------------
@@ -70,6 +72,15 @@ public class WsgFnDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
 
+        makeReadOnly(labWsgAnzVal);
+        makeReadOnly(labGesWsgFl);
+        makeReadOnly(labLandFl);
+        makeReadOnly(labAckerFl);
+        makeReadOnly(labGruenFl);
+        makeReadOnly(labLandPr);
+        makeReadOnly(labAckerPr);
+        makeReadOnly(labGruenPr);
+
         final DecimalFormat formatter = new DecimalFormat();
         formatter.setMaximumFractionDigits(2);
         formatter.setMinimumFractionDigits(2);
@@ -81,7 +92,7 @@ public class WsgFnDialog extends javax.swing.JDialog {
         labLandFl.setText(formatter.format((ackerTotal + grTotal) / 10000));
         labAckerFl.setText(formatter.format(ackerTotal / 10000));
         labGruenFl.setText(formatter.format(grTotal / 10000));
-        labLandPr.setText(formatter.format(wsgTotal / (ackerTotal + grTotal) * 100));
+        labLandPr.setText(formatter.format((ackerTotal + grTotal) / wsgTotal * 100));
         labAckerPr.setText(formatter.format(ackerTotal / (ackerTotal + grTotal) * 100));
         labGruenPr.setText(formatter.format(grTotal / (ackerTotal + grTotal) * 100));
         labFoot.setText(labFoot.getText() + getDate());
@@ -96,8 +107,19 @@ public class WsgFnDialog extends javax.swing.JDialog {
      * @return  DOCUMENT ME!
      */
     private String getDate() {
-        final DateFormat df = new SimpleDateFormat("dd.mm.yyyy");
+        final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
         return df.format(new Date());
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  tf  DOCUMENT ME!
+     */
+    public static void makeReadOnly(final JTextField tf) {
+        tf.setBorder(null);
+        tf.setOpaque(false);
+        tf.setEditable(false);
     }
 
     /**
@@ -111,22 +133,22 @@ public class WsgFnDialog extends javax.swing.JDialog {
 
         labFlNuWsg = new javax.swing.JLabel();
         labWsgAnz = new javax.swing.JLabel();
-        labWsgAnzVal = new javax.swing.JLabel();
         labFl = new javax.swing.JLabel();
         labAnteil = new javax.swing.JLabel();
         labGes = new javax.swing.JLabel();
         labLand = new javax.swing.JLabel();
         labAcker = new javax.swing.JLabel();
         labGruen = new javax.swing.JLabel();
-        labGesWsgFl = new javax.swing.JLabel();
-        labLandFl = new javax.swing.JLabel();
-        labAckerFl = new javax.swing.JLabel();
-        labGruenFl = new javax.swing.JLabel();
-        labLandPr = new javax.swing.JLabel();
-        labAckerPr = new javax.swing.JLabel();
-        labGruenPr = new javax.swing.JLabel();
         labFoot = new javax.swing.JLabel();
         butOk = new javax.swing.JButton();
+        labWsgAnzVal = new javax.swing.JTextField();
+        labGesWsgFl = new javax.swing.JTextField();
+        labLandFl = new javax.swing.JTextField();
+        labLandPr = new javax.swing.JTextField();
+        labAckerFl = new javax.swing.JTextField();
+        labGruenFl = new javax.swing.JTextField();
+        labAckerPr = new javax.swing.JTextField();
+        labGruenPr = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(WsgFnDialog.class, "WsgFnDialog.title", new Object[] {})); // NOI18N
@@ -152,12 +174,6 @@ public class WsgFnDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
         getContentPane().add(labWsgAnz, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 10);
-        getContentPane().add(labWsgAnzVal, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labFl,
@@ -219,48 +235,6 @@ public class WsgFnDialog extends javax.swing.JDialog {
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 25, 5, 5);
         getContentPane().add(labGruen, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
-        getContentPane().add(labGesWsgFl, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 10);
-        getContentPane().add(labLandFl, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
-        getContentPane().add(labAckerFl, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
-        getContentPane().add(labGruenFl, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 5);
-        getContentPane().add(labLandPr, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(labAckerPr, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(labGruenPr, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labFoot,
@@ -291,6 +265,110 @@ public class WsgFnDialog extends javax.swing.JDialog {
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         getContentPane().add(butOk, gridBagConstraints);
+
+        labWsgAnzVal.setText(org.openide.util.NbBundle.getMessage(
+                WsgFnDialog.class,
+                "WsgFnDialog.labWsgAnzVal.text",
+                new Object[] {})); // NOI18N
+        labWsgAnzVal.setMaximumSize(new java.awt.Dimension(100, 17));
+        labWsgAnzVal.setPreferredSize(new java.awt.Dimension(75, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 10);
+        getContentPane().add(labWsgAnzVal, gridBagConstraints);
+
+        labGesWsgFl.setText(org.openide.util.NbBundle.getMessage(
+                WsgFnDialog.class,
+                "WsgFnDialog.labGesWsgFl.text",
+                new Object[] {})); // NOI18N
+        labGesWsgFl.setMaximumSize(new java.awt.Dimension(100, 17));
+        labGesWsgFl.setPreferredSize(new java.awt.Dimension(75, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
+        getContentPane().add(labGesWsgFl, gridBagConstraints);
+
+        labLandFl.setText(org.openide.util.NbBundle.getMessage(
+                WsgFnDialog.class,
+                "WsgFnDialog.labLandFl.text",
+                new Object[] {})); // NOI18N
+        labLandFl.setMaximumSize(new java.awt.Dimension(100, 17));
+        labLandFl.setPreferredSize(new java.awt.Dimension(75, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 10);
+        getContentPane().add(labLandFl, gridBagConstraints);
+
+        labLandPr.setText(org.openide.util.NbBundle.getMessage(
+                WsgFnDialog.class,
+                "WsgFnDialog.labLandPr.text",
+                new Object[] {})); // NOI18N
+        labLandPr.setMaximumSize(new java.awt.Dimension(100, 17));
+        labLandPr.setPreferredSize(new java.awt.Dimension(75, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 5);
+        getContentPane().add(labLandPr, gridBagConstraints);
+
+        labAckerFl.setText(org.openide.util.NbBundle.getMessage(
+                WsgFnDialog.class,
+                "WsgFnDialog.labAckerFl.text",
+                new Object[] {})); // NOI18N
+        labAckerFl.setMaximumSize(new java.awt.Dimension(100, 17));
+        labAckerFl.setPreferredSize(new java.awt.Dimension(75, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
+        getContentPane().add(labAckerFl, gridBagConstraints);
+
+        labGruenFl.setText(org.openide.util.NbBundle.getMessage(
+                WsgFnDialog.class,
+                "WsgFnDialog.labGruenFl.text",
+                new Object[] {})); // NOI18N
+        labGruenFl.setMaximumSize(new java.awt.Dimension(100, 17));
+        labGruenFl.setPreferredSize(new java.awt.Dimension(75, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
+        getContentPane().add(labGruenFl, gridBagConstraints);
+
+        labAckerPr.setText(org.openide.util.NbBundle.getMessage(
+                WsgFnDialog.class,
+                "WsgFnDialog.labAckerPr.text",
+                new Object[] {})); // NOI18N
+        labAckerPr.setMaximumSize(new java.awt.Dimension(100, 17));
+        labAckerPr.setPreferredSize(new java.awt.Dimension(75, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(labAckerPr, gridBagConstraints);
+
+        labGruenPr.setText(org.openide.util.NbBundle.getMessage(
+                WsgFnDialog.class,
+                "WsgFnDialog.labGruenPr.text",
+                new Object[] {})); // NOI18N
+        labGruenPr.setMaximumSize(new java.awt.Dimension(100, 17));
+        labGruenPr.setPreferredSize(new java.awt.Dimension(75, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(labGruenPr, gridBagConstraints);
 
         pack();
     } // </editor-fold>//GEN-END:initComponents

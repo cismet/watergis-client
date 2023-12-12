@@ -16,8 +16,6 @@ import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import de.cismet.cismap.commons.features.FeatureCollectionEvent;
-import de.cismet.cismap.commons.features.FeatureCollectionListener;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 
@@ -29,7 +27,7 @@ import de.cismet.watergis.broker.AppBroker;
  * @author   Gilles Baatz
  * @version  $Revision$, $Date$
  */
-public class MapPanel extends javax.swing.JPanel implements FeatureCollectionListener, PropertyChangeListener {
+public class MapPanel extends javax.swing.JPanel implements PropertyChangeListener {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -76,7 +74,6 @@ public class MapPanel extends javax.swing.JPanel implements FeatureCollectionLis
      */
     private void initMap() {
         mappingComponent = CismapBroker.getInstance().getMappingComponent();
-        mappingComponent.getFeatureCollection().addFeatureCollectionListener(this);
         mappingComponent.setBackgroundEnabled(true);
         mappingComponent.addPropertyChangeListener(this);
         this.add(BorderLayout.CENTER, mappingComponent);
@@ -100,40 +97,5 @@ public class MapPanel extends javax.swing.JPanel implements FeatureCollectionLis
                 }
             }
         }
-    }
-
-    @Override
-    public void featuresAdded(final FeatureCollectionEvent fce) {
-        LOG.info("MapPanel.featuresAdded(): Not supported yet.");
-    }
-
-    @Override
-    public void allFeaturesRemoved(final FeatureCollectionEvent fce) {
-        LOG.info("MapPanel.allFeaturesRemoved(): Not supported yet.");
-    }
-
-    @Override
-    public void featuresRemoved(final FeatureCollectionEvent fce) {
-        LOG.info("MapPanel.featuresRemoved(): Not supported yet.");
-    }
-
-    @Override
-    public void featuresChanged(final FeatureCollectionEvent fce) {
-        LOG.info("MapPanel.featuresChanged(): Not supported yet.");
-    }
-
-    @Override
-    public void featureSelectionChanged(final FeatureCollectionEvent fce) {
-        LOG.info("MapPanel.featureSelectionChanged(): Not supported yet.");
-    }
-
-    @Override
-    public void featureReconsiderationRequested(final FeatureCollectionEvent fce) {
-        LOG.info("MapPanel.featureReconsiderationRequested(): Not supported yet.");
-    }
-
-    @Override
-    public void featureCollectionChanged() {
-        LOG.info("MapPanel.featureCollectionChanged(): Not supported yet.");
     }
 }
