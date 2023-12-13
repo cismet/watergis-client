@@ -114,6 +114,17 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
      * Creates a new GWKConnectionCheckAction object.
      */
     public GWKConnectionCheckAction() {
+        this(false);
+    }
+
+    /**
+     * Creates a new GWKConnectionCheckAction object.
+     *
+     * @param  isBackgroundCheck  DOCUMENT ME!
+     */
+    public GWKConnectionCheckAction(final boolean isBackgroundCheck) {
+        super(isBackgroundCheck);
+
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 GWKConnectionCheckAction.class,
                 "GWKConnectionCheckAction.toolTipText");
@@ -149,133 +160,9 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
 
                 @Override
                 protected CheckResult doInBackground() throws Exception {
-                    final CheckResult result = new CheckResult();
-                    String user = AppBroker.getInstance().getOwner();
                     this.wd.setMax(getProgressSteps());
 
-                    if (user.equalsIgnoreCase("Administratoren")) {
-                        user = null;
-                    }
-
-                    removeServicesFromDb(ALL_CHECKS);
-
-                    // start auto correction
-                    final CidsServerSearch search = new MergeLawa(user);
-                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), search);
-                    increaseProgress(wd, 1);
-
-                    List<FeatureServiceAttribute> serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
-
-                    FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
-                            "id",
-                            String.valueOf(Types.INTEGER),
-                            true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute(
-                            "la_cd",
-                            String.valueOf(Types.VARCHAR),
-                            true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-
-                    // start checks
-                    result.setConnectionService(analyseByCustomSearch(
-                            new LawaConnected(user),
-                            CHECK_LAWA_ROUTEN_KONNEKTIVITAET,
-                            serviceAttributeDefinition));
-                    increaseProgress(wd, 1);
-
-                    serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
-
-                    serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute(
-                            "la_cd",
-                            String.valueOf(Types.VARCHAR),
-                            true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-
-                    result.setDirectionService(analyseByCustomSearch(
-                            new LawaDirection(user),
-                            CHECK_LAWA_ROUTEN_GERICHTETHEIT,
-                            serviceAttributeDefinition));
-                    increaseProgress(wd, 1);
-
-                    result.setLakAeService(analyseByQuery(LAK_AE_MC, QUERY_AE, CHECK_LAWA_ROUTEN_AUS_EINLEITUNG));
-                    increaseProgress(wd, 1);
-
-                    final ArrayList<ArrayList> lawaCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
-                                .customServerSearch(SessionManager.getSession().getUser(), new LawaCount(user));
-
-                    if ((lawaCountList != null) && !lawaCountList.isEmpty()) {
-                        final ArrayList innerList = lawaCountList.get(0);
-
-                        if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
-                            result.setLawaCount(((Number)innerList.get(0)).intValue());
-                        }
-                    }
-                    increaseProgress(wd, 1);
-
-                    if (result.getConnectionService() != null) {
-                        final H2FeatureServiceFactory fac = (H2FeatureServiceFactory)result.getConnectionService()
-                                    .getFeatureFactory();
-                        final XBoundingBox boundingBox = new XBoundingBox(fac.getEnvelope());
-                        final List<FeatureServiceFeature> features = fac.createFeatures(
-                                null,
-                                boundingBox,
-                                null,
-                                0,
-                                0,
-                                null);
-                        final TreeSet<Object> laCdSet = new TreeSet<Object>();
-
-                        for (final FeatureServiceFeature fsf : features) {
-                            Object laCdCode = fsf.getProperty("la_cd");
-                            if (laCdCode == null) {
-                                laCdCode = "";
-                            }
-                            laCdSet.add(laCdCode);
-                        }
-
-                        result.setConnectionErrors(laCdSet.size());
-                        successful = false;
-                    }
-                    increaseProgress(wd, 1);
-
-                    if (result.getDirectionService() != null) {
-                        final H2FeatureServiceFactory fac = (H2FeatureServiceFactory)result.getDirectionService()
-                                    .getFeatureFactory();
-                        final XBoundingBox boundingBox = new XBoundingBox(fac.getEnvelope());
-                        final List<FeatureServiceFeature> features = fac.createFeatures(
-                                null,
-                                boundingBox,
-                                null,
-                                0,
-                                0,
-                                null);
-                        final TreeSet<Object> laCdSet = new TreeSet<Object>();
-
-                        for (final FeatureServiceFeature fsf : features) {
-                            Object laCdCode = fsf.getProperty("la_cd");
-                            if (laCdCode == null) {
-                                laCdCode = "";
-                            }
-                            laCdSet.add(laCdCode);
-                        }
-                        result.setDirectionErrors(laCdSet.size());
-                        successful = false;
-                    }
-                    increaseProgress(wd, 1);
-
-                    result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS, isExport));
-
-                    if (result.getLakAeService() != null) {
-                        result.setLakAeErrors(result.getLakAeService().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    return result;
+                    return check(isExport, wd);
                 }
 
                 @Override
@@ -349,6 +236,136 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
     }
 
     @Override
+    protected CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
+        final CheckResult result = new CheckResult();
+        String user = AppBroker.getInstance().getOwner();
+
+        if (user.equalsIgnoreCase("Administratoren")) {
+            user = null;
+        }
+
+        removeServicesFromDb(ALL_CHECKS);
+
+        // start auto correction
+        final CidsServerSearch search = new MergeLawa(user);
+        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), search);
+        increaseProgress(wd, 1);
+
+        List<FeatureServiceAttribute> serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
+
+        FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
+                "id",
+                String.valueOf(Types.INTEGER),
+                true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute(
+                "la_cd",
+                String.valueOf(Types.VARCHAR),
+                true);
+        serviceAttributeDefinition.add(serviceAttribute);
+
+        // start checks
+        result.setConnectionService(analyseByCustomSearch(
+                new LawaConnected(user),
+                CHECK_LAWA_ROUTEN_KONNEKTIVITAET,
+                serviceAttributeDefinition));
+        increaseProgress(wd, 1);
+
+        serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
+
+        serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute(
+                "la_cd",
+                String.valueOf(Types.VARCHAR),
+                true);
+        serviceAttributeDefinition.add(serviceAttribute);
+
+        result.setDirectionService(analyseByCustomSearch(
+                new LawaDirection(user),
+                CHECK_LAWA_ROUTEN_GERICHTETHEIT,
+                serviceAttributeDefinition));
+        increaseProgress(wd, 1);
+
+        result.setLakAeService(analyseByQuery(LAK_AE_MC, QUERY_AE, CHECK_LAWA_ROUTEN_AUS_EINLEITUNG));
+        increaseProgress(wd, 1);
+
+        final ArrayList<ArrayList> lawaCountList = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(SessionManager.getSession().getUser(), new LawaCount(user));
+
+        if ((lawaCountList != null) && !lawaCountList.isEmpty()) {
+            final ArrayList innerList = lawaCountList.get(0);
+
+            if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
+                result.setLawaCount(((Number)innerList.get(0)).intValue());
+            }
+        }
+        increaseProgress(wd, 1);
+
+        if (result.getConnectionService() != null) {
+            final H2FeatureServiceFactory fac = (H2FeatureServiceFactory)result.getConnectionService()
+                        .getFeatureFactory();
+            final XBoundingBox boundingBox = new XBoundingBox(fac.getEnvelope());
+            final List<FeatureServiceFeature> features = fac.createFeatures(
+                    null,
+                    boundingBox,
+                    null,
+                    0,
+                    0,
+                    null);
+            final TreeSet<Object> laCdSet = new TreeSet<Object>();
+
+            for (final FeatureServiceFeature fsf : features) {
+                Object laCdCode = fsf.getProperty("la_cd");
+                if (laCdCode == null) {
+                    laCdCode = "";
+                }
+                laCdSet.add(laCdCode);
+            }
+
+            result.setConnectionErrors(laCdSet.size());
+            successful = false;
+        }
+        increaseProgress(wd, 1);
+
+        if (result.getDirectionService() != null) {
+            final H2FeatureServiceFactory fac = (H2FeatureServiceFactory)result.getDirectionService()
+                        .getFeatureFactory();
+            final XBoundingBox boundingBox = new XBoundingBox(fac.getEnvelope());
+            final List<FeatureServiceFeature> features = fac.createFeatures(
+                    null,
+                    boundingBox,
+                    null,
+                    0,
+                    0,
+                    null);
+            final TreeSet<Object> laCdSet = new TreeSet<Object>();
+
+            for (final FeatureServiceFeature fsf : features) {
+                Object laCdCode = fsf.getProperty("la_cd");
+                if (laCdCode == null) {
+                    laCdCode = "";
+                }
+                laCdSet.add(laCdCode);
+            }
+            result.setDirectionErrors(laCdSet.size());
+            successful = false;
+        }
+        increaseProgress(wd, 1);
+
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS, isExport));
+
+        if (result.getLakAeService() != null) {
+            result.setLakAeErrors(result.getLakAeService().getFeatureCount(null));
+            successful = false;
+        }
+
+        return result;
+    }
+
+    @Override
     public boolean isEnabled() {
         return true
                     || AppBroker.getInstance().isActionsAlwaysEnabled();
@@ -361,7 +378,11 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
      *
      * @version  $Revision$, $Date$
      */
-    private class CheckResult {
+    private static class CheckResult extends AbstractCheckResult {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final String[] CHECK_NAMES = { "CONNECTION_ERRORS", "DIRECTION_ERRORS", "LAK_AE_ERRORS" };
 
         //~ Instance fields ----------------------------------------------------
 
@@ -381,6 +402,7 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
+        @Override
         public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
@@ -518,6 +540,37 @@ public class GWKConnectionCheckAction extends AbstractCheckAction {
          */
         public void setLawaCount(final int lawaCount) {
             this.lawaCount = lawaCount;
+        }
+
+        @Override
+        public String[] getCheckNames() {
+            return CHECK_NAMES;
+        }
+
+        @Override
+        public int getErrorsPerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return connectionErrors;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return directionErrors;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return lakAeErrors;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public H2FeatureService getErrorTablePerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return connectionService;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return directionService;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return lakAeService;
+            } else {
+                return null;
+            }
         }
     }
 }

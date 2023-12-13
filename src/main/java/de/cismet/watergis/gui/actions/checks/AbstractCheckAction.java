@@ -90,6 +90,8 @@ public abstract class AbstractCheckAction extends AbstractAction {
 
     //~ Instance fields --------------------------------------------------------
 
+    protected boolean isBackgroundCheck = false;
+
     private boolean exportCheck = false;
     private Map<String, CidsLayer> initialisedService = new HashMap<String, CidsLayer>();
 
@@ -101,7 +103,48 @@ public abstract class AbstractCheckAction extends AbstractAction {
     public AbstractCheckAction() {
     }
 
+    /**
+     * Creates a new AbstractGeoprocessingAction object.
+     *
+     * @param  isBackgroundCheck  DOCUMENT ME!
+     */
+    public AbstractCheckAction(final boolean isBackgroundCheck) {
+        this.isBackgroundCheck = isBackgroundCheck;
+    }
+
     //~ Methods ----------------------------------------------------------------
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    public synchronized AbstractCheckResult startBackgroundCheck() throws Exception {
+        final boolean originState = isBackgroundCheck;
+
+        isBackgroundCheck = true;
+
+        final AbstractCheckResult result = check(false, null);
+        cleanup();
+
+        isBackgroundCheck = originState;
+
+        return result;
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   isExport  DOCUMENT ME!
+     * @param   wd        DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     *
+     * @throws  Exception  DOCUMENT ME!
+     */
+    protected abstract AbstractCheckResult check(final boolean isExport, final WaitDialog wd) throws Exception;
 
     /**
      * DOCUMENT ME!
@@ -175,6 +218,36 @@ public abstract class AbstractCheckAction extends AbstractAction {
         if (service != null) {
             result.add(service);
         }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   isExport  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
+    protected int[] getSelectedIds(final boolean isExport) {
+        String user = AppBroker.getInstance().getOwner();
+        int[] selectedIds = null;
+
+        if (isBackgroundCheck) {
+            return null;
+        }
+
+        if (user.equalsIgnoreCase("Administratoren")) {
+            user = null;
+        }
+
+        if (isExport) {
+            if (user == null) {
+                selectedIds = getIdsOfSelectedObjects("fg_ba");
+            }
+        } else {
+            selectedIds = getIdsOfSelectedObjects("fg_ba");
+        }
+
+        return selectedIds;
     }
 
     /**
@@ -287,12 +360,14 @@ public abstract class AbstractCheckAction extends AbstractAction {
                     .createFeatures(clQuery, null, null, 0, 0, null);
 
         // create db service
+        final String layerName = tableName + (isBackgroundCheck ? "TMP" : "");
+
         if ((featureList != null) && !featureList.isEmpty()) {
-            H2FeatureService.removeTableIfExists(tableName + "_1");
+            H2FeatureService.removeTableIfExists(layerName + "_1");
             final H2FeatureService internalService = new H2FeatureService(
-                    removeFolderNameFromTableName(tableName),
+                    removeFolderNameFromTableName(layerName),
                     H2FeatureServiceFactory.DB_NAME,
-                    tableName
+                    layerName
                             + "_1",
                     null,
                     null,
@@ -326,8 +401,9 @@ public abstract class AbstractCheckAction extends AbstractAction {
         final User user = SessionManager.getSession().getUser();
         final ArrayList<ArrayList> attributes = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(user, search);
+        final String layerName = tableName + (isBackgroundCheck ? "TMP" : "");
 
-        return createLocalTopicByAttributeList(attributes, tableName, featureServiceAttributes);
+        return createLocalTopicByAttributeList(attributes, layerName, featureServiceAttributes);
     }
 
     /**
@@ -540,7 +616,11 @@ public abstract class AbstractCheckAction extends AbstractAction {
      */
     protected void removeServicesFromDb(final String[] tableNames) {
         for (final String table : tableNames) {
-            H2FeatureService.removeTableIfExists(table + "_1");
+            if (isBackgroundCheck) {
+                H2FeatureService.removeTableIfExists(table + "TMP_1");
+            } else {
+                H2FeatureService.removeTableIfExists(table + "_1");
+            }
         }
 
         final Component capComponent = AppBroker.getInstance().getComponent(ComponentName.CAPABILITIES);

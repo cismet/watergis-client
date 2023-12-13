@@ -212,6 +212,17 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
      * Creates a new BasicRoutesCheckAction object.
      */
     public BasicRoutesCheckAction() {
+        this(false);
+    }
+
+    /**
+     * Creates a new BasicRoutesCheckAction object.
+     *
+     * @param  isBackgroundCheck  DOCUMENT ME!
+     */
+    public BasicRoutesCheckAction(final boolean isBackgroundCheck) {
+        super(isBackgroundCheck);
+
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 BasicRoutesCheckAction.class,
                 "BasicRoutesCheckAction.toolTipText");
@@ -283,8 +294,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                                 return;
                             }
 
-                            if ((result.getErrorTree() == null)
-                                        || (result.getErrorTree().getCount() == 0)) {
+                            if ((result.getProblemTreeObjectCount() == null)
+                                        || (result.getProblemTreeObjectCount().getCount() == 0)) {
                                 JOptionPane.showMessageDialog(AppBroker.getInstance().getWatergisApp(),
                                     NbBundle.getMessage(
                                         BasicRoutesCheckAction.class,
@@ -318,8 +329,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
                                             result.getAusEinleitungErrors(),
                                             result.getPrefixErrors(),
                                             result.getWwGrErrors(),
-                                            result.getErrorTree().getCount(),
-                                            result.getErrorTree().getClasses()
+                                            result.getProblemTreeObjectCount().getCount(),
+                                            result.getProblemTreeObjectCount().getClasses()
                                         }),
                                     NbBundle.getMessage(
                                         BasicRoutesCheckAction.class,
@@ -373,7 +384,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
+    @Override
+    protected CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
         final CheckResult result = new CheckResult();
         String user = AppBroker.getInstance().getOwner();
         int[] selectedIds = null;
@@ -384,27 +396,29 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
 
         removeServicesFromDb(ALL_CHECKS);
 
-        if (isExport) {
-            if (user == null) {
-                final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
-                            .customServerSearch(SessionManager.getSession().getUser(),
-                                    new FgBakIdsByFgBaIds(getIdsOfSelectedObjects("fg_ba")));
+        if (!isBackgroundCheck) {
+            if (isExport) {
+                if (user == null) {
+                    final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
+                                .customServerSearch(SessionManager.getSession().getUser(),
+                                        new FgBakIdsByFgBaIds(getIdsOfSelectedObjects("fg_ba")));
 
-                if ((countList != null) && !countList.isEmpty()) {
-                    final ArrayList innerList = countList.get(0);
+                    if ((countList != null) && !countList.isEmpty()) {
+                        final ArrayList innerList = countList.get(0);
 
-                    if ((innerList != null) && !innerList.isEmpty()) {
-                        selectedIds = new int[innerList.size()];
-                        int index = -1;
+                        if ((innerList != null) && !innerList.isEmpty()) {
+                            selectedIds = new int[innerList.size()];
+                            int index = -1;
 
-                        for (final Object tmp : innerList) {
-                            selectedIds[++index] = ((Number)tmp).intValue();
+                            for (final Object tmp : innerList) {
+                                selectedIds[++index] = ((Number)tmp).intValue();
+                            }
                         }
                     }
                 }
+            } else {
+                selectedIds = getIdsOfSelectedObjects("fg_bak");
             }
-        } else {
-            selectedIds = getIdsOfSelectedObjects("fg_bak");
         }
 
         // start auto correction
@@ -580,7 +594,19 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
      *
      * @version  $Revision$, $Date$
      */
-    private class CheckResult {
+    protected static class CheckResult extends AbstractCheckResult {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final String[] CHECK_NAMES = {
+                "SHORT",
+                "CROSSED",
+                "MISSING_CODE",
+                "NOT_UNIQUE",
+                "AUS_EINLEITUNG",
+                "PREFIX",
+                "WW_GR"
+            };
 
         //~ Instance fields ----------------------------------------------------
 
@@ -734,7 +760,8 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
          *
          * @return  the errorTree
          */
-        public ProblemCountAndClasses getErrorTree() {
+        @Override
+        public ProblemCountAndClasses getProblemTreeObjectCount() {
             return errorTree;
         }
 
@@ -889,6 +916,53 @@ public class BasicRoutesCheckAction extends AbstractCheckAction {
          */
         public void setWwGrService(final H2FeatureService wwGrService) {
             this.wwGrService = wwGrService;
+        }
+
+        @Override
+        public String[] getCheckNames() {
+            return CHECK_NAMES;
+        }
+
+        @Override
+        public int getErrorsPerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return shortErrors;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return crossedErrors;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return missingCodeErrors;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return notUniqueCodeErrors;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return ausEinleitungErrors;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return prefixErrors;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return wwGrErrors;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public H2FeatureService getErrorTablePerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return shortService;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return crossedService;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return missingCodeService;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return notUniqueCodeService;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return ausEinleitungService;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return prefixService;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return wwGrService;
+            } else {
+                return null;
+            }
         }
     }
 }

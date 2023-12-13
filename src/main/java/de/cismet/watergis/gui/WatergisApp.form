@@ -3009,6 +3009,8 @@
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new NewDrawingButton()"/>
           </AuxValues>
         </Component>
+        <Component class="de.cismet.watergis.gui.panels.StatusPanel" name="statusPanel1">
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="panMain">

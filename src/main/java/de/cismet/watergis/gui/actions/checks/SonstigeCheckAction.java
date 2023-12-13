@@ -440,6 +440,17 @@ public class SonstigeCheckAction extends AbstractCheckAction {
      * Creates a new SonstigeCheckAction object.
      */
     public SonstigeCheckAction() {
+        this(false);
+    }
+
+    /**
+     * Creates a new SonstigeCheckAction object.
+     *
+     * @param  isBackgroundCheck  DOCUMENT ME!
+     */
+    public SonstigeCheckAction(final boolean isBackgroundCheck) {
+        super(isBackgroundCheck);
+
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 SonstigeCheckAction.class,
                 "SonstigeCheckAction.toolTipText");
@@ -656,24 +667,17 @@ public class SonstigeCheckAction extends AbstractCheckAction {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
+    @Override
+    protected CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
         final CheckResult result = new CheckResult();
         String user = AppBroker.getInstance().getOwner();
-        int[] selectedIds = null;
+        final int[] selectedIds = getSelectedIds(isExport);
 
         if (user.equalsIgnoreCase("Administratoren")) {
             user = null;
         }
 
         removeServicesFromDb(ALL_CHECKS);
-
-        if (isExport) {
-            if (user == null) {
-                selectedIds = getIdsOfSelectedObjects("fg_ba");
-            }
-        } else {
-            selectedIds = getIdsOfSelectedObjects("fg_ba");
-        }
 
         final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(SessionManager.getSession().getUser(),
@@ -966,7 +970,30 @@ public class SonstigeCheckAction extends AbstractCheckAction {
      *
      * @version  $Revision$, $Date$
      */
-    private class CheckResult {
+    protected static class CheckResult extends AbstractCheckResult {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final String[] CHECK_NAMES = {
+                "ATTRIBUTES_DEICH",
+                "GAP_DEICH",
+                "GERINNE_DEICH",
+                "ATTRIBUTES_WIWE",
+                "GAP_WIWE",
+                "GERINNE_WIWE",
+                "ATTRIBUTES_UGHZ",
+                "ATTRIBUTES_Foto",
+                "ATTRIBUTES_LEIS",
+                "GERINNE_LEIS",
+                "ATTRIBUTES_TECH",
+                "GAP_TECH",
+                "OVERLAPPED_TECH",
+                "GESCH_GERINNE_TECH",
+                "OFF_GERINNE_TECH",
+                "D_TECH",
+                "V_TECH",
+                "DUE_TECH"
+            };
 
         //~ Instance fields ----------------------------------------------------
 
@@ -1019,6 +1046,7 @@ public class SonstigeCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
+        @Override
         public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
@@ -1696,6 +1724,97 @@ public class SonstigeCheckAction extends AbstractCheckAction {
          */
         public void setBakCount(final int bakCount) {
             this.bakCount = bakCount;
+        }
+
+        @Override
+        public String[] getCheckNames() {
+            return CHECK_NAMES;
+        }
+
+        @Override
+        public int getErrorsPerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return attributesDeichErrors;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return gapDeichErrors;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return gerinneDeichErrors;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return attributesWiweErrors;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return gapWiweErrors;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return gerinneWiweErrors;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return attributesUghzErrors;
+            } else if (checkName.equals(CHECK_NAMES[7])) {
+                return attributesFotoErrors;
+            } else if (checkName.equals(CHECK_NAMES[8])) {
+                return attributesLeisErrors;
+            } else if (checkName.equals(CHECK_NAMES[9])) {
+                return gerinneLeisErrors;
+            } else if (checkName.equals(CHECK_NAMES[10])) {
+                return attributesTechErrors;
+            } else if (checkName.equals(CHECK_NAMES[11])) {
+                return gapTechErrors;
+            } else if (checkName.equals(CHECK_NAMES[12])) {
+                return overlappedTechErrors;
+            } else if (checkName.equals(CHECK_NAMES[13])) {
+                return geschGerinneTechErrors;
+            } else if (checkName.equals(CHECK_NAMES[14])) {
+                return offGerinneTechErrors;
+            } else if (checkName.equals(CHECK_NAMES[15])) {
+                return dTechErrors;
+            } else if (checkName.equals(CHECK_NAMES[16])) {
+                return vTechErrors;
+            } else if (checkName.equals(CHECK_NAMES[17])) {
+                return dueTechErrors;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public H2FeatureService getErrorTablePerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return attributesDeich;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return gapDeich;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return gerinneDeich;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return attributesWiwe;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return gapWiwe;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return gerinneWiwe;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return attributesUghz;
+            } else if (checkName.equals(CHECK_NAMES[7])) {
+                return attributesFoto;
+            } else if (checkName.equals(CHECK_NAMES[8])) {
+                return attributesLeis;
+            } else if (checkName.equals(CHECK_NAMES[9])) {
+                return gerinneLeis;
+            } else if (checkName.equals(CHECK_NAMES[10])) {
+                return attributesTech;
+            } else if (checkName.equals(CHECK_NAMES[11])) {
+                return gapTech;
+            } else if (checkName.equals(CHECK_NAMES[12])) {
+                return overlappedTech;
+            } else if (checkName.equals(CHECK_NAMES[13])) {
+                return geschGerinneTech;
+            } else if (checkName.equals(CHECK_NAMES[14])) {
+                return offGerinneTech;
+            } else if (checkName.equals(CHECK_NAMES[15])) {
+                return dTech;
+            } else if (checkName.equals(CHECK_NAMES[16])) {
+                return vTech;
+            } else if (checkName.equals(CHECK_NAMES[17])) {
+                return dueTech;
+            } else {
+                return null;
+            }
         }
     }
 }

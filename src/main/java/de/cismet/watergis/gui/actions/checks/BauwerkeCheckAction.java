@@ -1424,6 +1424,17 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
      * Creates a new BauwerkeCheckAction object.
      */
     public BauwerkeCheckAction() {
+        this(false);
+    }
+
+    /**
+     * Creates a new BauwerkeCheckAction object.
+     *
+     * @param  isBackgroundCheck  DOCUMENT ME!
+     */
+    public BauwerkeCheckAction(final boolean isBackgroundCheck) {
+        super(isBackgroundCheck);
+
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 BauwerkeCheckAction.class,
                 "BauwerkeCheckAction.toolTipText");
@@ -1697,24 +1708,17 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
+    @Override
+    protected CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
         final CheckResult result = new CheckResult();
         String user = AppBroker.getInstance().getOwner();
-        int[] selectedIds = null;
+        final int[] selectedIds = getSelectedIds(isExport);
 
         if (user.equalsIgnoreCase("Administratoren")) {
             user = null;
         }
 
         removeServicesFromDb(ALL_CHECKS);
-
-        if (isExport) {
-            if (user == null) {
-                selectedIds = getIdsOfSelectedObjects("fg_ba");
-            }
-        } else {
-            selectedIds = getIdsOfSelectedObjects("fg_ba");
-        }
 
         final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(SessionManager.getSession().getUser(),
@@ -2210,7 +2214,38 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
      *
      * @version  $Revision$, $Date$
      */
-    private class CheckResult {
+    protected static class CheckResult extends AbstractCheckResult {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final String[] CHECK_NAMES = {
+                "RL_ATTR",
+                "D_ATTR",
+                "DUE_ATTR",
+                "SCHA_ATTR",
+                "WEHR_ATTR",
+                "SCHw_ATTR",
+                "ANLP_ATTR",
+                "ANLL_ATTR",
+                "KR_ATTR",
+                "EA_ATTR",
+                "RL_HOLE",
+                "RL_OVERLAPS",
+                "SCHA_DISTANCE",
+                "WEHR_DISTANCE",
+                "SCHW_DISTANCE",
+                "KR_DISTANCE",
+                "KR_FGBA",
+                "KR_INVALID",
+                "SCHA_OFFEN",
+                "ANLP_OFFEN",
+                "ANLP_GESCHL",
+                "ANLP_ESW",
+                "KR_ESW",
+                "EA_ESW",
+                "ANLL_GESCHL",
+                "KR_MARKED_TWICE"
+            };
 
         //~ Instance fields ----------------------------------------------------
 
@@ -2270,15 +2305,6 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private H2FeatureService krMarkedTwice;
 
         //~ Methods ------------------------------------------------------------
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the problemTreeObjectCount
-         */
-        public ProblemCountAndClasses getProblemTreeObjectCount() {
-            return problemTreeObjectCount;
-        }
 
         /**
          * DOCUMENT ME!
@@ -3241,6 +3267,134 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
          */
         public void setKrMarkedTwiceError(final int krMarkedTwiceError) {
             this.krMarkedTwiceError = krMarkedTwiceError;
+        }
+
+        @Override
+        public String[] getCheckNames() {
+            return CHECK_NAMES;
+        }
+
+        @Override
+        public ProblemCountAndClasses getProblemTreeObjectCount() {
+            return problemTreeObjectCount;
+        }
+
+        @Override
+        public int getErrorsPerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return rlAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return dAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return dueAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return schaAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return wehrAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return schwAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return anlpAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[7])) {
+                return anllAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[8])) {
+                return krAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[9])) {
+                return eaAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[10])) {
+                return rlHoleErrors;
+            } else if (checkName.equals(CHECK_NAMES[11])) {
+                return rlOverlappsErrors;
+            } else if (checkName.equals(CHECK_NAMES[12])) {
+                return schaDistanceError;
+            } else if (checkName.equals(CHECK_NAMES[13])) {
+                return wehrDistanceError;
+            } else if (checkName.equals(CHECK_NAMES[14])) {
+                return schwDistanceError;
+            } else if (checkName.equals(CHECK_NAMES[15])) {
+                return krDistanceError;
+            } else if (checkName.equals(CHECK_NAMES[16])) {
+                return krFgBaError;
+            } else if (checkName.equals(CHECK_NAMES[17])) {
+                return krInvalidError;
+            } else if (checkName.equals(CHECK_NAMES[18])) {
+                return schaOffenError;
+            } else if (checkName.equals(CHECK_NAMES[19])) {
+                return anlpOffenError;
+            } else if (checkName.equals(CHECK_NAMES[20])) {
+                return anlpGeschlossenError;
+            } else if (checkName.equals(CHECK_NAMES[21])) {
+                return anlpEswError;
+            } else if (checkName.equals(CHECK_NAMES[22])) {
+                return krEswError;
+            } else if (checkName.equals(CHECK_NAMES[23])) {
+                return eaEswError;
+            } else if (checkName.equals(CHECK_NAMES[24])) {
+                return anllGeschlError;
+            } else if (checkName.equals(CHECK_NAMES[25])) {
+                return krMarkedTwiceError;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public H2FeatureService getErrorTablePerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return rlAttr;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return dAttr;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return dueAttr;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return schaAttr;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return wehrAttr;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return schwAttr;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return anlpAttr;
+            } else if (checkName.equals(CHECK_NAMES[7])) {
+                return anllAttr;
+            } else if (checkName.equals(CHECK_NAMES[8])) {
+                return krAttr;
+            } else if (checkName.equals(CHECK_NAMES[9])) {
+                return eaAttr;
+            } else if (checkName.equals(CHECK_NAMES[10])) {
+                return rlHole;
+            } else if (checkName.equals(CHECK_NAMES[11])) {
+                return rlOverlapps;
+            } else if (checkName.equals(CHECK_NAMES[12])) {
+                return schaDistance;
+            } else if (checkName.equals(CHECK_NAMES[13])) {
+                return wehrDistance;
+            } else if (checkName.equals(CHECK_NAMES[14])) {
+                return schwDistance;
+            } else if (checkName.equals(CHECK_NAMES[15])) {
+                return krDistance;
+            } else if (checkName.equals(CHECK_NAMES[16])) {
+                return krFgBa;
+            } else if (checkName.equals(CHECK_NAMES[17])) {
+                return krInvalid;
+            } else if (checkName.equals(CHECK_NAMES[18])) {
+                return schaOffen;
+            } else if (checkName.equals(CHECK_NAMES[19])) {
+                return anlpOffen;
+            } else if (checkName.equals(CHECK_NAMES[20])) {
+                return anlpGeschlossen;
+            } else if (checkName.equals(CHECK_NAMES[21])) {
+                return anlpEsw;
+            } else if (checkName.equals(CHECK_NAMES[22])) {
+                return krEsw;
+            } else if (checkName.equals(CHECK_NAMES[23])) {
+                return eaEsw;
+            } else if (checkName.equals(CHECK_NAMES[24])) {
+                return anllGeschl;
+            } else if (checkName.equals(CHECK_NAMES[25])) {
+                return krMarkedTwice;
+            } else {
+                return null;
+            }
         }
     }
 }
