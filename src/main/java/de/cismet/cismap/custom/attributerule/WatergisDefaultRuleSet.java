@@ -28,7 +28,9 @@ import org.openide.util.NbBundle;
 
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.event.MouseAdapter;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -113,6 +115,7 @@ import de.cismet.watergis.broker.AppBroker;
 import de.cismet.watergis.check.CrossedLinesCheck;
 
 import de.cismet.watergis.gui.dialog.DbUserDialog;
+import de.cismet.watergis.gui.panels.DocumentCellEditor;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
 import de.cismet.watergis.utils.LinkTableCellRenderer;
@@ -261,6 +264,59 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 filename = file.substring(0, file.lastIndexOf("."));
             } else {
                 filename = file;
+            }
+
+            if (filename.contains("/")) {
+                filename = filename.substring(filename.lastIndexOf("/") + 1);
+            }
+
+            final WebDavClient webDavClient = new WebDavClient(ProxyHandler.getInstance().getProxy(),
+                    WEB_DAV_USER,
+                    WEB_DAV_PASSWORD,
+                    true);
+
+            DownloadManager.instance()
+                    .add(new WebDavDownload(
+                            webDavClient,
+                            path
+                            + WebDavHelper.encodeURL(file),
+                            jobname,
+                            filename
+                            + extension,
+                            filename,
+                            extension));
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  path         DOCUMENT ME!
+     * @param  file         DOCUMENT ME!
+     * @param  newFilename  DOCUMENT ME!
+     */
+    public static void downloadDocumentFromWebDav(String path, String file, final String newFilename) {
+        if (!DownloadManagerDialog.getInstance().isAskForJobNameEnabled()
+                    || DownloadManagerDialog.getInstance().showAskingForUserTitleDialog(
+                        AppBroker.getInstance().getRootWindow())) {
+            final String jobname = DownloadManagerDialog.getInstance().getJobName();
+            String extension = null;
+            String filename;
+
+            // remove slashs from the file
+            while (file.startsWith("/")) {
+                file = file.substring(1);
+            }
+
+            if (!path.endsWith("/")) {
+                path = path + "/";
+            }
+
+            if (newFilename.contains(".")) {
+                extension = newFilename.substring(file.lastIndexOf("."));
+                filename = newFilename.substring(0, file.lastIndexOf("."));
+            } else {
+                filename = newFilename;
             }
 
             if (filename.contains("/")) {
@@ -1446,6 +1502,27 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     }
 
     @Override
+    public void mouseClicked(final FeatureServiceFeature feature,
+            final String columnName,
+            final Object value,
+            final int clickCount) {
+        final DataType type = typeMap.get(columnName);
+
+        if ((type instanceof Document)
+                    || ((type instanceof Catalogue) && (((Catalogue)type).getDataType() instanceof Document))) {
+            if ((value instanceof String) && (clickCount == 1)) {
+                final String origPath = (String)((CidsLayerFeature)feature).getBean()
+                            .getProperty(columnName + "_dateipfad");
+                final String path = origPath.substring(0, origPath.lastIndexOf("/"));
+                final String file = origPath.substring(origPath.lastIndexOf("/") + 1);
+                final String filename = (String)feature.getProperty(columnName);
+
+                downloadDocumentFromWebDav(path, file, filename);
+            }
+        }
+    }
+
+    @Override
     public TableCellRenderer getCellRenderer(final String columnName) {
         final DataType type = typeMap.get(columnName);
 
@@ -1578,6 +1655,35 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                     };
             }
 
+            if ((type instanceof Document)
+                        || ((type instanceof Catalogue) && (((Catalogue)type).getDataType() instanceof Document))) {
+                return new DefaultTableCellRenderer() {
+
+                        @Override
+                        public Component getTableCellRendererComponent(final JTable table,
+                                final Object value,
+                                final boolean isSelected,
+                                final boolean hasFocus,
+                                final int row,
+                                final int column) {
+                            final Component c = super.getTableCellRendererComponent(
+                                    table,
+                                    value,
+                                    isSelected,
+                                    hasFocus,
+                                    row,
+                                    column);
+
+                            if (c instanceof JLabel) {
+                                ((JLabel)c).setHorizontalAlignment(JLabel.LEFT);
+                                ((JLabel)c).setBorder(new EmptyBorder(0, 0, 0, 2));
+                            }
+
+                            return c;
+                        }
+                    };
+            }
+
             if (((type instanceof Link) && ((Link)type).isRightAlignment())) {
                 return new LinkTableCellRenderer(JLabel.RIGHT);
             }
@@ -1587,13 +1693,57 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     }
 
     @Override
+    public void beforeSave(final FeatureServiceFeature feature) {
+        for (final Object o : new ArrayList(feature.getProperties().keySet())) {
+            final String key = String.valueOf(o);
+            final DataType type = typeMap.get(key);
+
+            if ((type instanceof Document)
+                        || ((type instanceof Catalogue) && (((Catalogue)type).getDataType() instanceof Document))) {
+                final String pathKey = key + "_dateipfad";
+                final String val = (String)feature.getProperty(key);
+                final Object path = feature.getProperty(pathKey);
+
+                if (path == null) {
+                    final WebDavClient webDavClient = createWebDavClient();
+                    final File fileObject = new File(val);
+                    final String webFileName = WebDavHelper.generateWebDAVFileName("DOC-", fileObject);
+
+                    feature.setProperty(key, val.substring(val.lastIndexOf("/") + 1));
+
+                    try {
+                        final int statusCode = WebDavHelper.uploadFileToWebDAV(
+                                webFileName,
+                                fileObject,
+                                "https://files.cismet.de/remote.php/webdav/watergis/watergis/documents/",
+                                webDavClient,
+                                AppBroker.getInstance().getWatergisApp());
+                        ((CidsLayerFeature)feature).getBean()
+                                .setProperty(
+                                    pathKey,
+                                    "https://files.cismet.de/remote.php/webdav/watergis/watergis/documents/"
+                                    + webFileName);
+                        feature.setProperty(
+                            pathKey,
+                            "https://files.cismet.de/remote.php/webdav/watergis/watergis/documents/"
+                                    + webFileName);
+                    } catch (Exception e) {
+                        LOG.error("Cannot upload file", e);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public TableCellEditor getCellEditor(final String columnName) {
-//        final DataType type = typeMap.get(columnName);
-//        if (type != null) {
-//            if (type instanceof Numeric) {
-//
-//            }
-//        }
+        final DataType type = typeMap.get(columnName);
+
+        if ((type instanceof Document)
+                    || ((type instanceof Catalogue) && (((Catalogue)type).getDataType() instanceof Document))) {
+            return new DocumentCellEditor(columnName);
+        }
+
         return super.getCellEditor(columnName);
     }
 
@@ -3264,6 +3414,34 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         @Override
         public String toString() {
             return "Katalog";
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
+    public static class Document extends DataType {
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new Document object.
+         *
+         * @param  notNull   DOCUMENT ME!
+         * @param  editable  DOCUMENT ME!
+         * @param  field     DOCUMENT ME!
+         */
+        public Document(final boolean notNull, final boolean editable, final String field) {
+            super(notNull, false, editable, null, "dlm25w.Dokument");
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public String toString() {
+            return "Dokument";
         }
     }
 

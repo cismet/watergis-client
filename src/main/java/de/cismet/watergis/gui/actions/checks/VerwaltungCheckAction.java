@@ -276,6 +276,16 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
      * Creates a new VerwaltungCheckAction object.
      */
     public VerwaltungCheckAction() {
+        this(false);
+    }
+
+    /**
+     * Creates a new VerwaltungCheckAction object.
+     *
+     * @param  isBackgroundCheck  DOCUMENT ME!
+     */
+    public VerwaltungCheckAction(final boolean isBackgroundCheck) {
+        super(isBackgroundCheck);
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 VerwaltungCheckAction.class,
                 "VerwaltungCheckAction.toolTipText");
@@ -469,24 +479,17 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
+    @Override
+    protected CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
         final CheckResult result = new CheckResult();
         String user = AppBroker.getInstance().getOwner();
-        int[] selectedIds = null;
+        final int[] selectedIds = getSelectedIds(isExport);
 
         if (user.equalsIgnoreCase("Administratoren")) {
             user = null;
         }
 
         removeServicesFromDb(ALL_CHECKS);
-
-        if (isExport) {
-            if (user == null) {
-                selectedIds = getIdsOfSelectedObjects("fg_ba");
-            }
-        } else {
-            selectedIds = getIdsOfSelectedObjects("fg_ba");
-        }
 
         final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
                     .customServerSearch(SessionManager.getSession().getUser(),
@@ -754,7 +757,24 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
      *
      * @version  $Revision$, $Date$
      */
-    private class CheckResult {
+    protected static class CheckResult extends AbstractCheckResult {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final String[] CHECK_NAMES = {
+                "INCOMPLETE_GB",
+                "INCOMPLETE_SB",
+                "INCOMPLETE_GMD",
+                "INVALID_ATTRIBUTE_GMD",
+                "INVALID_ATTRIBUTE_GB",
+                "INVALID_ATTRIBUTE_SB",
+                "exp",
+                "OVERLAPPED_GMD",
+                "OVERLAPPED_GB",
+                "OVERLAPPEDSB",
+                "ST_GB",
+                "ST_GMD"
+            };
 
         //~ Instance fields ----------------------------------------------------
 
@@ -792,6 +812,7 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
+        @Override
         public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
@@ -1253,6 +1274,73 @@ public class VerwaltungCheckAction extends AbstractCheckAction {
          */
         public void setStGmdErrors(final int stGmdErrors) {
             this.stGmdErrors = stGmdErrors;
+        }
+
+        @Override
+        public String[] getCheckNames() {
+            return CHECK_NAMES;
+        }
+
+        @Override
+        public int getErrorsPerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return incompleteGbErrors;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return incompleteSbErrors;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return incompleteGmdErrors;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return invalidAttributeGmdErrors;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return invalidAttributeGbErrors;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return invalidAttributeSbErrors;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return expErrors;
+            } else if (checkName.equals(CHECK_NAMES[7])) {
+                return overlappedGmdErrors;
+            } else if (checkName.equals(CHECK_NAMES[8])) {
+                return overlappedGbErrors;
+            } else if (checkName.equals(CHECK_NAMES[9])) {
+                return overlappedSbErrors;
+            } else if (checkName.equals(CHECK_NAMES[10])) {
+                return stGbErrors;
+            } else if (checkName.equals(CHECK_NAMES[11])) {
+                return stGmdErrors;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public H2FeatureService getErrorTablePerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return incompleteGb;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return incompleteSb;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return incompleteGmd;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return invalidAttributeGmd;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return invalidAttributeGb;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return invalidAttributeSb;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return exp;
+            } else if (checkName.equals(CHECK_NAMES[7])) {
+                return overlappedGmd;
+            } else if (checkName.equals(CHECK_NAMES[8])) {
+                return overlappedGb;
+            } else if (checkName.equals(CHECK_NAMES[9])) {
+                return overlappedSb;
+            } else if (checkName.equals(CHECK_NAMES[10])) {
+                return stGb;
+            } else if (checkName.equals(CHECK_NAMES[11])) {
+                return stGmd;
+            } else {
+                return null;
+            }
         }
     }
 }

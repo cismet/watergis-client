@@ -247,10 +247,15 @@ import de.cismet.watergis.broker.listener.DrawingCountChangedEvent;
 import de.cismet.watergis.broker.listener.DrawingsListener;
 import de.cismet.watergis.broker.listener.PolygonChangeListener;
 
+import de.cismet.watergis.check.BackgroundCheckEvent;
+import de.cismet.watergis.check.BackgroundCheckListener;
+import de.cismet.watergis.check.CheckBackgroundWorker;
+
 import de.cismet.watergis.gui.actions.AddThemeAction;
 import de.cismet.watergis.gui.actions.AnnexAction;
 import de.cismet.watergis.gui.actions.InfoWindowAction;
 import de.cismet.watergis.gui.actions.ShowWindowAction;
+import de.cismet.watergis.gui.actions.checks.AbstractCheckResult;
 import de.cismet.watergis.gui.actions.map.RemoveDrawingModeAction;
 import de.cismet.watergis.gui.actions.reports.template.TemplateExportAction;
 import de.cismet.watergis.gui.components.GeometryOpButton;
@@ -266,6 +271,7 @@ import de.cismet.watergis.gui.panels.MapPanel;
 import de.cismet.watergis.gui.panels.Photo;
 import de.cismet.watergis.gui.panels.RouteZoomPanel;
 import de.cismet.watergis.gui.panels.SelectionPanel;
+import de.cismet.watergis.gui.panels.StatusPanel;
 import de.cismet.watergis.gui.panels.ZoomPanel;
 import de.cismet.watergis.gui.recently_opened_files.FileMenu;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
@@ -699,6 +705,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.SplitAction splitAction;
     private de.cismet.watergis.gui.actions.geoprocessing.StationAction stationAction1;
     private de.cismet.watergis.gui.panels.StatusBar statusBar1;
+    private de.cismet.watergis.gui.panels.StatusPanel statusPanel1;
     private javax.swing.JToggleButton tbtNewObject;
     private javax.swing.JToggleButton tbtnAddMode;
     private javax.swing.JToggleButton tbtnInfo;
@@ -798,6 +805,20 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_ba");
         wwGrMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.k_ww_gr");
         initComponents();
+
+        boolean backgroundChecksEnabled = false;
+
+        try {
+            backgroundChecksEnabled = SessionManager.getProxy()
+                        .getConfigAttr(SessionManager.getSession().getUser(),
+                                "backgroundChecksEnabled",
+                                connectionContext) != null;
+        } catch (ConnectionException ex) {
+            LOG.error("Cannot check for backgroundChecks permission", ex);
+        }
+
+        statusPanel1.setVisible(backgroundChecksEnabled);
+
         menSteckbriefWasserkoerper.setVisible(false);
         selectionModeAction.setButton(cmdSelectionMode);
         configureButtons();
@@ -859,6 +880,11 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdSelectAllDrawings.setEnabled(drawingsExists);
         mniSelectAllDrawing.setEnabled(drawingsExists);
         initDefaultPanels();
+
+        if (backgroundChecksEnabled) {
+            initialiseStatusPanel();
+        }
+
         initMapModes();
         initHistoryButtonsAndRecentlyOpenedFiles();
         initInfoNode();
@@ -1493,22 +1519,30 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         configManager.configure(pCapabilities);
         try {
             AppBroker.getInstance().initComponentRegistry(this);
-            pTable = AppBroker.getInstance().getComponentRegistry().getCatalogueTree();
-            pTablePane.setViewportView(pTable);
-            final PureTreeNode treeNode = (PureTreeNode)((RootTreeNode)pTable.getModel().getRoot()).getChildAt(0);
-            String childStat = treeNode.getMetaNode().getDynamicChildrenStatement();
-            String user = "null";
-            if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")) {
-                user = "'" + AppBroker.getInstance().getOwner() + "'";
+
+            if (!AppBroker.getInstance().getOwner().startsWith("gaeste")) {
+                // gaeste should not see the problem tree
+                pTable = AppBroker.getInstance().getComponentRegistry().getCatalogueTree();
+                pTablePane.setViewportView(pTable);
+                final PureTreeNode treeNode = (PureTreeNode)((RootTreeNode)pTable.getModel().getRoot()).getChildAt(0);
+                String childStat = treeNode.getMetaNode().getDynamicChildrenStatement();
+                String user = "null";
+                if (!AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")) {
+                    user = "'" + AppBroker.getInstance().getOwner() + "'";
+                }
+                childStat = childStat.replace("$user", user);
+                treeNode.getMetaNode().setDynamicChildrenStatement(childStat);
             } else {
-                cmdAnnex.setEnabled(false);
-                cmdRelease.setEnabled(false);
+                mniShowProblems.setVisible(false);
             }
-            childStat = childStat.replace("$user", user);
-            treeNode.getMetaNode().setDynamicChildrenStatement(childStat);
         } catch (Exception e) {
             LOG.error("The problem tree cannot be created", e);
             pTable.setModel(null);
+        }
+
+        if (AppBroker.getInstance().getOwner().equalsIgnoreCase("administratoren")) {
+            cmdAnnex.setEnabled(false);
+            cmdRelease.setEnabled(false);
         }
 
         AppBroker.getInstance().addComponent(ComponentName.MAP, pMap);
@@ -1530,6 +1564,58 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
         LOG.info("set refernence for the main application in Broker: " + this);
         AppBroker.getInstance().addComponent(ComponentName.MAIN, this);
+    }
+
+    /**
+     * DOCUMENT ME!
+     */
+    private void initialiseStatusPanel() {
+        final CheckBackgroundWorker worker = new CheckBackgroundWorker();
+
+        worker.addBackgroundCheckListener(new BackgroundCheckListener() {
+
+                @Override
+                public void checkComplete(final BackgroundCheckEvent e) {
+                    System.out.println(e.getIndex() + " ist fertig");
+                    final AbstractCheckResult result = e.getResult();
+                    final int index = e.getIndex();
+                    String text;
+                    StatusPanel.IconColor icon;
+
+                    if (result == null) {
+                        text = e.getCheck().getValue(Action.NAME) + ":\nWährend der Prüfung trat ein Fehler auf. ";
+                        icon = StatusPanel.IconColor.RED;
+                    } else {
+                        int problems = 0;
+
+                        for (final String check : result.getCheckNames()) {
+                            problems += result.getErrorsPerCheck(check);
+                        }
+
+                        if (problems == 0) {
+                            text = e.getCheck().getValue(Action.NAME).toString();
+                            icon = StatusPanel.IconColor.GREEN;
+                        } else {
+                            text = e.getCheck().getValue(Action.NAME).toString() + ":\nEs wurden " + problems
+                                        + " Probleme festgestellt";
+                            icon = StatusPanel.IconColor.RED;
+                        }
+                    }
+
+                    statusPanel1.setStatusIcon(index, icon);
+                    statusPanel1.setTooltip(index, text);
+                    statusPanel1.updateUI();
+                    statusPanel1.repaint();
+                }
+            });
+
+        statusPanel1.setCount(worker.getChecks().length);
+
+        for (int i = 0; i < worker.getChecks().length; ++i) {
+            statusPanel1.setTooltip(i, (String)worker.getChecks()[i].getValue(Action.NAME));
+        }
+
+        worker.start();
     }
 
     /**
@@ -2657,6 +2743,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdRemoveGeometry = new javax.swing.JButton();
         cmdDrawingOptions = new javax.swing.JButton();
         cmdDrawingMode = new NewDrawingButton();
+        statusPanel1 = new de.cismet.watergis.gui.panels.StatusPanel();
         panMain = new javax.swing.JPanel();
         statusBar1 = new de.cismet.watergis.gui.panels.StatusBar();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -3604,6 +3691,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         cmdDrawingMode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         cmdDrawingMode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(cmdDrawingMode);
+        jToolBar1.add(statusPanel1);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

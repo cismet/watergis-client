@@ -167,6 +167,17 @@ public class LawaCheckAction extends AbstractCheckAction {
      * Creates a new LawaCheckAction object.
      */
     public LawaCheckAction() {
+        this(false);
+    }
+
+    /**
+     * Creates a new LawaCheckAction object.
+     *
+     * @param  isBackgroundCheck  DOCUMENT ME!
+     */
+    public LawaCheckAction(final boolean isBackgroundCheck) {
+        super(isBackgroundCheck);
+
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 LawaCheckAction.class,
                 "LawaCheckAction.toolTipText");
@@ -201,174 +212,8 @@ public class LawaCheckAction extends AbstractCheckAction {
 
                 @Override
                 protected CheckResult doInBackground() throws Exception {
-                    final CheckResult result = new CheckResult();
-                    String user = AppBroker.getInstance().getOwner();
                     this.wd.setMax(getProgressSteps());
-
-                    if (user.equalsIgnoreCase("Administratoren")) {
-                        user = null;
-                    }
-
-                    removeServicesFromDb(ALL_CHECKS);
-
-                    final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
-                                .customServerSearch(SessionManager.getSession().getUser(),
-                                        new FgBakCount(user, null, null));
-
-                    if ((countList != null) && !countList.isEmpty()) {
-                        final ArrayList innerList = countList.get(0);
-
-                        if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
-                            result.setBakCount(((Number)innerList.get(0)).intValue());
-                        }
-                    }
-                    increaseProgress(wd, 1);
-
-                    // start auto correction
-                    final CidsServerSearch mergeGwk = new MergeFgBakGwk(user);
-                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGwk);
-                    increaseProgress(wd, 1);
-                    final CidsServerSearch mergeGbk = new MergeBakGbk(user);
-                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGbk);
-                    increaseProgress(wd, 1);
-                    final CidsServerSearch mergeGn = new MergeBakGn(user);
-                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGn);
-                    increaseProgress(wd, 1);
-//                    final CidsServerSearch mergeObjart = new MergeBakObjart(user);
-//                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeObjart);
-//                    increaseProgress(wd, 1);
-                    final CidsServerSearch mergeGbkDelta = new MergeBaGbkDelta(user);
-                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGbkDelta);
-                    increaseProgress(wd, 1);
-
-                    // start checks
-                    final List<FeatureServiceAttribute> gbkServiceAttributeDefinition =
-                        new ArrayList<FeatureServiceAttribute>();
-
-                    FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
-                            "id",
-                            String.valueOf(Types.INTEGER),
-                            true);
-                    gbkServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
-                    gbkServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
-                    gbkServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
-                    gbkServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
-                    gbkServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.VARCHAR), true);
-                    gbkServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
-                    gbkServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
-                    gbkServiceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
-                    gbkServiceAttributeDefinition.add(serviceAttribute);
-
-                    result.setFgBakWithoutGbk(analyseByCustomSearch(
-                            new BakWithIncompleteGbkCoverage(user, null, false),
-                            CHECK_BAK_OHNE_GBK,
-                            gbkServiceAttributeDefinition));
-                    increaseProgress(wd, 1);
-
-                    result.setGbkCat(analyseByQuery(FG_BAK_GBK,
-                            QUERY_GBK_CATALOGUE, CHECK_GBK_CAT_LAWA));
-                    increaseProgress(wd, 1);
-
-                    result.setGwkCat(analyseByQuery(FG_BAK_GWK,
-                            QUERY_GWK_CATALOGUE, CHECK_GBK_CAT_GWK));
-                    increaseProgress(wd, 1);
-
-                    final List<FeatureServiceAttribute> serviceAttributeDefinition =
-                        new ArrayList<FeatureServiceAttribute>();
-
-                    serviceAttribute = new FeatureServiceAttribute("id", String.valueOf(Types.INTEGER), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("la_cd", String.valueOf(Types.NUMERIC), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.NUMERIC), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.NUMERIC), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
-                    serviceAttributeDefinition.add(serviceAttribute);
-
-                    result.setGwkGbk(analyseByCustomSearch(
-                            new GwkLaCdFailure(user, null, false),
-                            CHECK_GWK_DELTA_GWK,
-                            serviceAttributeDefinition));
-                    increaseProgress(wd, 1);
-
-                    final List<FeatureServiceAttribute> serviceAttributeDefinitionFgBa =
-                        new ArrayList<FeatureServiceAttribute>();
-
-                    serviceAttribute = new FeatureServiceAttribute("id", String.valueOf(Types.INTEGER), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("ezg", String.valueOf(Types.NUMERIC), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.VARCHAR), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-                    serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
-                    serviceAttributeDefinitionFgBa.add(serviceAttribute);
-
-                    result.setGbkInIncorrectEzg(analyseByCustomSearch(
-                            new GbkInIncorrectEzg(user, null, false),
-                            CHECKEZG_DELTA_GBK,
-                            serviceAttributeDefinitionFgBa));
-                    increaseProgress(wd, 1);
-
-                    result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS, isExport));
-
-                    if (result.getFgBakWithoutGbk() != null) {
-                        result.setFgBakWithoutGbkErrors(result.getFgBakWithoutGbk().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    if (result.getGbkCat() != null) {
-                        result.setGbkCatErrors(result.getGbkCat().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    if (result.getGwkCat() != null) {
-                        result.setGwkCatErrors(result.getGwkCat().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    if (result.getGwkGbk() != null) {
-                        result.setGwkGbkErrors(result.getGwkGbk().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    if (result.getGbkInIncorrectEzg() != null) {
-                        result.setGbkInIncorrectEzgErrors(result.getGbkInIncorrectEzg().getFeatureCount(null));
-                        successful = false;
-                    }
-
-                    return result;
+                    return check(isExport, wd);
                 }
 
                 @Override
@@ -457,6 +302,174 @@ public class LawaCheckAction extends AbstractCheckAction {
     }
 
     @Override
+    protected CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
+        final CheckResult result = new CheckResult();
+        String user = AppBroker.getInstance().getOwner();
+
+        if (user.equalsIgnoreCase("Administratoren")) {
+            user = null;
+        }
+
+        removeServicesFromDb(ALL_CHECKS);
+
+        final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
+                    .customServerSearch(SessionManager.getSession().getUser(),
+                            new FgBakCount(user, null, null));
+
+        if ((countList != null) && !countList.isEmpty()) {
+            final ArrayList innerList = countList.get(0);
+
+            if ((innerList != null) && !innerList.isEmpty() && (innerList.get(0) instanceof Number)) {
+                result.setBakCount(((Number)innerList.get(0)).intValue());
+            }
+        }
+        increaseProgress(wd, 1);
+
+        // start auto correction
+        final CidsServerSearch mergeGwk = new MergeFgBakGwk(user);
+        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGwk);
+        increaseProgress(wd, 1);
+        final CidsServerSearch mergeGbk = new MergeBakGbk(user);
+        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGbk);
+        increaseProgress(wd, 1);
+        final CidsServerSearch mergeGn = new MergeBakGn(user);
+        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGn);
+        increaseProgress(wd, 1);
+//                    final CidsServerSearch mergeObjart = new MergeBakObjart(user);
+//                    SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeObjart);
+//                    increaseProgress(wd, 1);
+        final CidsServerSearch mergeGbkDelta = new MergeBaGbkDelta(user);
+        SessionManager.getProxy().customServerSearch(SessionManager.getSession().getUser(), mergeGbkDelta);
+        increaseProgress(wd, 1);
+
+        // start checks
+        final List<FeatureServiceAttribute> gbkServiceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
+
+        FeatureServiceAttribute serviceAttribute = new FeatureServiceAttribute(
+                "id",
+                String.valueOf(Types.INTEGER),
+                true);
+        gbkServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        gbkServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
+        gbkServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
+        gbkServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
+        gbkServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.VARCHAR), true);
+        gbkServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
+        gbkServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
+        gbkServiceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
+        gbkServiceAttributeDefinition.add(serviceAttribute);
+
+        result.setFgBakWithoutGbk(analyseByCustomSearch(
+                new BakWithIncompleteGbkCoverage(user, null, false),
+                CHECK_BAK_OHNE_GBK,
+                gbkServiceAttributeDefinition));
+        increaseProgress(wd, 1);
+
+        result.setGbkCat(analyseByQuery(FG_BAK_GBK,
+                QUERY_GBK_CATALOGUE, CHECK_GBK_CAT_LAWA));
+        increaseProgress(wd, 1);
+
+        result.setGwkCat(analyseByQuery(FG_BAK_GWK,
+                QUERY_GWK_CATALOGUE, CHECK_GBK_CAT_GWK));
+        increaseProgress(wd, 1);
+
+        final List<FeatureServiceAttribute> serviceAttributeDefinition = new ArrayList<FeatureServiceAttribute>();
+
+        serviceAttribute = new FeatureServiceAttribute("id", String.valueOf(Types.INTEGER), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("la_cd", String.valueOf(Types.NUMERIC), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.NUMERIC), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.NUMERIC), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
+        serviceAttributeDefinition.add(serviceAttribute);
+
+        result.setGwkGbk(analyseByCustomSearch(
+                new GwkLaCdFailure(user, null, false),
+                CHECK_GWK_DELTA_GWK,
+                serviceAttributeDefinition));
+        increaseProgress(wd, 1);
+
+        final List<FeatureServiceAttribute> serviceAttributeDefinitionFgBa = new ArrayList<FeatureServiceAttribute>();
+
+        serviceAttribute = new FeatureServiceAttribute("id", String.valueOf(Types.INTEGER), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("geom", String.valueOf(Types.GEOMETRY), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ba_cd", String.valueOf(Types.VARCHAR), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("bak_st_von", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("bak_st_bis", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("ezg", String.valueOf(Types.NUMERIC), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("gbk_lawa", String.valueOf(Types.VARCHAR), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("laenge", String.valueOf(Types.DOUBLE), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_date", String.valueOf(Types.TIMESTAMP), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+        serviceAttribute = new FeatureServiceAttribute("fis_g_user", String.valueOf(Types.VARCHAR), true);
+        serviceAttributeDefinitionFgBa.add(serviceAttribute);
+
+        result.setGbkInIncorrectEzg(analyseByCustomSearch(
+                new GbkInIncorrectEzg(user, null, false),
+                CHECKEZG_DELTA_GBK,
+                serviceAttributeDefinitionFgBa));
+        increaseProgress(wd, 1);
+
+        result.setProblemTreeObjectCount(getErrorObjectsFromTree(user, null, USED_CLASS_IDS, isExport));
+
+        if (result.getFgBakWithoutGbk() != null) {
+            result.setFgBakWithoutGbkErrors(result.getFgBakWithoutGbk().getFeatureCount(null));
+            successful = false;
+        }
+
+        if (result.getGbkCat() != null) {
+            result.setGbkCatErrors(result.getGbkCat().getFeatureCount(null));
+            successful = false;
+        }
+
+        if (result.getGwkCat() != null) {
+            result.setGwkCatErrors(result.getGwkCat().getFeatureCount(null));
+            successful = false;
+        }
+
+        if (result.getGwkGbk() != null) {
+            result.setGwkGbkErrors(result.getGwkGbk().getFeatureCount(null));
+            successful = false;
+        }
+
+        if (result.getGbkInIncorrectEzg() != null) {
+            result.setGbkInIncorrectEzgErrors(result.getGbkInIncorrectEzg().getFeatureCount(null));
+            successful = false;
+        }
+
+        return result;
+    }
+
+    @Override
     public boolean isEnabled() {
         return true
                     || AppBroker.getInstance().isActionsAlwaysEnabled();
@@ -469,7 +482,17 @@ public class LawaCheckAction extends AbstractCheckAction {
      *
      * @version  $Revision$, $Date$
      */
-    private class CheckResult {
+    protected static class CheckResult extends AbstractCheckResult {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final String[] CHECK_NAMES = {
+                "FG_BAK_WITHOUT_GBK",
+                "GBK_CAT",
+                "GWK_CAT",
+                "GWK_GBK",
+                "GBK_IN_INCORRECT_EZG"
+            };
 
         //~ Instance fields ----------------------------------------------------
 
@@ -493,6 +516,7 @@ public class LawaCheckAction extends AbstractCheckAction {
          *
          * @return  the problemTreeObjectCount
          */
+        @Override
         public ProblemCountAndClasses getProblemTreeObjectCount() {
             return problemTreeObjectCount;
         }
@@ -702,6 +726,45 @@ public class LawaCheckAction extends AbstractCheckAction {
          */
         public void setGbkInIncorrectEzg(final H2FeatureService gbkInIncorrectEzg) {
             this.gbkInIncorrectEzg = gbkInIncorrectEzg;
+        }
+
+        @Override
+        public String[] getCheckNames() {
+            return CHECK_NAMES;
+        }
+
+        @Override
+        public int getErrorsPerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return fgBakWithoutGbkErrors;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return gbkCatErrors;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return gwkCatErrors;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return gwkGbkErrors;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return gbkInIncorrectEzgErrors;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public H2FeatureService getErrorTablePerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return fgBakWithoutGbk;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return gbkCat;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return gwkCat;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return gwkGbk;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return gbkInIncorrectEzg;
+            } else {
+                return null;
+            }
         }
     }
 }
