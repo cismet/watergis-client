@@ -440,6 +440,17 @@ public class AusbauCheckAction extends AbstractCheckAction {
      * Creates a new AusbauCheckAction object.
      */
     public AusbauCheckAction() {
+        this(false);
+    }
+
+    /**
+     * Creates a new AusbauCheckAction object.
+     *
+     * @param  isBackgroundCheck  DOCUMENT ME!
+     */
+    public AusbauCheckAction(final boolean isBackgroundCheck) {
+        super(isBackgroundCheck);
+
         final String tooltip = org.openide.util.NbBundle.getMessage(
                 AusbauCheckAction.class,
                 "AusbauCheckAction.toolTipText");
@@ -645,21 +656,14 @@ public class AusbauCheckAction extends AbstractCheckAction {
      *
      * @throws  Exception  DOCUMENT ME!
      */
-    private CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
+    @Override
+    protected CheckResult check(final boolean isExport, final WaitDialog wd) throws Exception {
         final CheckResult result = new CheckResult();
         String user = AppBroker.getInstance().getOwner();
-        int[] selectedIds = null;
+        final int[] selectedIds = getSelectedIds(isExport);
 
         if (user.equalsIgnoreCase("Administratoren")) {
             user = null;
-        }
-
-        if (isExport) {
-            if (user == null) {
-                selectedIds = getIdsOfSelectedObjects("fg_ba");
-            }
-        } else {
-            selectedIds = getIdsOfSelectedObjects("fg_ba");
         }
 
         final ArrayList<ArrayList> countList = (ArrayList<ArrayList>)SessionManager.getProxy()
@@ -881,7 +885,24 @@ public class AusbauCheckAction extends AbstractCheckAction {
      *
      * @version  $Revision$, $Date$
      */
-    private class CheckResult {
+    protected static class CheckResult extends AbstractCheckResult {
+
+        //~ Static fields/initializers -----------------------------------------
+
+        private static final String[] CHECK_NAMES = {
+                "PROF_ATTR",
+                "SBEF_ATTR",
+                "BBEF_ATTR",
+                "UBEF_ATTR",
+                "PROF_GESCHL",
+                "SBEF_GESCHL",
+                "UBEF_GESCHL",
+                "BBEF_GESCHL",
+                "PROF_OVERLAPS",
+                "PROF_HOLE",
+                "SBEF_OVERLAPS",
+                "BBEF_OVERLAPS"
+            };
 
         //~ Instance fields ----------------------------------------------------
 
@@ -913,15 +934,6 @@ public class AusbauCheckAction extends AbstractCheckAction {
         private H2FeatureService bbefOverlapsAttr;
 
         //~ Methods ------------------------------------------------------------
-
-        /**
-         * DOCUMENT ME!
-         *
-         * @return  the problemTreeObjectCount
-         */
-        public ProblemCountAndClasses getProblemTreeObjectCount() {
-            return problemTreeObjectCount;
-        }
 
         /**
          * DOCUMENT ME!
@@ -1380,6 +1392,78 @@ public class AusbauCheckAction extends AbstractCheckAction {
          */
         public void setBakCount(final int bakCount) {
             this.bakCount = bakCount;
+        }
+
+        @Override
+        public String[] getCheckNames() {
+            return CHECK_NAMES;
+        }
+
+        @Override
+        public ProblemCountAndClasses getProblemTreeObjectCount() {
+            return problemTreeObjectCount;
+        }
+
+        @Override
+        public int getErrorsPerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return profAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return sbefAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return bbefAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return ubefAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return profGeschlErrors;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return sbefGeschlErrors;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return ubefGeschlErrors;
+            } else if (checkName.equals(CHECK_NAMES[7])) {
+                return bbefGeschlErrors;
+            } else if (checkName.equals(CHECK_NAMES[8])) {
+                return profOverlapsErrors;
+            } else if (checkName.equals(CHECK_NAMES[9])) {
+                return profHoleErrors;
+            } else if (checkName.equals(CHECK_NAMES[10])) {
+                return sbefOverlapsAttrErrors;
+            } else if (checkName.equals(CHECK_NAMES[11])) {
+                return bbefOverlapsAttrErrors;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public H2FeatureService getErrorTablePerCheck(final String checkName) {
+            if (checkName.equals(CHECK_NAMES[0])) {
+                return profAttr;
+            } else if (checkName.equals(CHECK_NAMES[1])) {
+                return sbefAttr;
+            } else if (checkName.equals(CHECK_NAMES[2])) {
+                return bbefAttr;
+            } else if (checkName.equals(CHECK_NAMES[3])) {
+                return ubefAttr;
+            } else if (checkName.equals(CHECK_NAMES[4])) {
+                return profGeschl;
+            } else if (checkName.equals(CHECK_NAMES[5])) {
+                return sbefGeschl;
+            } else if (checkName.equals(CHECK_NAMES[6])) {
+                return ubefGeschl;
+            } else if (checkName.equals(CHECK_NAMES[7])) {
+                return bbefGeschl;
+            } else if (checkName.equals(CHECK_NAMES[8])) {
+                return profOverlaps;
+            } else if (checkName.equals(CHECK_NAMES[9])) {
+                return profHole;
+            } else if (checkName.equals(CHECK_NAMES[10])) {
+                return sbefOverlapsAttr;
+            } else if (checkName.equals(CHECK_NAMES[11])) {
+                return bbefOverlapsAttr;
+            } else {
+                return null;
+            }
         }
     }
 }
