@@ -11,7 +11,6 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
 import Sirius.navigator.exception.ConnectionException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -20,11 +19,9 @@ import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
 
-import org.openide.util.Exceptions;
 
 import java.awt.Component;
 
-import java.sql.Timestamp;
 
 import java.util.HashMap;
 
@@ -46,7 +43,6 @@ import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
-import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.SimpleAttributeTableModel;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
@@ -79,6 +75,7 @@ public class EzgDetailRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("gbk_ordn", new Catalogue("k_gbk_lawa", false, true, new Numeric(2, 0, false, false)));
         typeMap.put("gbk_pl", new Catalogue("k_gbk_lawa", false, true, new Numeric(10, 0, false, false)));
         typeMap.put("ezg_fl", new Numeric(12, 0, false, true));
+        typeMap.put("doc", new Document(false, true, "doc"));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
@@ -296,12 +293,13 @@ public class EzgDetailRuleSet extends WatergisDefaultRuleSet {
             return editor;
         }
 
-        return null;
+        return super.getCellEditor(columnName);
     }
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
         adjustFisGDateAndFisGUser(feature);
+        super.beforeSave(feature);
     }
 
     @Override
