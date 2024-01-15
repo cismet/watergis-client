@@ -1100,10 +1100,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             + user.getUserGroup().getName()
                             + "' or %2$s) and ka.anlp in ('Fu', 'P', 'P-Grr', 'P-Steg', 'P-Grr-Steg', 'P-Lat', 'Steg', 'Stt', 'Vt') and \n"
                             + "(exists(select 1 from dlm25w.fg_ba_rl r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or\n"
                             + "exists(select 1 from dlm25w.fg_ba_d r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
-                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert)\n"
+                            + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert  or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
                             + "or \n"
                             + "exists(select 1 from dlm25w.fg_ba_due r join dlm25w.fg_ba_linie l on (r.ba_st = l.id) join dlm25w.fg_ba_punkt v on (l.von = v.id) join dlm25w.fg_ba_punkt b on (l.bis = b.id)\n"
                             + "where v.route = s.route and (least(v.wert, b.wert) <= s.wert or dlm25w.is_station_equal(least(v.wert, b.wert), s.wert)) and (greatest(v.wert, b.wert) >= s.wert or dlm25w.is_station_equal(greatest(v.wert, b.wert), s.wert)))\n"
