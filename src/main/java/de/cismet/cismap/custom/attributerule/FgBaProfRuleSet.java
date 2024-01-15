@@ -11,7 +11,6 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
 
 import Sirius.server.middleware.types.MetaClass;
 
@@ -19,17 +18,12 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import org.deegree.datatypes.Types;
 
-import java.sql.Timestamp;
 
 import java.util.List;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -48,7 +42,6 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
-import de.cismet.watergis.utils.LinkTableCellRenderer;
 
 /**
  * DOCUMENT ME!
@@ -505,6 +498,8 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                             && (toNumber(feature.getProperty("bh_re")).doubleValue() != 0.0)) {
                     // we assume, that bv = ba / bh and bl^2 = ba^2 + bh^2
                     // so bl = sqrt((bv*bh)^2 + bh^2)
+                    // bv = sqrt(bl^2 - bh^2) / bh
+                    // bh = sqrt(bl^2 /(bv^2+1))
                     final double bh = toNumber(feature.getProperty("bh_re")).doubleValue();
                     final double bv = toNumber(feature.getProperty("bv_re")).doubleValue();
                     final double bl = Math.sqrt(Math.pow(bv * bh, 2) + Math.pow(bh, 2));
@@ -521,6 +516,8 @@ public class FgBaProfRuleSet extends WatergisDefaultRuleSet {
                             && (toNumber(feature.getProperty("bh_li")).doubleValue() != 0.0)) {
                     // we assume, that bv = ba / bh and bl^2 = ba^2 + bh^2
                     // so bl = sqrt((bv*bh)^2 + bh^2)
+                    // bv = sqrt(bl^2 - bh^2) / bh
+                    // bh = sqrt(bl^2 /(bv^2+1))
                     final double bh = toNumber(feature.getProperty("bh_li")).doubleValue();
                     final double bv = toNumber(feature.getProperty("bv_li")).doubleValue();
                     final double bl = Math.sqrt(Math.pow(bv * bh, 2) + Math.pow(bh, 2));
