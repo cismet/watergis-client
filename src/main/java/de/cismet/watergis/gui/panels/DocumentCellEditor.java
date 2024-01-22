@@ -11,35 +11,13 @@
  */
 package de.cismet.watergis.gui.panels;
 
-import Sirius.navigator.connection.SessionManager;
-
-import Sirius.server.middleware.types.MetaClass;
-import Sirius.server.middleware.types.MetaObject;
-
 import org.apache.log4j.Logger;
 
 import java.awt.Component;
-import java.awt.Container;
-
-import java.util.List;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
-
-import de.cismet.cids.dynamics.CidsBean;
-
-import de.cismet.cids.navigator.utils.ClassCacheMultiple;
-
-import de.cismet.cismap.cidslayer.CidsLayerFeature;
-
-import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.features.JDBCFeature;
-import de.cismet.cismap.commons.featureservice.LinearReferencingInfo;
-import de.cismet.cismap.commons.gui.attributetable.AttributeTable;
-import de.cismet.cismap.commons.gui.featureinfopanel.FeatureInfoPanel;
-
-import de.cismet.cismap.linearreferencing.tools.StationTableCellEditorInterface;
 
 import de.cismet.connectioncontext.ConnectionContext;
 import de.cismet.connectioncontext.ConnectionContextProvider;
@@ -101,33 +79,10 @@ public class DocumentCellEditor extends AbstractCellEditor implements TableCellE
             final boolean isSelected,
             final int row,
             final int column) {
-        Container o = table;
+        pan = new DocumentPanel();
 
-        while ((o.getParent() != null)
-                    && (!(o.getParent() instanceof AttributeTable) && !(o.getParent() instanceof FeatureInfoPanel))) {
-            o = o.getParent();
-        }
-
-        if (o.getParent() instanceof AttributeTable) {
-            final AttributeTable tab = (AttributeTable)o.getParent();
-            final FeatureServiceFeature feature = tab.getFeatureByRow(row);
-
-            if (feature instanceof CidsLayerFeature) {
-                final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
-                pan = new DocumentPanel();
-            } else if (feature instanceof JDBCFeature) {
-                final JDBCFeature f = (JDBCFeature)feature;
-
-                pan = new DocumentPanel();
-            }
-        } else if (o.getParent() instanceof FeatureInfoPanel) {
-            final FeatureInfoPanel infoPanel = (FeatureInfoPanel)o.getParent();
-            final FeatureServiceFeature feature = infoPanel.getSelectedFeature();
-
-            if (feature instanceof CidsLayerFeature) {
-                final CidsLayerFeature cidsFeature = (CidsLayerFeature)feature;
-                pan = new DocumentPanel();
-            }
+        if (value instanceof String) {
+            pan.setValue((String)value);
         }
 
         pan.requestFocus();

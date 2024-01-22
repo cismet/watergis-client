@@ -38,19 +38,26 @@ public class HaltungRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("ba_cd", new Varchar(50, false, false));
         typeMap.put("ba_st_von", new Numeric(10, 2, false, false));
         typeMap.put("ba_st_bis", new Numeric(10, 2, false, false));
-        typeMap.put("gu_cd", new Varchar(50, false, false));
-        typeMap.put("anfangsobjekt", new Numeric(10, 0, false, false));
-        typeMap.put("endobjekt", new Numeric(10, 0, false, false));
+        typeMap.put("gu_cd", new Varchar(250, false, false));
+        typeMap.put("anf_obj", new Numeric(10, 0, false, false));
+        typeMap.put("end_obj", new Numeric(10, 0, false, false));
+        typeMap.put("obj_reihf", new Varchar(30, false, false));
+        typeMap.put("rl_mat", new Varchar(10, false, false));
+        typeMap.put("rl_br_dm", new Numeric(8, 3, false, false));
+        typeMap.put("d_mat", new Varchar(10, false, false));
+        typeMap.put("d_br_dm", new Numeric(8, 3, false, false));
+        typeMap.put("doc", new Document(false, true, "doc"));
+        typeMap.put("bemerkung", new Varchar(250, false, false));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
-        typeMap.put("objekt_reihenfolge", new Varchar(250, false, false));
-        typeMap.put("bemerkungen", new Varchar(250, false, false));
+        typeMap.put("fis_g_date", new DateTime(false, false));
+        typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return columnName.equals("bemerkungen");
+        return columnName.equals("bemerkungen") || columnName.equals("kamerainspektion");
     }
 
     @Override
@@ -79,6 +86,7 @@ public class HaltungRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public void beforeSave(final FeatureServiceFeature feature) {
+        adjustFisGDateAndFisGUser(feature);
     }
 
     @Override

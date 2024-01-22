@@ -14,20 +14,9 @@ package de.cismet.watergis.gui.panels;
 
 import org.apache.log4j.Logger;
 
-import org.openide.util.NbBundle;
-
-import java.io.File;
-
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
-import de.cismet.cids.dynamics.CidsBean;
 
 import de.cismet.tools.gui.RestrictedFileSystemView;
-
-import de.cismet.watergis.gui.dialog.GafProfReportDialog;
-
-import de.cismet.watergis.utils.CidsBeanUtils;
 
 /**
  * DOCUMENT ME!
@@ -80,6 +69,7 @@ public class DocumentPanel extends javax.swing.JPanel {
                 "DocumentPanel.txtFile.text",
                 new Object[] {})); // NOI18N
         txtFile.setEnabled(false);
+        txtFile.setMinimumSize(new java.awt.Dimension(16, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -91,6 +81,7 @@ public class DocumentPanel extends javax.swing.JPanel {
 
         butFile.setIcon(new javax.swing.ImageIcon(
                 getClass().getResource("/de/cismet/watergis/res/icons16/icon-importfile.png"))); // NOI18N
+        butFile.setMinimumSize(new java.awt.Dimension(16, 16));
         butFile.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -113,30 +104,25 @@ public class DocumentPanel extends javax.swing.JPanel {
      */
     private void butFileActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butFileActionPerformed
         JFileChooser fc;
+        String path = lastPath;
+
+        if ((txtFile.getText() != null) && !txtFile.getText().equals("") && !txtFile.getText().startsWith("http")) {
+            if (txtFile.getText().contains("/")) {
+                path = txtFile.getText().substring(0, txtFile.getText().lastIndexOf("/"));
+            } else if (txtFile.getText().contains("\\")) {
+                path = txtFile.getText().substring(0, txtFile.getText().lastIndexOf("\\"));
+            }
+        }
 
         try {
-            fc = new JFileChooser(lastPath);
+            fc = new JFileChooser(path);
         } catch (Exception bug) {
             // Bug Workaround http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857
-            fc = new JFileChooser(lastPath, new RestrictedFileSystemView());
+            fc = new JFileChooser(path, new RestrictedFileSystemView());
         }
 
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setAcceptAllFileFilterUsed(true);
-//        fc.setFileFilter(new FileFilter() {
-//
-//                @Override
-//                public boolean accept(final File f) {
-//                    return f.isDirectory();
-//                }
-//
-//                @Override
-//                public String getDescription() {
-//                    return NbBundle.getMessage(
-//                            GafProfReportDialog.class,
-//                            "GewaesserReportDialog.butFileActionPerformed().getDescription()");
-//                }
-//            });
 
         final int ans = fc.showSaveDialog(this);
 
@@ -153,6 +139,15 @@ public class DocumentPanel extends javax.swing.JPanel {
      */
     public String getFile() {
         return txtFile.getText();
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  file  DOCUMENT ME!
+     */
+    public void setValue(final String file) {
+        txtFile.setText(file);
     }
 
     /**
