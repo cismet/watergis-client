@@ -19,9 +19,7 @@ import org.apache.log4j.Logger;
 
 import org.deegree.datatypes.Types;
 
-
 import java.awt.Component;
-
 
 import java.util.HashMap;
 
@@ -75,7 +73,6 @@ public class EzgDetailRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("gbk_ordn", new Catalogue("k_gbk_lawa", false, true, new Numeric(2, 0, false, false)));
         typeMap.put("gbk_pl", new Catalogue("k_gbk_lawa", false, true, new Numeric(10, 0, false, false)));
         typeMap.put("ezg_fl", new Numeric(12, 0, false, true));
-        typeMap.put("doc", new Document(false, true, "doc"));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));

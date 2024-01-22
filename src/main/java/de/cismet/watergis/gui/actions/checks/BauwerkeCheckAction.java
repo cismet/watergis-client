@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 
 import de.cismet.cids.custom.helper.SQLFormatter;
 import de.cismet.cids.custom.watergis.server.search.FgBakCount;
+import de.cismet.cids.custom.watergis.server.search.HaltungWithHolesCoverage;
 import de.cismet.cids.custom.watergis.server.search.MergeBaAnll;
 import de.cismet.cids.custom.watergis.server.search.MergeBaAnlp;
 import de.cismet.cids.custom.watergis.server.search.MergeBaD;
@@ -175,6 +176,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         "Prüfungen->Bauwerke->Scha->Scha: doppelt/zu nah";
     private static final String CHECKS_BAUWERKE_RL_RL__UEBERLAPPUNG =
         "Prüfungen->Bauwerke->RL/D/Dü->RL/D/Dü: Überlappung";
+    private static final String CHECKS_HALTUNG_HOLES = "Prüfungen->Bauwerke->Haltung->Löcher";
     private static final String CHECKS_BAUWERKE_RL_RL__LUECKE = "Prüfungen->Bauwerke->RL/D/Dü->RL/D/Dü: Lücke";
     private static final String CHECKS_BAUWERKE_DD__ATTRIBUTE = "Prüfungen->Bauwerke->RL/D/Dü->D: Attribute";
     private static final String CHECKS_BAUWERKE_WEHR_WEHR__ATTRIBUTE = "Prüfungen->Bauwerke->Wehr->Wehr: Attribute";
@@ -1452,7 +1454,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
 
     @Override
     public int getProgressSteps() {
-        return 30;
+        return 31;
     }
 
     @Override
@@ -2059,6 +2061,12 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
+        result.setHaltungHoles(analyseByCustomSearch(
+                new HaltungWithHolesCoverage(user, selectedIds),
+                CHECKS_HALTUNG_HOLES,
+                serviceAttributeDefinition));
+        increaseProgress(wd, 1);
+
 //        query = (useExpCond
 //                ? String.format(QUERY_KR_MARKED_TWICE, SQLFormatter.createSqlArrayString(selectedIds), expCondition)
 //                : String.format(QUERY_KR_MARKED_TWICE, SQLFormatter.createSqlArrayString(selectedIds)));
@@ -2198,6 +2206,11 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             successful = false;
         }
 
+        if (result.getHaltungHoles() != null) {
+            result.setHaltungHolesError(result.getHaltungHoles().getFeatureCount(null));
+            successful = false;
+        }
+
         return result;
     }
 
@@ -2244,7 +2257,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 "KR_ESW",
                 "EA_ESW",
                 "ANLL_GESCHL",
-                "KR_MARKED_TWICE"
+                "KR_MARKED_TWICE",
+                "HALTUNG_HOLES"
             };
 
         //~ Instance fields ----------------------------------------------------
@@ -2276,6 +2290,7 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private int eaEswError;
         private int anllGeschlError;
         private int krMarkedTwiceError;
+        private int haltungHolesError;
         private ProblemCountAndClasses problemTreeObjectCount;
         private H2FeatureService rlAttr;
         private H2FeatureService dAttr;
@@ -2303,8 +2318,45 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private H2FeatureService eaEsw;
         private H2FeatureService anllGeschl;
         private H2FeatureService krMarkedTwice;
+        private H2FeatureService haltungHoles;
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the haltungHolesError
+         */
+        public int getHaltungHolesError() {
+            return haltungHolesError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  haltungHolesError  the haltungHolesError to set
+         */
+        public void setHaltungHolesError(final int haltungHolesError) {
+            this.haltungHolesError = haltungHolesError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the haltungHoles
+         */
+        public H2FeatureService getHaltungHoles() {
+            return haltungHoles;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  haltungHoles  the haltungHoles to set
+         */
+        public void setHaltungHoles(final H2FeatureService haltungHoles) {
+            this.haltungHoles = haltungHoles;
+        }
 
         /**
          * DOCUMENT ME!
@@ -3333,6 +3385,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 return anllGeschlError;
             } else if (checkName.equals(CHECK_NAMES[25])) {
                 return krMarkedTwiceError;
+            } else if (checkName.equals(CHECK_NAMES[26])) {
+                return haltungHolesError;
             } else {
                 return 0;
             }
@@ -3392,6 +3446,8 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 return anllGeschl;
             } else if (checkName.equals(CHECK_NAMES[25])) {
                 return krMarkedTwice;
+            } else if (checkName.equals(CHECK_NAMES[26])) {
+                return haltungHoles;
             } else {
                 return null;
             }

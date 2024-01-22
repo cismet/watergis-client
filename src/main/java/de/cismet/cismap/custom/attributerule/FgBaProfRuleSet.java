@@ -11,19 +11,16 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-
 import Sirius.server.middleware.types.MetaClass;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.deegree.datatypes.Types;
 
-
 import java.util.List;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
-
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
