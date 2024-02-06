@@ -89,7 +89,7 @@ public class VwAlkFlstFnWbvGRuleSet extends WatergisDefaultRuleSet {
 
             if (geom != null) {
                 fn_g_fl = geom.getArea();
-                feature.getProperties().put("fn_g_fl", Math.round(fn_g_fl * 10000) / 10000.0);
+                feature.getProperties().put("fn_g_fl", round(fn_g_fl, 4));
                 Double value = null;
 
                 final Double flst_fl = ((Double)feature.getProperty("flst_fl"));
@@ -109,7 +109,7 @@ public class VwAlkFlstFnWbvGRuleSet extends WatergisDefaultRuleSet {
 
             if (geom != null) {
                 fn_g_fl = geom.getArea();
-                feature.getProperties().put("fn_g_fl", Math.round(fn_g_fl * 10000) / 10000.0);
+                feature.getProperties().put("fn_g_fl", round(fn_g_fl, 4));
                 Double value = null;
 
                 final Double flst_fl = ((Double)newValue);
@@ -130,7 +130,7 @@ public class VwAlkFlstFnWbvGRuleSet extends WatergisDefaultRuleSet {
 
             if (geom != null) {
                 fn_g_fl = geom.getArea();
-                feature.getProperties().put("fn_g_fl", Math.round(fn_g_fl * 10000) / 10000.0);
+                feature.getProperties().put("fn_g_fl", round(fn_g_fl, 4));
                 Double value = null;
 
                 final Double flst_fl = ((Double)feature.getProperty("flst_fl"));
@@ -188,7 +188,7 @@ public class VwAlkFlstFnWbvGRuleSet extends WatergisDefaultRuleSet {
 
         if (geom != null) {
             fn_g_fl = geom.getArea();
-            feature.getProperties().put("fn_g_fl", Math.round(fn_g_fl * 10000) / 10000.0);
+            feature.getProperties().put("fn_g_fl", round(fn_g_fl, 4));
             Double value = null;
 
             final Double flst_fl = ((Double)feature.getProperty("flst_fl"));

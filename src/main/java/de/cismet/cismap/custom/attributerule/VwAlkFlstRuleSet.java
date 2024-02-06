@@ -72,7 +72,7 @@ public class VwAlkFlstRuleSet extends WatergisDefaultRuleSet {
             final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
             if (geom != null) {
-                final Double flst_fl = Math.round(geom.getArea() * 10000) / 10000.0;
+                final Double flst_fl = round(geom.getArea(), 4);
                 feature.getProperties().put("flst_fl", flst_fl);
             }
         }
@@ -115,7 +115,7 @@ public class VwAlkFlstRuleSet extends WatergisDefaultRuleSet {
         final Geometry geom = ((Geometry)feature.getProperty("geom"));
 
         if (geom != null) {
-            final Double flst_fl = Math.round(geom.getArea() * 10000) / 10000.0;
+            final Double flst_fl = round(geom.getArea(), 4);
             feature.getProperties().put("flst_fl", flst_fl);
         }
     }

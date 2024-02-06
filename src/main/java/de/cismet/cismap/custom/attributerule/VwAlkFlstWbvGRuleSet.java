@@ -23,6 +23,9 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 /**
  * DOCUMENT ME!
@@ -77,7 +80,7 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
 
             if (geom != null) {
                 flst_g_fl = geom.getArea();
-                feature.getProperties().put("flst_g_fl", Math.round(flst_g_fl * 10000) / 10000.0);
+                feature.getProperties().put("flst_g_fl", round(flst_g_fl, 4));
                 Double value = null;
 
                 final Double flst_fl = ((Double)feature.getProperty("flst_fl"));
@@ -101,7 +104,7 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
 
             if (geom != null) {
                 flst_g_fl = geom.getArea();
-                feature.getProperties().put("flst_g_fl", Math.round(flst_g_fl * 10000) / 10000.0);
+                feature.getProperties().put("flst_g_fl", round(flst_g_fl, 4));
                 Double value = null;
 
                 final Double flst_fl = ((Double)newValue);
@@ -158,7 +161,7 @@ public class VwAlkFlstWbvGRuleSet extends WatergisDefaultRuleSet {
 
         if (geom != null) {
             flst_g_fl = geom.getArea();
-            feature.getProperties().put("flst_g_fl", Math.round(flst_g_fl * 10000) / 10000.0);
+            feature.getProperties().put("flst_g_fl", round(flst_g_fl, 4));
             Double value = null;
 
             final Double flst_fl = ((Double)feature.getProperty("flst_fl"));

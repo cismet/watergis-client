@@ -159,7 +159,7 @@ public class VwAlkFlstFnRuleSet extends WatergisDefaultRuleSet {
 
         if (geom != null) {
             fn_fl = geom.getArea();
-            feature.getProperties().put("fn_fl", Math.round(fn_fl * 10000) / 10000.0);
+            feature.getProperties().put("fn_fl", round(fn_fl, 4));
             Double value = null;
 
             final Double flst_fl = ((Double)feature.getProperty("flst_fl"));

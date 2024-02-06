@@ -425,6 +425,12 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             return false;
         }
     }
+    
+    protected static Double round(final double value, final int digits) {
+        BigDecimal bd = new BigDecimal(value);
+        
+        return bd.round(new MathContext(digits, RoundingMode.HALF_UP)).doubleValue();
+    }
 
     /**
      * DOCUMENT ME!
@@ -712,7 +718,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      * @return  DOCUMENT ME!
      */
     protected double round(final double value) {
-        return Math.round(value * 100) / 100.0;
+        return round(value, 2);
     }
 
     /**
