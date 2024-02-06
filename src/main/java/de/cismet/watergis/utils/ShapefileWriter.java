@@ -57,6 +57,8 @@ import org.geotools.shapefile.Shapefile;
 import java.io.*;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import java.net.URL;
 
@@ -66,9 +68,7 @@ import java.util.*;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
-import de.cismet.cismap.commons.features.PersistentFeature;
 import de.cismet.cismap.commons.util.FilePersistenceManager;
 
 import de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet;
@@ -730,9 +730,9 @@ public class ShapefileWriter implements JUMPWriter {
                     } else {
                         final int index = nameToIndex.get(name);
                         if (fields[index].fieldnumdec > 0) {
-                            final Double d = Math.round((Double)a
-                                            * Math.pow(10, fields[index].fieldnumdec))
-                                        / Math.pow(10, fields[index].fieldnumdec);
+                            final BigDecimal bd = new BigDecimal((Double)a);
+                            final Double d = bd.round(new MathContext(fields[index].fieldnumdec, RoundingMode.HALF_UP))
+                                        .doubleValue();
                             DBFrow.add(d);
                         } else {
                             final long val = Math.round((Double)a);

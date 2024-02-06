@@ -57,7 +57,7 @@ public class HaltungRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return columnName.equals("bemerkungen") || columnName.equals("kamerainspektion");
+        return columnName.equals("bemerkung") || columnName.equals("doc");
     }
 
     @Override
