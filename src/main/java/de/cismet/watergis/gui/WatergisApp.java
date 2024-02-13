@@ -1576,7 +1576,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
 
                 @Override
                 public void checkComplete(final BackgroundCheckEvent e) {
-                    System.out.println(e.getIndex() + " ist fertig");
                     final AbstractCheckResult result = e.getResult();
                     final int index = e.getIndex();
                     String text;

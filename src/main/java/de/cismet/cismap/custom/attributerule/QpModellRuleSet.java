@@ -11,8 +11,6 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.server.middleware.types.MetaClass;
-
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.apache.log4j.Logger;
@@ -22,23 +20,18 @@ import org.deegree.datatypes.Types;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import de.cismet.cids.navigator.utils.ClassCacheMultiple;
-
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
-import de.cismet.cismap.cidslayer.CidsLayerFeatureFilter;
 import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
-import de.cismet.cismap.cidslayer.StationLineCreator;
 
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
+import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
+import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
 
 import de.cismet.cismap.linearreferencing.StationTableCellEditor;
 
-import de.cismet.watergis.broker.AppBroker;
-
 import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
-import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 
 /**
  * DOCUMENT ME!
@@ -89,6 +82,7 @@ public class QpModellRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("m_mq", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
         typeMap.put("m_q330", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
         typeMap.put("m_mhq", new Catalogue("k_geschehen", false, true, new Varchar(1, false, false)));
+        typeMap.put("ba_gn", new Varchar(100, false, true));
         typeMap.put("bemerkung", new Varchar(250, false, true));
         typeMap.put("laenge", new Numeric(10, 2, false, false));
         typeMap.put("fis_g_date", new DateTime(false, false));
@@ -123,26 +117,6 @@ public class QpModellRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-//        if (columnName.equals("m_traeger")) {
-//            final CidsLayerFeatureFilter filter = createCidsLayerFeatureFilter("praefix", true);
-//            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
-//                    new FeatureServiceAttribute(
-//                        "m_traeger",
-//                        String.valueOf(Types.VARCHAR),
-//                        true),
-//                    filter);
-//            editor.setNullable(true);
-//
-//            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
-//
-//                    @Override
-//                    protected String toString(final CidsLayerFeature bean) {
-//                        return (String)bean.getProperty("praefix");
-//                    }
-//                });
-//
-//            return editor;
-//        }
         if (columnName.equals("m_traeger")) {
             final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
                     new FeatureServiceAttribute(
@@ -288,15 +262,20 @@ public class QpModellRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public FeatureCreator getFeatureCreator() {
-        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
-        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
+        final PrimitiveGeometryCreator c = new PrimitiveGeometryCreator(
+                CreateGeometryListenerInterface.LINESTRING,
+                true);
 
-        final StationLineCreator creator = new StationLineCreator(
-                "la_st",
-                routeMc,
-                "LAWA-Gewässer (LAWA)",
-                new LinearReferencingWatergisHelper());
-
-        return creator;
+        return c;
+//        final MetaClass routeMc = ClassCacheMultiple.getMetaClass(AppBroker.DOMAIN_NAME, "dlm25w.fg_la");
+//        final OnOwnRouteStationCheck check = new OnOwnRouteStationCheck();
+//
+//        final StationLineCreator creator = new StationLineCreator(
+//                "la_st",
+//                routeMc,
+//                "LAWA-Gewässer (LAWA)",
+//                new LinearReferencingWatergisHelper());
+//
+//        return creator;
     }
 }

@@ -13,6 +13,7 @@
 package de.cismet.watergis.gui.actions.geoprocessing;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.linearref.LengthIndexedLine;
 import com.vividsolutions.jts.linearref.LinearLocation;
 import com.vividsolutions.jts.linearref.LocationIndexedLine;
 
@@ -26,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -41,12 +41,10 @@ import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
 import de.cismet.cismap.commons.featureservice.LayerProperties;
 
-import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.gui.actions.reports.KatasterGewaesserReportAction;
 import de.cismet.watergis.gui.dialog.MergeDialog;
 import de.cismet.watergis.gui.dialog.StationDialog;
 
@@ -231,6 +229,7 @@ public class TechProfAction extends AbstractGeoprocessingAction {
                                         AppBroker.DOMAIN_NAME,
                                         "dlm25w.fg_ba_prof"));
                             final String query = "dlm25wPk_ww_gr1.ww_gr = 3100";
+                            // and dlm25w.fg_ba.ba_cd = '10:1LV29a-20'
                             tech.initAndWait();
                             final List<FeatureServiceFeature> featureListTech = tech.getFeatureFactory()
                                         .createFeatures(query, null, null, 0, 0, null);
@@ -481,13 +480,9 @@ public class TechProfAction extends AbstractGeoprocessingAction {
                                 }
 
                                 final double len = Math.min(bis, bisProf) - Math.max(von, vonProf);
-                                final LocationIndexedLine lineLIL = new LocationIndexedLine(g);
-                                final LinearLocation startLoc = lineLIL.getStartIndex();
-                                final LinearLocation endLoc = lineLIL.indexOf(lineLIL.extractPoint(
-                                            startLoc,
-                                            len));
+                                final LengthIndexedLine lineLIL = new LengthIndexedLine(g);
 
-                                newFeature.setGeometry(lineLIL.extractLine(startLoc, endLoc));
+                                newFeature.setGeometry(lineLIL.extractLine(0, len));
                             }
 
                             return newFeature;

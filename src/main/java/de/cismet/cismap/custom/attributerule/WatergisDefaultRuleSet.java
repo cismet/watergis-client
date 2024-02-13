@@ -425,10 +425,18 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
             return false;
         }
     }
-    
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param   value   DOCUMENT ME!
+     * @param   digits  DOCUMENT ME!
+     *
+     * @return  DOCUMENT ME!
+     */
     protected static Double round(final double value, final int digits) {
-        BigDecimal bd = new BigDecimal(value);
-        
+        final BigDecimal bd = new BigDecimal(value);
+
         return bd.round(new MathContext(digits, RoundingMode.HALF_UP)).doubleValue();
     }
 

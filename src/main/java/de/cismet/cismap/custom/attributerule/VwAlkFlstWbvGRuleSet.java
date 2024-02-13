@@ -13,6 +13,10 @@ package de.cismet.cismap.custom.attributerule;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
@@ -23,9 +27,6 @@ import de.cismet.cismap.commons.features.FeatureServiceFeature;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 
 /**
  * DOCUMENT ME!
