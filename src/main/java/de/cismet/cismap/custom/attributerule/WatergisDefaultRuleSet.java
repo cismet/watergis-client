@@ -2788,6 +2788,40 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
      *
      * @version  $Revision$, $Date$
      */
+    public static class Bool extends DataType {
+
+        //~ Constructors -------------------------------------------------------
+
+        /**
+         * Creates a new BooleanAsInteger object.
+         *
+         * @param  notNull   DOCUMENT ME!
+         * @param  editable  DOCUMENT ME!
+         */
+        public Bool(final boolean notNull, final boolean editable) {
+            super(notNull, false, editable, null, null);
+        }
+
+        //~ Methods ------------------------------------------------------------
+
+        @Override
+        public ValidationResult isValidValue(final Object value) {
+            final ValidationResult result = super.isValidValue(value);
+
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Boolean";
+        }
+    }
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @version  $Revision$, $Date$
+     */
     public static class Varchar extends DataType {
 
         //~ Instance fields ----------------------------------------------------

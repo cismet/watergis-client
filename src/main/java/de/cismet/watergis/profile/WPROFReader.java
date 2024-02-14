@@ -528,11 +528,12 @@ public class WPROFReader extends AbstractProfileReader {
                 String query = "select " + GEOM_MC.getID() + ", geom." + GEOM_MC.getPrimaryKey() + " from "
                             + ROUTE_MC.getTableName();
                 query += " fg join " + GEOM_MC.getTableName()
-                            + " geom on (fg.geom = geom.id) where st_intersects(geom.geo_field, '" + line.toText()
-                            + "') "
+                            + " geom on (fg.geom = geom.id) where st_intersects(geom.geo_field, st_setSrid('"
+                            + line.toText()
+                            + "'::geometry, 5650)) "
                             + " order by abs(0.5 - ST_LineLocatePoint('" + line.toText()
-                            + "', st_geometryN(st_intersection('"
-                            + line.toText() + "', geom.geo_field)), 1)";
+                            + "', st_geometryN(st_intersection(st_setSrid('"
+                            + line.toText() + "'::geometry, 5650), geom.geo_field)), 1)";
 
                 metaObjects = SessionManager.getProxy().getMetaObjectByQuery(query, 0, CC);
                 routes = metaObjects;
