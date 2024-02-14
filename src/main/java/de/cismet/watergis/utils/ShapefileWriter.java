@@ -627,7 +627,12 @@ public class ShapefileWriter implements JUMPWriter {
                         'N',
                         precision
                                 + lengthOfDecimalCharacter,
-                        scale); // LDB: previously 16
+                        scale);                                                   // LDB: previously 16
+                fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+                f++;
+            } else if ((columnType == AttributeType.STRING)
+                        && (getTypeFromRuleSet(columnName) instanceof WatergisDefaultRuleSet.Bool)) {
+                fields[f] = new DbfFieldDef(columnName.toUpperCase(), 'N', 1, 0); // LDB: previously 16
                 fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
                 f++;
             } else if (columnType == AttributeType.STRING) {
@@ -752,6 +757,25 @@ public class ShapefileWriter implements JUMPWriter {
 
                     if (a instanceof BigDecimal) {
                         DBFrow.add(((BigDecimal)a).doubleValue());
+                    } else {
+                        DBFrow.add(null);
+                    }
+                } else if ((columnType == AttributeType.STRING)
+                            && (getTypeFromRuleSet(name) instanceof WatergisDefaultRuleSet.Bool)) {
+                    final Object a = feature.getAttribute(u);
+
+                    if (a instanceof Boolean) {
+                        if (((Boolean)a)) {
+                            DBFrow.add(1);
+                        } else {
+                            DBFrow.add(0);
+                        }
+                    } else if (a instanceof String) {
+                        if (String.valueOf(a).equalsIgnoreCase("true")) {
+                            DBFrow.add(1);
+                        } else {
+                            DBFrow.add(0);
+                        }
                     } else {
                         DBFrow.add(null);
                     }

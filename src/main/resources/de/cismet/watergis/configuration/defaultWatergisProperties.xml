@@ -205,7 +205,7 @@
             <crs shortname="WGS 84 - 4326" name="WGS 84 - 4326" code="EPSG:4326" metric="false" selected="false" />
             <crs shortname="ETRS89 MV" name="ETRS89 MV" code="EPSG:35833" metric="true" selected="false" />
         </crsList>
-        <defaultCrs geometrySridAlias="0"/>
+        <defaultCrs geometrySridAlias="5650"/>
         <printing>
             <scale selected="false" denominator="0">frei</scale>
             <scale selected="false" denominator="-1">benutzerdefiniert</scale>

@@ -681,10 +681,19 @@ public class GeometryUtils {
             return unionGeometries(gList, 0, geomList.size() - 1);
         }
 
+//        public static Geometry unionGeometries(final List<Geometry> geom, final int from, final int to) {
+//            if (to == from) {
+//                return geom.get(from);
+//            } else {
+//                final Geometry g1 = unionGeometries(geom, from, from + ((to - from) / 2));
+//                final Geometry g2 = unionGeometries(geom, from + ((to - from) / 2) + 1, to);
+//
+//                return g1.union(g2);
+//            }
+//        }
+
         /**
-         * public static Geometry unionGeometries(final List<Geometry> geom, final int from, final int to) { if (to ==
-         * from) { return geom.get(from); } else { final Geometry g1 = unionGeometries(geom, from, from + ((to - from) /
-         * 2)); final Geometry g2 = unionGeometries(geom, from + ((to - from) / 2) + 1, to); return g1.union(g2); } }.
+         * DOCUMENT ME!
          *
          * @param   geomList  DOCUMENT ME!
          * @param   from      DOCUMENT ME!

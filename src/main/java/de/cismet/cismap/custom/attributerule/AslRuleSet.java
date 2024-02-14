@@ -44,10 +44,10 @@ public class AslRuleSet extends WatergisDefaultRuleSet {
     {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("szenario", new Varchar(100, false, true));
-        typeMap.put("plan", new BooleanAsInteger(false, true));
-        typeMap.put("ist", new BooleanAsInteger(false, true));
+        typeMap.put("plan", new Bool(false, true));
+        typeMap.put("ist", new Bool(false, true));
         typeMap.put("qp_id", new Numeric(10, 0, false, true));
-        typeMap.put("obsolet", new BooleanAsInteger(false, true));
+        typeMap.put("obsolet", new Bool(false, true));
         typeMap.put("bemerkung", new Varchar(255, false, true));
         typeMap.put("ba_gn", new Varchar(100, false, true));
         typeMap.put("m_traeger", new Catalogue("k_m_traeger", false, true, new Varchar(2, false, false)));
@@ -65,7 +65,7 @@ public class AslRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("id") && !!columnName.equals("flaeche");
+                    && !columnName.equals("geom") && !columnName.equals("id") && !columnName.equals("flaeche");
     }
 
     @Override
