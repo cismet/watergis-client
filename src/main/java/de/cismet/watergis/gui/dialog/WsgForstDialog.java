@@ -219,8 +219,10 @@ public class WsgForstDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labGes,
-            org.openide.util.NbBundle.getMessage(WsgForstDialog.class, "WsgForstDialog.labGes.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WsgForstDialog.class,
+                "WsgForstDialog.labGes.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -230,8 +232,10 @@ public class WsgForstDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labLand,
-            org.openide.util.NbBundle.getMessage(WsgForstDialog.class, "WsgForstDialog.labLand.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WsgForstDialog.class,
+                "WsgForstDialog.labLand.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -241,8 +245,10 @@ public class WsgForstDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labHolz,
-            org.openide.util.NbBundle.getMessage(WsgForstDialog.class, "WsgForstDialog.labHolz.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WsgForstDialog.class,
+                "WsgForstDialog.labHolz.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
@@ -265,8 +271,10 @@ public class WsgForstDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labFoot,
-            org.openide.util.NbBundle.getMessage(WsgForstDialog.class, "WsgForstDialog.labFoot.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WsgForstDialog.class,
+                "WsgForstDialog.labFoot.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
@@ -446,7 +454,7 @@ public class WsgForstDialog extends javax.swing.JDialog {
      *
      * @param  evt  DOCUMENT ME!
      */
-    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butOkActionPerformed
+    private void butOkActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOkActionPerformed
         setVisible(false);
-    }//GEN-LAST:event_butOkActionPerformed
+    }                                                                         //GEN-LAST:event_butOkActionPerformed
 }
