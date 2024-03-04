@@ -598,6 +598,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private javax.swing.JMenuItem mniPrintPhoto;
     private javax.swing.JMenuItem mniPrintQp;
     private javax.swing.JMenuItem mniRechtsgrundlage;
+    private javax.swing.JMenuItem mniRechtsgrundlage1;
     private javax.swing.JMenuItem mniRefreshDbUser;
     private javax.swing.JMenuItem mniRemoveDrawing;
     private javax.swing.JMenuItem mniRemoveSelection;
@@ -726,6 +727,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
     private de.cismet.watergis.gui.actions.WindowAction windowAction;
     private de.cismet.watergis.gui.actions.reports.WkFgReportAction wkFgReportAction;
     private de.cismet.watergis.gui.actions.reports.WsgAction wsgAction1;
+    private de.cismet.watergis.gui.actions.reports.WsgWaldAction wsgWaldAction1;
     private de.cismet.watergis.gui.actions.selection.ZoomAllDrawingsAction zoomAllDrawingsAction;
     private de.cismet.watergis.gui.actions.map.ZoomInAction zoomInAction;
     private de.cismet.watergis.gui.actions.map.ZoomModeAction zoomModeAction;
@@ -2663,6 +2665,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         wsgAction1 = new de.cismet.watergis.gui.actions.reports.WsgAction();
         rechtsgrundlageAction1 = new de.cismet.watergis.gui.actions.reports.RechtsgrundlageAction();
         refreshViewsForUser1 = new de.cismet.watergis.gui.actions.RefreshViewsForUser();
+        wsgWaldAction1 = new de.cismet.watergis.gui.actions.reports.WsgWaldAction();
         tobDLM25W = new javax.swing.JToolBar();
         cmdOpenProject = new javax.swing.JButton();
         cmdSaveSameFileProject = new javax.swing.JButton();
@@ -2838,6 +2841,7 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         menWsg = new javax.swing.JMenu();
         mniFlNu = new javax.swing.JMenuItem();
         mniRechtsgrundlage = new javax.swing.JMenuItem();
+        mniRechtsgrundlage1 = new javax.swing.JMenuItem();
         menPhoto = new javax.swing.JMenu();
         mniUpload = new javax.swing.JMenuItem();
         mniPhotoInfo = new javax.swing.JMenuItem();
@@ -4086,10 +4090,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGewaesser.setAction(gewaesserReportAction);
         org.openide.awt.Mnemonics.setLocalizedText(
             mniGewaesser,
-            org.openide.util.NbBundle.getMessage(
-                WatergisApp.class,
-                "WatergisApp.mniGewaesser.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniGewaesser.text", new Object[] {
+                }));               // NOI18N
         mniGewaesser.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniGewaesser.toolTipText",
@@ -4248,6 +4250,19 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                 "WatergisApp.mniRechtsgrundlage.toolTipText",
                 new Object[] {})); // NOI18N
         menWsg.add(mniRechtsgrundlage);
+
+        mniRechtsgrundlage1.setAction(wsgWaldAction1);
+        org.openide.awt.Mnemonics.setLocalizedText(
+            mniRechtsgrundlage1,
+            org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniRechtsgrundlage1.text",
+                new Object[] {})); // NOI18N
+        mniRechtsgrundlage1.setToolTipText(org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniRechtsgrundlage1.toolTipText",
+                new Object[] {})); // NOI18N
+        menWsg.add(mniRechtsgrundlage1);
 
         menReport.add(menWsg);
 
