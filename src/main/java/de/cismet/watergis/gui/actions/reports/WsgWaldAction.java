@@ -158,7 +158,7 @@ public class WsgWaldAction extends AbstractAction {
                                         .getMappingModel();
                             final MetaClass wsgMc = ClassCacheMultiple.getMetaClass(
                                     AppBroker.DOMAIN_NAME,
-                                    "dlm25w.wr_sg_wsg_fn");
+                                    "dlm25w.wr_sg_wsg_forst");
                             final CidsLayer layer = new CidsLayer(wsgMc);
 
                             model.removeLayer(layer);
