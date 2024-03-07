@@ -13,21 +13,13 @@ package de.cismet.cismap.custom.attributerule;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import org.deegree.datatypes.Types;
-
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
 
-import de.cismet.cismap.cidslayer.CidsLayerFeature;
-import de.cismet.cismap.cidslayer.CidsLayerReferencedComboEditor;
-
 import de.cismet.cismap.commons.features.FeatureServiceFeature;
-import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.gui.attributetable.FeatureCreator;
 import de.cismet.cismap.commons.gui.attributetable.creator.PrimitiveGeometryCreator;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface;
-
-import de.cismet.watergis.utils.AbstractCidsLayerListCellRenderer;
 
 import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.MIN_AREA_SIZE;
 
@@ -65,31 +57,14 @@ public class AslRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isColumnEditable(final String columnName) {
         return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
-                    && !columnName.equals("geom") && !columnName.equals("id") && !columnName.equals("flaeche");
+                    && !columnName.equals("geom") && !columnName.equals("id") && !columnName.equals("flaeche")
+                    && !columnName.equals("ba_gn") && !columnName.equals("m_traeger") && !columnName.equals("abschnitt")
+                    && !columnName.equals("jahr") && !columnName.equals("m_software") && !columnName.equals("m_dim");
     }
 
     @Override
     public TableCellEditor getCellEditor(final String columnName) {
-        if (columnName.equals("m_traeger")) {
-            final CidsLayerReferencedComboEditor editor = new CidsLayerReferencedComboEditor(
-                    new FeatureServiceAttribute(
-                        "m_traeger",
-                        String.valueOf(Types.VARCHAR),
-                        true));
-            editor.setNullable(true);
-
-            editor.setListRenderer(new AbstractCidsLayerListCellRenderer() {
-
-                    @Override
-                    protected String toString(final CidsLayerFeature bean) {
-                        return (String)bean.getProperty("traeger");
-                    }
-                });
-
-            return editor;
-        } else {
-            return super.getCellEditor(columnName);
-        }
+        return super.getCellEditor(columnName);
     }
 
     @Override
