@@ -106,7 +106,7 @@ public class AslRuleSet extends WatergisDefaultRuleSet {
     @Override
     public String getAdditionalFieldFormula(final String propertyName) {
         if (propertyName.equals("flaeche")) {
-            return "round(st_area(geom))";
+            return "round(st_area(dlm25w.asl.geom))";
         } else {
             return null;
         }
