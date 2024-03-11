@@ -953,10 +953,12 @@ public class ShapefileWriter implements JUMPWriter {
         for (final Iterator i = fc.iterator(); i.hasNext();) {
             f = (Feature)i.next();
             // patch from Hisaji Ono for Double byte characters
-            l = f.getString(attributeNumber).getBytes().length;
+            if (f.getString(attributeNumber) != null) {
+                l = f.getString(attributeNumber).getBytes().length;
 
-            if (l > maxlen) {
-                maxlen = l;
+                if (l > maxlen) {
+                    maxlen = l;
+                }
             }
         }
 
