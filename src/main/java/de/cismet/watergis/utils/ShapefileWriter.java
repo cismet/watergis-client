@@ -736,8 +736,7 @@ public class ShapefileWriter implements JUMPWriter {
                         final int index = nameToIndex.get(name);
                         if (fields[index].fieldnumdec > 0) {
                             final BigDecimal bd = new BigDecimal((Double)a);
-                            final Double d = bd.round(new MathContext(fields[index].fieldnumdec, RoundingMode.HALF_UP))
-                                        .doubleValue();
+                            final Double d = bd.setScale(fields[index].fieldnumdec, RoundingMode.HALF_UP).doubleValue();
                             DBFrow.add(d);
                         } else {
                             final long val = Math.round((Double)a);

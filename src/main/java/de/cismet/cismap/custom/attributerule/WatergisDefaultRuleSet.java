@@ -437,7 +437,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
     protected static Double round(final double value, final int digits) {
         final BigDecimal bd = new BigDecimal(value);
 
-        return bd.round(new MathContext(digits, RoundingMode.HALF_UP)).doubleValue();
+        return bd.setScale(digits, RoundingMode.HALF_UP).doubleValue();
     }
 
     /**
@@ -3596,7 +3596,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
         @Override
         public boolean accept(final CidsLayerFeature bean) {
-            return (bean != null) && (bean.getProperty("praefix") != null);
+            return (bean != null); // && (bean.getProperty("praefix") != null);
         }
     }
 
