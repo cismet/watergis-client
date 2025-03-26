@@ -167,8 +167,10 @@ public class WsgRechtDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labAnz,
-            org.openide.util.NbBundle.getMessage(WsgRechtDialog.class, "WsgRechtDialog.labAnz.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WsgRechtDialog.class,
+                "WsgRechtDialog.labAnz.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -201,8 +203,10 @@ public class WsgRechtDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labWsg,
-            org.openide.util.NbBundle.getMessage(WsgRechtDialog.class, "WsgRechtDialog.labWsg.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WsgRechtDialog.class,
+                "WsgRechtDialog.labWsg.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -212,8 +216,10 @@ public class WsgRechtDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labDdr,
-            org.openide.util.NbBundle.getMessage(WsgRechtDialog.class, "WsgRechtDialog.labDdr.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WsgRechtDialog.class,
+                "WsgRechtDialog.labDdr.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
@@ -223,8 +229,10 @@ public class WsgRechtDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labBrd,
-            org.openide.util.NbBundle.getMessage(WsgRechtDialog.class, "WsgRechtDialog.labBrd.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WsgRechtDialog.class,
+                "WsgRechtDialog.labBrd.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
@@ -235,8 +243,10 @@ public class WsgRechtDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             labFoot,
-            org.openide.util.NbBundle.getMessage(WsgRechtDialog.class, "WsgRechtDialog.labFoot.text", new Object[] {
-                })); // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WsgRechtDialog.class,
+                "WsgRechtDialog.labFoot.text",
+                new Object[] {})); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;

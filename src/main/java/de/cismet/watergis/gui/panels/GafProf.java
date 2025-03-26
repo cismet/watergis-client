@@ -148,14 +148,22 @@ public class GafProf extends javax.swing.JPanel {
 
     //~ Static fields/initializers ---------------------------------------------
 
-    private static final CidsLayer ppLayer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                AppBroker.DOMAIN_NAME,
-                "dlm25w.qp_gaf_pp"));
+    private static CidsLayer ppLayer = null;
     private static int idCounter = -1;
     private static final String FILE_PROTOCOL_PREFIX = "file://";
     private static final Logger LOG = Logger.getLogger(GafProf.class);
     private static final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
     public static CidsLayerFeature selectedFeature = null;
+
+    static {
+        final MetaClass mc = ClassCacheMultiple.getMetaClass(
+                AppBroker.DOMAIN_NAME,
+                "dlm25w.qp_gaf_pp");
+
+        if (mc != null) {
+            ppLayer = new CidsLayer(mc);
+        }
+    }
 
     //~ Instance fields --------------------------------------------------------
 
