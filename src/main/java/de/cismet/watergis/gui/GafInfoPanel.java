@@ -12,6 +12,8 @@
  */
 package de.cismet.watergis.gui;
 
+import Sirius.server.middleware.types.MetaClass;
+
 import org.apache.log4j.Logger;
 
 import java.awt.CardLayout;
@@ -66,11 +68,19 @@ public class GafInfoPanel extends javax.swing.JPanel {
     //~ Static fields/initializers ---------------------------------------------
 
     private static final Logger LOG = Logger.getLogger(GafInfoPanel.class);
-    private static final CidsLayer ppLayer = new CidsLayer(ClassCacheMultiple.getMetaClass(
-                AppBroker.DOMAIN_NAME,
-                "dlm25w.qp_pkte"));
+    private static CidsLayer ppLayer = null;
     private static final int IMAGE_HEIGHT = 200;
     private static final int IMAGE_WIDTH = 400;
+
+    static {
+        final MetaClass mc = ClassCacheMultiple.getMetaClass(
+                AppBroker.DOMAIN_NAME,
+                "dlm25w.qp_pkte");
+
+        if (mc != null) {
+            ppLayer = new CidsLayer(mc);
+        }
+    }
 
     //~ Instance fields --------------------------------------------------------
 

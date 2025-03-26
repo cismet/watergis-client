@@ -494,14 +494,12 @@ public class KatasterSbReport {
                         gew));
                 feature.put(
                     "ben_a",
-                    getCountPointObjectsBySb(
-                        AllPunktObjects.Table.wr_wbu_ben,
+                    getCountPointObjectsBySb(AllPunktObjects.Table.wr_wbu_ben,
                         sb,
                         gew));
                 feature.put(
                     "aus_a",
-                    getCountPointObjectsBySb(
-                        AllPunktObjects.Table.wr_wbu_aus,
+                    getCountPointObjectsBySb(AllPunktObjects.Table.wr_wbu_aus,
                         sb,
                         gew));
                 feature.put(
@@ -828,16 +826,16 @@ public class KatasterSbReport {
      * @throws  Exception  DOCUMENT ME!
      */
     private FeatureDataSource getGuWidmung() throws Exception {
-        final List<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> features = new ArrayList<>();
 
         sheetNames.add("GU");
-        final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> featureListKum = new ArrayList<>();
 
         for (final String guName : getGu()) {
-            final List<Map<String, Object>> featureListGuKum = new ArrayList<Map<String, Object>>();
+            final List<Map<String, Object>> featureListGuKum = new ArrayList<>();
 
             for (final Integer wdm : getWidmung(guName)) {
-                final Map<String, Object> feature = new HashMap<String, Object>();
+                final Map<String, Object> feature = new HashMap<>();
                 feature.put("anzahlGu", getCountGu());
                 feature.put("gu", getGuId(guName));
                 feature.put("guName", guName); // abhaengig vom Gewaesser. Nicht vom GU
@@ -886,14 +884,12 @@ public class KatasterSbReport {
                         wdm));
                 feature.put(
                     "ben_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.wr_wbu_ben,
+                    getCountPointObjects(AllPunktObjects.Table.wr_wbu_ben,
                         guName,
                         wdm));
                 feature.put(
                     "aus_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.wr_wbu_aus,
+                    getCountPointObjects(AllPunktObjects.Table.wr_wbu_aus,
                         guName,
                         wdm));
                 feature.put(

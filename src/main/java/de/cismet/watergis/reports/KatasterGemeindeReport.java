@@ -1275,14 +1275,12 @@ public class KatasterGemeindeReport {
                             wdm));
                     feature.put(
                         "ben_a",
-                        getCountPointObjects(
-                            AllPunktObjects.Table.wr_wbu_ben,
+                        getCountPointObjects(AllPunktObjects.Table.wr_wbu_ben,
                             gem,
                             wdm));
                     feature.put(
                         "aus_a",
-                        getCountPointObjects(
-                            AllPunktObjects.Table.wr_wbu_aus,
+                        getCountPointObjects(AllPunktObjects.Table.wr_wbu_aus,
                             gem,
                             wdm));
                     feature.put(
@@ -1724,14 +1722,12 @@ public class KatasterGemeindeReport {
                             wdm)));
                 feature.put(
                     "ben_a",
-                    toNullIfZero(getCountPointObjects(
-                            AllPunktObjects.Table.wr_wbu_ben,
+                    toNullIfZero(getCountPointObjects(AllPunktObjects.Table.wr_wbu_ben,
                             guName,
                             wdm)));
                 feature.put(
                     "aus_a",
-                    toNullIfZero(getCountPointObjects(
-                            AllPunktObjects.Table.wr_wbu_aus,
+                    toNullIfZero(getCountPointObjects(AllPunktObjects.Table.wr_wbu_aus,
                             guName,
                             wdm)));
                 feature.put(
