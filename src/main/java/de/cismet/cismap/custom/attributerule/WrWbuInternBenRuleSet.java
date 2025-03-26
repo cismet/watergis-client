@@ -11,12 +11,17 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
+import Sirius.navigator.connection.SessionManager;
+
 import Sirius.server.middleware.types.MetaClass;
+import Sirius.server.newuser.User;
 
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import java.sql.Timestamp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +45,15 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 
+import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.hasAccessToProtectedWbbl;
+
 /**
  * DOCUMENT ME!
  *
  * @author   therter
  * @version  $Revision$, $Date$
  */
-public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
+public class WrWbuInternBenRuleSet extends WatergisDefaultRuleSet {
 
     //~ Static fields/initializers ---------------------------------------------
 
@@ -54,7 +61,7 @@ public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
     private static final String URL_TEMPLATE_PUBLIC =
         "https://fis-wasser-mv.de/kvwmap/index.php?gast=37&go=Layer-Suche_Suchen&selected_layer_id=1118&value_wbbl_id=%1s&operator_wbbl_id==";
     private static final String URL_TEMPLATE_INTERN =
-        "https://fis-wasser-mv.de/kvwmap/index.php?Stelle_ID=1066&go=Layer-Suche_Suchen&selected_layer_id=232&value_wbbl_id=%1s&operator_wbbl_id==";
+        "https://fis-wasser-mv.de/kvwmap/index.php?gast=37&go=Layer-Suche_Suchen&selected_layer_id=1117&value_wbbl_id=%1s&operator_wbbl_id==";
 
     //~ Instance initializers --------------------------------------------------
 
@@ -67,9 +74,12 @@ public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("wbbl", new WbblLink(getWbblPath(), 10, true, true));
         typeMap.put("wbaktzei", new Varchar(75, false, true));
         typeMap.put("wbbehakt", new Varchar(65, false, true));
-        typeMap.put("wbbescheid", new Varchar(75, false, true));
-        typeMap.put("wbausbau1", new Varchar(75, false, true));
-        typeMap.put("wbausbau2", new Varchar(75, false, true));
+        typeMap.put("wbbenart1", new Varchar(75, false, true));
+        typeMap.put("wbbenart2", new Varchar(75, false, true));
+        typeMap.put("wbbenzw1", new Varchar(75, false, true));
+        typeMap.put("wbbenzw2", new Varchar(75, false, true));
+        typeMap.put("wbbenzweck", new Numeric(4, 0, false, true));
+        typeMap.put("wbbengew", new Varchar(50, false, true));
         typeMap.put("fis_g_date", new DateTime(false, false));
         typeMap.put("fis_g_user", new Varchar(50, false, false));
     }
@@ -117,8 +127,9 @@ public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
 
     @Override
     public boolean isColumnEditable(final String columnName) {
-        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date") && !columnName.equals("id")
-                    && !columnName.equals("geom") && !columnName.equals("la_cd") && !columnName.equals("la_st");
+        return !columnName.equals("fis_g_user") && !columnName.equals("fis_g_date")
+                    && !columnName.equals("geom") && !columnName.equals("id") && !columnName.equals("la_cd")
+                    && !columnName.equals("la_st");
     }
 
     @Override
@@ -195,7 +206,6 @@ public class WrWbuAusRuleSet extends WatergisDefaultRuleSet {
             newFeature.removeProperty("ba_st");
             newFeature.removeProperty("la_cd");
             newFeature.removeProperty("la_st");
-            newFeature.removeProperty("wbausbau2");
             featureList.add(newFeature);
         }
 

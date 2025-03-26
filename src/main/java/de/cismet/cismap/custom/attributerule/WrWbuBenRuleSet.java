@@ -11,13 +11,14 @@
  */
 package de.cismet.cismap.custom.attributerule;
 
-import Sirius.navigator.connection.SessionManager;
-
 import Sirius.server.middleware.types.MetaClass;
-import Sirius.server.newuser.User;
 
-import java.sql.Timestamp;
+import org.apache.log4j.Logger;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.TableCellEditor;
@@ -39,6 +40,8 @@ import de.cismet.watergis.broker.AppBroker;
 
 import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
 
+import static de.cismet.cismap.custom.attributerule.WatergisDefaultRuleSet.hasAccessToProtectedWbbl;
+
 /**
  * DOCUMENT ME!
  *
@@ -46,6 +49,14 @@ import de.cismet.watergis.utils.LinearReferencingWatergisHelper;
  * @version  $Revision$, $Date$
  */
 public class WrWbuBenRuleSet extends WatergisDefaultRuleSet {
+
+    //~ Static fields/initializers ---------------------------------------------
+
+    private static final Logger LOG = Logger.getLogger(WrWbuAusRuleSet.class);
+    private static final String URL_TEMPLATE_PUBLIC =
+        "https://fis-wasser-mv.de/kvwmap/index.php?gast=37&go=Layer-Suche_Suchen&selected_layer_id=1118&value_wbbl_id=%1s&operator_wbbl_id==";
+    private static final String URL_TEMPLATE_INTERN =
+        "https://fis-wasser-mv.de/kvwmap/index.php?gast=37&go=Layer-Suche_Suchen&selected_layer_id=1117&value_wbbl_id=%1s&operator_wbbl_id==";
 
     //~ Instance initializers --------------------------------------------------
 
@@ -156,8 +167,21 @@ public class WrWbuBenRuleSet extends WatergisDefaultRuleSet {
             final Object value,
             final int clickCount) {
         if (columnName.equals("wbbl")) {
-            if ((value instanceof String) && (clickCount == 1)) {
-                downloadDocumentFromWebDav(getWbblPath(), addExtension(value.toString(), "pdf"));
+            if ((value != null) && (clickCount == 1)) {
+                final String urlTemplate = (hasAccessToProtectedWbbl() ? URL_TEMPLATE_INTERN : URL_TEMPLATE_PUBLIC);
+                final String wbbl = String.valueOf(value);
+
+                try {
+                    final URL u = new URL(String.format(urlTemplate, wbbl.toString()));
+
+                    try {
+                        de.cismet.tools.BrowserLauncher.openURL(u.toString());
+                    } catch (Exception ex) {
+                        LOG.error("Cannot open the url:" + u, ex);
+                    }
+                } catch (MalformedURLException ex) {
+                    // nothing to do
+                }
             }
         }
     }
@@ -165,5 +189,21 @@ public class WrWbuBenRuleSet extends WatergisDefaultRuleSet {
     @Override
     public boolean isCatThree() {
         return true;
+    }
+
+    @Override
+    public FeatureServiceFeature[] prepareFeaturesForExport(final FeatureServiceFeature[] features) {
+        final List<FeatureServiceFeature> featureList = new ArrayList<FeatureServiceFeature>();
+
+        for (final FeatureServiceFeature f : features) {
+            final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
+            newFeature.removeProperty("ba_cd");
+            newFeature.removeProperty("ba_st");
+            newFeature.removeProperty("la_cd");
+            newFeature.removeProperty("la_st");
+            featureList.add(newFeature);
+        }
+
+        return featureList.toArray(new FeatureServiceFeature[featureList.size()]);
     }
 }

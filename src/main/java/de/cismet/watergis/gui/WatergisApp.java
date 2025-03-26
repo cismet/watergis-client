@@ -63,6 +63,10 @@ import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
@@ -1457,27 +1461,16 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
      * DOCUMENT ME!
      */
     private static void initLog4J() {
-        try {
-            PropertyConfigurator.configure(WatergisApp.class.getResource(
-                    "/de/cismet/watergis/configuration/log4j.properties"));
+        try(final InputStream configStream = WatergisApp.class.getResourceAsStream(
+                            "/de/cismet/watergis/configuration/log4j.xml")) {
+            final ConfigurationSource source = new ConfigurationSource(configStream);
+            final LoggerContext context = (LoggerContext)LogManager.getContext(false);
+            context.start(new XmlConfiguration(context, source)); // Apply new configuration
             LOG.info("Log4J System was configured successfully");
         } catch (Exception ex) {
             System.err.println("Error during the initialisation");
             ex.printStackTrace();
         }
-//        p.put("log4j.appender.File", "org.apache.log4j.FileAppender");                              // NOI18N
-//        p.put("log4j.appender.File.file", DIRECTORYPATH_WATERGIS + FILESEPARATOR + "watergis.log"); // NOI18N
-//        p.put("log4j.appender.File.layout", "org.apache.log4j.xml.XMLLayout");                      // NOI18N
-//        p.put("log4j.appender.File.append", "false");                                               // NOI18N
-//        p.put("log4j.rootLogger", "WARN,File");                                                     // NOI18N
-//        final Properties p = new Properties();
-//        p.put("log4j.appender.Remote", "org.apache.log4j.net.SocketAppender"); // NOI18N
-//        p.put("log4j.appender.Remote.remoteHost", "localhost");                // NOI18N
-//        p.put("log4j.appender.Remote.port", "4445");                           // NOI18N
-//        p.put("log4j.appender.Remote.locationInfo", "true");                   // NOI18N
-//        p.put("log4j.rootLogger", "WARN,Remote");                              // NOI18N
-//        org.apache.log4j.PropertyConfigurator.configure(p);
-//        Log4JQuickConfig.configure4LumbermillOnLocalhost();
     }
 
     /**
@@ -4090,8 +4083,10 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGewaesser.setAction(gewaesserReportAction);
         org.openide.awt.Mnemonics.setLocalizedText(
             mniGewaesser,
-            org.openide.util.NbBundle.getMessage(WatergisApp.class, "WatergisApp.mniGewaesser.text", new Object[] {
-                }));               // NOI18N
+            org.openide.util.NbBundle.getMessage(
+                WatergisApp.class,
+                "WatergisApp.mniGewaesser.text",
+                new Object[] {})); // NOI18N
         mniGewaesser.setToolTipText(org.openide.util.NbBundle.getMessage(
                 WatergisApp.class,
                 "WatergisApp.mniGewaesser.toolTipText",
@@ -5844,10 +5839,6 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
                     String query = null;
 
                     if (hasArrayValue(attributeNames, "ww_gr") && (afs instanceof CidsLayer)) {
-                        if (AppBroker.getInstance().isGu()) {
-                            query = "dlm25wPk_ww_gr1.wdm = '" + AppBroker.getInstance().getOwner() + "'";
-                        }
-
                         if (!ThemeExportDialog.getInstance().has1501() || !ThemeExportDialog.getInstance().has1502()
                                     || !ThemeExportDialog.getInstance().has1503()
                                     || !ThemeExportDialog.getInstance().has1504()

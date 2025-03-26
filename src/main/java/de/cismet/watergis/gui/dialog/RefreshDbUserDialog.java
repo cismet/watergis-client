@@ -26,13 +26,20 @@ import Sirius.server.newuser.User;
 
 import org.apache.log4j.Logger;
 
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 
 import java.awt.EventQueue;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -87,6 +94,7 @@ public class RefreshDbUserDialog extends javax.swing.JDialog {
     private javax.swing.ButtonGroup bgBuffer;
     private javax.swing.JButton butCancel;
     private javax.swing.JButton butOk;
+    private javax.swing.JButton butOk1;
     private javax.swing.JComboBox cbUserGroup;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JPanel jPanel1;
@@ -110,6 +118,11 @@ public class RefreshDbUserDialog extends javax.swing.JDialog {
     public RefreshDbUserDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
+
+        final File file = new File(System.getProperty("user.home") + System.getProperty("file.separator")
+                        + ".ro_schemas.txt");
+
+        butOk1.setVisible(file.exists());
 
         setLayerModel();
         enabledOrNot();
@@ -136,6 +149,7 @@ public class RefreshDbUserDialog extends javax.swing.JDialog {
         butOk = new javax.swing.JButton();
         butCancel = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        butOk1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         labTableName2 = new javax.swing.JLabel();
         txtDBSchema = new javax.swing.JTextField();
@@ -259,9 +273,32 @@ public class RefreshDbUserDialog extends javax.swing.JDialog {
         jPanel1.add(butCancel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.weightx = 1.0;
         jPanel1.add(jPanel2, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(
+            butOk1,
+            org.openide.util.NbBundle.getMessage(
+                RefreshDbUserDialog.class,
+                "RefreshDbUserDialog.butOk1.text",
+                new Object[] {})); // NOI18N
+        butOk1.setMinimumSize(new java.awt.Dimension(80, 29));
+        butOk1.setPreferredSize(new java.awt.Dimension(120, 29));
+        butOk1.addActionListener(new java.awt.event.ActionListener() {
+
+                @Override
+                public void actionPerformed(final java.awt.event.ActionEvent evt) {
+                    butOk1ActionPerformed(evt);
+                }
+            });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(15, 10, 15, 10);
+        jPanel1.add(butOk1, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -342,6 +379,105 @@ public class RefreshDbUserDialog extends javax.swing.JDialog {
             return;
         }
 
+        start(userGroup, dbUser, schema);
+    } //GEN-LAST:event_butOkActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void cbUserGroupActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbUserGroupActionPerformed
+        EventQueue.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    enabledOrNot();
+                }
+            });
+    } //GEN-LAST:event_cbUserGroupActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtDbUserKeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtDbUserKeyTyped
+        EventQueue.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    enabledOrNot();
+                }
+            });
+    } //GEN-LAST:event_txtDbUserKeyTyped
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void txtDBSchemaKeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtDBSchemaKeyTyped
+        enabledOrNot();
+    }                                                                     //GEN-LAST:event_txtDBSchemaKeyTyped
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  evt  DOCUMENT ME!
+     */
+    private void butOk1ActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_butOk1ActionPerformed
+        BufferedReader br = null;
+
+        try {
+            final File file = new File(System.getProperty("user.home") + System.getProperty("file.separator")
+                            + ".ro_schemas.txt");
+            br = new BufferedReader(new FileReader(file));
+            String tmp;
+
+            while ((tmp = br.readLine()) != null) {
+                if (!tmp.startsWith("#") && !tmp.equals("") && tmp.contains(";")) {
+                    final StringTokenizer st = new StringTokenizer(tmp, ";");
+                    String userGroup;
+                    String dbUser;
+                    String schema;
+
+                    if (st.countTokens() == 2) {
+                        userGroup = st.nextToken();
+                        dbUser = st.nextToken();
+                        schema = dbUser;
+                    } else if (st.countTokens() == 3) {
+                        userGroup = st.nextToken();
+                        dbUser = st.nextToken();
+                        schema = st.nextToken();
+                    } else {
+                        continue;
+                    }
+
+                    start(userGroup, dbUser, schema);
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Erro while refreshing schemas", e);
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException ex) {
+                    // nothing to do
+                }
+            }
+        }
+    } //GEN-LAST:event_butOk1ActionPerformed
+
+    /**
+     * DOCUMENT ME!
+     *
+     * @param  userGroup  DOCUMENT ME!
+     * @param  dbUser     DOCUMENT ME!
+     * @param  schema     DOCUMENT ME!
+     */
+    private void start(final String userGroup, final String dbUser, final String schema) {
         if (ActionHelper.isInvalidSchemaName(schema)) {
             JOptionPane.showMessageDialog(
                 RefreshDbUserDialog.this,
@@ -463,7 +599,11 @@ public class RefreshDbUserDialog extends javax.swing.JDialog {
                                 continue;
                             }
 
-                            DbUserDialog.createView(clazz, schema, dbUser, session.getUser());
+                            errorMessage = DbUserDialog.createView(clazz, schema, dbUser, session.getUser());
+
+                            if (errorMessage != null) {
+                                return errorMessage;
+                            }
                         }
                     } else {
                         return NbBundle.getMessage(
@@ -503,46 +643,7 @@ public class RefreshDbUserDialog extends javax.swing.JDialog {
 
         this.setVisible(false);
         wdt.start();
-    } //GEN-LAST:event_butOkActionPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
-    private void cbUserGroupActionPerformed(final java.awt.event.ActionEvent evt) { //GEN-FIRST:event_cbUserGroupActionPerformed
-        EventQueue.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    enabledOrNot();
-                }
-            });
-    } //GEN-LAST:event_cbUserGroupActionPerformed
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
-    private void txtDbUserKeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtDbUserKeyTyped
-        EventQueue.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    enabledOrNot();
-                }
-            });
-    } //GEN-LAST:event_txtDbUserKeyTyped
-
-    /**
-     * DOCUMENT ME!
-     *
-     * @param  evt  DOCUMENT ME!
-     */
-    private void txtDBSchemaKeyTyped(final java.awt.event.KeyEvent evt) { //GEN-FIRST:event_txtDBSchemaKeyTyped
-        enabledOrNot();
-    }                                                                     //GEN-LAST:event_txtDBSchemaKeyTyped
+    }
 
     /**
      * DOCUMENT ME!

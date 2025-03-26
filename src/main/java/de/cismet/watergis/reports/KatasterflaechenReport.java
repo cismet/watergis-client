@@ -869,13 +869,13 @@ public class KatasterflaechenReport {
      * @throws  Exception  DOCUMENT ME!
      */
     private FeatureDataSource getGewaesserGu() throws Exception {
-        final List<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> features = new ArrayList<>();
 
         for (final Object gem : flDataMap.keySet()) {
             sheetNames.add("GU " + String.valueOf(flDataMap.get(gem).getAttr2()));
-            final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
+            final List<Map<String, Object>> featureListKum = new ArrayList<>();
             for (final String guName : getGu(gem)) {
-                final Map<String, Object> feature = new HashMap<String, Object>();
+                final Map<String, Object> feature = new HashMap<>();
                 feature.put("gmdName", String.valueOf(flDataMap.get(gem).getAttr2()));
                 feature.put("gmdNummer", String.valueOf(gem));
                 feature.put("anzahlGu", getCountGu(gem));
@@ -960,14 +960,14 @@ public class KatasterflaechenReport {
      * @throws  Exception  DOCUMENT ME!
      */
     private FeatureDataSource getGewaesserGuWidmung() throws Exception {
-        final List<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> features = new ArrayList<>();
 
         for (final Object gem : flDataMap.keySet()) {
             sheetNames.add("GU " + String.valueOf(flDataMap.get(gem).getAttr2()));
-            final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
+            final List<Map<String, Object>> featureListKum = new ArrayList<>();
 
             for (final String guName : getGu(gem)) {
-                final List<Map<String, Object>> featureListGuKum = new ArrayList<Map<String, Object>>();
+                final List<Map<String, Object>> featureListGuKum = new ArrayList<>();
 
                 for (final Integer wdm : getWidmung(gem, guName)) {
                     final Map<String, Object> feature = new HashMap<String, Object>();
@@ -1022,14 +1022,12 @@ public class KatasterflaechenReport {
                             wdm));
                     feature.put(
                         "ben_a",
-                        getCountPointObjects(
-                            AllPunktObjects.Table.wr_wbu_ben,
+                        getCountPointObjects(AllPunktObjects.Table.wr_wbu_ben,
                             gem,
                             wdm));
                     feature.put(
                         "aus_a",
-                        getCountPointObjects(
-                            AllPunktObjects.Table.wr_wbu_aus,
+                        getCountPointObjects(AllPunktObjects.Table.wr_wbu_aus,
                             gem,
                             wdm));
                     feature.put(
@@ -1262,12 +1260,12 @@ public class KatasterflaechenReport {
      * @throws  Exception  DOCUMENT ME!
      */
     private FeatureDataSource getGuTable() throws Exception {
-        final List<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> features = new ArrayList<>();
 
         sheetNames.add("GU");
-        final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> featureListKum = new ArrayList<>();
         for (final String guName : getGu()) {
-            final Map<String, Object> feature = new HashMap<String, Object>();
+            final Map<String, Object> feature = new HashMap<>();
             feature.put("anzahlGu", getCountGu());
             feature.put("group", 1);
             feature.put("gu", getGuId(guName));
@@ -1344,13 +1342,13 @@ public class KatasterflaechenReport {
      * @throws  Exception  DOCUMENT ME!
      */
     private FeatureDataSource getGuWidmung() throws Exception {
-        final List<Map<String, Object>> features = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> features = new ArrayList<>();
 
         sheetNames.add("GU");
-        final List<Map<String, Object>> featureListKum = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> featureListKum = new ArrayList<>();
 
         for (final String guName : getGu()) {
-            final List<Map<String, Object>> featureListGuKum = new ArrayList<Map<String, Object>>();
+            final List<Map<String, Object>> featureListGuKum = new ArrayList<>();
 
             for (final Integer wdm : getWidmung(guName)) {
                 final Map<String, Object> feature = new HashMap<String, Object>();
@@ -1402,14 +1400,12 @@ public class KatasterflaechenReport {
                         wdm));
                 feature.put(
                     "ben_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.wr_wbu_ben,
+                    getCountPointObjects(AllPunktObjects.Table.wr_wbu_ben,
                         guName,
                         wdm));
                 feature.put(
                     "aus_a",
-                    getCountPointObjects(
-                        AllPunktObjects.Table.wr_wbu_aus,
+                    getCountPointObjects(AllPunktObjects.Table.wr_wbu_aus,
                         guName,
                         wdm));
                 feature.put(

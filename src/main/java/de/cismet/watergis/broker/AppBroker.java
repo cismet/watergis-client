@@ -65,7 +65,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -74,9 +73,6 @@ import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
 import javax.swing.event.PopupMenuListener;
 
 import javax.xml.stream.XMLInputFactory;
@@ -107,8 +103,6 @@ import de.cismet.watergis.gui.components.RefreshMenuItem;
 import de.cismet.watergis.gui.recently_opened_files.RecentlyOpenedFilesList;
 
 import de.cismet.watergis.utils.BookmarkManager;
-
-import static de.cismet.cismap.commons.gui.piccolo.eventlistener.CreateGeometryListenerInterface.LINESTRING;
 
 /**
  * DOCUMENT ME!
@@ -808,7 +802,7 @@ public class AppBroker implements Configurable {
             if ((owner != null) && owner.equals(user.getUserGroup().getName())) {
                 final String prefix = (String)bean.getProperty("praefix");
 
-                if (prefix != null) {
+                if ((prefix != null) || ((owner != null) && owner.startsWith("wbv"))) {
                     return true;
                 }
             }
