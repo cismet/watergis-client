@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>de.cismet.watergis</groupId>
                 <artifactId>watergis-server</artifactId>
-                <version>8.3-SNAPSHOT</version>
+                <version>9.0</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
