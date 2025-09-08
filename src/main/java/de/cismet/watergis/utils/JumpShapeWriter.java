@@ -108,7 +108,8 @@ public class JumpShapeWriter implements ShapeWriter {
     public void writeShape(final FeatureServiceFeature[] features,
             final List<String[]> aliasAttributeList,
             final File fileToSaveTo) throws Exception {
-        String charset = Charset.defaultCharset().name();
+//        String charset = Charset.defaultCharset().name();
+        String charset = "UTF-8";
         final String[] charsetString = findCustomCharset(aliasAttributeList);
 
         if (charsetString != null) {

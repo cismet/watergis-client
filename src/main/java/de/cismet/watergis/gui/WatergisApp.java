@@ -159,6 +159,8 @@ import de.cismet.cismap.DrawingManager;
 import de.cismet.cismap.cidslayer.CidsLayer;
 import de.cismet.cismap.cidslayer.CidsLayerFeature;
 
+import de.cismet.cismap.commons.Crs;
+import de.cismet.cismap.commons.CrsTransformer;
 import de.cismet.cismap.commons.ServiceLayer;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.features.DefaultFeatureServiceFeature;
@@ -1034,6 +1036,15 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
             }
         } catch (ConnectionException ex) {
             LOG.error("Cannot check for qp permission", ex);
+        }
+        final List<Crs> crsList = mappingComponent.getCrsList();
+
+        CismapBroker.getInstance().addCrsChangeListener(mappingComponent);
+
+        for (final Crs crs : crsList) {
+            if (crs.getCode().equals(CrsTransformer.createCrsFromSrid(5650))) {
+                CismapBroker.getInstance().setSrs(crs);
+            }
         }
     }
 

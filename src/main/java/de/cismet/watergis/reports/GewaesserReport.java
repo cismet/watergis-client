@@ -539,8 +539,8 @@ public class GewaesserReport {
      */
     private Image generateMap(final CidsLayerFeature feature) {
         try {
-            final String urlBackground = "http://www.geodaten-mv.de/dienste/webatlasde_wms"
-                        + "?REQUEST=GetMap&VERSION=1.1.1&SERVICE=WMS&LAYERS=WebAtlasDE_MV_farbe"
+            final String urlBackground = "https://sgx.geodatenzentrum.de/wms_topplus_open"
+                        + "?REQUEST=GetMap&VERSION=1.1.1&SERVICE=WMS&LAYERS=web_light_grau"
                         + "&BBOX=<cismap:boundingBox>"
                         + "&SRS=EPSG:5650&FORMAT=image/png"
                         + "&WIDTH=<cismap:width>"

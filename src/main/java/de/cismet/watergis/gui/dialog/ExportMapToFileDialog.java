@@ -24,7 +24,6 @@ import java.io.File;
 
 import java.util.concurrent.Future;
 
-import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
@@ -32,14 +31,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
 
 import de.cismet.cismap.commons.HeadlessMapProvider;
 import de.cismet.cismap.commons.XBoundingBox;
 import de.cismet.cismap.commons.gui.MappingComponent;
 import de.cismet.cismap.commons.tools.WorldFileDownload;
 
-import de.cismet.tools.gui.RestrictedFileSystemView;
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.downloadmanager.DownloadManager;
 
@@ -48,8 +45,6 @@ import de.cismet.watergis.broker.ComponentName;
 
 import de.cismet.watergis.download.ImageDownload;
 
-import de.cismet.watergis.gui.WatergisApp;
-import de.cismet.watergis.gui.actions.reports.WkFgReportAction;
 import de.cismet.watergis.gui.components.ValidationJTextField;
 
 /**

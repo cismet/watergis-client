@@ -761,9 +761,46 @@ public class StationDialog extends javax.swing.JDialog {
                             }
 
                             final LengthIndexedLine lil = new LengthIndexedLine(geom);
+                            int lastGeomIndex = 0;
 
                             for (int geomIndex = 0; geomIndex < geom.getLength(); geomIndex = geomIndex + distance) {
                                 final Coordinate coordinate = lil.extractPoint(geomIndex);
+
+                                if (service != null) {
+                                    final JDBCFeature newFeature = (JDBCFeature)service.getFeatureFactory()
+                                                .createNewFeature();
+                                    newFeature.setProperty("stat", geomIndex);
+                                    newFeature.setProperty("stat_km", geomIndex / 1000.0);
+                                    newFeature.setProperty(
+                                        "stat_c",
+                                        ((int)geomIndex / 1000)
+                                                + "+"
+                                                + (geomIndex % 1000));
+                                    newFeature.setGeometry(factory.createPoint(coordinate));
+                                    newFeature.saveChangesWithoutUpdateEnvelope();
+                                } else {
+                                    final FeatureServiceFeature newFeature = (FeatureServiceFeature)f.clone();
+                                    newFeature.setLayerProperties(newLayerProperties);
+                                    newFeature.setGeometry(factory.createPoint(coordinate));
+                                    newFeature.setProperty("stat", geomIndex);
+                                    newFeature.setProperty("stat_km", geomIndex / 1000.0);
+                                    newFeature.setProperty(
+                                        "stat_c",
+                                        ((int)geomIndex / 1000)
+                                                + "+"
+                                                + (geomIndex % 1000));
+                                    resultedFeatures.add(newFeature);
+                                    ++featuresCreated;
+                                }
+
+                                lastGeomIndex = geomIndex;
+                            }
+
+                            // Station auf Endpunkt erstellen
+                            if ((int)geom.getLength() != lastGeomIndex) {
+                                final int geomIndex = (int)geom.getLength();
+                                // use length with decimals
+                                final Coordinate coordinate = lil.extractPoint(geom.getLength());
 
                                 if (service != null) {
                                     final JDBCFeature newFeature = (JDBCFeature)service.getFeatureFactory()

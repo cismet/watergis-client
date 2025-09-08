@@ -118,6 +118,8 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField txtFile;
     // End of variables declaration//GEN-END:variables
 
@@ -248,6 +250,8 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanel8 = new javax.swing.JPanel();
         ckbKarte = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         butOk = new javax.swing.JButton();
@@ -311,6 +315,8 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
                 new Object[] {})); // NOI18N
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
+        jPanel8.setLayout(new java.awt.GridBagLayout());
+
         ckbKarte.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbKarte,
@@ -327,7 +333,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbKarte, gridBagConstraints);
+        jPanel8.add(ckbKarte, gridBagConstraints);
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -391,7 +397,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weighty = 1.0;
-        getContentPane().add(jPanel1, gridBagConstraints);
+        jPanel8.add(jPanel1, gridBagConstraints);
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
@@ -433,12 +439,12 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel3, gridBagConstraints);
+        jPanel8.add(jPanel3, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
-        getContentPane().add(filler1, gridBagConstraints);
+        jPanel8.add(filler1, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel1,
@@ -452,7 +458,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(jLabel1, gridBagConstraints);
+        jPanel8.add(jLabel1, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel2,
@@ -465,7 +471,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
-        getContentPane().add(jLabel2, gridBagConstraints);
+        jPanel8.add(jLabel2, gridBagConstraints);
 
         ckbSelection1.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -481,7 +487,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(ckbSelection1, gridBagConstraints);
+        jPanel8.add(ckbSelection1, gridBagConstraints);
 
         ckbVerkn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -499,7 +505,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbVerkn, gridBagConstraints);
+        jPanel8.add(ckbVerkn, gridBagConstraints);
 
         ckbGwk.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -517,7 +523,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
-        getContentPane().add(ckbGwk, gridBagConstraints);
+        jPanel8.add(ckbGwk, gridBagConstraints);
 
         ckbGbk.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -535,7 +541,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbGbk, gridBagConstraints);
+        jPanel8.add(ckbGbk, gridBagConstraints);
 
         ckbTopo.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -553,7 +559,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbTopo, gridBagConstraints);
+        jPanel8.add(ckbTopo, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel3,
@@ -567,7 +573,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
-        getContentPane().add(jLabel3, gridBagConstraints);
+        jPanel8.add(jLabel3, gridBagConstraints);
 
         ckbWsg.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -585,7 +591,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
-        getContentPane().add(ckbWsg, gridBagConstraints);
+        jPanel8.add(ckbWsg, gridBagConstraints);
 
         ckbSchutzgebiete.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -604,7 +610,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbSchutzgebiete, gridBagConstraints);
+        jPanel8.add(ckbSchutzgebiete, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel4,
@@ -618,7 +624,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
-        getContentPane().add(jLabel4, gridBagConstraints);
+        jPanel8.add(jLabel4, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbDeich,
@@ -635,7 +641,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbDeich, gridBagConstraints);
+        jPanel8.add(ckbDeich, gridBagConstraints);
 
         ckbUghz.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -653,7 +659,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbUghz, gridBagConstraints);
+        jPanel8.add(ckbUghz, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel5,
@@ -667,7 +673,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
-        getContentPane().add(jLabel5, gridBagConstraints);
+        jPanel8.add(jLabel5, gridBagConstraints);
 
         ckbPegel.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -685,7 +691,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbPegel, gridBagConstraints);
+        jPanel8.add(ckbPegel, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel6,
@@ -703,7 +709,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(jLabel6, gridBagConstraints);
+        jPanel8.add(jLabel6, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel7,
@@ -717,7 +723,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
-        getContentPane().add(jLabel7, gridBagConstraints);
+        jPanel8.add(jLabel7, gridBagConstraints);
 
         ckbGmd.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -735,7 +741,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
-        getContentPane().add(ckbGmd, gridBagConstraints);
+        jPanel8.add(ckbGmd, gridBagConstraints);
 
         ckbGb.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -753,7 +759,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbGb, gridBagConstraints);
+        jPanel8.add(ckbGb, gridBagConstraints);
 
         ckbSb.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -771,7 +777,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbSb, gridBagConstraints);
+        jPanel8.add(ckbSb, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel8,
@@ -785,7 +791,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
-        getContentPane().add(jLabel8, gridBagConstraints);
+        jPanel8.add(jLabel8, gridBagConstraints);
 
         ckbProf.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -803,7 +809,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbProf, gridBagConstraints);
+        jPanel8.add(ckbProf, gridBagConstraints);
 
         ckbSbef.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -821,7 +827,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbSbef, gridBagConstraints);
+        jPanel8.add(ckbSbef, gridBagConstraints);
 
         ckbUbef.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -839,7 +845,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbUbef, gridBagConstraints);
+        jPanel8.add(ckbUbef, gridBagConstraints);
 
         ckbBbef.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -857,7 +863,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
-        getContentPane().add(ckbBbef, gridBagConstraints);
+        jPanel8.add(ckbBbef, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel10,
@@ -871,7 +877,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
-        getContentPane().add(jLabel10, gridBagConstraints);
+        jPanel8.add(jLabel10, gridBagConstraints);
 
         ckbRl.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -889,7 +895,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbRl, gridBagConstraints);
+        jPanel8.add(ckbRl, gridBagConstraints);
 
         ckbD.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -907,7 +913,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbD, gridBagConstraints);
+        jPanel8.add(ckbD, gridBagConstraints);
 
         ckbDue.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -925,7 +931,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbDue, gridBagConstraints);
+        jPanel8.add(ckbDue, gridBagConstraints);
 
         ckbScha.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -943,7 +949,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbScha, gridBagConstraints);
+        jPanel8.add(ckbScha, gridBagConstraints);
 
         ckbWehr.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -961,7 +967,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbWehr, gridBagConstraints);
+        jPanel8.add(ckbWehr, gridBagConstraints);
 
         ckbSchw.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -979,7 +985,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbSchw, gridBagConstraints);
+        jPanel8.add(ckbSchw, gridBagConstraints);
 
         ckbAnlp.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -997,7 +1003,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbAnlp, gridBagConstraints);
+        jPanel8.add(ckbAnlp, gridBagConstraints);
 
         ckbAnll.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1015,7 +1021,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbAnll, gridBagConstraints);
+        jPanel8.add(ckbAnll, gridBagConstraints);
 
         ckbKr.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1033,7 +1039,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbKr, gridBagConstraints);
+        jPanel8.add(ckbKr, gridBagConstraints);
 
         ckbEa.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1051,7 +1057,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
-        getContentPane().add(ckbEa, gridBagConstraints);
+        jPanel8.add(ckbEa, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel11,
@@ -1065,7 +1071,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 10, 10);
-        getContentPane().add(jLabel11, gridBagConstraints);
+        jPanel8.add(jLabel11, gridBagConstraints);
 
         ckbFoto.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1083,7 +1089,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbFoto, gridBagConstraints);
+        jPanel8.add(ckbFoto, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbLeis,
@@ -1100,7 +1106,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbLeis, gridBagConstraints);
+        jPanel8.add(ckbLeis, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbTech,
@@ -1117,7 +1123,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbTech, gridBagConstraints);
+        jPanel8.add(ckbTech, gridBagConstraints);
 
         ckbAus.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1135,7 +1141,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 15, 10);
-        getContentPane().add(ckbAus, gridBagConstraints);
+        jPanel8.add(ckbAus, gridBagConstraints);
 
         ckbBen.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -1153,7 +1159,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbBen, gridBagConstraints);
+        jPanel8.add(ckbBen, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbDoku,
@@ -1170,7 +1176,7 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        getContentPane().add(ckbDoku, gridBagConstraints);
+        jPanel8.add(ckbDoku, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbProj,
@@ -1187,7 +1193,15 @@ public class GewaesserReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbProj, gridBagConstraints);
+        jPanel8.add(ckbProj, gridBagConstraints);
+
+        jScrollPane1.setViewportView(jPanel8);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(jScrollPane1, gridBagConstraints);
 
         pack();
     } // </editor-fold>//GEN-END:initComponents
