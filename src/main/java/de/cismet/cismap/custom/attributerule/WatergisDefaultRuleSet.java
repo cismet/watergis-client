@@ -3104,10 +3104,15 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
 
         @Override
         public ValidationResult isValidValue(final Object value) {
-            ValidationResult result = super.isValidValue(value);
+            Object val = value;
 
-            if ((value != null) && !value.equals("") && (result.getValidationResult() == Validation.OK)) {
-                if (!checkDocumentExistenceOnWebDav(wbblPath, addExtension(value.toString(), "pdf"))) {
+            if (value.equals("")) {
+                val = null;
+            }
+            ValidationResult result = super.isValidValue(val);
+
+            if ((val != null) && !val.equals("") && (result.getValidationResult() == Validation.OK)) {
+                if (!checkDocumentExistenceOnWebDav(wbblPath, addExtension(val.toString(), "pdf"))) {
                     result = new ValidationResult(Validation.WBBL_NOT_ACCESSIBLE);
                 }
             }

@@ -209,6 +209,21 @@ public class MergeAction extends AbstractAction {
                                         }
                                     }
 
+                                    try {
+                                        serviceFeature.saveChangesWithoutReload();
+                                    } catch (Exception ex) {
+                                        // When one of the geoemtries is a LineString z and the other a normal
+                                        // LineString, then this code will be executed and the exception will contain
+                                        // the message "can not mix dimensionality in a geometry "
+                                        JOptionPane.showMessageDialog(
+                                            wd,
+                                            ex.getMessage(),
+                                            "Fehler",
+                                            JOptionPane.ERROR_MESSAGE);
+
+                                        return null;
+                                    }
+
                                     for (final Feature f : sortedFeaturesWithoutMaster) {
                                         if (f instanceof ModifiableFeature) {
                                             final AttributeTable table = AppBroker.getInstance()
@@ -225,7 +240,6 @@ public class MergeAction extends AbstractAction {
                                         }
                                     }
 
-                                    serviceFeature.saveChangesWithoutReload();
                                     serviceFeature.setEditable(false);
                                     serviceFeature.setEditable(true);
 

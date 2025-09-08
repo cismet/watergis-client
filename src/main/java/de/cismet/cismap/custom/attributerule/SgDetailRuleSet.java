@@ -59,6 +59,8 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
     {
         typeMap.put("geom", new Geom(true, false));
         typeMap.put("ww_gr", new Catalogue("k_ww_gr", true, true, new Numeric(4, 0, false, false)));
+        typeMap.put("vl", new Numeric(1, 0, false, true));
+        typeMap.put("kg", new Numeric(1, 0, false, true));
         typeMap.put("see_gn", new Varchar(50, false, true));
         typeMap.put("see_gn_t", new Numeric(1, 0, false, true));
         typeMap.put("see_lawa", new Varchar(20, false, true));

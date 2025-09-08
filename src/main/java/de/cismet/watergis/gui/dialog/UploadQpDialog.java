@@ -184,6 +184,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -192,6 +193,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -446,6 +448,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
         butOk1 = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         cbRoute = new de.cismet.cismap.cidslayer.DefaultCidsLayerBindableReferenceCombo(LAWA_MC, true);
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         butOk = new javax.swing.JButton();
         butCancel = new javax.swing.JButton();
@@ -510,10 +514,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             butOk1,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.butOk1.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.butOk1.text", new Object[] {
+                })); // NOI18N
         butOk1.addActionListener(new java.awt.event.ActionListener() {
 
                 @Override
@@ -566,14 +568,14 @@ public class UploadQpDialog extends javax.swing.JDialog {
         setMinimumSize(new java.awt.Dimension(690, 191));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
             butOk,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.butOk.text_1",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.butOk.text_1", new Object[] {
+                })); // NOI18N
         butOk.setMinimumSize(new java.awt.Dimension(170, 29));
         butOk.setPreferredSize(new java.awt.Dimension(170, 29));
         butOk.addActionListener(new java.awt.event.ActionListener() {
@@ -622,7 +624,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        getContentPane().add(jPanel1, gridBagConstraints);
+        jPanel2.add(jPanel1, gridBagConstraints);
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
@@ -668,12 +670,12 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel3, gridBagConstraints);
+        jPanel2.add(jPanel3, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
-        getContentPane().add(filler1, gridBagConstraints);
+        jPanel2.add(filler1, gridBagConstraints);
 
         jPanel4.setPreferredSize(new java.awt.Dimension(252, 100));
         jPanel4.setLayout(new java.awt.GridBagLayout());
@@ -732,7 +734,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel4, gridBagConstraints);
+        jPanel2.add(jPanel4, gridBagConstraints);
 
         jPanel5.setLayout(new java.awt.GridBagLayout());
 
@@ -761,10 +763,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
         labCol.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/cismet/watergis/res/icons22/stop.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(
             labCol,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.labCol.text",
-                new Object[] {}));                                                                                     // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.labCol.text", new Object[] {
+                }));                                                                                                   // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
@@ -775,7 +775,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel5, gridBagConstraints);
+        jPanel2.add(jPanel5, gridBagConstraints);
 
         jPanel13.setLayout(new java.awt.GridBagLayout());
 
@@ -827,7 +827,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel13, gridBagConstraints);
+        jPanel2.add(jPanel13, gridBagConstraints);
 
         jPanel6.setLayout(new java.awt.GridBagLayout());
 
@@ -851,10 +851,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel1,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.jLabel1.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.jLabel1.text", new Object[] {
+                })); // NOI18N
         jLabel1.setMinimumSize(new java.awt.Dimension(110, 20));
         jLabel1.setPreferredSize(new java.awt.Dimension(110, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -866,10 +864,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel2,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.jLabel2.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.jLabel2.text", new Object[] {
+                })); // NOI18N
         jLabel2.setMinimumSize(new java.awt.Dimension(110, 20));
         jLabel2.setPreferredSize(new java.awt.Dimension(110, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -902,7 +898,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel6, gridBagConstraints);
+        jPanel2.add(jPanel6, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
@@ -910,7 +906,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
-        getContentPane().add(jSeparator1, gridBagConstraints);
+        jPanel2.add(jSeparator1, gridBagConstraints);
 
         jPanel7.setLayout(new java.awt.GridBagLayout());
 
@@ -953,7 +949,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel7, gridBagConstraints);
+        jPanel2.add(jPanel7, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
@@ -961,7 +957,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
-        getContentPane().add(jSeparator2, gridBagConstraints);
+        jPanel2.add(jSeparator2, gridBagConstraints);
 
         jPanel8.setLayout(new java.awt.GridBagLayout());
 
@@ -985,10 +981,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel3,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.jLabel3.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.jLabel3.text", new Object[] {
+                })); // NOI18N
         jLabel3.setMinimumSize(new java.awt.Dimension(110, 20));
         jLabel3.setPreferredSize(new java.awt.Dimension(110, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1000,10 +994,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel4,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.jLabel4.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.jLabel4.text", new Object[] {
+                })); // NOI18N
         jLabel4.setMinimumSize(new java.awt.Dimension(110, 20));
         jLabel4.setPreferredSize(new java.awt.Dimension(110, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1036,16 +1028,14 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 11;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel8, gridBagConstraints);
+        jPanel2.add(jPanel8, gridBagConstraints);
 
         jPanel9.setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel5,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.jLabel5.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.jLabel5.text", new Object[] {
+                })); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -1082,10 +1072,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel6,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.jLabel6.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.jLabel6.text", new Object[] {
+                })); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
@@ -1095,10 +1083,8 @@ public class UploadQpDialog extends javax.swing.JDialog {
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel7,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.jLabel7.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.jLabel7.text", new Object[] {
+                })); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
@@ -1133,16 +1119,14 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 13;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel9, gridBagConstraints);
+        jPanel2.add(jPanel9, gridBagConstraints);
 
         jPanel10.setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel8,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.jLabel8.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.jLabel8.text", new Object[] {
+                })); // NOI18N
         jLabel8.setMinimumSize(new java.awt.Dimension(110, 20));
         jLabel8.setPreferredSize(new java.awt.Dimension(110, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1184,16 +1168,14 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 14;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel10, gridBagConstraints);
+        jPanel2.add(jPanel10, gridBagConstraints);
 
         jPanel11.setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel9,
-            org.openide.util.NbBundle.getMessage(
-                UploadQpDialog.class,
-                "UploadQpDialog.jLabel9.text",
-                new Object[] {})); // NOI18N
+            org.openide.util.NbBundle.getMessage(UploadQpDialog.class, "UploadQpDialog.jLabel9.text", new Object[] {
+                })); // NOI18N
         jLabel9.setMinimumSize(new java.awt.Dimension(110, 20));
         jLabel9.setPreferredSize(new java.awt.Dimension(110, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1235,7 +1217,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 15;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel11, gridBagConstraints);
+        jPanel2.add(jPanel11, gridBagConstraints);
 
         jPanel12.setLayout(new java.awt.GridBagLayout());
 
@@ -1286,7 +1268,7 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 16;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel12, gridBagConstraints);
+        jPanel2.add(jPanel12, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 17;
@@ -1294,7 +1276,17 @@ public class UploadQpDialog extends javax.swing.JDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
-        getContentPane().add(jSeparator3, gridBagConstraints);
+        jPanel2.add(jSeparator3, gridBagConstraints);
+
+        jScrollPane2.setViewportView(jPanel2);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(jScrollPane2, gridBagConstraints);
 
         pack();
     } // </editor-fold>//GEN-END:initComponents

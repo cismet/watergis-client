@@ -26,7 +26,6 @@ import Sirius.server.newuser.User;
 
 import org.apache.log4j.Logger;
 
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 
 import java.awt.EventQueue;
@@ -36,7 +35,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -45,24 +43,11 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 import de.cismet.cids.custom.helper.ActionHelper;
-import de.cismet.cids.custom.watergis.server.actions.CreateSchemaAction;
-import de.cismet.cids.custom.watergis.server.actions.CreateUserAction;
-import de.cismet.cids.custom.watergis.server.actions.CreateViewAction;
-import de.cismet.cids.custom.watergis.server.actions.RemoveSchemaAction;
-import de.cismet.cids.custom.watergis.server.actions.RemoveUserAction;
 import de.cismet.cids.custom.watergis.server.actions.SchemaExistsAction;
 import de.cismet.cids.custom.watergis.server.actions.UserExistsAction;
 import de.cismet.cids.custom.watergis.server.search.AllGroups;
 
 import de.cismet.cids.server.actions.ServerActionParameter;
-import de.cismet.cids.server.cidslayer.CidsLayerInfo;
-
-import de.cismet.cids.tools.CidsLayerUtil;
-
-import de.cismet.cismap.cidslayer.CidsLayer;
-
-import de.cismet.cismap.commons.featureservice.DefaultLayerProperties;
-import de.cismet.cismap.commons.gui.attributetable.AttributeTableRuleSet;
 
 import de.cismet.connectioncontext.AbstractConnectionContext;
 import de.cismet.connectioncontext.ConnectionContext;
@@ -563,14 +548,14 @@ public class RefreshDbUserDialog extends javax.swing.JDialog {
                                         CONNECTION_CONTEXT);
                         String errorMessage = null;
 
-                        errorMessage = DbUserDialog.removeSchema(schema);
+//                        errorMessage = DbUserDialog.removeSchema(schema);
 
                         if (errorMessage != null) {
                             return errorMessage;
                         }
 
                         // create schema
-                        errorMessage = DbUserDialog.createSchema(schema, dbUser);
+// errorMessage = DbUserDialog.createSchema(schema, dbUser);
 
                         if (errorMessage != null) {
                             return errorMessage;
