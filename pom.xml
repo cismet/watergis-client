@@ -63,7 +63,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-gui-commons</artifactId>
-                <version>9.1-SNAPSHOT</version>
+                <version>9.1</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>de.cismet.watergis</groupId>
                 <artifactId>watergis-server</artifactId>
-                <version>9.1-SNAPSHOT</version>
+                <version>9.0.1</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
