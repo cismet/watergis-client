@@ -130,6 +130,8 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField txtDim1;
     private javax.swing.JTextField txtDim10;
     private javax.swing.JTextField txtDim2;
@@ -322,6 +324,8 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanel8 = new javax.swing.JPanel();
         ckb1501 = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         butOk = new javax.swing.JButton();
@@ -392,6 +396,8 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
                 new Object[] {})); // NOI18N
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
+        jPanel8.setLayout(new java.awt.GridBagLayout());
+
         ckb1501.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
             ckb1501,
@@ -408,7 +414,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckb1501, gridBagConstraints);
+        jPanel8.add(ckb1501, gridBagConstraints);
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -466,7 +472,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        getContentPane().add(jPanel1, gridBagConstraints);
+        jPanel8.add(jPanel1, gridBagConstraints);
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
@@ -508,12 +514,12 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel3, gridBagConstraints);
+        jPanel8.add(jPanel3, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
-        getContentPane().add(filler1, gridBagConstraints);
+        jPanel8.add(filler1, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel2,
@@ -526,7 +532,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(jLabel2, gridBagConstraints);
+        jPanel8.add(jLabel2, gridBagConstraints);
 
         ckbFlSelection.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -542,7 +548,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(ckbFlSelection, gridBagConstraints);
+        jPanel8.add(ckbFlSelection, gridBagConstraints);
 
         ckb1502.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -560,7 +566,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckb1502, gridBagConstraints);
+        jPanel8.add(ckb1502, gridBagConstraints);
 
         ckb1503.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -578,7 +584,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckb1503, gridBagConstraints);
+        jPanel8.add(ckb1503, gridBagConstraints);
 
         ckb1505.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -596,7 +602,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckb1505, gridBagConstraints);
+        jPanel8.add(ckb1505, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbArt,
@@ -621,7 +627,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 5, 10);
-        getContentPane().add(ckbArt, gridBagConstraints);
+        jPanel8.add(ckbArt, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbTf,
@@ -646,7 +652,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 15, 10);
-        getContentPane().add(ckbTf, gridBagConstraints);
+        jPanel8.add(ckbTf, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbSumGu,
@@ -671,7 +677,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbSumGu, gridBagConstraints);
+        jPanel8.add(ckbSumGu, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbWdmSeparated,
@@ -696,7 +702,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 30, 15, 10);
-        getContentPane().add(ckbWdmSeparated, gridBagConstraints);
+        jPanel8.add(ckbWdmSeparated, gridBagConstraints);
 
         ckb1504.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -714,7 +720,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckb1504, gridBagConstraints);
+        jPanel8.add(ckb1504, gridBagConstraints);
 
         ckbGewSelection.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -730,7 +736,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(ckbGewSelection, gridBagConstraints);
+        jPanel8.add(ckbGewSelection, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel3,
@@ -743,7 +749,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        getContentPane().add(jLabel3, gridBagConstraints);
+        jPanel8.add(jLabel3, gridBagConstraints);
 
         ckbArtRl.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -761,7 +767,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbArtRl, gridBagConstraints);
+        jPanel8.add(ckbArtRl, gridBagConstraints);
 
         ckbArtD.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -779,7 +785,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbArtD, gridBagConstraints);
+        jPanel8.add(ckbArtD, gridBagConstraints);
 
         ckbArtDue.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(
@@ -797,7 +803,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbArtDue, gridBagConstraints);
+        jPanel8.add(ckbArtDue, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbOhneKlasse,
@@ -822,7 +828,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(ckbOhneKlasse, gridBagConstraints);
+        jPanel8.add(ckbOhneKlasse, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel4,
@@ -835,7 +841,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 15;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
-        getContentPane().add(jLabel4, gridBagConstraints);
+        jPanel8.add(jLabel4, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel5,
@@ -848,7 +854,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
-        getContentPane().add(jLabel5, gridBagConstraints);
+        jPanel8.add(jLabel5, gridBagConstraints);
 
         txtTf1.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -860,7 +866,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf1, gridBagConstraints);
+        jPanel8.add(txtTf1, gridBagConstraints);
 
         txtTf2.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -872,7 +878,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf2, gridBagConstraints);
+        jPanel8.add(txtTf2, gridBagConstraints);
 
         txtTf3.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -884,7 +890,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf3, gridBagConstraints);
+        jPanel8.add(txtTf3, gridBagConstraints);
 
         txtTf4.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -896,7 +902,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf4, gridBagConstraints);
+        jPanel8.add(txtTf4, gridBagConstraints);
 
         txtTf5.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -908,7 +914,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf5, gridBagConstraints);
+        jPanel8.add(txtTf5, gridBagConstraints);
 
         txtTf6.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -920,7 +926,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 17;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf6, gridBagConstraints);
+        jPanel8.add(txtTf6, gridBagConstraints);
 
         txtTf7.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -932,7 +938,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 17;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf7, gridBagConstraints);
+        jPanel8.add(txtTf7, gridBagConstraints);
 
         txtTf8.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -944,7 +950,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 17;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf8, gridBagConstraints);
+        jPanel8.add(txtTf8, gridBagConstraints);
 
         txtTf9.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -956,7 +962,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 17;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf9, gridBagConstraints);
+        jPanel8.add(txtTf9, gridBagConstraints);
 
         txtTf10.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -968,7 +974,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 17;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtTf10, gridBagConstraints);
+        jPanel8.add(txtTf10, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel6,
@@ -981,7 +987,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 19;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
-        getContentPane().add(jLabel6, gridBagConstraints);
+        jPanel8.add(jLabel6, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbOhneDimension,
@@ -1006,7 +1012,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(ckbOhneDimension, gridBagConstraints);
+        jPanel8.add(ckbOhneDimension, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             jLabel7,
@@ -1019,7 +1025,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 20;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
-        getContentPane().add(jLabel7, gridBagConstraints);
+        jPanel8.add(jLabel7, gridBagConstraints);
 
         txtDim1.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1031,7 +1037,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 20;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim1, gridBagConstraints);
+        jPanel8.add(txtDim1, gridBagConstraints);
 
         txtDim2.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1043,7 +1049,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 20;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim2, gridBagConstraints);
+        jPanel8.add(txtDim2, gridBagConstraints);
 
         txtDim3.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1055,7 +1061,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 20;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim3, gridBagConstraints);
+        jPanel8.add(txtDim3, gridBagConstraints);
 
         txtDim4.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1067,7 +1073,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 20;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim4, gridBagConstraints);
+        jPanel8.add(txtDim4, gridBagConstraints);
 
         txtDim5.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1079,7 +1085,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 20;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim5, gridBagConstraints);
+        jPanel8.add(txtDim5, gridBagConstraints);
 
         txtDim6.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1091,7 +1097,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 21;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim6, gridBagConstraints);
+        jPanel8.add(txtDim6, gridBagConstraints);
 
         txtDim7.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1103,7 +1109,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 21;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim7, gridBagConstraints);
+        jPanel8.add(txtDim7, gridBagConstraints);
 
         txtDim8.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1115,7 +1121,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 21;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim8, gridBagConstraints);
+        jPanel8.add(txtDim8, gridBagConstraints);
 
         txtDim9.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1127,7 +1133,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 21;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim9, gridBagConstraints);
+        jPanel8.add(txtDim9, gridBagConstraints);
 
         txtDim10.setText(org.openide.util.NbBundle.getMessage(
                 GerinneGeschlFlaechenReportDialog.class,
@@ -1139,7 +1145,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 21;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 10, 10);
-        getContentPane().add(txtDim10, gridBagConstraints);
+        jPanel8.add(txtDim10, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbDim,
@@ -1164,7 +1170,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 15, 10);
-        getContentPane().add(ckbDim, gridBagConstraints);
+        jPanel8.add(ckbDim, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbPerGew,
@@ -1189,7 +1195,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 10);
-        getContentPane().add(ckbPerGew, gridBagConstraints);
+        jPanel8.add(ckbPerGew, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbPerObj,
@@ -1214,7 +1220,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 30, 5, 10);
-        getContentPane().add(ckbPerObj, gridBagConstraints);
+        jPanel8.add(ckbPerObj, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(
             ckbFach,
@@ -1239,7 +1245,7 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 40, 15, 10);
-        getContentPane().add(ckbFach, gridBagConstraints);
+        jPanel8.add(ckbFach, gridBagConstraints);
 
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
@@ -1314,7 +1320,15 @@ public class GerinneGeschlFlaechenReportDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jPanel4, gridBagConstraints);
+        jPanel8.add(jPanel4, gridBagConstraints);
+
+        jScrollPane1.setViewportView(jPanel8);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(jScrollPane1, gridBagConstraints);
 
         pack();
     } // </editor-fold>//GEN-END:initComponents
