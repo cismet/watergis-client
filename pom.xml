@@ -13,7 +13,7 @@
 
     <groupId>de.cismet.watergis</groupId>
     <artifactId>watergis-client</artifactId>
-    <version>9.0.2</version>
+    <version>9.0.3</version>
     <packaging>jar</packaging>
 
     <name>WaterGIS Client</name>
@@ -35,7 +35,7 @@
         <connection>https://github.com/cismet/watergis-client.git</connection>
         <developerConnection>scm:git:git@github.com:cismet/watergis-client.git</developerConnection>
         <url>https://github.com/cismet/s-client</url>
-      <tag>v9.0.2</tag>
+      <tag>v9.0.3</tag>
   </scm>
 
     

@@ -3106,7 +3106,7 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
         public ValidationResult isValidValue(final Object value) {
             Object val = value;
 
-            if (value.equals("")) {
+            if ((value == null) || value.equals("")) {
                 val = null;
             }
             ValidationResult result = super.isValidValue(val);
