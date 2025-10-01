@@ -54,6 +54,7 @@ public class SgSuUsgRuleSet extends WatergisDefaultRuleSet {
 
     {
         typeMap.put("geom", new Geom(true, false));
+        typeMap.put("usg_aktiv", new Numeric(1, 0, false, true));
         typeMap.put("su_cd", new Varchar(50, false, false));
         typeMap.put("su_st_von", new Numeric(10, 2, false, true));
         typeMap.put("su_st_bis", new Numeric(10, 2, false, true));
