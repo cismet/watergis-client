@@ -43,8 +43,8 @@ public class SRwseggmRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("wa_cd", new WatergisDefaultRuleSet.Varchar(10, false));
         typeMap.put("planu_cd", new WatergisDefaultRuleSet.Varchar(10, false));
         typeMap.put("land_cd", new WatergisDefaultRuleSet.Varchar(4, false));
-        typeMap.put("ins_when", new WatergisDefaultRuleSet.Varchar(8, false));
-        typeMap.put("ins_by", new WatergisDefaultRuleSet.Varchar(15, false));
+        typeMap.put("ins_when", new WatergisDefaultRuleSet.Varchar(10, false));
+        typeMap.put("ins_by", new WatergisDefaultRuleSet.Varchar(50, false));
         typeMap.put("scale", new WatergisDefaultRuleSet.Varchar(1, false));
         typeMap.put("f_measure", new WatergisDefaultRuleSet.Numeric(9, 5, false));
         typeMap.put("t_measure", new WatergisDefaultRuleSet.Numeric(9, 5, false));
