@@ -55,7 +55,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-commons</artifactId>
-                <version>9.0</version>
+                <version>9.0.6</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -63,7 +63,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismet-gui-commons</artifactId>
-                <version>9.1</version>
+                <version>9.1.2</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>9.0.1</version>
+                <version>9.2-SNAPSHOT</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -79,7 +79,7 @@
             <dependency>
                 <groupId>de.cismet.cids</groupId>
                 <artifactId>cids-server</artifactId>
-                <version>9.0</version>
+                <version>9.1.7</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -87,7 +87,7 @@
             <dependency>
                 <groupId>de.cismet.cids.navigator</groupId>
                 <artifactId>cids-navigator</artifactId>
-                <version>9.0</version>
+                <version>9.1.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -95,7 +95,7 @@
             <dependency>
                 <groupId>de.cismet.cismap</groupId>
                 <artifactId>cismap-plugin</artifactId>
-                <version>9.0</version>
+                <version>9.0.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>de.cismet.watergis</groupId>
                 <artifactId>watergis-server</artifactId>
-                <version>9.0.1</version>
+                <version>9.0.3</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -345,6 +345,10 @@
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>dom4j</groupId>
+                    <artifactId>dom4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -383,7 +387,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
+            <artifactId>poi-ooxml-full</artifactId>
             <version>${apache.poi.version}</version>
             <scope>runtime</scope>
         </dependency>
