@@ -19,7 +19,6 @@ import Sirius.server.middleware.types.MetaClass;
 import Sirius.server.middleware.types.MetaObject;
 import Sirius.server.newuser.User;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.apache.log4j.Logger;
@@ -28,7 +27,6 @@ import org.openide.util.NbBundle;
 
 import java.awt.Component;
 import java.awt.EventQueue;
-import java.awt.event.MouseAdapter;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +36,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import java.text.DateFormat;
@@ -53,7 +50,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,7 +65,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import de.cismet.cids.custom.watergis.server.actions.RefreshTemplateAction;
-import de.cismet.cids.custom.watergis.server.actions.RemoveUserAction;
 import de.cismet.cids.custom.watergis.server.search.CalculateFgLa;
 import de.cismet.cids.custom.watergis.server.search.UniquenessCheck;
 
@@ -100,7 +95,6 @@ import de.cismet.commons.security.WebDavHelper;
 
 import de.cismet.connectioncontext.ConnectionContext;
 
-import de.cismet.netutil.Proxy;
 import de.cismet.netutil.ProxyHandler;
 
 import de.cismet.tools.PasswordEncrypter;
@@ -112,9 +106,6 @@ import de.cismet.tools.gui.downloadmanager.WebDavDownload;
 
 import de.cismet.watergis.broker.AppBroker;
 
-import de.cismet.watergis.check.CrossedLinesCheck;
-
-import de.cismet.watergis.gui.dialog.DbUserDialog;
 import de.cismet.watergis.gui.panels.DocumentCellEditor;
 
 import de.cismet.watergis.utils.FeatureServiceHelper;
@@ -2552,22 +2543,18 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                             result = new ValidationResult(Validation.OUT_OF_SIZE);
                         } else if (tmpScale > scale) {
                             Object roundedValue;
+                            bd.setScale(scale, RoundingMode.HALF_UP);
 
                             if (isDouble) {
-                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
-                                            .doubleValue();
+                                roundedValue = bd.doubleValue();
                             } else if (isInteger) {
-                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
-                                            .intValue();
+                                roundedValue = bd.intValue();
                             } else if (isLong) {
-                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
-                                            .longValue();
+                                roundedValue = bd.longValue();
                             } else if (isFloat) {
-                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
-                                            .floatValue();
+                                roundedValue = bd.floatValue();
                             } else {
-                                roundedValue = bd.round(new MathContext(digitsOnTheLeft + scale, RoundingMode.HALF_UP))
-                                            .toString();
+                                roundedValue = bd.toString();
                             }
 
                             result = new ValidationResult(Validation.SIZE_CORRECTION, true, roundedValue);
