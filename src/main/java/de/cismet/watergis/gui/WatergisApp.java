@@ -59,10 +59,7 @@ import net.infonode.util.Direction;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
@@ -195,10 +192,8 @@ import de.cismet.cismap.commons.gui.piccolo.PFeature;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SelectionListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.SimpleMoveListener;
 import de.cismet.cismap.commons.gui.piccolo.eventlistener.actions.CustomAction;
-import de.cismet.cismap.commons.interaction.ActiveLayerListener;
 import de.cismet.cismap.commons.interaction.CismapBroker;
 import de.cismet.cismap.commons.interaction.MapDnDListener;
-import de.cismet.cismap.commons.interaction.events.ActiveLayerEvent;
 import de.cismet.cismap.commons.interaction.events.MapDnDEvent;
 import de.cismet.cismap.commons.interaction.memento.MementoInterface;
 import de.cismet.cismap.commons.rasterservice.ImageFileMetaData;
@@ -793,13 +788,13 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         // clear all locks from the previous session
         H2FeatureService.clearLocks();
         H2FeatureService.removeUnusedSequences();
-        final Map<HostConfiguration, Integer> maxHostConnections = new HashMap<HostConfiguration, Integer>();
-        maxHostConnections.put(HostConfiguration.ANY_HOST_CONFIGURATION, 128);
-        HttpConnectionManagerParams.getDefaultParams()
-                .setParameter(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, maxHostConnections);
-        HttpConnectionManagerParams.getDefaultParams()
-                .setIntParameter(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, 128);
-        HttpConnectionManagerParams.getDefaultParams().setIntParameter(HttpConnectionManagerParams.SO_LINGER, 2);
+//        final Map<HostConfiguration, Integer> maxHostConnections = new HashMap<HostConfiguration, Integer>();
+//        maxHostConnections.put(HostConfiguration.ANY_HOST_CONFIGURATION, 128);
+//        HttpConnectionManagerParams.getDefaultParams()
+//                .setParameter(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, maxHostConnections);
+//        HttpConnectionManagerParams.getDefaultParams()
+//                .setIntParameter(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, 128);
+//        HttpConnectionManagerParams.getDefaultParams().setIntParameter(HttpConnectionManagerParams.SO_LINGER, 2);
         configManager.addConfigurable(this);
         configManager.configure(this);
         ClassCacheMultiple.setInstance(AppBroker.DOMAIN_NAME);
