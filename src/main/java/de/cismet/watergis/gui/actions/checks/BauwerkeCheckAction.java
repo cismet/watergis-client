@@ -28,6 +28,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import de.cismet.cids.custom.helper.SQLFormatter;
+import de.cismet.cids.custom.watergis.server.search.DInSg;
+import de.cismet.cids.custom.watergis.server.search.DueInSg;
 import de.cismet.cids.custom.watergis.server.search.FgBakCount;
 import de.cismet.cids.custom.watergis.server.search.HaltungWithHolesCoverage;
 import de.cismet.cids.custom.watergis.server.search.MergeBaAnll;
@@ -41,7 +43,9 @@ import de.cismet.cids.custom.watergis.server.search.MergeBaSchw;
 import de.cismet.cids.custom.watergis.server.search.MergeBaWehr;
 import de.cismet.cids.custom.watergis.server.search.OverlappedAnllWithR;
 import de.cismet.cids.custom.watergis.server.search.OverlappedRlWithRDDue;
+import de.cismet.cids.custom.watergis.server.search.RlInSg;
 import de.cismet.cids.custom.watergis.server.search.RlWithHole;
+import de.cismet.cids.custom.watergis.server.search.TechDWrongPlace;
 
 import de.cismet.cids.navigator.utils.ClassCacheMultiple;
 
@@ -49,14 +53,12 @@ import de.cismet.cids.server.search.CidsServerSearch;
 
 import de.cismet.cismap.commons.featureservice.FeatureServiceAttribute;
 import de.cismet.cismap.commons.featureservice.H2FeatureService;
-import de.cismet.cismap.commons.gui.layerwidget.ThemeLayerWidget;
 
 import de.cismet.tools.gui.StaticSwingTools;
 import de.cismet.tools.gui.WaitDialog;
 import de.cismet.tools.gui.WaitingDialogThread;
 
 import de.cismet.watergis.broker.AppBroker;
-import de.cismet.watergis.broker.ComponentName;
 
 import static javax.swing.Action.NAME;
 import static javax.swing.Action.SHORT_DESCRIPTION;
@@ -179,6 +181,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
     private static final String CHECKS_HALTUNG_HOLES = "Prüfungen->Bauwerke->Haltung->Löcher";
     private static final String CHECKS_BAUWERKE_RL_RL__LUECKE = "Prüfungen->Bauwerke->RL/D/Dü->RL/D/Dü: Lücke";
     private static final String CHECKS_BAUWERKE_DD__ATTRIBUTE = "Prüfungen->Bauwerke->RL/D/Dü->D: Attribute";
+    private static final String CHECKS_BAUWERKE_D_IN_SG = "Prüfungen->Bauwerke->RL/D/Dü->D: See";
+    private static final String CHECKS_BAUWERKE_RL_IN_SG = "Prüfungen->Bauwerke->RL/D/Dü->RL: See";
+    private static final String CHECKS_BAUWERKE_DUE_IN_SG = "Prüfungen->Bauwerke->RL/D/Dü->DUE: See";
     private static final String CHECKS_BAUWERKE_WEHR_WEHR__ATTRIBUTE = "Prüfungen->Bauwerke->Wehr->Wehr: Attribute";
     private static final String CHECKS_BAUWERKE_SCHW_SCHW__ATTRIBUTE = "Prüfungen->Bauwerke->Schw->Schw: Attribute";
     private static final String CHECKS_BAUWERKE_SCHA_SCHA__ATTRIBUTE = "Prüfungen->Bauwerke->Scha->Scha: Attribute";
@@ -217,7 +222,10 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             CHECKS_BAUWERKE_SCHW_SCHW__ATTRIBUTE,
             CHECKS_BAUWERKE_WEHR_WEHR_AUF_GESCHLOSSEN,
             CHECKS_BAUWERKE_WEHR_WEHR_DOPPELTZU_NAH,
-            CHECKS_BAUWERKE_WEHR_WEHR__ATTRIBUTE
+            CHECKS_BAUWERKE_WEHR_WEHR__ATTRIBUTE,
+            CHECKS_BAUWERKE_D_IN_SG,
+            CHECKS_BAUWERKE_RL_IN_SG,
+            CHECKS_BAUWERKE_DUE_IN_SG
         };
 
     static {
@@ -1490,6 +1498,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                     addService(result, cr.getWehrAttr());
                     addService(result, cr.getWehrDistance());
                     addService(result, cr.getdAttr());
+                    addService(result, cr.getdInSg());
+                    addService(result, cr.getRlInSg());
+                    addService(result, cr.getDueInSg());
                 }
             } catch (Exception e) {
                 LOG.error("Error while performing check", e);
@@ -1684,6 +1695,15 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                             }
                             if (result.getRlAttr() != null) {
                                 showService(result.getRlAttr());
+                            }
+                            if (result.getdInSg() != null) {
+                                showService(result.getdInSg());
+                            }
+                            if (result.getRlInSg() != null) {
+                                showService(result.getRlInSg());
+                            }
+                            if (result.getDueInSg() != null) {
+                                showService(result.getDueInSg());
                             }
                             refreshTree();
                             refreshMap();
@@ -1899,6 +1919,24 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
                 FG_BA_D,
                 query,
                 CHECKS_BAUWERKE_DD__ATTRIBUTE));
+        increaseProgress(wd, 1);
+
+        result.setdInSg(analyseByCustomSearch(
+                new DInSg(user, selectedIds, export),
+                CHECKS_BAUWERKE_D_IN_SG,
+                serviceAttributeDefinition));
+        increaseProgress(wd, 1);
+
+        result.setRlInSg(analyseByCustomSearch(
+                new RlInSg(user, selectedIds, export),
+                CHECKS_BAUWERKE_RL_IN_SG,
+                serviceAttributeDefinition));
+        increaseProgress(wd, 1);
+
+        result.setDueInSg(analyseByCustomSearch(
+                new DueInSg(user, selectedIds, export),
+                CHECKS_BAUWERKE_DUE_IN_SG,
+                serviceAttributeDefinition));
         increaseProgress(wd, 1);
 
         result.setRlHole(analyseByCustomSearch(
@@ -2211,6 +2249,21 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
             successful = false;
         }
 
+        if (result.getdInSg() != null) {
+            result.setdInSgError(result.getdInSg().getFeatureCount(null));
+            successful = false;
+        }
+
+        if (result.getRlInSg() != null) {
+            result.setRlInSgError(result.getRlInSg().getFeatureCount(null));
+            successful = false;
+        }
+
+        if (result.getDueInSg() != null) {
+            result.setDueInSgError(result.getDueInSg().getFeatureCount(null));
+            successful = false;
+        }
+
         return result;
     }
 
@@ -2291,6 +2344,9 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private int anllGeschlError;
         private int krMarkedTwiceError;
         private int haltungHolesError;
+        private int dInSgError;
+        private int rlInSgError;
+        private int dueInSgError;
         private ProblemCountAndClasses problemTreeObjectCount;
         private H2FeatureService rlAttr;
         private H2FeatureService dAttr;
@@ -2319,8 +2375,119 @@ public class BauwerkeCheckAction extends AbstractCheckAction {
         private H2FeatureService anllGeschl;
         private H2FeatureService krMarkedTwice;
         private H2FeatureService haltungHoles;
+        private H2FeatureService dInSg;
+        private H2FeatureService rlInSg;
+        private H2FeatureService dueInSg;
 
         //~ Methods ------------------------------------------------------------
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the dInSgError
+         */
+        public int getdInSgError() {
+            return dInSgError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  dInSgError  the dInSgError to set
+         */
+        public void setdInSgError(final int dInSgError) {
+            this.dInSgError = dInSgError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the rlInSgError
+         */
+        public int getRlInSgError() {
+            return rlInSgError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  rlInSgError  the rlInSgError to set
+         */
+        public void setRlInSgError(final int rlInSgError) {
+            this.rlInSgError = rlInSgError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the dueInSgError
+         */
+        public int getDueInSgError() {
+            return dueInSgError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  dueInSgError  the dueInSgError to set
+         */
+        public void setDueInSgError(final int dueInSgError) {
+            this.dueInSgError = dueInSgError;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the dInSg
+         */
+        public H2FeatureService getdInSg() {
+            return dInSg;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  dInSg  the dInSg to set
+         */
+        public void setdInSg(final H2FeatureService dInSg) {
+            this.dInSg = dInSg;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the rlInSg
+         */
+        public H2FeatureService getRlInSg() {
+            return rlInSg;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  rlInSg  the rlInSg to set
+         */
+        public void setRlInSg(final H2FeatureService rlInSg) {
+            this.rlInSg = rlInSg;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @return  the dueInSg
+         */
+        public H2FeatureService getDueInSg() {
+            return dueInSg;
+        }
+
+        /**
+         * DOCUMENT ME!
+         *
+         * @param  dueInSg  the dueInSg to set
+         */
+        public void setDueInSg(final H2FeatureService dueInSg) {
+            this.dueInSg = dueInSg;
+        }
 
         /**
          * DOCUMENT ME!
