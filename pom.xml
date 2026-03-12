@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>de.cismet.commons</groupId>
                 <artifactId>cismap-commons</artifactId>
-                <version>9.1.8</version>
+                <version>9.1.11</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>de.cismet.watergis</groupId>
                 <artifactId>watergis-server</artifactId>
-                <version>9.0.3</version>
+                <version>9.0.4</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -250,12 +250,6 @@
         <dependency>
             <groupId>org.swinglabs</groupId>
             <artifactId>swing-layout</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <scope>compile</scope>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
