@@ -1006,7 +1006,8 @@ public class WatergisApp extends javax.swing.JFrame implements Configurable,
         mniGafUpload.setVisible(checkForQP);
 
         final boolean checkForTechProf = AppBroker.getInstance().isAdminUser()
-                    || AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals(3100);
+                    || AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals(3100)
+                    || AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals(3200);
         mniTechProf.setVisible(checkForTechProf);
         mniTechProf.setEnabled(checkForTechProf);
         checkForCreatedObjects();

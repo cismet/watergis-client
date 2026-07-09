@@ -492,7 +492,9 @@ public class RefreshDbUserDialog extends javax.swing.JDialog {
         final WaitingDialogThread<String> wdt = new WaitingDialogThread<String>(AppBroker.getInstance()
                         .getWatergisApp(),
                 true,
-                "Aktualisiere DB Profil                                 ",
+                "Aktualisiere DB Profil "
+                        + schema
+                        + "                            ",
                 null,
                 100,
                 true) {

@@ -1465,6 +1465,15 @@ public class WatergisDefaultRuleSet extends DefaultCidsLayerAttributeTableRuleSe
                 // this property should never be copied
                 continue;
             }
+            if (attrKey.equalsIgnoreCase("wbbl")) {
+                // this property should never begin or end with spaces
+                final Object val = getFeaturePropertyIgnoreCase(sourceFeature, attrKey);
+
+                if (val instanceof String) {
+                    targetFeature.setProperty(attrKey, ((String)val).trim());
+                    continue;
+                }
+            }
             final Object val = getFeaturePropertyIgnoreCase(sourceFeature, attrKey);
 
             if (val != null) {
