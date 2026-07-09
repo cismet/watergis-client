@@ -354,7 +354,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	join dlm25w.fg_ba_punkt bis on (linie.bis = bis.id)\n"
                             + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
                             + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (obj_nr is null or abs(von.wert - bis.wert) < 0.5)";
+                            + " left join geom on (linie.geom = geom.id)\n"
+                            + "where (%1$s is null or von.route = any(%1$s)) and (obj_nr is null or abs(von.wert - bis.wert) < 0.5 or st_geometryType(geo_field) not ilike 'ST_LineString' or  not st_isValid(geo_field) )";
             } else {
                 QUERY_TECH_ATTR = "select " + FG_BA_TECH.getID() + ", t." + FG_BA_TECH.getPrimaryKey()
                             + " from dlm25w.fg_ba_tech t\n"
@@ -364,7 +365,8 @@ public class SonstigeCheckAction extends AbstractCheckAction {
                             + "	join dlm25w.fg_ba ba on (von.route = ba.id)\n"
                             + "	join dlm25w.fg_bak bak on (ba.bak_id = bak.id)\n"
                             + "	join dlm25w.k_ww_gr gr on (bak.ww_gr = gr.id)\n"
-                            + "where (%1$s is null or von.route = any(%1$s)) and (obj_nr is null or abs(von.wert - bis.wert) < 0.5) and (gr.owner = '"
+                            + " left join geom on (linie.geom = geom.id)\n"
+                            + "where (%1$s is null or von.route = any(%1$s)) and (obj_nr is null or abs(von.wert - bis.wert) < 0.5 or st_geometryType(geo_field) not ilike 'ST_LineString' or  not st_isValid(geo_field) ) and (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s)";
             }
             if ((user == null)

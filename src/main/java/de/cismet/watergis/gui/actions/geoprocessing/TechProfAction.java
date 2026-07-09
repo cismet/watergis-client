@@ -192,7 +192,8 @@ public class TechProfAction extends AbstractGeoprocessingAction {
             result = JOptionPane.showOptionDialog(AppBroker.getInstance().getWatergisApp(),
                     NbBundle.getMessage(
                         TechProfAction.class,
-                        "TechProfAction.actionPerformed.message2"),
+                        "TechProfAction.actionPerformed.message2",
+                        (AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals(3200) ? "3200" : "3100")),
                     NbBundle.getMessage(
                         TechProfAction.class,
                         "TechProfAction.actionPerformed.title2"),
@@ -228,7 +229,9 @@ public class TechProfAction extends AbstractGeoprocessingAction {
                             final CidsLayer prof = new CidsLayer(ClassCacheMultiple.getMetaClass(
                                         AppBroker.DOMAIN_NAME,
                                         "dlm25w.fg_ba_prof"));
-                            final String query = "dlm25wPk_ww_gr1.ww_gr = 3100";
+                            final String query = "dlm25wPk_ww_gr1.ww_gr = "
+                                        + (AppBroker.getInstance().getOwnWwGr().getProperty("ww_gr").equals(3200)
+                                            ? "3200" : "3100");
                             // and dlm25w.fg_ba.ba_cd = '10:1LV29a-20'
                             tech.initAndWait();
                             final List<FeatureServiceFeature> featureListTech = tech.getFeatureFactory()

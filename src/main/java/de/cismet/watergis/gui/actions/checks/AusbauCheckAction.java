@@ -155,6 +155,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_l_st kst on (kst.id = bef.l_st)\n"
                             + "left join dlm25w.k_traeger kt on (kt.id = bef.traeger)\n"
                             + "left join dlm25w.k_zust_kl kz on (kz.id = bef.zust_kl)\n"
+                            + "left join geom on (linie.geom = geom.id)\n"
                             + "where\n"
                             + " (%1$s is null or von.route = any(%1$s)) and (kpr.profil is null or (bef.l_st is not null and kst.l_st is null) or obj_nr is null\n"
                             + "or (bef.traeger is not null and kt.traeger is null)\n"
@@ -176,6 +177,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kpr.profil = 're' and (bv_re is not null and bv_re <> 0))\n"
                             + "or (kpr.profil = 're' and ((bv_re is not null and bv_re <> 0) or (bv_li is not null and bv_li <> 0) ) )\n"
                             + "or (kpr.profil = 'tr' and ((bv_re is not null and bv_re = 0) and (bv_li is not null and bv_li = 0) ) )\n"
+                            + "or st_geometryType(geo_field) not ilike 'ST_LineString'"
+                            + "or  not st_isValid(geo_field) "
                             + ");";
             } else {
                 QUERY_PROF_ATTR = "select distinct " + FG_BA_PROF.getID() + ", bef." + FG_BA_PROF.getPrimaryKey()
@@ -190,6 +193,7 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "left join dlm25w.k_l_st kst on (kst.id = bef.l_st)\n"
                             + "left join dlm25w.k_traeger kt on (kt.id = bef.traeger)\n"
                             + "left join dlm25w.k_zust_kl kz on (kz.id = bef.zust_kl)\n"
+                            + "left join geom on (linie.geom = geom.id)\n"
                             + "where\n"
                             + " (%1$s is null or von.route = any(%1$s)) and (kpr.profil is null or (bef.l_st is not null and kst.l_st is null) or obj_nr is null\n"
                             + "or (bef.traeger is not null and kt.traeger is null)\n"
@@ -211,6 +215,8 @@ public class AusbauCheckAction extends AbstractCheckAction {
                             + "or (kpr.profil = 're' and (bv_re is not null and bv_re <> 0))\n"
                             + "or (kpr.profil = 're' and ((bv_re is not null and bv_re <> 0) or (bv_li is not null and bv_li <> 0) ) )\n"
                             + "or (kpr.profil = 'tr' and ((bv_re is not null and bv_re = 0) and (bv_li is not null and bv_li = 0) ) )\n"
+                            + "or st_geometryType(geo_field) not ilike 'ST_LineString'"
+                            + "or  not st_isValid(geo_field) "
                             + ") and (gr.owner = '"
                             + user.getUserGroup().getName() + "' or %2$s);";
             }

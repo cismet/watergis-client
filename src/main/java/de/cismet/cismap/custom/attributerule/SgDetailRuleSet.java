@@ -84,6 +84,8 @@ public class SgDetailRuleSet extends WatergisDefaultRuleSet {
         typeMap.put("leff", new Numeric(6, 3, false, true));
         typeMap.put("beff", new Numeric(6, 3, false, true));
         typeMap.put("tabelle", new Varchar(50, false, true));
+        typeMap.put("ant_fl_mv", new Numeric(10, 0, false, true));
+        typeMap.put("ant_fl", new Numeric(5, 2, false, true));
         typeMap.put("ezg", new Numeric(1, 0, false, true));
         typeMap.put("ezg_fl", new Numeric(12, 0, false, true));
         typeMap.put("flaeche", new Numeric(12, 0, false, false));
